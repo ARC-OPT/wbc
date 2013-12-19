@@ -1,0 +1,20 @@
+<package>
+  <description brief="Whole Body control library">
+  Implementations of algorithms for whole body robot control, including redundancy resolution based on hierarchical null space decomposition. Should cover velocity, acceleration and force based control.
+  </description>
+  <author>Dennis Mronga/dennis.mronga@dfki.de</author>
+  <license></license>
+  <url>http://</url>
+  <logo>http://</logo>
+  <depend package="base/cmake" />
+  <!--
+   To add any dependencies use the depend tag
+  <depend package="dummy-dependency-0" />
+	...
+  <depend package="dummy-dependency-n-1" />
+  <depend package="dummy-dependency-n" />
+  -->
+  <depend package="base/types" />
+  <depend package="control/kdl_parser" />
+  <depend package="eigen3" />
+</package>
