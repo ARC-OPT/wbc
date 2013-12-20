@@ -1,7 +1,7 @@
 #ifndef HIERARCHICAL_SOLVER_HPP
 #define HIERARCHICAL_SOLVER_HPP
 
-#include <eigen3/Eigen/Core>
+#include <Eigen/Core>
 #include <vector>
 
 class HierarchicalSolver{
