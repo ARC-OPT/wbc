@@ -2,6 +2,7 @@
 #define HIERARCHICAL_WDLS_SOLVER_HPP
 
 #include "HierarchicalSolver.hpp"
+#include <Eigen/SVD>
 
 class HierarchicalLSSolver : HierarchicalSolver{
 
@@ -30,6 +31,7 @@ public:
             y_comp_.resize(ny);
             task_weight_mat_.resize(ny, ny);
             task_weight_mat_.setZero();
+            svd_ = Eigen::JacobiSVD<Eigen::MatrixXd>(ny, nx);
         }
         Eigen::MatrixXd A_proj_; /** A Matrix projected on nullspace of the higher priority*/
         Eigen::MatrixXd A_proj_w_; /** A Matrix projected on nullspace of the higher priority with weighting*/
@@ -40,8 +42,10 @@ public:
 
         unsigned int ny_; /** Number of task variables*/
 
+
         //Helpers
         Eigen::MatrixXd U_;
+        Eigen::JacobiSVD<Eigen::MatrixXd> svd_;
 
     };
 

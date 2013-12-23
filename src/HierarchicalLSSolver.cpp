@@ -4,8 +4,6 @@
 #include <base/logging.h>
 #include <stdexcept>
 #include <iostream>
-#include <Eigen/LU>
-#include <Eigen/Cholesky>
 
 using namespace std;
 
@@ -38,9 +36,9 @@ bool HierarchicalLSSolver::configure(const std::vector<unsigned int> &ny_per_pri
         priorities_.push_back(Priority(ny_per_prio[prio], nx));
 
     nx_ = nx;
-    proj_mat_.resize(nx_, nx);
+    proj_mat_.resize(nx_, nx_);
     S_.resize(nx_);
-    S_.setConstant(1.0);
+    S_.setZero();
     S_inv_.resize( nx_, nx_);
     S_inv_.setZero();
     Damped_S_inv_.resize( nx_, nx_);
@@ -64,6 +62,7 @@ bool HierarchicalLSSolver::configure(const std::vector<unsigned int> &ny_per_pri
         task_weights.setConstant(1);
         setTaskWeights(task_weights, prio);
     }
+
 
     return true;
 }
@@ -110,7 +109,19 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         //Compute weighted projection mat: A_proj_w = Wy * A_proj * Wq^-1
         priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * priorities_[prio].A_proj_ * joint_weight_mat_;
 
-        //Compute svd of A Matrix
+        //Compute svd of A Matrix TODO: Check the Eigen Version of SVD to get rid of KDL dependency here
+        /*priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, ComputeFullV | ComputeFullU);
+        V_ = priorities_[prio].svd_.matrixV();
+        S_.block(0,0,priorities_[prio].ny_,1) = priorities_[prio].svd_.singularValues();
+        priorities_[prio].U_.block(0,0, priorities_[prio].ny_, priorities_[prio].ny_) = priorities_[prio].svd_.matrixU().transpose();
+        cout<<"U: "<<priorities_[prio].U_<<endl;
+        cout<<"V: "<<V_<<endl;
+        cout<<"S: "<<S_<<endl;
+        V_.resize(nx_, nx_);
+        V_.setIdentity();
+        priorities_[prio].U_.resize(priorities_[prio].ny_, nx_);
+        S_.resize(nx_);*/
+
         int ret = KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
         if (ret < 0)
             throw std::runtime_error("Unable to perform svd");

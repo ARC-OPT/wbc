@@ -27,7 +27,7 @@ BOOST_AUTO_TEST_CASE(test_solver)
    task_weights.resize(NO_CONSTRAINTS);
    task_weights.setConstant(1);
    task_weights(0) = 1.0;
-   task_weights(1) = 0.0;
+   task_weights(1) = 1.0;
    solver.setTaskWeights(task_weights, 0);
 
 
