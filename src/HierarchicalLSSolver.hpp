@@ -16,28 +16,33 @@ public:
          */
         Priority(const unsigned int ny, const unsigned int nx){
             ny_ = ny;
-            A_projected_.resize(ny, nx);
-            A_projected_.setZero();
-            A_projected_inv_.resize(ny, nx);
-            A_projected_inv_.setZero();
-            A_projected_damped_inv_.resize(ny, nx);
-            A_projected_damped_inv_.setZero();
+            A_proj_.resize(ny, nx);
+            A_proj_.setZero();
+            A_proj_w_.resize(ny,nx);
+            A_proj_w_.setZero();
+            A_proj_inv_wls_.resize(ny, nx);
+            A_proj_inv_wls_.setZero();
+            A_proj_inv_wdls_.resize(ny, nx);
+            A_proj_inv_wdls_.setZero();
             U_.resize(ny, nx);
             U_.setZero();
-            A_projected_.setZero();
+            A_proj_.setZero();
             y_comp_.resize(ny);
             task_weight_mat_.resize(ny, ny);
             task_weight_mat_.setZero();
         }
-        Eigen::MatrixXd A_projected_; /** A Matrix projected on nullspace of the higher priority*/
-        Eigen::MatrixXd A_projected_inv_; /** A Matrix projected on nullspace of the higher priority (Inverted)*/
-        Eigen::MatrixXd A_projected_damped_inv_; /** A Matrix projected on nullspace of the higher priority (Damped, Inverted) */
+        Eigen::MatrixXd A_proj_; /** A Matrix projected on nullspace of the higher priority*/
+        Eigen::MatrixXd A_proj_w_; /** A Matrix projected on nullspace of the higher priority with weighting*/
+        Eigen::MatrixXd A_proj_inv_wls_; /** Least square inverse of A_proj_w_*/
+        Eigen::MatrixXd A_proj_inv_wdls_;  /** Damped Least square inverse of A_proj_w_*/
         Eigen::VectorXd y_comp_; /** Task variables which are compensated for the part of solution already met in higher priorities */
         Eigen::MatrixXd task_weight_mat_; /** Matrix containing information about the task weights*/
+
+        unsigned int ny_; /** Number of task variables*/
+
         //Helpers
         Eigen::MatrixXd U_;
 
-        unsigned int ny_;
     };
 
     HierarchicalLSSolver();

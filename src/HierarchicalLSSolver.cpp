@@ -94,18 +94,24 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
     proj_mat_.setIdentity();
     x.setZero();
 
-    // Loop through all priorities
+    //////// Loop through all priorities
+
     for(uint prio = 0; prio < priorities_.size(); prio++){
+
+        priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
         priorities_[prio].y_comp_ = y[prio] - A[prio]*x;
 
-        //projection of A on the null space of previous priorities. For the highest priority proj_mat will be Identity, so
-        //that the projected A will be equal to A
-        priorities_[prio].A_projected_ = A[prio] * proj_mat_;
+        //projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
+        //For the first priority P == Identity
+        priorities_[prio].A_proj_ = A[prio] * proj_mat_;
+
+        //Compute weighted projection mat: A_proj_w = Wy * A_proj * Wq^-1
+        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * priorities_[prio].A_proj_ * joint_weight_mat_;
 
         //Compute svd of A Matrix
-        int ret = KDL::svd_eigen_HH(priorities_[prio].A_projected_, priorities_[prio].U_, S_, V_, tmp_);
+        int ret = KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
         if (ret < 0)
             throw std::runtime_error("Unable to perform svd");
 
@@ -135,26 +141,31 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
                 S_inv_(i,i) = 1 / S_(i);
         }
 
-        // A^# = V * S^# * U^T
-        priorities_[prio].A_projected_inv_ =  V_ * S_inv_ * priorities_[prio].U_.transpose(); //Normal Inverse
-        priorities_[prio].A_projected_damped_inv_ = V_ * Damped_S_inv_ * priorities_[prio].U_.transpose(); //Damped inverse
+        // A^# = Wq * V * S^# * U^T * Wy
+        priorities_[prio].A_proj_inv_wls_ =  joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Normal Inverse with weighting
+        priorities_[prio].A_proj_inv_wdls_ =  joint_weight_mat_ * V_ * Damped_S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
 
         // x = x + A^# * y
-        x += priorities_[prio].A_projected_inv_ * priorities_[prio].y_comp_;
+        x += priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;
 
         // Compute projection matrix for the next priority. Use here the undamped inverse to have a correct solution
-        proj_mat_ -= priorities_[prio].A_projected_inv_ * priorities_[prio].A_projected_;
+        proj_mat_ -= priorities_[prio].A_proj_inv_wls_ * priorities_[prio].A_proj_;
 
     } //priority loop
+
+    ///////////////
 }
 
 
 void HierarchicalLSSolver::setJointWeights(const Eigen::VectorXd& weights){
     if(weights.rows() == nx_){
         for(uint i = 0; i < nx_; i++){
-            //In the original code, here, a choleski factorization + tranpose + inverse was done. Todo: Why?
+            //In the original code, here, a choleski factorization + tranpose + inverse was done.
             //Since the weighting matrix is a diagonal matrix, this can be simplified to
-            joint_weight_mat_(i,i) = 1/sqrt(weights(i));
+            if(weights(i) == 0)
+                joint_weight_mat_(i,i) = 1/sqrt(1e10);
+            else
+                joint_weight_mat_(i,i) = 1/sqrt(1/weights(i));
         }
     }
     else{
