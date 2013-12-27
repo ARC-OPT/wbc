@@ -1,4 +1,4 @@
 rock_library(wbc
-    SOURCES HierarchicalLSSolver.cpp TaskFrame.cpp
-    HEADERS HierarchicalSolver.hpp HierarchicalLSSolver.hpp Priority.hpp TaskFrame.hpp
+    SOURCES HierarchicalSolver.cpp SubTask.cpp Wbc.cpp
+    HEADERS HierarchicalSolver.hpp SubTask.hpp Wbc.hpp
     DEPS_PKGCONFIG orocos-kdl base-lib)

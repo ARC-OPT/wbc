@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp> 
-#include "../src/HierarchicalLSSolver.hpp"
+#include "../src/HierarchicalSolver.hpp"
 #include <stdlib.h>
 
 using namespace std;
@@ -9,13 +9,13 @@ BOOST_AUTO_TEST_CASE(test_solver)
 {
    srand (time(NULL));
 
-   const int NO_JOINTS = 11;
+   const int NO_JOINTS = 7;
    const int NO_CONSTRAINTS = 2;
 
-   HierarchicalLSSolver solver;
+   HierarchicalSolver solver;
    std::vector<unsigned int> ny_per_prio(1,NO_CONSTRAINTS);
    solver.configure(ny_per_prio, NO_JOINTS);
-   solver.setNormMax(5.95);
+   solver.setNormMax(5.75);
 
    Eigen::VectorXd joint_weights;
    joint_weights.resize(NO_JOINTS);

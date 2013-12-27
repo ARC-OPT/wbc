@@ -1,20 +1,20 @@
 
 #include <kdl/utilities/svd_eigen_HH.hpp>
-#include "HierarchicalLSSolver.hpp"
+#include "HierarchicalSolver.hpp"
 #include <base/logging.h>
 #include <stdexcept>
 #include <iostream>
 
 using namespace std;
 
-HierarchicalLSSolver::HierarchicalLSSolver()
+HierarchicalSolver::HierarchicalSolver()
     : epsilon_(1e-9),
       norm_max_(1){
 
 }
 
-bool HierarchicalLSSolver::configure(const std::vector<unsigned int> &ny_per_prio,
-                                     const unsigned int nx){
+bool HierarchicalSolver::configure(const std::vector<unsigned int> &ny_per_prio,
+                                   const unsigned int nx){
     if(nx == 0){
         LOG_ERROR("No of joint variables must be > 0");
         return false;
@@ -67,9 +67,9 @@ bool HierarchicalLSSolver::configure(const std::vector<unsigned int> &ny_per_pri
     return true;
 }
 
-void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
-                                 const std::vector<Eigen::VectorXd> &y,
-                                 Eigen::VectorXd &x){
+void HierarchicalSolver::solve(const std::vector<Eigen::MatrixXd> &A,
+                               const std::vector<Eigen::VectorXd> &y,
+                               Eigen::VectorXd &x){
     //Check valid input
     if(x.cols() != nx_){
         LOG_WARN("Size of output vector does not match number of joint variables. Will do a resize!");
@@ -107,7 +107,9 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         priorities_[prio].A_proj_ = A[prio] * proj_mat_;
 
         //Compute weighted projection mat: A_proj_w = Wy * A_proj * Wq^-1
-        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * priorities_[prio].A_proj_ * joint_weight_mat_;
+        Eigen::MatrixXd tmp(nx_, nx_);
+        tmp = priorities_[prio].A_proj_ * joint_weight_mat_;
+        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * tmp;//priorities_[prio].A_proj_ * joint_weight_mat_;
 
         //Compute svd of A Matrix TODO: Check the Eigen Version of SVD to get rid of KDL dependency here
         /*priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, ComputeFullV | ComputeFullU);
@@ -121,6 +123,8 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         V_.setIdentity();
         priorities_[prio].U_.resize(priorities_[prio].ny_, nx_);
         S_.resize(nx_);*/
+
+        cout<<priorities_[prio].A_proj_w_<<endl;
 
         int ret = KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
         if (ret < 0)
@@ -136,13 +140,24 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
             damping = (1/norm_max_)/2;
         else if(s_min >= (1/norm_max_))
             damping = 0;
-        else
+        else{
+            cout<<"TEST"<<endl;
             damping = sqrt(s_min*((1/norm_max_)-s_min));
+        }
+
+        cout<<"s_min: "<<s_min<<endl;
+        cout<<"1/norm_max: "<<(1/norm_max_)/2<<endl;
+        cout<<"Damping: "<<damping<<endl;
+        cout<<"S: "<<endl;
+        cout<<S_<<endl;
 
         // Damped Inverse of Eigenvalue matrix for computation of a singularity robust solution for the current priority
         Damped_S_inv_.setZero();
         for (uint i = 0; i < min(nx_, priorities_[prio].ny_); i++)
             Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + damping * damping));
+
+        cout<<"S_Inv: "<<endl;
+        cout<<Damped_S_inv_<<endl;
 
         // Additionally compute normal Inverse of Eigenvalue matrix for correct computation of nullspace projection
         for(uint i = 0; i < S_.rows(); i++){
@@ -153,8 +168,8 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         }
 
         // A^# = Wq * V * S^# * U^T * Wy
-        priorities_[prio].A_proj_inv_wls_ =  joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Normal Inverse with weighting
-        priorities_[prio].A_proj_inv_wdls_ =  joint_weight_mat_ * V_ * Damped_S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
+        priorities_[prio].A_proj_inv_wls_ = joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Normal Inverse with weighting
+        priorities_[prio].A_proj_inv_wdls_ = joint_weight_mat_ * V_ * Damped_S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
 
         // x = x + A^# * y
         x += priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;
@@ -168,7 +183,7 @@ void HierarchicalLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 }
 
 
-void HierarchicalLSSolver::setJointWeights(const Eigen::VectorXd& weights){
+void HierarchicalSolver::setJointWeights(const Eigen::VectorXd& weights){
     if(weights.rows() == nx_){
         for(uint i = 0; i < nx_; i++){
             //In the original code, here, a choleski factorization + tranpose + inverse was done.
@@ -178,6 +193,8 @@ void HierarchicalLSSolver::setJointWeights(const Eigen::VectorXd& weights){
             else
                 joint_weight_mat_(i,i) = 1/sqrt(1/weights(i));
         }
+        cout<<"Joint Weights: "<<endl;
+        cout<<joint_weight_mat_<<endl;
     }
     else{
         LOG_ERROR("Cannot set joint weights. Size of weight vector is %i but number of joints is %i", weights.rows(), nx_);
@@ -185,7 +202,7 @@ void HierarchicalLSSolver::setJointWeights(const Eigen::VectorXd& weights){
     }
 }
 
-void HierarchicalLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
     if(prio >= priorities_.size()){
         LOG_ERROR("Cannot set task weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
@@ -194,6 +211,7 @@ void HierarchicalLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const 
         LOG_ERROR("Cannot set task weights. No of task variables of priority %i is %i and number of weights is %i", prio, priorities_[prio].ny_, weights.size());
         throw std::invalid_argument("Invalid Weight vector size");
     }
+
     for(uint i = 0; i < priorities_[prio].ny_; i++){
         //In the original code, here, a choleski factorization + tranpose was done. Todo: Why?
         //Since the weighting matrix is a diagonal matrix, this can be simplified to
