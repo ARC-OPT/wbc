@@ -10,7 +10,7 @@
  */
 class SubTask{
 public:
-    SubTask(const KDL::Chain &chain, const uint no_task_variables);
+    SubTask(const KDL::Chain &chain, const uint no_task_variables, const uint priority);
     ~SubTask();
 
     /**
@@ -19,7 +19,7 @@ public:
      * @param q_dot Joint velocities of all joints in the kinematic chain in rad/sec
      * @param q_dot_dot Joint accelerations of all joints in the kinematic chain in rad/ssec
      */
-    void Update(const KDL::JntArray &q, const KDL::JntArray& q_dot, const KDL::JntArray &q_dot_dot);
+    void Update();
 
     KDL::Chain chain_; /** Kinematic chain that describes this sub task */
     KDL::ChainFkSolverPos_recursive* pos_fk_solver_;
@@ -27,9 +27,9 @@ public:
 
     KDL::Jacobian jac_;  /** Jacobian of kinematic chain expressed in root frame and with ref point in root frame */
     KDL::Frame pose_; /** Full pose of tip frame of kinematic chain expressed in root frame */
+    KDL::JntArray q_, q_dot_, q_dot_dot_;
     uint no_task_variables_;
-
-
+    uint priority_;
 };
 
 #endif

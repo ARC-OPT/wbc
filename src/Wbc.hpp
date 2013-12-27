@@ -15,18 +15,14 @@ class Wbc{
     SolverMap solver_map_;
     std::vector<SubTask*> sub_task_map_;
     JointIndexMap joint_index_map_;
-    KDL::Tree robot_;
     bool configured_;
 public:
     Wbc(){configured_ = false;}
     ~Wbc(){}
 
-    bool AddRobot(const KDL::Tree &tree);
-
-    bool AddSubTask(const std::string& root_frame,
-                    const std::string& tip_frame,
+    bool AddSubTask(const KDL::Chain &chain,
                     const uint no_task_variables,
-                    const uint priority = 0);
+                    const uint priority);
 
     bool AddSolver(const std::string &name,
                    HierarchicalSolver* solver);

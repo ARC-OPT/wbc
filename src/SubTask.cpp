@@ -1,11 +1,16 @@
 #include "SubTask.hpp"
 #include <stdexcept>
 
-SubTask::SubTask(const KDL::Chain &chain, const uint no_task_variables){
+SubTask::SubTask(const KDL::Chain &chain, const uint no_task_variables, const uint priority){
     chain_ = chain;
     pos_fk_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
     jac_solver_ = new KDL::ChainJntToJacSolver(chain_);
     no_task_variables_ = no_task_variables;
+    priority_ = priority;
+
+    q_.resize(chain.getNrOfJoints());
+    q_dot_.resize(chain.getNrOfJoints());
+    q_dot_dot_.resize(chain.getNrOfJoints());
 }
 
 SubTask::~SubTask(){
@@ -13,21 +18,12 @@ SubTask::~SubTask(){
     delete jac_solver_;
 }
 
-void SubTask::Update(const KDL::JntArray &q, const KDL::JntArray& q_dot, const KDL::JntArray &q_dot_dot){
-    if(q.columns() != chain_.getNrOfJoints())
-        throw std::invalid_argument("Invalid number of input joint angles");
-
-    if(q_dot.columns() != chain_.getNrOfJoints())
-        throw std::invalid_argument("Invalid number of input joint velocities");
-
-    if(q_dot_dot.columns() != chain_.getNrOfJoints())
-        throw std::invalid_argument("Invalid number of input joint accelerations");
-
+void SubTask::Update(){
     //Compute FK
-    pos_fk_solver_->JntToCart(q, pose_);
+    pos_fk_solver_->JntToCart(q_, pose_);
 
     //Compute Jacobian
-    jac_solver_->JntToJac(q_dot, jac_);
+    jac_solver_->JntToJac(q_dot_, jac_);
 
     // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip.
     // This changes the reference point to the root frame
