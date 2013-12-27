@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp> 
-#include "../src/HierarchicalSolver.hpp"
+#include "../src/HierarchicalWDLSSolver.hpp"
 #include <stdlib.h>
 
 using namespace std;
@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(test_solver)
    const int NO_JOINTS = 7;
    const int NO_CONSTRAINTS = 2;
 
-   HierarchicalSolver solver;
+   HierarchicalWDLSSolver solver;
    std::vector<unsigned int> ny_per_prio(1,NO_CONSTRAINTS);
    solver.configure(ny_per_prio, NO_JOINTS);
    solver.setNormMax(5.75);

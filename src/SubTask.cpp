@@ -1,10 +1,11 @@
 #include "SubTask.hpp"
 #include <stdexcept>
 
-SubTask::SubTask(const KDL::Chain &chain){
+SubTask::SubTask(const KDL::Chain &chain, const uint no_task_variables){
     chain_ = chain;
     pos_fk_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
     jac_solver_ = new KDL::ChainJntToJacSolver(chain_);
+    no_task_variables_ = no_task_variables;
 }
 
 SubTask::~SubTask(){

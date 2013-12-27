@@ -1,10 +1,10 @@
-#ifndef HIERARCHICAL_SOLVER_HPP
-#define HIERARCHICAL_SOLVER_HPP
+#ifndef HIERARCHICAL_WDLS_SOLVER_HPP
+#define HIERARCHICAL_WDLS_SOLVER_HPP
 
-#include <vector>
+#include "HierarchicalSolver.hpp"
 #include <Eigen/SVD>
 
-class HierarchicalSolver{
+class HierarchicalWDLSSolver : public HierarchicalSolver{
 
 public:
     class Priority{
@@ -49,7 +49,8 @@ public:
 
     };
 
-    HierarchicalSolver();
+    HierarchicalWDLSSolver();
+    ~HierarchicalWDLSSolver(){}
 
     /**
      * @brief configure Resizes member variables

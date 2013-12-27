@@ -10,7 +10,7 @@
  */
 class SubTask{
 public:
-    SubTask(const KDL::Chain &chain);
+    SubTask(const KDL::Chain &chain, const uint no_task_variables);
     ~SubTask();
 
     /**
@@ -27,6 +27,9 @@ public:
 
     KDL::Jacobian jac_;  /** Jacobian of kinematic chain expressed in root frame and with ref point in root frame */
     KDL::Frame pose_; /** Full pose of tip frame of kinematic chain expressed in root frame */
+    uint no_task_variables_;
+
+
 };
 
 #endif

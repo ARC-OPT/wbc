@@ -8,6 +8,6 @@
   <logo>http://</logo>
   <depend package="base/cmake" />
   <depend package="base/types" />
-  <depend package="control/kdl_parser" />
+  <depend package="control/kdl" />
   <depend package="eigen3" />
 </package>

@@ -1,20 +1,20 @@
 
 #include <kdl/utilities/svd_eigen_HH.hpp>
-#include "HierarchicalSolver.hpp"
+#include "HierarchicalWDLSSolver.hpp"
 #include <base/logging.h>
 #include <stdexcept>
 #include <iostream>
 
 using namespace std;
 
-HierarchicalSolver::HierarchicalSolver()
-    : epsilon_(1e-9),
-      norm_max_(1){
+HierarchicalWDLSSolver::HierarchicalWDLSSolver() : HierarchicalSolver(),
+    epsilon_(1e-9),
+    norm_max_(1){
 
 }
 
-bool HierarchicalSolver::configure(const std::vector<unsigned int> &ny_per_prio,
-                                   const unsigned int nx){
+bool HierarchicalWDLSSolver::configure(const std::vector<unsigned int> &ny_per_prio,
+                                       const unsigned int nx){
     if(nx == 0){
         LOG_ERROR("No of joint variables must be > 0");
         return false;
@@ -67,9 +67,9 @@ bool HierarchicalSolver::configure(const std::vector<unsigned int> &ny_per_prio,
     return true;
 }
 
-void HierarchicalSolver::solve(const std::vector<Eigen::MatrixXd> &A,
-                               const std::vector<Eigen::VectorXd> &y,
-                               Eigen::VectorXd &x){
+void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
+                                   const std::vector<Eigen::VectorXd> &y,
+                                   Eigen::VectorXd &x){
     //Check valid input
     if(x.cols() != nx_){
         LOG_WARN("Size of output vector does not match number of joint variables. Will do a resize!");
@@ -183,7 +183,7 @@ void HierarchicalSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 }
 
 
-void HierarchicalSolver::setJointWeights(const Eigen::VectorXd& weights){
+void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
     if(weights.rows() == nx_){
         for(uint i = 0; i < nx_; i++){
             //In the original code, here, a choleski factorization + tranpose + inverse was done.
@@ -202,7 +202,7 @@ void HierarchicalSolver::setJointWeights(const Eigen::VectorXd& weights){
     }
 }
 
-void HierarchicalSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
     if(prio >= priorities_.size()){
         LOG_ERROR("Cannot set task weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
