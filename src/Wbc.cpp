@@ -117,8 +117,6 @@ bool Wbc::configure(){
         y.setZero();
         A_.push_back(A);
         y_.push_back(y);
-        cout<<A<<endl;
-        cout<<y<<endl;
     }
 
     if(!solver_->configure(ny_per_priority, robot_->no_of_joints_))
@@ -143,8 +141,8 @@ void Wbc::updateSubTask(const std::string &task_name, const Eigen::VectorXd &y_d
     }
 
     SubTask *sub_task = sub_task_map_[task_name];
-    if(sub_task->no_task_variables_ != y_des.cols()){
-        LOG_ERROR("No of task variables of task %s is %i, but size of desired task state is %i", task_name.c_str(), sub_task->no_task_variables_, y_des.cols());
+    if(sub_task->no_task_variables_ != y_des.rows()){
+        LOG_ERROR("No of task variables of task %s is %i, but size of desired task state is %i", task_name.c_str(), sub_task->no_task_variables_, y_des.rows());
         throw std::invalid_argument("Invalid no of task variables in wbc input");
     }
     sub_task->y_des_ = y_des;
@@ -181,6 +179,7 @@ void Wbc::updateSubTask(const std::string &task_name, const Eigen::VectorXd &y_d
                 ///// A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root: Inverse Task Jacobian * Robot Jacobian of object frame one
                 sub_task->A_ = sub_task->H_.block(0, 0, sub_task->no_task_variables_, 6) * tf_tip->jac_robot_.data
                         -(sub_task->H_.block(0, 0, sub_task->no_task_variables_, 6) * tf_root->jac_robot_.data);
+
             }
             else{
                 LOG_ERROR("Subtask %s defines task frames %s and %s but at least one of them has not been added to robot model",
@@ -245,6 +244,7 @@ void Wbc::solve(const WbcInputMap& wbc_input,
 
         y_[prio_index].segment(row_index, nc) = sub_task->y_des_;
         A_[prio_index].block(row_index, 0, nc, nq) = sub_task->A_;
+
 
         row_index += sub_task->no_task_variables_;
     }

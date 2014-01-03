@@ -85,6 +85,9 @@ public:
                base::commands::Joints &solver_output);
 
     uint getNoOfJoints();
+
+    HierarchicalSolver* solver(){return solver_;}
+    RobotModel* robot(){return robot_;}
 };
 
 #endif

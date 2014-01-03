@@ -9,7 +9,7 @@ using namespace std;
 
 HierarchicalWDLSSolver::HierarchicalWDLSSolver() : HierarchicalSolver(),
     epsilon_(1e-9),
-    norm_max_(1){
+    norm_max_(200){
 
 }
 
@@ -63,7 +63,6 @@ bool HierarchicalWDLSSolver::configure(const std::vector<unsigned int> &ny_per_p
         task_weights.setConstant(1);
         setTaskWeights(task_weights, prio);
     }
-
 
     return true;
 }
@@ -125,8 +124,6 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         priorities_[prio].U_.resize(priorities_[prio].ny_, nx_);
         S_.resize(nx_);*/
 
-        cout<<priorities_[prio].A_proj_w_<<endl;
-
         int ret = KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
         if (ret < 0)
             throw std::runtime_error("Unable to perform svd");
@@ -141,24 +138,17 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
             damping = (1/norm_max_)/2;
         else if(s_min >= (1/norm_max_))
             damping = 0;
-        else{
-            cout<<"TEST"<<endl;
+        else
             damping = sqrt(s_min*((1/norm_max_)-s_min));
-        }
 
         cout<<"s_min: "<<s_min<<endl;
         cout<<"1/norm_max: "<<(1/norm_max_)/2<<endl;
         cout<<"Damping: "<<damping<<endl;
-        cout<<"S: "<<endl;
-        cout<<S_<<endl;
 
         // Damped Inverse of Eigenvalue matrix for computation of a singularity robust solution for the current priority
         Damped_S_inv_.setZero();
         for (uint i = 0; i < min(nx_, priorities_[prio].ny_); i++)
             Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + damping * damping));
-
-        cout<<"S_Inv: "<<endl;
-        cout<<Damped_S_inv_<<endl;
 
         // Additionally compute normal Inverse of Eigenvalue matrix for correct computation of nullspace projection
         for(uint i = 0; i < S_.rows(); i++){

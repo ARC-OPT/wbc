@@ -1,6 +1,9 @@
 #include "TaskFrame.hpp"
 #include <base/logging.h>
 #include <map>
+#include <kdl/frames_io.hpp>
+
+using namespace std;
 
 TaskFrame::TaskFrame(const KDL::Chain &chain, const uint no_robot_joints){
     chain_ = chain;
@@ -11,7 +14,7 @@ TaskFrame::TaskFrame(const KDL::Chain &chain, const uint no_robot_joints){
     jac_.data.setZero(6,chain_.getNrOfJoints());
 
     jac_robot_ = KDL::Jacobian(no_robot_joints);
-    jac_.data.setZero(6,no_robot_joints);
+    jac_robot_.data.setZero(6,no_robot_joints);
 
     q_.resize(chain.getNrOfJoints());
     q_dot_.resize(chain.getNrOfJoints());

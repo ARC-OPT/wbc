@@ -1,8 +1,11 @@
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/frames_io.hpp>
+#include <kdl/chainfksolvervel_recursive.hpp>
 #include <boost/test/unit_test.hpp> 
 #include "../src/HierarchicalWDLSSolver.hpp"
 #include <stdlib.h>
 #include <kdl_parser/kdl_parser.hpp>
-#include "../src/Wbc.hpp""
+#include "../src/Wbc.hpp"
 
 using namespace std;
 
@@ -11,8 +14,8 @@ BOOST_AUTO_TEST_CASE(test_solver)
 {
    srand (time(NULL));
 
-   const int NO_JOINTS = 7;
-   const int NO_CONSTRAINTS = 2;
+   const uint NO_JOINTS = 7;
+   const uint NO_CONSTRAINTS = 2;
 
    HierarchicalWDLSSolver solver;
    std::vector<unsigned int> ny_per_prio(1,NO_CONSTRAINTS);
@@ -44,9 +47,9 @@ BOOST_AUTO_TEST_CASE(test_solver)
    //A_prio.push_back(A);
 
    std::vector<Eigen::VectorXd> y_prio;
-   for(int i = 0; i < NO_CONSTRAINTS; i++ ) y.data()[i] = (rand()%1000)/1000.0;
+   for(uint i = 0; i < NO_CONSTRAINTS; i++ ) y.data()[i] = (rand()%1000)/1000.0;
    y_prio.push_back(y);
-   for(int i = 0; i < NO_CONSTRAINTS; i++ ) y.data()[i] = (rand()%1000)/1000.0;
+   for(uint i = 0; i < NO_CONSTRAINTS; i++ ) y.data()[i] = (rand()%1000)/1000.0;
    //y_prio.push_back(y);
 
    cout<<"............Testing Hierarchical Solver "<<endl<<endl;
@@ -88,16 +91,92 @@ BOOST_AUTO_TEST_CASE(test_wbc)
 
     std::string urdf_file = argv[0];
 
-    KDL::Tree tree;
+    KDL::Tree tree, reduced_tree;
     BOOST_CHECK_EQUAL(kdl_parser::treeFromFile(urdf_file, tree), true);
+    KDL::Chain right_hand_chain, left_hand_chain, chest_chain;
+    tree.getChain("Chest", "Hand_l", chest_chain);
+    tree.getChain("Rover_base", "Hand_l", left_hand_chain);
+    tree.getChain("Rover_base", "Hand_r", right_hand_chain);
+    reduced_tree.addSegment(KDL::Segment("Rover_base", KDL::Joint("Rover_base",KDL::Joint::None),KDL::Frame::Identity()), "root");
+    reduced_tree.addChain(right_hand_chain, "Rover_base");
+    reduced_tree.addChain(chest_chain, "Chest");
 
-    Wbc wbc(tree, WBC_TYPE_VELOCITY);
+    Wbc wbc(reduced_tree, WBC_TYPE_VELOCITY);
     BOOST_CHECK_EQUAL(wbc.addSubTask("CartesianPoseController_r", 0, "Rover_base", "Hand_r", 6), true);
     BOOST_CHECK_EQUAL(wbc.addSubTask("CartesianPoseController_l", 0, "Rover_base", "Hand_l", 6), true);
-    BOOST_CHECK_EQUAL(wbc.addSubTask("VSController", 5, "Chest", "Hand_r", 6), true);
-
-
     BOOST_CHECK_EQUAL(wbc.configure(), true);
+
+    base::samples::Joints status;
+    base::commands::Joints command;
+
+    status.resize(chest_chain.getNrOfJoints() + right_hand_chain.getNrOfJoints());
+    uint idx = 0;
+    for(uint i = 0; i < right_hand_chain.getNrOfSegments(); i++){
+        KDL::Segment seg = right_hand_chain.getSegment(i);
+        if(seg.getJoint().getType() != KDL::Joint::None)
+            status.names[idx++] = seg.getJoint().getName();
+    }
+    for(uint i = 0; i < chest_chain.getNrOfSegments(); i++){
+        KDL::Segment seg = chest_chain.getSegment(i);
+        if(seg.getJoint().getType() != KDL::Joint::None)
+            status.names[idx++] = seg.getJoint().getName();
+    }
+    for(uint i = 0; i < status.size(); i++){
+        status[i].position = 0.3;
+        status[i].speed = status[i].effort = 0;
+    }
+
+
+    WbcInputMap input;
+    Eigen::VectorXd cart_in_r(6);
+    Eigen::VectorXd cart_in_l(6);
+    cart_in_r.setZero();
+    cart_in_l.setZero();
+    cart_in_r(0) = 0.1;
+    cart_in_l(2) = 0.1;
+    input["CartesianPoseController_r"] = cart_in_r;
+    input["CartesianPoseController_l"] = cart_in_l;
+    wbc.solve(input, status, command);
+
+    //Test
+    KDL::ChainFkSolverVel_recursive solver_r(right_hand_chain);
+    KDL::ChainFkSolverVel_recursive solver_l(left_hand_chain);
+    KDL::FrameVel p_out_r, p_out_l;
+    KDL::JntArrayVel q_dot_in_r(right_hand_chain.getNrOfJoints());
+    KDL::JntArrayVel q_dot_in_l(left_hand_chain.getNrOfJoints());
+
+    for(uint i = 0; i < right_hand_chain.getNrOfJoints(); i++){
+        q_dot_in_r.q(i) = 0.3;
+        q_dot_in_r.qdot(i) = command[i].speed;
+    }
+
+    for(uint i = 0; i < 4; i++){
+        q_dot_in_l.q(i) = 0.3;
+        q_dot_in_l.qdot(i) = command[i].speed;
+    }
+    for(uint i = 0; i < chest_chain.getNrOfJoints(); i++){
+        q_dot_in_l.q(i + 4) = 0.3;
+        q_dot_in_l.qdot(i + 4) = command[i + right_hand_chain.getNrOfJoints()].speed;
+    }
+    solver_r.JntToCart(q_dot_in_r, p_out_r);
+    solver_l.JntToCart(q_dot_in_l, p_out_l);
+
+    cout<<"Desired Cart Velocity right: "<<endl;
+    cout<<cart_in_r.transpose()<<endl<<endl;
+
+    cout<<"Desired Cart Velocity left: "<<endl;
+    cout<<cart_in_l.transpose()<<endl<<endl;
+
+    cout<<"Actual Cart velocity right: "<<endl;
+    cout<<p_out_r.deriv()<<endl<<endl;
+
+    cout<<"Actual Cart Velocity left: "<<endl;
+    cout<<p_out_l.deriv()<<endl<<endl;
+
+    for(uint i = 0; i < 6; i++ ){
+        BOOST_CHECK_EQUAL(fabs(p_out_r.deriv()(i) - cart_in_r(i)) < 1e-5, true);
+        BOOST_CHECK_EQUAL(fabs(p_out_l.deriv()(i) - cart_in_l(i)) < 1e-5, true);
+    }
 }
 
 BOOST_AUTO_TEST_CASE(test_wbc_invalid_sub_task)
