@@ -1,6 +1,8 @@
 #include <boost/test/unit_test.hpp> 
 #include "../src/HierarchicalWDLSSolver.hpp"
 #include <stdlib.h>
+#include <kdl_parser/kdl_parser.hpp>
+#include "../src/Wbc.hpp""
 
 using namespace std;
 
@@ -73,4 +75,52 @@ BOOST_AUTO_TEST_CASE(test_solver)
    }
 
    cout<<endl;
+}
+
+
+BOOST_AUTO_TEST_CASE(test_wbc)
+{
+    int argc = boost::unit_test::framework::master_test_suite().argc;
+    char **argv = boost::unit_test::framework::master_test_suite().argv;
+
+    argc-=2;
+    argv+=2;
+
+    std::string urdf_file = argv[0];
+
+    KDL::Tree tree;
+    BOOST_CHECK_EQUAL(kdl_parser::treeFromFile(urdf_file, tree), true);
+
+    Wbc wbc(tree, WBC_TYPE_VELOCITY);
+    BOOST_CHECK_EQUAL(wbc.addSubTask("CartesianPoseController_r", 0, "Rover_base", "Hand_r", 6), true);
+    BOOST_CHECK_EQUAL(wbc.addSubTask("CartesianPoseController_l", 0, "Rover_base", "Hand_l", 6), true);
+    BOOST_CHECK_EQUAL(wbc.addSubTask("VSController", 5, "Chest", "Hand_r", 6), true);
+
+
+    BOOST_CHECK_EQUAL(wbc.configure(), true);
+}
+
+BOOST_AUTO_TEST_CASE(test_wbc_invalid_sub_task)
+{
+    int argc = boost::unit_test::framework::master_test_suite().argc;
+    char **argv = boost::unit_test::framework::master_test_suite().argv;
+
+    argc-=2;
+    argv+=2;
+
+    std::string urdf_file = argv[0];
+
+    KDL::Tree tree;
+    BOOST_CHECK_EQUAL(kdl_parser::treeFromFile(urdf_file, tree), true);
+
+    Wbc wbc(tree, WBC_TYPE_VELOCITY);
+    BOOST_CHECK_EQUAL(wbc.addSubTask("CartesianPoseController", 0, "Rover_base", "Hand_r", 6), true);
+    BOOST_CHECK_EQUAL(wbc.addSubTask("CartesianPoseController", 0, "Rover_base", "Hand_l", 6), true);
+
+
+    BOOST_CHECK_EQUAL(wbc.addSubTask("VSController", 5, "chest", "Hand_r", 6), true);
+
+    BOOST_CHECK_EQUAL(wbc.addSubTask("VSController", 5, "Chest", "Chest", 6), true);
+
+    BOOST_CHECK_EQUAL(wbc.configure(), true);
 }

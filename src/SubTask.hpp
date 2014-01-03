@@ -1,35 +1,58 @@
 #ifndef SUBTASK_HPP
 #define SUBTASK_HPP
 
-#include <kdl/chain.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainjnttojacsolver.hpp>
+#include "TaskFrame.hpp"
 
 /**
- * @brief Defines a sub task in the whole body control problem. Each sub task is characterized by a kinematic chain
+ * @brief Defines a sub task in the whole body control problem.
  */
 class SubTask{
 public:
-    SubTask(const KDL::Chain &chain, const uint no_task_variables, const uint priority);
-    ~SubTask();
+    SubTask(const std::string &root_frame,
+            const std::string &tip_frame,
+            const uint no_task_variables,
+            const uint no_of_joints,
+            const uint priority){
+        no_task_variables_ = no_task_variables;
+        priority_ = priority;
+        root_ = root_frame;
+        tip_ = tip_frame;
 
-    /**
-     * @brief Update kinematic and dynamic equations
-     * @param q Joint angles of all joints in the kinematic chain in rad
-     * @param q_dot Joint velocities of all joints in the kinematic chain in rad/sec
-     * @param q_dot_dot Joint accelerations of all joints in the kinematic chain in rad/ssec
-     */
-    void Update();
+        y_des_.resize(no_task_variables);
 
-    KDL::Chain chain_; /** Kinematic chain that describes this sub task */
-    KDL::ChainFkSolverPos_recursive* pos_fk_solver_;
-    KDL::ChainJntToJacSolver* jac_solver_;
+        task_jac_ = KDL::Jacobian(no_task_variables);
+        task_jac_.data.setZero();
 
-    KDL::Jacobian jac_;  /** Jacobian of kinematic chain expressed in root frame and with ref point in root frame */
-    KDL::Frame pose_; /** Full pose of tip frame of kinematic chain expressed in root frame */
-    KDL::JntArray q_, q_dot_, q_dot_dot_;
+        H_.resize(no_task_variables,6);
+        H_.setZero();
+
+        Uf_.resize(6, no_task_variables);
+        Uf_.setIdentity();
+
+        Vf_.resize(no_task_variables, no_task_variables);
+        Vf_.setIdentity();
+
+        Sf_.resize(no_task_variables);
+        Sf_.setZero();
+
+        A_.resize(no_task_variables, no_of_joints);
+        A_.setZero();
+    }
+
+    ~SubTask(){}
+
     uint no_task_variables_;
     uint priority_;
+    Eigen::VectorXd y_des_;
+    std::string root_, tip_;
+    KDL::Jacobian task_jac_;
+    KDL::Frame pose_;
+    Eigen::MatrixXd A_;
+
+    //Helpers for inversion of the task Jacobian
+    Eigen::MatrixXd Uf_, Vf_;
+    Eigen::VectorXd Sf_;
+    Eigen::MatrixXd H_;
 };
 
 #endif

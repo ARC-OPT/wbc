@@ -48,6 +48,7 @@ bool HierarchicalWDLSSolver::configure(const std::vector<unsigned int> &ny_per_p
     tmp_.resize(nx_);
     tmp_.setZero();
     joint_weight_mat_.resize(nx_, nx_);
+    joint_weight_mat_.setZero();
 
     //Set Joint weights to default (all 1)
     Eigen::VectorXd joint_weights;
@@ -185,6 +186,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
 void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
     if(weights.rows() == nx_){
+        joint_weight_mat_.setIdentity();
         for(uint i = 0; i < nx_; i++){
             //In the original code, here, a choleski factorization + tranpose + inverse was done.
             //Since the weighting matrix is a diagonal matrix, this can be simplified to
@@ -193,8 +195,6 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
             else
                 joint_weight_mat_(i,i) = 1/sqrt(1/weights(i));
         }
-        cout<<"Joint Weights: "<<endl;
-        cout<<joint_weight_mat_<<endl;
     }
     else{
         LOG_ERROR("Cannot set joint weights. Size of weight vector is %i but number of joints is %i", weights.rows(), nx_);
@@ -212,6 +212,7 @@ void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, cons
         throw std::invalid_argument("Invalid Weight vector size");
     }
 
+    priorities_[prio].task_weight_mat_.setIdentity();
     for(uint i = 0; i < priorities_[prio].ny_; i++){
         //In the original code, here, a choleski factorization + tranpose was done. Todo: Why?
         //Since the weighting matrix is a diagonal matrix, this can be simplified to
