@@ -28,6 +28,8 @@ public:
                        const std::vector<Eigen::VectorXd> &y,
                        Eigen::VectorXd &x) = 0;
 
+    virtual void setTaskWeights(const Eigen::VectorXd& weights, const uint prio) = 0;
+    virtual void setJointWeights(const Eigen::VectorXd& weights) = 0;
 };
 
 #endif

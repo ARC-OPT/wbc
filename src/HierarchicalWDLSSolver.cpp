@@ -9,7 +9,8 @@ using namespace std;
 
 HierarchicalWDLSSolver::HierarchicalWDLSSolver() : HierarchicalSolver(),
     epsilon_(1e-9),
-    norm_max_(200){
+    norm_max_(200),
+    damping_(0){
 
 }
 
@@ -107,10 +108,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         priorities_[prio].A_proj_ = A[prio] * proj_mat_;
 
         //Compute weighted projection mat: A_proj_w = Wy * A_proj * Wq^-1
-        Eigen::MatrixXd tmp(nx_, nx_);
-        tmp = priorities_[prio].A_proj_ * joint_weight_mat_;
-        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * tmp;//priorities_[prio].A_proj_ * joint_weight_mat_;
-
+        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * priorities_[prio].A_proj_ * joint_weight_mat_;//priorities_[prio].A_proj_ * joint_weight_mat_;
         //Compute svd of A Matrix TODO: Check the Eigen Version of SVD to get rid of KDL dependency here
         /*priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, ComputeFullV | ComputeFullU);
         V_ = priorities_[prio].svd_.matrixV();
@@ -133,22 +131,17 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         //Robotic Manipulators through Kinematically Singular Configurations”,
         //Journal of Robotic Systems, Vol. 5, No. 6, pp. 527 - 552, 1988.
         double s_min = S_.block(0,0,min(nx_, priorities_[prio].ny_),1).minCoeff();
-        double damping;
         if(s_min <= (1/norm_max_)/2)
-            damping = (1/norm_max_)/2;
+            damping_ = (1/norm_max_)/2;
         else if(s_min >= (1/norm_max_))
-            damping = 0;
+            damping_ = 0;
         else
-            damping = sqrt(s_min*((1/norm_max_)-s_min));
-
-        cout<<"s_min: "<<s_min<<endl;
-        cout<<"1/norm_max: "<<(1/norm_max_)/2<<endl;
-        cout<<"Damping: "<<damping<<endl;
+            damping_ = sqrt(s_min*((1/norm_max_)-s_min));
 
         // Damped Inverse of Eigenvalue matrix for computation of a singularity robust solution for the current priority
         Damped_S_inv_.setZero();
         for (uint i = 0; i < min(nx_, priorities_[prio].ny_); i++)
-            Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + damping * damping));
+            Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + damping_ * damping_));
 
         // Additionally compute normal Inverse of Eigenvalue matrix for correct computation of nullspace projection
         for(uint i = 0; i < S_.rows(); i++){
@@ -158,9 +151,9 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
                 S_inv_(i,i) = 1 / S_(i);
         }
 
-        // A^# = Wq * V * S^# * U^T * Wy
+        // A^# = Wq^-1 * V * S^# * U^T * Wy
         priorities_[prio].A_proj_inv_wls_ = joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Normal Inverse with weighting
-        priorities_[prio].A_proj_inv_wdls_ = joint_weight_mat_ * V_ * Damped_S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
+        priorities_[prio].A_proj_inv_wdls_ = joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
 
         // x = x + A^# * y
         x += priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;
@@ -180,6 +173,10 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
         for(uint i = 0; i < nx_; i++){
             //In the original code, here, a choleski factorization + tranpose + inverse was done.
             //Since the weighting matrix is a diagonal matrix, this can be simplified to
+            if(weights(i) < 0){
+                LOG_ERROR("Joint weights have to be >= 0");
+                throw std::invalid_argument("Invalid joint weights");
+            }
             if(weights(i) == 0)
                 joint_weight_mat_(i,i) = 1/sqrt(1e10);
             else
@@ -190,6 +187,13 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
         LOG_ERROR("Cannot set joint weights. Size of weight vector is %i but number of joints is %i", weights.rows(), nx_);
         throw std::invalid_argument("Invalid Joint weight vector size");
     }
+}
+
+Eigen::VectorXd HierarchicalWDLSSolver::getJointWeights(){
+    Eigen::VectorXd joint_weights(joint_weight_mat_.rows());
+    for(uint i = 0; i < joint_weight_mat_.rows(); i++)
+        joint_weights(i) = joint_weight_mat_(i,i);
+    return joint_weights;
 }
 
 void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){

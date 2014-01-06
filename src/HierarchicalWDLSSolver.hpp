@@ -4,6 +4,13 @@
 #include "HierarchicalSolver.hpp"
 #include <Eigen/SVD>
 
+/**
+ * @brief Implementation of a hierarchical weighted damped least squares solver. This solver may cope with several hierarchially organized
+ *        tasks, which will be solved using nullspace projections. That is, the task with the highest priority will be solved fully if m <= n
+ *        (where m is the number of task variables and n the number of independent joint variables), the task of the next priority will be
+ *        solved as good as possible (depending on the degree of redundancy) and so on.
+ *        The solver may also include weights in joint and task space.
+ */
 class HierarchicalWDLSSolver : public HierarchicalSolver{
 
 public:
@@ -70,10 +77,12 @@ public:
                        const std::vector<Eigen::VectorXd> &y,
                        Eigen::VectorXd &x);
 
+    double getCurDamping(){return damping_;}
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
-    void setJointWeights(const Eigen::VectorXd& weights);
-    void setTaskWeights(const Eigen::VectorXd& weights, const uint prio);
+    Eigen::VectorXd getJointWeights();
+    virtual void setJointWeights(const Eigen::VectorXd& weights);
+    virtual void setTaskWeights(const Eigen::VectorXd& weights, const uint prio);
 
 protected:
     Eigen::MatrixXd proj_mat_; /** Projection Matrix */
@@ -81,6 +90,7 @@ protected:
     Eigen::MatrixXd Damped_S_inv_; /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix with damping*/
     std::vector<Priority> priorities_; /** Priority vector */
     unsigned int nx_;
+    double damping_;
     Eigen::MatrixXd joint_weight_mat_; /** Matrix containing joint weight information. */
 
     //Properties
