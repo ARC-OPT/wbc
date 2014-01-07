@@ -9,7 +9,7 @@
 #include "../src/RobotModel.hpp"
 
 using namespace std;
-
+using namespace wbc;
 
 BOOST_AUTO_TEST_CASE(test_solver)
 {
@@ -110,14 +110,13 @@ BOOST_AUTO_TEST_CASE(test_wbc)
     reduced_tree.addSegment(KDL::Segment("Rover_base", KDL::Joint("Rover_base",KDL::Joint::None),KDL::Frame::Identity()), "root");
     reduced_tree.addChain(right_hand_chain, "Rover_base");
 
-    Wbc wbc(reduced_tree, WBC_TYPE_VELOCITY);
+    Wbc wbc(reduced_tree, mode_velocity);
     WbcConfig config;
     std::vector<SubTaskConfig> config_prio_0;
     SubTaskConfig conf;
-    conf.root_frame_ = "Rover_base";
-    conf.tip_frame_ = "Hand_r";
-    conf.no_task_variables_ = 6;
-    conf.task_type_ = WBC_TASK_TYPE_CARTESIAN;
+    conf.root = "Rover_base";
+    conf.tip = "Hand_r";
+    conf.type = cartesian;
     config_prio_0.push_back(conf);
     config.push_back(config_prio_0);
 

@@ -7,6 +7,8 @@
 
 using namespace std;
 
+namespace wbc{
+
 HierarchicalWDLSSolver::HierarchicalWDLSSolver() : HierarchicalSolver(),
     epsilon_(1e-9),
     norm_max_(200),
@@ -212,4 +214,5 @@ void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, cons
         //Since the weighting matrix is a diagonal matrix, this can be simplified to
         priorities_[prio].task_weight_mat_(i,i) = sqrt(weights(i));
     }
+}
 }

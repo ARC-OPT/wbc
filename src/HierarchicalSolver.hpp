@@ -4,6 +4,8 @@
 #include <vector>
 #include <Eigen/Core>
 
+namespace wbc{
+
 class HierarchicalSolver{
 
 public:
@@ -31,5 +33,5 @@ public:
     virtual void setTaskWeights(const Eigen::VectorXd& weights, const uint prio) = 0;
     virtual void setJointWeights(const Eigen::VectorXd& weights) = 0;
 };
-
+}
 #endif

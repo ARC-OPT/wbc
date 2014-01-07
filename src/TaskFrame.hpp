@@ -6,6 +6,8 @@
 #include <base/samples/joints.h>
 #include <kdl/chainjnttojacsolver.hpp>
 
+namespace wbc{
+
 class TaskFrame{
 public:
     TaskFrame(const KDL::Chain& chain, const uint no_robot_joints);
@@ -25,5 +27,5 @@ public:
 
     std::vector<uint> joint_index_vector_;
 };
-
+}
 #endif

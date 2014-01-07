@@ -4,6 +4,8 @@
 #include <kdl/tree.hpp>
 #include <base/samples/joints.h>
 
+namespace wbc{
+
 class TaskFrame;
 
 typedef std::map<std::string, int> JointIndexMap;
@@ -23,6 +25,6 @@ public:
     KDL::Tree tree_;
     uint no_of_joints_;
 };
-
+}
 
 #endif

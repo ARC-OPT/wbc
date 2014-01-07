@@ -5,6 +5,8 @@
 
 using namespace std;
 
+namespace wbc{
+
 TaskFrame::TaskFrame(const KDL::Chain &chain, const uint no_robot_joints){
     chain_ = chain;
     pos_fk_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
@@ -81,3 +83,4 @@ void TaskFrame::update(const base::samples::Joints &status){
     //TODO: Add dynamic equations here
 }
 
+}

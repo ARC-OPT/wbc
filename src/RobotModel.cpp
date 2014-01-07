@@ -2,6 +2,8 @@
 #include "TaskFrame.hpp"
 #include <base/logging.h>
 
+namespace wbc{
+
 RobotModel::RobotModel(const KDL::Tree tree){
     tree_ = tree;
     no_of_joints_ = tree_.getNrOfJoints();
@@ -57,4 +59,5 @@ void RobotModel::update(const base::samples::Joints &status){
         TaskFrame* tf = it->second;
         tf->update(status);
     }
+}
 }

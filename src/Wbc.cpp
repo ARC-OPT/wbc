@@ -7,10 +7,12 @@
 
 using namespace std;
 
-Wbc::Wbc(KDL::Tree tree, const WBC_TYPE wbc_type){
+namespace wbc{
+
+Wbc::Wbc(KDL::Tree tree, const mode wbc_mode){
     configured_ = false;
     robot_ = new RobotModel(tree);
-    wbc_type_= wbc_type;
+    mode_= wbc_mode;
     temp_ = Eigen::VectorXd(6);
     solver_ = new HierarchicalWDLSSolver();
 }
@@ -38,38 +40,25 @@ bool Wbc::configure(const WbcConfig &config){
     //Walk through all priorities
     for(uint prio = 0; prio < config.size(); prio++ ){
 
+        uint no_task_vars;
         //Walk through all sub tasks of this priority
         for(uint i = 0; i < config[prio].size(); i++){
 
+            no_task_vars = 6;
             SubTaskConfig sub_task_conf = config[prio][i];
-            if(sub_task_conf.task_type_ == WBC_TASK_TYPE_CARTESIAN){
+            if(sub_task_conf.type == cartesian){
 
-                if(!robot_->addTaskFrame(sub_task_conf.root_frame_))
+                if(!robot_->addTaskFrame(sub_task_conf.root))
                     return false;
-                if(!robot_->addTaskFrame(sub_task_conf.tip_frame_))
+                if(!robot_->addTaskFrame(sub_task_conf.tip))
                     return false;
             }
-            else{
-                //Check valid config
-                if(sub_task_conf.joints_.empty()){
-                    if(sub_task_conf.no_task_variables_ != robot_->no_of_joints_){
-                        LOG_ERROR("Invalid Sub task configuration: Joint name vector is empty, no of task variables is %i, but no of robot joints is %i",
-                                  sub_task_conf.no_task_variables_, robot_->no_of_joints_)
-                        throw std::invalid_argument("Invalid Sub task configuration");
-                    }
-                }
-                else{
-                    if(sub_task_conf.no_task_variables_ != sub_task_conf.joints_.size()){
-                        LOG_ERROR("Invalid Sub task configuration: Joint name vector has size %i, but no of task variables is %i",
-                                  sub_task_conf.joints_.size(), sub_task_conf.no_task_variables_)
-                        throw std::invalid_argument("Invalid Sub task configuration");
-                    }
-                }
-            }
+            else
+                no_task_vars = sub_task_conf.joints.size();
 
             SubTask* sub_task = new SubTask(sub_task_conf, robot_->no_of_joints_);
             sub_task_vector_[prio].push_back(sub_task);
-            ny_per_priority[prio] += sub_task_conf.no_task_variables_;
+            ny_per_priority[prio] += no_task_vars;
         }
     }
 
@@ -104,15 +93,15 @@ bool Wbc::configure(const WbcConfig &config){
 
 void Wbc::updateSubTask(SubTask* sub_task){
 
-    switch(wbc_type_){
+    switch(mode_){
 
-    case WBC_TYPE_VELOCITY:{
+    case mode_velocity:{
 
-        uint nc = sub_task->config_.no_task_variables_;
-        if(sub_task->config_.task_type_ == WBC_TASK_TYPE_CARTESIAN){
+        if(sub_task->config_.type == cartesian){
+            uint nc = 6; //Task is Cartesian: always 6 task variables
 
-            TaskFrame* tf_root = robot_->getTaskFrame(sub_task->config_.root_frame_);
-            TaskFrame* tf_tip = robot_->getTaskFrame(sub_task->config_.tip_frame_);
+            TaskFrame* tf_root = robot_->getTaskFrame(sub_task->config_.root);
+            TaskFrame* tf_tip = robot_->getTaskFrame(sub_task->config_.tip);
 
             if(tf_root && tf_tip){ //Task is in Cartesian space
                 sub_task->pose_ = tf_root->pose_.Inverse() * tf_tip->pose_;
@@ -138,40 +127,36 @@ void Wbc::updateSubTask(SubTask* sub_task){
             }
             else{
                 LOG_ERROR("Subtask defines task frames %s and %s but at least one of them has not been added to robot model",
-                          sub_task->config_.root_frame_.c_str(), sub_task->config_.tip_frame_.c_str());
+                          sub_task->config_.root.c_str(), sub_task->config_.tip.c_str());
                 throw std::runtime_error("Invalid sub task");
             }
         }
-        else if(sub_task->config_.task_type_ == WBC_TASK_TYPE_JOINT){
+        else if(sub_task->config_.type == joint){
 
-            if(sub_task->config_.joints_.empty())
-                sub_task->A_ = Eigen::MatrixXd::Identity(nc, robot_->no_of_joints_);
-            else{
+            sub_task->A_ = Eigen::MatrixXd::Zero(sub_task->config_.joints.size(), robot_->no_of_joints_);
 
-                sub_task->A_ = Eigen::MatrixXd::Zero(nc, robot_->no_of_joints_);
-
-                for(uint i = 0; i < sub_task->config_.joints_.size(); i++){
-                    std::string joint_name = sub_task->config_.joints_[i];
-                    uint idx = robot_->joint_index_map_[joint_name];
-                    sub_task->A_(i,idx) = 1.0;
-                }
+            for(uint i = 0; i < sub_task->config_.joints.size(); i++){
+                std::string joint_name = sub_task->config_.joints[i];
+                uint idx = robot_->joint_index_map_[joint_name];
+                sub_task->A_(i,idx) = 1.0;
             }
+
         }
         break;
     }
-    case WBC_TYPE_TORQUE:{ //TODO
+    case mode_torque:{ //TODO
         break;
     }
     default: {
-        LOG_ERROR("Invalid WBC type: %i", wbc_type_);
-        throw std::invalid_argument("Invalid wbc type");
+        LOG_ERROR("Invalid WBC type: %i", mode_);
+        throw std::invalid_argument("Invalid wbc mode");
     }
     }//Switch
 }
 
 void Wbc::solve(const WbcInput& task_ref,
                 const WbcInput& task_weights,
-                const Eigen::VectorXd joint_weights,
+                const base::VectorXd joint_weights,
                 const base::samples::Joints &robot_status,
                 base::commands::Joints &solver_output){
 
@@ -220,12 +205,16 @@ void Wbc::solve(const WbcInput& task_ref,
         for(uint i = 0; i < sub_task_vector_[prio].size(); i++){
 
             SubTask *sub_task = sub_task_vector_[prio][i];
-            uint nc = sub_task->config_.no_task_variables_;
+            uint no_task_vars;
+            if(sub_task->config_.type == cartesian)
+                no_task_vars = 6;
+            else
+                no_task_vars = sub_task->config_.joints.size();
 
-            if(nc != task_ref[prio][i].rows() ||
-               nc != task_weights[prio][i].rows()){
+            if(no_task_vars != task_ref[prio][i].rows() ||
+               no_task_vars != task_weights[prio][i].rows()){
                 LOG_ERROR("Invalid input vector size: Task %i of Priority %i has %i task variables, but input size is: Ref: %i, Task Weights: %i",
-                          i, prio, nc, task_ref[prio][i].rows(), task_weights[prio][i].rows());
+                          i, prio, no_task_vars, task_ref[prio][i].rows(), task_weights[prio][i].rows());
                 throw std::invalid_argument("Invalid input vector size");
             }
 
@@ -233,11 +222,11 @@ void Wbc::solve(const WbcInput& task_ref,
             updateSubTask(sub_task);
 
             //insert task equation into equation system of current priority
-            Wy_[prio].segment(row_index, nc) = task_weights[prio][i];
-            y_[prio].segment(row_index, nc) = task_ref[prio][i];
-            A_[prio].block(row_index, 0, nc, nq_robot) = sub_task->A_;
+            Wy_[prio].segment(row_index, no_task_vars) = task_weights[prio][i];
+            y_[prio].segment(row_index, no_task_vars) = task_ref[prio][i];
+            A_[prio].block(row_index, 0, no_task_vars, nq_robot) = sub_task->A_;
 
-            row_index += nc;
+            row_index += no_task_vars;
         }
 
         //Set weights for current priority in solver
@@ -251,14 +240,14 @@ void Wbc::solve(const WbcInput& task_ref,
     solver_->solve(A_, y_, solver_output_);
 
     //Write output
-    switch(wbc_type_){
-    case WBC_TYPE_VELOCITY:{
+    switch(mode_){
+    case mode_velocity:{
         for(uint i = 0; i < robot_->no_of_joints_; i++)
             solver_output[i].speed = solver_output_(i);
         break;
     }
     default:{
-        LOG_ERROR("Invalid WBC type: %i", wbc_type_);
+        LOG_ERROR("Invalid WBC type: %i", mode_);
         throw std::invalid_argument("Invalid wbc type");
     }
     }
@@ -267,4 +256,5 @@ void Wbc::solve(const WbcInput& task_ref,
 
 uint Wbc::getNoOfJoints(){
     return robot_->no_of_joints_;
+}
 }

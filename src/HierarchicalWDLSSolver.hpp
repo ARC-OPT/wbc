@@ -1,8 +1,11 @@
 #ifndef HIERARCHICAL_WDLS_SOLVER_HPP
 #define HIERARCHICAL_WDLS_SOLVER_HPP
 
+
 #include "HierarchicalSolver.hpp"
 #include <Eigen/SVD>
+
+namespace wbc{
 
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver may cope with several hierarchially organized
@@ -102,5 +105,5 @@ protected:
     Eigen::MatrixXd V_;
 
 };
-
+}
 #endif
