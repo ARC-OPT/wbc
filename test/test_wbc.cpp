@@ -137,7 +137,7 @@ BOOST_AUTO_TEST_CASE(test_wbc)
         status[i].speed = status[i].effort = 0;
     }
 
-    Eigen::VectorXd joint_weights(wbc.robot()->no_of_joints_);
+    Eigen::VectorXd joint_weights(wbc.robot_->no_of_joints_);
     joint_weights.setConstant(1);
 
     WbcInput reference(1), weights(1);

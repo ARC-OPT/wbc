@@ -4,15 +4,15 @@
 #include "WbcTypes.hpp"
 #include <kdl/tree.hpp>
 #include <base/commands/joints.h>
+#include "TaskFrame.hpp"
 #include <base/Eigen.hpp>
+#include "HierarchicalWDLSSolver.hpp"
+#include "RobotModel.hpp"
 
 namespace wbc{
 
 typedef std::vector< std::vector<base::VectorXd> > WbcInput;
 typedef std::vector< std::vector<SubTaskConfig> > WbcConfig;
-
-class HierarchicalSolver;
-class RobotModel;
 
 /**
  * @brief helper class to carry sub task specific information
@@ -68,7 +68,7 @@ public:
 };
 
 class Wbc{
-protected:
+public:
     mode mode_; /** Which type of wbc is being used?*/
 
     RobotModel *robot_; /** Instance of the KDL robot model. Created at construction time of wbc. Contains task frames, Jacobians, etc...*/
@@ -78,7 +78,8 @@ protected:
     Eigen::VectorXd solver_output_; /** Control solution. Size: No of joints in kdl tree. Order of joints will be same as in status vector given in solve() */
 
     std::vector<Eigen::MatrixXd> A_; /** Vector of task matrices per priority. These define, together with y, for each priority the linear equation system that has to be solved */
-    std::vector<Eigen::VectorXd> y_; /** Vector of desired task variables per priority */
+    std::vector<Eigen::VectorXd> y_ref_; /** Vector of desired task variables per priority */
+    std::vector<Eigen::VectorXd> y_; /** Vector of actual task variables according to the computed control solution*/
     std::vector<Eigen::VectorXd> Wy_; /** Vector of task weights per priority */
 
     bool configured_;
@@ -88,7 +89,6 @@ protected:
 
     void updateSubTask(SubTask* sub_task);
 
-public:
     /**
      * @brief Create Robot Model and Solver
      * @param tree Kinematic tree for the robot model
@@ -118,10 +118,6 @@ public:
                const base::samples::Joints &robot_status,
                base::commands::Joints &solver_output);
 
-    uint getNoOfJoints();
-    mode getMode(){return mode_;}
-    HierarchicalSolver* solver(){return solver_;}
-    RobotModel* robot(){return robot_;}
 };
 }
 #endif

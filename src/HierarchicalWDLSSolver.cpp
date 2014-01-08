@@ -74,7 +74,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
                                    const std::vector<Eigen::VectorXd> &y,
                                    Eigen::VectorXd &x){
     //Check valid input
-    if(x.cols() != nx_){
+    if(x.rows() != nx_){
         LOG_WARN("Size of output vector does not match number of joint variables. Will do a resize!");
         x.resize(nx_);
     }

@@ -1,7 +1,4 @@
 #include "Wbc.hpp"
-#include "TaskFrame.hpp"
-#include "RobotModel.hpp"
-#include "HierarchicalWDLSSolver.hpp"
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <base/logging.h>
 
@@ -44,9 +41,9 @@ bool Wbc::configure(const WbcConfig &config){
         //Walk through all sub tasks of this priority
         for(uint i = 0; i < config[prio].size(); i++){
 
-            no_task_vars = 6;
             SubTaskConfig sub_task_conf = config[prio][i];
             if(sub_task_conf.type == cartesian){
+                no_task_vars = 6;
 
                 if(!robot_->addTaskFrame(sub_task_conf.root))
                     return false;
@@ -66,14 +63,17 @@ bool Wbc::configure(const WbcConfig &config){
     for(uint prio = 0; prio < ny_per_priority.size(); prio++){
         Eigen::MatrixXd A(ny_per_priority[prio], robot_->no_of_joints_);
         Eigen::VectorXd y(ny_per_priority[prio]);
+        Eigen::VectorXd y_act(ny_per_priority[prio]);
         Eigen::VectorXd Wy(ny_per_priority[prio]);
 
         Wy.setConstant(1); //Set all task weights to 1 in the beginning
         A.setZero();
         y.setZero();
+        y_act.setZero();
 
         A_.push_back(A);
-        y_.push_back(y);
+        y_ref_.push_back(y);
+        y_.push_back(y_act);
         Wy_.push_back(Wy);
     }
 
@@ -223,7 +223,7 @@ void Wbc::solve(const WbcInput& task_ref,
 
             //insert task equation into equation system of current priority
             Wy_[prio].segment(row_index, no_task_vars) = task_weights[prio][i];
-            y_[prio].segment(row_index, no_task_vars) = task_ref[prio][i];
+            y_ref_[prio].segment(row_index, no_task_vars) = task_ref[prio][i];
             A_[prio].block(row_index, 0, no_task_vars, nq_robot) = sub_task->A_;
 
             row_index += no_task_vars;
@@ -237,7 +237,7 @@ void Wbc::solve(const WbcInput& task_ref,
     solver_->setJointWeights(joint_weights);
 
     //Solve equation system
-    solver_->solve(A_, y_, solver_output_);
+    solver_->solve(A_, y_ref_, solver_output_);
 
     //Write output
     switch(mode_){
@@ -252,9 +252,9 @@ void Wbc::solve(const WbcInput& task_ref,
     }
     }
 
+    //Compute Debug data
+    for(uint prio = 0; prio < y_.size(); prio++)
+        y_[prio] = A_[prio] * solver_output_;
 }
 
-uint Wbc::getNoOfJoints(){
-    return robot_->no_of_joints_;
-}
 }
