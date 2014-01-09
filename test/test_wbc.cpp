@@ -1,8 +1,7 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames_io.hpp>
 #include <kdl/chainfksolvervel_recursive.hpp>
-#include <boost/test/unit_test.hpp> 
-#include "../src/HierarchicalWDLSSolver.hpp"
+#include <boost/test/unit_test.hpp>
 #include <stdlib.h>
 #include <kdl_parser/kdl_parser.hpp>
 #include "../src/Wbc.hpp"
@@ -11,18 +10,19 @@
 using namespace std;
 using namespace wbc;
 
+
 BOOST_AUTO_TEST_CASE(test_solver)
 {
     srand (time(NULL));
 
-    const uint NO_JOINTS = 7;
+    const uint NO_JOINTS = 3;
     const uint NO_CONSTRAINTS = 4;
     const uint NO_RUNS = 1;
 
     HierarchicalWDLSSolver solver;
-    std::vector<unsigned int> ny_per_prio(2,NO_CONSTRAINTS);
+    std::vector<uint> ny_per_prio(1,NO_CONSTRAINTS);
     solver.configure(ny_per_prio, NO_JOINTS);
-    solver.setNormMax(1000000);
+    solver.setNormMax(5.75);
 
     //Set joint weights
     Eigen::VectorXd joint_weights;
@@ -37,9 +37,6 @@ BOOST_AUTO_TEST_CASE(test_solver)
     task_weights(0) = 0.0;
     task_weights(1) = 1.0;
     solver.setTaskWeights(task_weights, 0);
-    task_weights(0) = 1.0;
-    task_weights(1) = 1.0;
-    solver.setTaskWeights(task_weights, 1);
 
     cout<<"............Testing Hierarchical Solver ............ "<<endl<<endl;
     for(uint run_no = 1; run_no <= NO_RUNS; run_no++){
@@ -52,13 +49,8 @@ BOOST_AUTO_TEST_CASE(test_solver)
 
         std::vector<Eigen::MatrixXd> A_prio;
         A_prio.push_back(A);
-        for(uint i = 0; i < NO_CONSTRAINTS*NO_JOINTS; i++ ) A.data()[i] = (rand()%1000)/1000.0;
-        A_prio.push_back(A);
 
         std::vector<Eigen::VectorXd> y_prio;
-        for(uint i = 0; i < NO_CONSTRAINTS; i++ ) y.data()[i] = (rand()%1000)/1000.0;
-        y(0) = 0;
-        y_prio.push_back(y);
         for(uint i = 0; i < NO_CONSTRAINTS; i++ ) y.data()[i] = (rand()%1000)/1000.0;
         y_prio.push_back(y);
 
@@ -110,7 +102,7 @@ BOOST_AUTO_TEST_CASE(test_wbc)
     reduced_tree.addSegment(KDL::Segment("Rover_base", KDL::Joint("Rover_base",KDL::Joint::None),KDL::Frame::Identity()), "root");
     reduced_tree.addChain(right_hand_chain, "Rover_base");
 
-    Wbc wbc(reduced_tree, mode_velocity);
+    Wbc wbc(reduced_tree);
     WbcConfig config;
     std::vector<SubTaskConfig> config_prio_0;
     SubTaskConfig conf;

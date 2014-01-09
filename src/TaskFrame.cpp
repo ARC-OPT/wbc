@@ -79,8 +79,6 @@ void TaskFrame::update(const base::samples::Joints &status){
         uint idx = joint_index_vector_[i];
         jac_robot_.setColumn(idx, jac_.getColumn(i));
     }
-
-    //TODO: Add dynamic equations here
 }
 
 }

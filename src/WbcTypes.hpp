@@ -6,7 +6,6 @@
 
 namespace wbc{
 
-enum mode{mode_velocity, mode_torque};
 enum task_type{joint, cartesian};
 
 /**
