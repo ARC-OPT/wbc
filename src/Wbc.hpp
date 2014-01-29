@@ -31,7 +31,7 @@ public:
     SubTask(const SubTaskConfig& config, const uint no_robot_joints){
         config_ = config;
         uint no_task_vars;
-        if(config.type == cartesian)
+        if(config.type == task_type_cartesian)
             no_task_vars = 6;
         else
             no_task_vars = config.joints.size();

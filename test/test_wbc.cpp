@@ -108,7 +108,7 @@ BOOST_AUTO_TEST_CASE(test_wbc)
     SubTaskConfig conf;
     conf.root = "Rover_base";
     conf.tip = "Hand_r";
-    conf.type = cartesian;
+    conf.type = task_type_cartesian;
     config_prio_0.push_back(conf);
     config.push_back(config_prio_0);
 

@@ -6,11 +6,12 @@
 
 namespace wbc{
 
-enum task_type{joint, cartesian};
+enum task_type{task_type_joint, task_type_cartesian};
+
 
 /**
  * @brief Defines a sub task in the whole body control problem. Valid Configuration are e.g.
- *        - task_type = WBC_TASK_TYPE_CARTESIAN
+ *        - task_type = wbc::joint
  *          root_frame = "Robot_base"
  *          tip_frame = "Gripper"
  *
@@ -21,6 +22,9 @@ class SubTaskConfig{
 public:
     /** Whole body task type, can be joint space or Cartesian for now */
     task_type type;
+
+    /** Unique identifier of the task*/
+    std::string name;
 
     /**
      * Only Cartesian Tasks: Root frame associated with this task.
@@ -39,6 +43,9 @@ public:
      * the joints used for this task have to be specified here.
      */
     std::vector<std::string> joints;
+
+    /** Priority of this subtask. 0-based. 0 ^= highest priority */
+    uint priority;
 };
 }
 #endif

@@ -39,7 +39,7 @@ bool Wbc::configure(const WbcConfig &config){
 
             uint no_task_vars;
             SubTaskConfig sub_task_conf = config[prio][i];
-            if(sub_task_conf.type == cartesian){
+            if(sub_task_conf.type == task_type_cartesian){
                 no_task_vars = 6;
 
                 if(!robot_->addTaskFrame(sub_task_conf.root))
@@ -83,7 +83,7 @@ bool Wbc::configure(const WbcConfig &config){
 
 void Wbc::updateSubTask(SubTask* sub_task){
 
-    if(sub_task->config_.type == cartesian){
+    if(sub_task->config_.type == task_type_cartesian){
         uint nc = 6; //Task is Cartesian: always 6 task variables
 
         TaskFrame* tf_root = robot_->getTaskFrame(sub_task->config_.root);
@@ -117,7 +117,7 @@ void Wbc::updateSubTask(SubTask* sub_task){
             throw std::runtime_error("Invalid sub task");
         }
     }
-    else if(sub_task->config_.type == joint){
+    else if(sub_task->config_.type == task_type_joint){
 
         sub_task->A_ = Eigen::MatrixXd::Zero(sub_task->config_.joints.size(), robot_->no_of_joints_);
 
@@ -181,7 +181,7 @@ void Wbc::solve(const WbcInput& task_ref,
 
             SubTask *sub_task = sub_task_vector_[prio][i];
             uint no_task_vars;
-            if(sub_task->config_.type == cartesian)
+            if(sub_task->config_.type == task_type_cartesian)
                 no_task_vars = 6;
             else
                 no_task_vars = sub_task->config_.joints.size();
