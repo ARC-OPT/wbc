@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include <stdlib.h>
 #include <kdl_parser/kdl_parser.hpp>
-#include "../src/Wbc.hpp"
+#include "../src/WbcVelocity.hpp"
 #include "../src/RobotModel.hpp"
 
 using namespace std;

@@ -17,6 +17,17 @@ RobotModel::~RobotModel(){
     task_frame_map_.clear();
 }
 
+bool RobotModel::configure(const std::vector<SubTaskConfig> &config){
+    for(uint i = 0; i < config.size(); i++){
+        if(config[i].type == task_type_cartesian){
+            if(!addTaskFrame(config[i].root) ||
+                    !addTaskFrame((config[i].tip)))
+                return false;
+        }
+    }
+    return true;
+}
+
 bool RobotModel::addTaskFrame(const std::string &frame_id){
     if(task_frame_map_.count(frame_id) == 0){
         std::string robot_root = tree_.getRootSegment()->first;

@@ -1,7 +1,7 @@
 #ifndef WBC_TYPES_HPP
 #define WBC_TYPES_HPP
 
-#include <kdl/jacobian.hpp>
+#include <string>
 #include <vector>
 
 namespace wbc{
@@ -45,7 +45,7 @@ public:
     std::vector<std::string> joints;
 
     /** Priority of this subtask. 0-based. 0 ^= highest priority */
-    uint priority;
+    unsigned int priority;
 };
 }
 #endif

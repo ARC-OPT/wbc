@@ -2,6 +2,7 @@
 #define ROBOT_MODEL_HPP
 
 #include <kdl/tree.hpp>
+#include "SubTaskConfig.hpp"
 #include <base/samples/joints.h>
 
 namespace wbc{
@@ -16,6 +17,7 @@ public:
     RobotModel(const KDL::Tree tree);
     ~RobotModel();
 
+    bool configure(const std::vector<SubTaskConfig> &config);
     bool addTaskFrame(const std::string &frame_id);
     TaskFrame* getTaskFrame(const std::string& frame_id);
     void update(const base::samples::Joints &status);

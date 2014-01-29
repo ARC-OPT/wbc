@@ -1,4 +1,4 @@
-#include "Wbc.hpp"
+#include "WbcVelocity.hpp"
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <base/logging.h>
 
