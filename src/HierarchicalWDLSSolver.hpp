@@ -41,6 +41,8 @@ public:
             y_comp_.resize(ny);
             task_weight_mat_.resize(ny, ny);
             task_weight_mat_.setIdentity();
+            u_t_task_weight_mat_.resize(nx, ny);
+            u_t_task_weight_mat_.setZero();
             svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
         }
         Eigen::MatrixXd A_proj_; /** A Matrix projected on nullspace of the higher priority*/
@@ -56,7 +58,7 @@ public:
         //Helpers
         Eigen::MatrixXd U_;
         Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_;
-
+        Eigen::MatrixXd u_t_task_weight_mat_; /** Matrix U_transposed * task_weight_mat_s*/
     };
 
     HierarchicalWDLSSolver();
@@ -96,6 +98,7 @@ protected:
     unsigned int nx_;
     double damping_;
     Eigen::MatrixXd joint_weight_mat_; /** Matrix containing joint weight information. */
+    Eigen::MatrixXd Wq_V_, Wq_V_S_inv_, Wq_V_Damped_S_inv_;
     bool configured_;
 
     //Properties

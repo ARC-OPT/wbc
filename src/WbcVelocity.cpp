@@ -41,6 +41,15 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
     tree_ = tree;
     no_robot_joints_ = tree_.getNrOfJoints();
 
+    //Store joint names
+    KDL::SegmentMap segments = tree_.getSegments();
+    for(KDL::SegmentMap::iterator it = segments.begin(); it != segments.end(); it++){
+        KDL::Segment seg = it->second.segment;
+        if(seg.getJoint().getType() != KDL::Joint::None)
+            joint_names_.push_back(seg.getJoint().getName());
+    }
+
+    LOG_DEBUG("Started Configuration of WbcVelocity");
     LOG_DEBUG("No of joints is %i\n", no_robot_joints_);
 
     //
@@ -51,7 +60,7 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
         if(config[i].priority > max_prio)
             max_prio = config[i].priority;
     }
-    sub_task_vector_.resize(max_prio);
+    sub_task_vector_.resize(max_prio + 1);
     for(uint i = 0; i < config.size(); i++){
 
         TaskFrame* tf_root = 0, *tf_tip = 0;
@@ -82,18 +91,6 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
         }
     }
 
-    LOG_DEBUG("Sub Task Vector: ");
-    for(uint i = 0; i < sub_task_vector_.size(); i++){
-        LOG_DEBUG("Prio: %i", i);
-        for(uint j = 0; j < sub_task_vector_[i].size(); j++){
-            LOG_DEBUG("Task name: %s", sub_task_vector_[i][j]->config_.name.c_str());
-            LOG_DEBUG("No task vars: %i", sub_task_vector_[i][j]->y_des_.size());
-        }
-    }
-    LOG_DEBUG("Sub Task Map: ");
-    for(SubTaskMap::iterator it = sub_task_map_.begin(); it != sub_task_map_.end(); it++)
-        LOG_DEBUG("Prio: %s", it->first.c_str());
-
     //
     // Resize matrices and vectors
     //
@@ -110,19 +107,44 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
         }
 
         Eigen::MatrixXd A(no_task_vars_prio, no_robot_joints_);
-        Eigen::VectorXd y(no_task_vars_prio);
-        Eigen::VectorXd y_act(no_task_vars_prio);
+        Eigen::VectorXd y_ref(no_task_vars_prio);
         Eigen::VectorXd Wy(no_task_vars_prio);
 
         Wy.setConstant(1); //Set all task weights to 1 in the beginning
         A.setZero();
-        y_act.setZero();
+        y_ref.setZero();
         A_.push_back(A);
-        y_ref_.push_back(y);
+        y_ref_.push_back(y_ref);
         Wy_.push_back(Wy);
+        no_task_vars_pp_.push_back(y_ref.size());
     }
 
     configured_ = true;
+
+    LOG_DEBUG("Task Frames: ");
+    for(TaskFrameMap::iterator it = task_frame_map_.begin(); it != task_frame_map_.end(); it++){
+        LOG_DEBUG("Name: %s", it->first.c_str());
+        LOG_DEBUG("Joints: ");
+        for(uint i = 0; i < it->second->joint_names_.size(); i++)
+            LOG_DEBUG("%s", it->second->joint_names_[i].c_str());
+    }
+    LOG_DEBUG("");
+    LOG_DEBUG("Sub Task Vector: ");
+    for(uint i = 0; i < sub_task_vector_.size(); i++){
+        LOG_DEBUG("Prio: %i", i);
+        for(uint j = 0; j < sub_task_vector_[i].size(); j++){
+            LOG_DEBUG("Task name: %s", sub_task_vector_[i][j]->config_.name.c_str());
+            LOG_DEBUG("No task vars: %i", sub_task_vector_[i][j]->y_des_.size());
+        }
+    }
+    LOG_DEBUG("");
+    LOG_DEBUG("Sub Task Map: ");
+    for(SubTaskMap::iterator it = sub_task_map_.begin(); it != sub_task_map_.end(); it++)
+        LOG_DEBUG("Prio: %s", it->first.c_str());
+    LOG_DEBUG("");
+
+    LOG_DEBUG("... done configuration of WbcVelocity");
+
     return true;
 }
 
@@ -162,7 +184,6 @@ SubTask* WbcVelocity::subTask(const std::string &name){
     return sub_task_map_[name];
 }
 
-
 void WbcVelocity::update(const base::samples::Joints &status){
 
     if(!configured_)
@@ -172,6 +193,10 @@ void WbcVelocity::update(const base::samples::Joints &status){
     if(joint_index_map_.empty()){
         for(uint i = 0; i < status.size(); i++)
             joint_index_map_[status.names[i]] = i;
+
+        LOG_DEBUG("Joint Index Map: ");
+        for(JointIndexMap::iterator it = joint_index_map_.begin(); it != joint_index_map_.end(); it++)
+            LOG_DEBUG("%s::%i", it->first.c_str(), it->second);
     }
 
     //Update Task Frames

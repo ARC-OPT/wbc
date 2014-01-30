@@ -2,6 +2,7 @@
 #include <base/logging.h>
 #include <stdexcept>
 #include <iostream>
+#include <base/time.h>
 
 using namespace std;
 
@@ -51,6 +52,9 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     tmp_.setZero();
     joint_weight_mat_.resize(nx_, nx_);
     joint_weight_mat_.setZero();
+    Wq_V_.resize(nx_, nx_);
+    Wq_V_S_inv_.resize(nx_, nx_);
+    Wq_V_Damped_S_inv_.resize(nx_, nx_);
 
     //Set Joint weights to default (all 1)
     Eigen::VectorXd joint_weights;
@@ -100,6 +104,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
+        base::Time start = base::Time::now();
         priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
@@ -110,8 +115,10 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         priorities_[prio].A_proj_ = A[prio] * proj_mat_;
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
-        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * priorities_[prio].A_proj_ * joint_weight_mat_;
+        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * priorities_[prio].A_proj_ * joint_weight_mat_;       
+        cout<<"projection: "<<(base::Time::now() - start).toSeconds()<<endl;
 
+        start = base::Time::now();
         //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
         priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
 
@@ -125,7 +132,9 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         //U output of svd will have different size than required, copy only the first ns columns. They contain the relevant Eigenvectors
         priorities_[prio].U_.block(0,0, priorities_[prio].ny_, ns) =
                 priorities_[prio].svd_.matrixU().block(0,0,priorities_[prio].ny_, ns);
+        cout<<"svd: "<<(base::Time::now() - start).toSeconds()<<endl;
 
+        start = base::Time::now();
         //Compute damping factor based on
         //A.A. Maciejewski, C.A. Klein, “Numerical Filtering for the Operation of
         //Robotic Manipulators through Kinematically Singular Configurations”,
@@ -150,10 +159,34 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
             else
                 S_inv_(i,i) = 1 / S_(i);
         }
+        cout<<"inversion: "<<(base::Time::now() - start).toSeconds()<<endl;
 
         // A^# = Wq^-1 * V * S^# * U^T * Wy
+        start = base::Time::now();
+        priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose();
+        for(uint i = 0; i < priorities_[prio].ny_; i++)
+            priorities_[prio].u_t_task_weight_mat_(i,i)*=priorities_[prio].task_weight_mat_(i,i);
+
         priorities_[prio].A_proj_inv_wls_ = joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Normal Inverse with weighting
-        priorities_[prio].A_proj_inv_wdls_ = joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
+        priorities_[prio].A_proj_inv_wdls_ = joint_weight_mat_ * V_ *Damped_S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
+
+        //priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_;
+        /*Wq_V_ = V_;
+        for(uint i = 0; i < priorities_[prio].ny_; i++)
+            Wq_V_(i,i) *= joint_weight_mat_(i,i);
+
+        Wq_V_S_inv_ = Wq_V_ ;
+        Wq_V_Damped_S_inv_ = Wq_V_;
+        for(uint i = 0; i < S_.rows(); i++){
+            Wq_V_S_inv_(i,i) *= S_inv_(i,i);
+            Wq_V_Damped_S_inv_(i,i) *= Damped_S_inv_(i,i);
+        }
+        //Wq_V_ = joint_weight_mat_ * V_;
+        //Wq_V_S_inv_ = Wq_V_ * S_inv_;
+        //Wq_V_Damped_S_inv_ = Wq_V_ * Damped_S_inv_;
+        priorities_[prio].A_proj_inv_wls_ = Wq_V_S_inv_ * priorities_[prio].u_t_task_weight_mat_; //Normal Inverse with weighting
+        priorities_[prio].A_proj_inv_wdls_ = Wq_V_Damped_S_inv_ * priorities_[prio].u_t_task_weight_mat_; //Damped inverse with weighting
+        cout<<"multiply: "<<(base::Time::now() - start).toSeconds()<<endl;*/
 
         // x = x + A^# * y
         x += priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;

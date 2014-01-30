@@ -57,6 +57,8 @@ public:
     std::vector<Eigen::VectorXd> y_ref_; /** Vector of desired task variables per priority */
     std::vector<Eigen::VectorXd> Wy_; /** Vector of task weights per priority */
     uint no_robot_joints_;
+    std::vector<uint> no_task_vars_pp_;
+    std::vector<std::string> joint_names_;
 
 };
 }
