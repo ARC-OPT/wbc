@@ -25,8 +25,8 @@ public:
 
         y_des_.resize(no_task_vars_);
 
-        task_weights_.resize(no_task_vars_);
-        task_weights_.setConstant(1);
+        task_weights_.resize(no_task_vars_, no_task_vars_);
+        task_weights_.setIdentity();
 
         task_jac_ = KDL::Jacobian(no_task_vars_);
         task_jac_.data.setZero();
@@ -55,7 +55,7 @@ public:
     TaskFrame* tf_tip_;
 
     Eigen::VectorXd y_des_;
-    Eigen::VectorXd task_weights_;
+    Eigen::MatrixXd task_weights_;
 
     KDL::Jacobian task_jac_;
     KDL::Frame pose_;

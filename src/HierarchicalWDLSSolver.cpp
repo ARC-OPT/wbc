@@ -3,6 +3,8 @@
 #include <stdexcept>
 #include <iostream>
 #include <base/time.h>
+#include <Eigen/Cholesky>
+#include <Eigen/LU>
 
 using namespace std;
 
@@ -14,6 +16,9 @@ HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
     damping_(0),
     configured_(false){
 
+}
+
+HierarchicalWDLSSolver::~HierarchicalWDLSSolver(){
 }
 
 bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
@@ -51,24 +56,12 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     tmp_.resize(nx_);
     tmp_.setZero();
     joint_weight_mat_.resize(nx_, nx_);
-    joint_weight_mat_.setZero();
+    joint_weight_mat_.setIdentity();
     Wq_V_.resize(nx_, nx_);
     Wq_V_S_inv_.resize(nx_, nx_);
     Wq_V_Damped_S_inv_.resize(nx_, nx_);
-
-    //Set Joint weights to default (all 1)
-    Eigen::VectorXd joint_weights;
-    joint_weights.resize(nx_);
-    joint_weights.setConstant(1);
-    setJointWeights(joint_weights);
-
-    //Set all task weights to default (all 1)
-    for(uint prio = 0; prio < ny_per_prio.size(); prio++){
-        Eigen::VectorXd task_weights;
-        task_weights.resize(priorities_[prio].ny_);
-        task_weights.setConstant(1);
-        setTaskWeights(task_weights, prio);
-    }
+    L_.resize(nx_, nx_);
+    joint_weight_mat_is_diagonal_ = true;
 
     configured_ = true;
     return true;
@@ -93,7 +86,6 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
                       priorities_[i].ny_, nx_, priorities_[i].ny_, A[i].rows(), A[i].cols(), y[i].rows());
             throw std::invalid_argument("Invalid size of input variables");
         }
-
     }
 
     //Init projection matrix as identity, so that the highest priority can look for a solution in whole configuration space
@@ -102,9 +94,9 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
     //////// Loop through all priorities
 
+    base::Time total = base::Time::now();
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
-        base::Time start = base::Time::now();
         priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
@@ -115,10 +107,22 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         priorities_[prio].A_proj_ = A[prio] * proj_mat_;
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
-        priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ * priorities_[prio].A_proj_ * joint_weight_mat_;       
-        cout<<"projection: "<<(base::Time::now() - start).toSeconds()<<endl;
+        // If the weight matrices are diagonal, there is no need for full matrix multiplication
 
-        start = base::Time::now();
+        if(priorities_[prio].task_weight_mat_is_diagonal_){
+            for(uint i = 0; i < priorities_[prio].ny_; i++)
+                priorities_[prio].A_proj_w_.row(i) = priorities_[prio].task_weight_mat_(i,i) * priorities_[prio].A_proj_.row(i);
+        }
+        else
+            priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ *  priorities_[prio].A_proj_;
+
+        if(joint_weight_mat_is_diagonal_){
+            for(uint i = 0; i < nx_; i++)
+                priorities_[prio].A_proj_w_.col(i) = joint_weight_mat_(i,i) * priorities_[prio].A_proj_.col(i);
+        }
+        else
+            priorities_[prio].A_proj_w_ = priorities_[prio].A_proj_w_ * joint_weight_mat_;
+
         //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
         priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
 
@@ -132,9 +136,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         //U output of svd will have different size than required, copy only the first ns columns. They contain the relevant Eigenvectors
         priorities_[prio].U_.block(0,0, priorities_[prio].ny_, ns) =
                 priorities_[prio].svd_.matrixU().block(0,0,priorities_[prio].ny_, ns);
-        cout<<"svd: "<<(base::Time::now() - start).toSeconds()<<endl;
 
-        start = base::Time::now();
         //Compute damping factor based on
         //A.A. Maciejewski, C.A. Klein, “Numerical Filtering for the Operation of
         //Robotic Manipulators through Kinematically Singular Configurations”,
@@ -159,34 +161,32 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
             else
                 S_inv_(i,i) = 1 / S_(i);
         }
-        cout<<"inversion: "<<(base::Time::now() - start).toSeconds()<<endl;
 
         // A^# = Wq^-1 * V * S^# * U^T * Wy
-        start = base::Time::now();
-        priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose();
-        for(uint i = 0; i < priorities_[prio].ny_; i++)
-            priorities_[prio].u_t_task_weight_mat_(i,i)*=priorities_[prio].task_weight_mat_(i,i);
+        // If the weight matrices are diagonal, there is no need for full matrix multiplication (saves a lot of computation!)
 
-        priorities_[prio].A_proj_inv_wls_ = joint_weight_mat_ * V_ * S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Normal Inverse with weighting
-        priorities_[prio].A_proj_inv_wdls_ = joint_weight_mat_ * V_ *Damped_S_inv_ * priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_; //Damped inverse with weighting
-
-        //priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_;
-        /*Wq_V_ = V_;
-        for(uint i = 0; i < priorities_[prio].ny_; i++)
-            Wq_V_(i,i) *= joint_weight_mat_(i,i);
-
-        Wq_V_S_inv_ = Wq_V_ ;
-        Wq_V_Damped_S_inv_ = Wq_V_;
-        for(uint i = 0; i < S_.rows(); i++){
-            Wq_V_S_inv_(i,i) *= S_inv_(i,i);
-            Wq_V_Damped_S_inv_(i,i) *= Damped_S_inv_(i,i);
+        if(priorities_[prio].task_weight_mat_is_diagonal_){
+            priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose();
+            for(uint i = 0; i < priorities_[prio].ny_; i++)
+                priorities_[prio].u_t_task_weight_mat_.col(i) = priorities_[prio].u_t_task_weight_mat_.col(i) * priorities_[prio].task_weight_mat_(i,i);
         }
-        //Wq_V_ = joint_weight_mat_ * V_;
-        //Wq_V_S_inv_ = Wq_V_ * S_inv_;
-        //Wq_V_Damped_S_inv_ = Wq_V_ * Damped_S_inv_;
+        else
+            priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_;
+
+        if(joint_weight_mat_is_diagonal_){
+            for(uint i = 0; i < nx_; i++)
+                Wq_V_.row(i) = joint_weight_mat_(i,i) * V_.row(i);
+        }
+        else
+            Wq_V_ = joint_weight_mat_ * V_;
+
+        for(uint i = 0; i < nx_; i++)
+            Wq_V_S_inv_.col(i) = Wq_V_.col(i) * S_inv_(i,i);
+        for(uint i = 0; i < nx_; i++)
+            Wq_V_Damped_S_inv_.col(i) = Wq_V_.col(i) * Damped_S_inv_(i,i);
+
         priorities_[prio].A_proj_inv_wls_ = Wq_V_S_inv_ * priorities_[prio].u_t_task_weight_mat_; //Normal Inverse with weighting
         priorities_[prio].A_proj_inv_wdls_ = Wq_V_Damped_S_inv_ * priorities_[prio].u_t_task_weight_mat_; //Damped inverse with weighting
-        cout<<"multiply: "<<(base::Time::now() - start).toSeconds()<<endl;*/
 
         // x = x + A^# * y
         x += priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;
@@ -199,51 +199,72 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
     ///////////////
 }
 
+void HierarchicalWDLSSolver::setJointWeights(const Eigen::MatrixXd& weights){
+    if(weights.rows() == nx_ &&
+       weights.cols() == nx_){
 
-void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
-    if(weights.rows() == nx_){
-        joint_weight_mat_.setIdentity();
-        for(uint i = 0; i < nx_; i++){
-            //In the original code, here, a choleski factorization + tranpose + inverse was done.
-            //Since the weighting matrix is a diagonal matrix, this can be simplified to
-            if(weights(i) < 0){
-                LOG_ERROR("Joint weights have to be >= 0");
-                throw std::invalid_argument("Invalid joint weights");
+        //Check if new matrix is diagonal
+        joint_weight_mat_is_diagonal_ = true;
+        for(uint i = 0; i < weights.rows(); i++){
+            for(uint j = 0; j < weights.cols(); j++){
+                if(i != j){
+                    if(weights(i,j) != 0)
+                        joint_weight_mat_is_diagonal_ = false;
+                }
             }
-            if(weights(i) == 0)
-                joint_weight_mat_(i,i) = 1/sqrt(1e10);
-            else
-                joint_weight_mat_(i,i) = 1/sqrt(1/weights(i));
+        }
+        if(joint_weight_mat_is_diagonal_){
+            joint_weight_mat_.setZero();
+            for(uint i = 0; i < nx_; i++){
+                if(weights(i,i) == 0)
+                    joint_weight_mat_(i,i) = 1e10;
+                else
+                    joint_weight_mat_(i,i) = sqrt(1/weights(i,i));
+            }
+        }
+        else{
+            Eigen::LLT<Eigen::MatrixXd> llt(weights); // compute the Cholesky decomposition of A
+            L_ = llt.matrixL(); // retrieve factor L  in the decomposition
+            joint_weight_mat_ =  L_.transpose().inverse();
         }
     }
     else{
-        LOG_ERROR("Cannot set joint weights. Size of weight vector is %i but number of joints is %i", weights.rows(), nx_);
+        LOG_ERROR("Cannot set joint weights. Size of weight matrix is %i x %i but should be %i x %s", weights.rows(), weights.cols(), nx_, nx_);
         throw std::invalid_argument("Invalid Joint weight vector size");
     }
 }
 
-Eigen::VectorXd HierarchicalWDLSSolver::getJointWeights(){
-    Eigen::VectorXd joint_weights(joint_weight_mat_.rows());
-    for(uint i = 0; i < joint_weight_mat_.rows(); i++)
-        joint_weights(i) = joint_weight_mat_(i,i);
-    return joint_weights;
-}
-
-void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalWDLSSolver::setTaskWeights(const Eigen::MatrixXd& weights, const uint prio){
     if(prio >= priorities_.size()){
         LOG_ERROR("Cannot set task weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
     }
-    if(priorities_[prio].ny_ != weights.rows()){
-        LOG_ERROR("Cannot set task weights. No of task variables of priority %i is %i and number of weights is %i", prio, priorities_[prio].ny_, weights.size());
+    if(priorities_[prio].ny_ != weights.rows() ||
+       priorities_[prio].ny_ != weights.cols()){
+        LOG_ERROR("Cannot set task weights. Size of weight mat is %i x %i but should be %i x %i", weights.rows(), weights.cols(), priorities_[prio].ny_, priorities_[prio].ny_);
         throw std::invalid_argument("Invalid Weight vector size");
     }
 
-    priorities_[prio].task_weight_mat_.setIdentity();
-    for(uint i = 0; i < priorities_[prio].ny_; i++){
-        //In the original code, here, a choleski factorization + tranpose was done. Todo: Why?
-        //Since the weighting matrix is a diagonal matrix, this can be simplified to
-        priorities_[prio].task_weight_mat_(i,i) = sqrt(weights(i));
+    //Check if new matrix is diagonal
+    priorities_[prio].task_weight_mat_is_diagonal_ = true;
+    for(uint i = 0; i < weights.rows(); i++){
+        for(uint j = 0; j < weights.cols(); j++){
+            if(i != j){
+                if(weights(i,j) != 0)
+                    priorities_[prio].task_weight_mat_is_diagonal_ = false;
+            }
+        }
+    }
+
+    if(priorities_[prio].task_weight_mat_is_diagonal_){
+        priorities_[prio].task_weight_mat_.setZero();
+        for(uint i = 0; i < priorities_[prio].ny_; i++)
+            priorities_[prio].task_weight_mat_(i,i) = sqrt(weights(i,i));
+    }
+    else{
+        // compute the Cholesky decomposition of weights
+        Eigen::LLT<Eigen::MatrixXd> llt(weights);
+        priorities_[prio].task_weight_mat_ = llt.matrixL().transpose();
     }
 }
 }

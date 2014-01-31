@@ -26,7 +26,6 @@ protected:
     bool configured_;
     KDL::Tree tree_;
 
-    std::vector< std::vector<SubTask*> > sub_task_vector_; /** Vector containing all sub tasks (ordered by priority, highest priority first) */
     std::map<std::string, SubTask*> sub_task_map_; /** Map associating names of subtasks to subtask pointers */
     Eigen::VectorXd solver_output_; /** Control solution. Size: No of joints in kdl tree. Order of joints will be same as in status vector given in solve() */
 
@@ -55,10 +54,11 @@ public:
 
     std::vector<Eigen::MatrixXd> A_; /** Vector of task matrices per priority. These define, together with y, for each priority the linear equation system that has to be solved */
     std::vector<Eigen::VectorXd> y_ref_; /** Vector of desired task variables per priority */
-    std::vector<Eigen::VectorXd> Wy_; /** Vector of task weights per priority */
+    std::vector<Eigen::MatrixXd> Wy_; /** Vector of task weights per priority */
     uint no_robot_joints_;
     std::vector<uint> no_task_vars_pp_;
     std::vector<std::string> joint_names_;
+    std::vector< std::vector<SubTask*> > sub_task_vector_; /** Vector containing all sub tasks (ordered by priority, highest priority first) */
 
 };
 }

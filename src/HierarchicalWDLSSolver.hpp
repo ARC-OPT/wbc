@@ -15,7 +15,6 @@ namespace wbc{
  *        The solver may also include weights in joint and task space.
  */
 class HierarchicalWDLSSolver{
-
 public:
     class Priority{
     public:
@@ -44,6 +43,7 @@ public:
             u_t_task_weight_mat_.resize(nx, ny);
             u_t_task_weight_mat_.setZero();
             svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
+            task_weight_mat_is_diagonal_ = true;
         }
         Eigen::MatrixXd A_proj_; /** A Matrix projected on nullspace of the higher priority*/
         Eigen::MatrixXd A_proj_w_; /** A Matrix projected on nullspace of the higher priority with weighting*/
@@ -52,8 +52,9 @@ public:
         Eigen::VectorXd y_comp_; /** Task variables which are compensated for the part of solution already met in higher priorities */
         Eigen::MatrixXd task_weight_mat_; /** Matrix containing information about the task weights*/
 
-        unsigned int ny_; /** Number of task variables*/
 
+        unsigned int ny_; /** Number of task variables*/
+        bool task_weight_mat_is_diagonal_;
 
         //Helpers
         Eigen::MatrixXd U_;
@@ -62,7 +63,7 @@ public:
     };
 
     HierarchicalWDLSSolver();
-    ~HierarchicalWDLSSolver(){}
+    ~HierarchicalWDLSSolver();
 
     /**
      * @brief configure Resizes member variables
@@ -82,12 +83,26 @@ public:
                        const std::vector<Eigen::VectorXd> &y,
                        Eigen::VectorXd &x);
 
+    /**
+     * @brief setJointWeights Set full joint weight matrix.
+     * @param weights Size must be no_joints * no_joints. Matrix must be symmetric and positive definite! This is not checked by the algorithm.
+     *                If matrix is not diagonal, computation will increase a lot. If matrix is diagonal, a very HIGH entry means that
+     *                the corresponding joint is not used at all for the solution. If matrix is diagonal, entries must be >= 0.
+     */
+    void setJointWeights(const Eigen::MatrixXd& weights);
+
+    /**
+     * @brief setTaskWeights Set full task weight matrix of the given priority. Note that, by using this method to set the task weights, the algorithm assumes that
+     *                        the task weight matrix is not diagonal, which affects computation time a lot.
+     * @param weights Size must be ny * ny. Matrix must be symmetric and positive definite! This is not checked by the algorithm.
+     * @param prio Priority (>= 0) according to what was passed to configure() method
+     */
+    void setTaskWeights(const Eigen::MatrixXd& weights, const uint prio);
+
     double getCurDamping(){return damping_;}
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
-    Eigen::VectorXd getJointWeights();
-    void setJointWeights(const Eigen::VectorXd& weights);
-    void setTaskWeights(const Eigen::VectorXd& weights, const uint prio);
+    Eigen::MatrixXd getJointWeights(){return joint_weight_mat_;}
     bool configured(){return configured_;}
 
 protected:
@@ -100,14 +115,15 @@ protected:
     Eigen::MatrixXd joint_weight_mat_; /** Matrix containing joint weight information. */
     Eigen::MatrixXd Wq_V_, Wq_V_S_inv_, Wq_V_Damped_S_inv_;
     bool configured_;
+    bool joint_weight_mat_is_diagonal_;
 
     //Properties
-    double norm_max_; /** Maximum norm of (J#) * y */
     double epsilon_; /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
+    double norm_max_; /** Maximum norm of (J#) * y */
 
     //Helpers
     Eigen::VectorXd S_, tmp_;
-    Eigen::MatrixXd V_;
+    Eigen::MatrixXd V_, L_;
 
 };
 }

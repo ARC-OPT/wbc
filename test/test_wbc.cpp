@@ -16,8 +16,8 @@ BOOST_AUTO_TEST_CASE(test_solver)
 {
     srand (time(NULL));
 
-    const uint NO_JOINTS = 7;
-    const uint NO_CONSTRAINTS = 6;
+    const uint NO_JOINTS = 4;
+    const uint NO_CONSTRAINTS = 2;
     const uint NO_RUNS = 1;
 
     HierarchicalWDLSSolver solver;
@@ -25,19 +25,34 @@ BOOST_AUTO_TEST_CASE(test_solver)
     solver.configure(ny_per_prio, NO_JOINTS);
     solver.setNormMax(5.75);
 
+    Eigen::MatrixXd test;
+    test.resize(NO_JOINTS,NO_JOINTS);
+    test << 1,0,0,0,
+            0,1e10,0,0,
+            0,0,1,0,
+            0,0,0,1;
+    solver.setJointWeights(test);
+
     //Set joint weights
     Eigen::VectorXd joint_weights;
     joint_weights.resize(NO_JOINTS);
     joint_weights.setConstant(1);
-    solver.setJointWeights(joint_weights);
+    joint_weights(1) = 0;
+    //solver.setJointWeights(joint_weights);
 
     //Set task weights
+    Eigen::MatrixXd test_task;
+    test_task.resize(NO_CONSTRAINTS,NO_CONSTRAINTS);
+    test_task << 0,0,
+                 0,1;
+    solver.setTaskWeights(test_task, 0);
+
     Eigen::VectorXd task_weights;
     task_weights.resize(NO_CONSTRAINTS);
     task_weights.setConstant(1);
     task_weights(0) = 1.0;
     task_weights(1) = 1.0;
-    solver.setTaskWeights(task_weights, 0);
+    //solver.setTaskWeights(task_weights, 0);
 
     cout<<"............Testing Hierarchical Solver ............ "<<endl<<endl;
     for(uint run_no = 1; run_no <= NO_RUNS; run_no++){
