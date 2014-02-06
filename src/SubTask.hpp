@@ -24,6 +24,7 @@ public:
             no_task_vars_ = config.joints.size();
 
         y_des_.resize(no_task_vars_);
+        y_des_.setZero();
 
         task_weights_.resize(no_task_vars_, no_task_vars_);
         task_weights_.setIdentity();
