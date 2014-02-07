@@ -26,7 +26,7 @@ public:
     KDL::ChainJntToJacSolver* jac_solver_;
 
     std::vector<uint> joint_index_vector_;
-    std::string root_name_, tip_name_;
+    std::string tf_name_;
 };
 }
 #endif

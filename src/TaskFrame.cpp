@@ -28,8 +28,7 @@ TaskFrame::TaskFrame(const KDL::Chain &chain, const uint no_robot_joints){
             joint_names_.push_back(joint.getName());
     }
 
-    root_name_ = chain_.segments[0].getName();
-    tip_name_= chain_.segments[chain_.getNrOfSegments()-1].getName();
+    tf_name_= chain_.segments[chain_.getNrOfSegments()-1].getName();
 }
 
 TaskFrame::~TaskFrame(){
