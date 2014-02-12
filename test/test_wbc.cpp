@@ -123,7 +123,7 @@ BOOST_AUTO_TEST_CASE(test_wbc_cart)
     SubTaskConfig conf(task_type_cartesian, 0, "Cart_r", std::vector<std::string>(), "Chest", "Hand_r");
     config.push_back(conf);
 
-    BOOST_CHECK_EQUAL(wbc.configure(tree, config), true);
+    BOOST_CHECK_EQUAL(wbc.configure(tree, config, "Rover_base"), true);
 
     SubTask* sub_task = wbc.subTask(conf.name);
     sub_task->y_des_ = Eigen::VectorXd(6);
@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE(test_wbc_joint)
     SubTaskConfig conf(task_type_joint, 0, "Joint", joints);
     config.push_back(conf);
 
-    BOOST_CHECK_EQUAL(wbc.configure(tree, config), true);
+    BOOST_CHECK_EQUAL(wbc.configure(tree, config, "Rover_base"), true);
 
     SubTask* sub_task = wbc.subTask(conf.name);
     sub_task->y_des_(0) = 0.1;

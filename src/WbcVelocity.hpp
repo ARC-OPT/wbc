@@ -25,6 +25,7 @@ protected:
 
     bool configured_;
     KDL::Tree tree_;
+    std::string robot_root_;
 
     std::map<std::string, SubTask*> sub_task_map_; /** Map associating names of subtasks to subtask pointers */
     Eigen::VectorXd solver_output_; /** Control solution. Size: No of joints in kdl tree. Order of joints will be same as in status vector given in solve() */
@@ -46,7 +47,7 @@ public:
      * @param config Sub task configuration vector.
      * @return True in case of success, false else
      */
-    bool configure(const KDL::Tree tree, const std::vector<SubTaskConfig> &config);
+    bool configure(const KDL::Tree tree, const std::vector<SubTaskConfig> &config, const std::string &robot_root);
 
     SubTask* subTask(const std::string &name);
 

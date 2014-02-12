@@ -34,9 +34,11 @@ void WbcVelocity::clear(){
 
 }
 
-bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfig> &config){
+bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfig> &config, const std::string &robot_root){
 
     clear();
+
+    robot_root_ = robot_root;
 
     tree_ = tree;
     no_robot_joints_ = tree_.getNrOfJoints();
@@ -150,10 +152,9 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
 
 bool WbcVelocity::addTaskFrame(const std::string &frame_id){
     if(task_frame_map_.count(frame_id) == 0){
-        std::string robot_root = tree_.getRootSegment()->first;
         KDL::Chain chain;
-        if(!tree_.getChain(robot_root, frame_id, chain)){
-            LOG_ERROR("Could not extract kinematic chain between %s and %s from robot tree", robot_root.c_str(), frame_id.c_str());
+        if(!tree_.getChain(robot_root_, frame_id, chain)){
+            LOG_ERROR("Could not extract kinematic chain between %s and %s from robot tree", robot_root_.c_str(), frame_id.c_str());
             return false;
         }
         TaskFrame* tf = new TaskFrame(chain, no_robot_joints_);
