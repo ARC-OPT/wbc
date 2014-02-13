@@ -130,8 +130,9 @@ BOOST_AUTO_TEST_CASE(test_wbc_cart)
     sub_task->y_des_(0) = 0.1;
 
     base::samples::Joints status;
-    status.names = wbc.joint_names_;
-    status.resize(wbc.joint_names_.size());
+    status.resize(wbc.joint_index_map_.size());
+    for(JointIndexMap::iterator it = wbc.joint_index_map_.begin(); it != wbc.joint_index_map_.end(); it++)
+        status.names.push_back(it->first);
 
     for(uint i = 0; i < status.size(); i++)
         status[i].position = 1.;
@@ -155,7 +156,7 @@ BOOST_AUTO_TEST_CASE(test_wbc_cart)
     cout<<"Desired y: "<<endl;
     cout<<sub_task->y_des_.transpose()<<endl<<endl;
     cout<<"Joint names: "<<endl;
-    for(uint i = 0; i < wbc.joint_names_.size(); i++) cout<<wbc.joint_names_[i]<<" "; cout<<endl<<endl;
+    for(uint i = 0; i <status.names.size(); i++) cout<<status.names[i]<<" "; cout<<endl<<endl;
     cout<<"Ctrl solution: "<<endl;
     cout<<x.transpose()<<endl<<endl;
     cout<<"Actual y: "<<endl;
@@ -197,8 +198,9 @@ BOOST_AUTO_TEST_CASE(test_wbc_joint)
     sub_task->y_des_(1) = 0.3;
 
     base::samples::Joints status;
-    status.names = wbc.joint_names_;
-    status.resize(wbc.joint_names_.size());
+    status.resize(wbc.joint_index_map_.size());
+    for(JointIndexMap::iterator it = wbc.joint_index_map_.begin(); it != wbc.joint_index_map_.end(); it++)
+        status.names.push_back(it->first);
 
     for(uint i = 0; i < status.size(); i++)
         status[i].position = 0.0;
@@ -222,7 +224,7 @@ BOOST_AUTO_TEST_CASE(test_wbc_joint)
     cout<<"Desired y: "<<endl;
     cout<<sub_task->y_des_.transpose()<<endl<<endl;
     cout<<"Joint names: "<<endl;
-    for(uint i = 0; i < wbc.joint_names_.size(); i++) cout<<wbc.joint_names_[i]<<" "; cout<<endl<<endl;
+    for(uint i = 0; i < status.names.size(); i++) cout<<status.names[i]<<" "; cout<<endl<<endl;
     cout<<"Ctrl solution: "<<endl;
     cout<<x.transpose()<<endl<<endl;
     cout<<"Actual y: "<<endl;

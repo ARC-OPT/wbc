@@ -21,7 +21,6 @@ protected:
     void clear();
 
     TaskFrameMap task_frame_map_;
-    JointIndexMap joint_index_map_;
 
     bool configured_;
     KDL::Tree tree_;
@@ -58,7 +57,7 @@ public:
     std::vector<Eigen::MatrixXd> Wy_; /** Vector of task weights per priority */
     uint no_robot_joints_;
     std::vector<uint> no_task_vars_pp_;
-    std::vector<std::string> joint_names_;
+    JointIndexMap joint_index_map_;
     std::vector< std::vector<SubTask*> > sub_task_vector_; /** Vector containing all sub tasks (ordered by priority, highest priority first) */
 
 };

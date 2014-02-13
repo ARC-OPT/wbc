@@ -53,7 +53,6 @@ void TaskFrame::update(const base::samples::Joints &status){
                 LOG_ERROR("No such joint in status vector: %s", joint_name.c_str());
                 throw std::invalid_argument("No such joint name");
             }
-
             joint_index_vector_.push_back(joint_index_map[joint_name]);
         }
     }

@@ -43,14 +43,6 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
     tree_ = tree;
     no_robot_joints_ = tree_.getNrOfJoints();
 
-    //Store joint names
-    KDL::SegmentMap segments = tree_.getSegments();
-    for(KDL::SegmentMap::iterator it = segments.begin(); it != segments.end(); it++){
-        KDL::Segment seg = it->second.segment;
-        if(seg.getJoint().getType() != KDL::Joint::None)
-            joint_names_.push_back(seg.getJoint().getName());
-    }
-
     LOG_DEBUG("Started Configuration of WbcVelocity");
     LOG_DEBUG("No of joints is %i\n", no_robot_joints_);
 
@@ -122,6 +114,7 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
     }
 
     configured_ = true;
+    joint_index_map_.clear();
 
     LOG_DEBUG("Task Frames: ");
     for(TaskFrameMap::iterator it = task_frame_map_.begin(); it != task_frame_map_.end(); it++){
@@ -239,7 +232,7 @@ void WbcVelocity::update(const base::samples::Joints &status){
             }
             else if(sub_task->config_.type == task_type_joint){
                 for(uint i = 0; i < sub_task->config_.joints.size(); i++){
-                    std::string joint_name = sub_task->config_.joints[i];
+                    const std::string &joint_name = sub_task->config_.joints[i];
                     uint idx = joint_index_map_[joint_name];
                     sub_task->A_(i,idx) = 1.0;
                 }
@@ -255,5 +248,4 @@ void WbcVelocity::update(const base::samples::Joints &status){
         }
     }
 }
-
 }
