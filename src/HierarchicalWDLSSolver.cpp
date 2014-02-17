@@ -262,6 +262,7 @@ void HierarchicalWDLSSolver::setTaskWeights(const Eigen::MatrixXd& weights, cons
             priorities_[prio].task_weight_mat_(i,i) = sqrt(weights(i,i));
     }
     else{
+        cout<<"Computing Choleski"<<endl;
         // compute the Cholesky decomposition of weights
         Eigen::LLT<Eigen::MatrixXd> llt(weights);
         priorities_[prio].task_weight_mat_ = llt.matrixL().transpose();

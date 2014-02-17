@@ -75,7 +75,7 @@ void TaskFrame::update(const base::samples::Joints &status){
     // This changes the reference point to the root frame
     jac_.changeRefPoint(-pose_.p);
 
-    //Fill in columns of Jacobian into the correct place of the full robot Jacobian
+    //IMPORTANT: Fill in columns of Jacobian into the correct place of the full robot Jacobian.
     for(uint i = 0; i < joint_names_.size(); i++){
         uint idx = joint_index_vector_[i];
         jac_robot_.setColumn(idx, jac_.getColumn(i));

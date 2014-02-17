@@ -55,10 +55,11 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
             max_prio = config[i].priority;
     }
     sub_task_vector_.resize(max_prio + 1);
-    for(uint i = 0; i < config.size(); i++){
-
+    for(uint i = 0; i < config.size(); i++)
+    {
         TaskFrame* tf_root = 0, *tf_tip = 0;
-        if(config[i].type == task_type_cartesian){
+        if(config[i].type == task_type_cartesian)
+        {
             if(!addTaskFrame(config[i].root) ||
                !addTaskFrame((config[i].tip)))
                 return false;
@@ -78,7 +79,8 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
     }
 
     //Erase empty priorities
-    for(uint prio = 0; prio < sub_task_vector_.size(); prio++){
+    for(uint prio = 0; prio < sub_task_vector_.size(); prio++)
+    {
         if(sub_task_vector_[prio].empty()){
             sub_task_vector_.erase(sub_task_vector_.begin() + prio, sub_task_vector_.begin() + prio + 1);
             prio--;
@@ -88,10 +90,11 @@ bool WbcVelocity::configure(const KDL::Tree tree, const std::vector<SubTaskConfi
     //
     // Resize matrices and vectors
     //
-    for(uint prio = 0; prio < sub_task_vector_.size(); prio++){
+    for(uint prio = 0; prio < sub_task_vector_.size(); prio++)
+    {
         uint no_task_vars_prio = 0;
-        for(uint i = 0; i < sub_task_vector_[prio].size(); i++){
-
+        for(uint i = 0; i < sub_task_vector_[prio].size(); i++)
+        {
             SubTaskConfig conf = sub_task_vector_[prio][i]->config_;
             uint type = conf.type;
             if(type == task_type_cartesian)
@@ -165,12 +168,13 @@ bool WbcVelocity::addTaskFrame(const std::string &frame_id){
     return true;
 }
 
-SubTask* WbcVelocity::subTask(const std::string &name){
-
+SubTask* WbcVelocity::subTask(const std::string &name)
+{
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
 
-    if(sub_task_map_.count(name) == 0){
+    if(sub_task_map_.count(name) == 0)
+    {
         std::stringstream ss;
         ss<<"No such sub Task: "<<name<<endl;
         throw std::invalid_argument(ss.str());
@@ -178,13 +182,15 @@ SubTask* WbcVelocity::subTask(const std::string &name){
     return sub_task_map_[name];
 }
 
+
 void WbcVelocity::update(const base::samples::Joints &status){
 
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
 
     //if not done yet create joint index vector
-    if(joint_index_map_.empty()){
+    if(joint_index_map_.empty())
+    {
         for(uint i = 0; i < status.size(); i++)
             joint_index_map_[status.names[i]] = i;
 
@@ -198,13 +204,12 @@ void WbcVelocity::update(const base::samples::Joints &status){
          it->second->update(status);
 
     //Walk through all priorities and update equation system
-    for(uint prio = 0; prio < sub_task_vector_.size(); prio++){
-
-
+    for(uint prio = 0; prio < sub_task_vector_.size(); prio++)
+    {
         //Walk through all tasks of current priority
         uint row_index = 0;
-        for(uint i = 0; i < sub_task_vector_[prio].size(); i++){
-
+        for(uint i = 0; i < sub_task_vector_[prio].size(); i++)
+        {
             SubTask *sub_task = sub_task_vector_[prio][i];
             if(sub_task->config_.type == task_type_cartesian){
                 uint nc = 6; //Task is Cartesian: always 6 task variables
@@ -216,7 +221,8 @@ void WbcVelocity::update(const base::samples::Joints &status){
                 //Invert Task Jacobian
                 KDL::svd_eigen_HH(sub_task->task_jac_.data, sub_task->Uf_, sub_task->Sf_, sub_task->Vf_, temp_);
 
-                for (unsigned int j = 0; j < sub_task->Sf_.size(); j++){
+                for (unsigned int j = 0; j < sub_task->Sf_.size(); j++)
+                {
                     if (sub_task->Sf_(j) > 0)
                         sub_task->Uf_.col(j) *= 1 / sub_task->Sf_(j);
                     else
@@ -228,10 +234,13 @@ void WbcVelocity::update(const base::samples::Joints &status){
                 ///// A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root: Inverse Task Jacobian * Robot Jacobian of object frame one
                 sub_task->A_ = sub_task->H_.block(0, 0, nc, 6) * sub_task->tf_tip_->jac_robot_.data
                         -(sub_task->H_.block(0, 0, nc, 6) * sub_task->tf_root_->jac_robot_.data);
-
             }
             else if(sub_task->config_.type == task_type_joint){
                 for(uint i = 0; i < sub_task->config_.joints.size(); i++){
+
+                    //Joint space tasks: Task matrix has only ones and Zeros
+                    //IMPORTANT: The joint order in the tasks might be different than in wbc.
+                    //Thus, for joint space tasks, the joint indices have to be mapped correctly.
                     const std::string &joint_name = sub_task->config_.joints[i];
                     uint idx = joint_index_map_[joint_name];
                     sub_task->A_(i,idx) = 1.0;
@@ -241,9 +250,8 @@ void WbcVelocity::update(const base::samples::Joints &status){
 
             //insert task equation into equation system of current priority
             Wy_[prio].block(row_index, row_index, n_vars, n_vars) = sub_task->task_weights_;
-            y_ref_[prio].segment(row_index, n_vars) = sub_task->y_des_;
             A_[prio].block(row_index, 0, n_vars, no_robot_joints_) = sub_task->A_;
-
+            y_ref_[prio].segment(row_index, n_vars) = sub_task->y_des_;
             row_index += n_vars;
         }
     }

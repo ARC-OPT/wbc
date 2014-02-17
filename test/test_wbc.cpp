@@ -28,17 +28,10 @@ BOOST_AUTO_TEST_CASE(test_solver)
     Eigen::MatrixXd test;
     test.resize(NO_JOINTS,NO_JOINTS);
     test << 1,0,0,0,
-            0,1e10,0,0,
+            0,1,0,0,
             0,0,1,0,
             0,0,0,1;
     solver.setJointWeights(test);
-
-    //Set joint weights
-    Eigen::VectorXd joint_weights;
-    joint_weights.resize(NO_JOINTS);
-    joint_weights.setConstant(1);
-    joint_weights(1) = 0;
-    //solver.setJointWeights(joint_weights);
 
     //Set task weights
     Eigen::MatrixXd test_task;
@@ -191,31 +184,44 @@ BOOST_AUTO_TEST_CASE(test_wbc_joint)
     SubTaskConfig conf(task_type_joint, 0, "Joint", joints);
     config.push_back(conf);
 
-    BOOST_CHECK_EQUAL(wbc.configure(tree, config, "Rover_base"), true);
+    BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, "Rover_base"), true);
 
     SubTask* sub_task = wbc.subTask(conf.name);
-    sub_task->y_des_(0) = 0.1;
-    sub_task->y_des_(1) = 0.3;
+    sub_task->y_des_(0) = 0.2;
+    sub_task->y_des_(1) = -0.3;
+
+    sub_task->task_weights_(1,1) = 0.0;
+
 
     base::samples::Joints status;
-    status.resize(wbc.joint_index_map_.size());
-    for(JointIndexMap::iterator it = wbc.joint_index_map_.begin(); it != wbc.joint_index_map_.end(); it++)
-        status.names.push_back(it->first);
-
+    status.resize(right_hand_chain.getNrOfJoints());
     for(uint i = 0; i < status.size(); i++)
         status[i].position = 0.0;
+    status.names[0] = "J_Foot";
+    status.names[1] = "J_Knees";
+    status.names[2] = "J_Hip";
+    status.names[3] = "J_Waist";
+    status.names[4] = "J_Shoulder1_r";
+    status.names[5] = "J_Shoulder2_r";
+    status.names[6] = "J_UpperArm_r";
+    status.names[7] = "J_Elbow_r";
+    status.names[8] = "J_Forearm_r";
+    status.names[9] = "J_Wrist1_r";
+    status.names[10] = "J_Wrist2_r";
 
     wbc.update(status);
 
     HierarchicalWDLSSolver solver;
     BOOST_CHECK_EQUAL(solver.configure(wbc.no_task_vars_pp_, wbc.no_robot_joints_), true);
-    solver.setNormMax(20.0);
+    solver.setNormMax(10000.0);
 
     Eigen::VectorXd x(status.size());
     solver.solve(wbc.A_, wbc.y_ref_, x);
 
     Eigen::VectorXd y_act(2);
     y_act = sub_task->A_ * x;
+
+    cout<<sub_task->A_<<endl;
 
     for(uint i = 0; i < y_act.rows(); i++)
         BOOST_CHECK_EQUAL(fabs(y_act(i) - sub_task->y_des_(i)) < 1e-5, true);
