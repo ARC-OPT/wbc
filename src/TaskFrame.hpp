@@ -5,12 +5,13 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <base/samples/joints.h>
 #include <kdl/chainjnttojacsolver.hpp>
+#include <map>
 
 namespace wbc{
 
 class TaskFrame{
 public:
-    TaskFrame(const KDL::Chain& chain, const uint no_robot_joints);
+    TaskFrame(const KDL::Chain& chain, const uint no_robot_joints, std::map<std::string, int> joint_index_map);
     ~TaskFrame();
 
     void update(const base::samples::Joints &status);
@@ -27,6 +28,7 @@ public:
 
     std::vector<uint> joint_index_vector_;
     std::string tf_name_;
+    std::map<std::string, int> joint_index_map_;
 };
 }
 #endif

@@ -94,7 +94,6 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
     //////// Loop through all priorities
 
-    base::Time total = base::Time::now();
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
         priorities_[prio].y_comp_.setZero();
@@ -118,7 +117,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
         if(joint_weight_mat_is_diagonal_){
             for(uint i = 0; i < nx_; i++)
-                priorities_[prio].A_proj_w_.col(i) = joint_weight_mat_(i,i) * priorities_[prio].A_proj_.col(i);
+                priorities_[prio].A_proj_w_.col(i) = joint_weight_mat_(i,i) * priorities_[prio].A_proj_w_.col(i);
         }
         else
             priorities_[prio].A_proj_w_ = priorities_[prio].A_proj_w_ * joint_weight_mat_;
@@ -262,7 +261,6 @@ void HierarchicalWDLSSolver::setTaskWeights(const Eigen::MatrixXd& weights, cons
             priorities_[prio].task_weight_mat_(i,i) = sqrt(weights(i,i));
     }
     else{
-        cout<<"Computing Choleski"<<endl;
         // compute the Cholesky decomposition of weights
         Eigen::LLT<Eigen::MatrixXd> llt(weights);
         priorities_[prio].task_weight_mat_ = llt.matrixL().transpose();

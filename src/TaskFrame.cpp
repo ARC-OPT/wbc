@@ -7,7 +7,7 @@ using namespace std;
 
 namespace wbc{
 
-TaskFrame::TaskFrame(const KDL::Chain &chain, const uint no_robot_joints){
+TaskFrame::TaskFrame(const KDL::Chain& chain, const uint no_robot_joints, std::map<std::string, int> joint_index_map){
     chain_ = chain;
     pos_fk_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
     jac_solver_ = new KDL::ChainJntToJacSolver(chain_);
@@ -28,6 +28,7 @@ TaskFrame::TaskFrame(const KDL::Chain &chain, const uint no_robot_joints){
             joint_names_.push_back(joint.getName());
     }
 
+    joint_index_map_ = joint_index_map;
     tf_name_= chain_.segments[chain_.getNrOfSegments()-1].getName();
 }
 
@@ -38,22 +39,18 @@ TaskFrame::~TaskFrame(){
 
 void TaskFrame::update(const base::samples::Joints &status){
 
-    //if not done yet create joint index vector
-    if(joint_index_vector_.empty()){
-
-        //Create temporary joint index map
-        std::map<std::string, uint> joint_index_map;
-        for(uint i = 0; i < status.size(); i++)
-            joint_index_map[status.names[i]] = i;
-
-        for(uint i = 0; i < joint_names_.size(); i++){
-
+    //if not done yet create joint index vector: Faster than map
+    if(joint_index_vector_.empty())
+    {
+        for(uint i = 0; i < joint_names_.size(); i++)
+        {
             const std::string& joint_name = joint_names_[i];
-            if(joint_index_map.count(joint_name) == 0){
+            if(joint_index_map_.count(joint_name) == 0)
+            {
                 LOG_ERROR("No such joint in status vector: %s", joint_name.c_str());
                 throw std::invalid_argument("No such joint name");
             }
-            joint_index_vector_.push_back(joint_index_map[joint_name]);
+            joint_index_vector_.push_back(joint_index_map_[joint_name]);
         }
     }
 

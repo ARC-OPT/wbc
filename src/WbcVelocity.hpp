@@ -46,7 +46,9 @@ public:
      * @param config Sub task configuration vector.
      * @return True in case of success, false else
      */
-    bool configure(const KDL::Tree tree, const std::vector<SubTaskConfig> &config, const std::string &robot_root);
+    bool configure(const KDL::Tree tree,
+                   const std::vector<SubTaskConfig> &config,
+                   const std::vector<std::string> &joint_names);
 
     SubTask* subTask(const std::string &name);
 
