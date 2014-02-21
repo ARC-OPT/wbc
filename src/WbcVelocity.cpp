@@ -31,7 +31,6 @@ void WbcVelocity::clear(){
     sub_task_map_.clear();
     sub_task_vector_.clear();
     task_frame_map_.clear();
-
 }
 
 bool WbcVelocity::configure(const KDL::Tree tree,
@@ -44,8 +43,15 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     tree_ = tree;
     no_robot_joints_ = tree_.getNrOfJoints();
 
-    LOG_DEBUG("Started Configuration of WbcVelocity");
-    LOG_DEBUG("No of joints is %i\n", no_robot_joints_);
+    if(no_robot_joints_ == 0)
+    {
+        LOG_ERROR("KDL tree contains zero joints");
+        return false;
+    }
+
+    //
+    // Create joint index map
+    //
 
     // The joint name property can define the internal order of joints.
     // This order will be kept in all task matrices, weight matrices, status vectors, etc.
@@ -54,11 +60,12 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     if(joint_names.empty())
     {
         KDL::SegmentMap segments = tree_.getSegments();
+        uint idx = 0;
         for(KDL::SegmentMap::iterator it = segments.begin(); it != segments.end(); it++)
         {
             KDL::Segment seg = it->second.segment;
             if(seg.getJoint().getType() != KDL::Joint::None)
-                joint_index_map_[seg.getJoint().getName()] = joint_index_map_.size();
+                joint_index_map_[seg.getJoint().getName()] = idx++;
         }
     }
     else
@@ -86,9 +93,14 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     //
     // Create Subtasks and sort them by priority
     //
-    uint max_prio = 0;
+    int max_prio = 0;
     for(uint i = 0; i < config.size(); i++)
     {
+        if(config[i].priority < 0)
+        {
+            LOG_ERROR("Task Priorities must be >= 0. Task priority of task %s is %i", config[i].name.c_str(), config[i].priority);
+            return false;
+        }
         if(config[i].priority > max_prio)
             max_prio = config[i].priority;
     }
@@ -98,6 +110,11 @@ bool WbcVelocity::configure(const KDL::Tree tree,
         TaskFrame* tf_root = 0, *tf_tip = 0;
         if(config[i].type == task_type_cartesian)
         {
+            if(config[i].root.empty() || config[i].tip.empty())
+            {
+                LOG_ERROR("Task %s has empty root or tip frame name", config[i].name.c_str());
+                return false;
+            }
             if(!addTaskFrame(config[i].root) ||
                !addTaskFrame((config[i].tip)))
                 return false;
@@ -105,11 +122,20 @@ bool WbcVelocity::configure(const KDL::Tree tree,
             tf_root = task_frame_map_[config[i].root];
             tf_tip = task_frame_map_[config[i].tip];
         }
+        else
+        {
+            if(config[i].joint_names.size() == 0)
+            {
+                LOG_ERROR("Task %s is in joint space but joint_names vector is empty", config[i].name.c_str());
+                return false;
+            }
+        }
         SubTask* sub_task = new SubTask(config[i], no_robot_joints_, tf_root, tf_tip);
         sub_task_vector_[config[i].priority].push_back(sub_task);
 
         //Also put subtasks in a map that associates them with their names (for easier access)
-        if(sub_task_map_.count(config[i].name) != 0){
+        if(sub_task_map_.count(config[i].name) != 0)
+        {
             LOG_ERROR("Task with name %s already exists! Task names must be unique", config[i].name.c_str());
             return false;
         }
@@ -119,7 +145,8 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     //Erase empty priorities
     for(uint prio = 0; prio < sub_task_vector_.size(); prio++)
     {
-        if(sub_task_vector_[prio].empty()){
+        if(sub_task_vector_[prio].empty())
+        {
             sub_task_vector_.erase(sub_task_vector_.begin() + prio, sub_task_vector_.begin() + prio + 1);
             prio--;
         }
@@ -138,7 +165,7 @@ bool WbcVelocity::configure(const KDL::Tree tree,
             if(type == task_type_cartesian)
                 no_task_vars_prio += 6;
             else
-                no_task_vars_prio +=  conf.joints.size();
+                no_task_vars_prio +=  conf.joint_names.size();
         }
 
         Eigen::MatrixXd A(no_task_vars_prio, no_robot_joints_);
@@ -156,6 +183,8 @@ bool WbcVelocity::configure(const KDL::Tree tree,
 
     configured_ = true;
 
+    LOG_DEBUG("WBC Configuration:\n");
+    LOG_DEBUG("No of robot joints is %i", no_robot_joints_);
     LOG_DEBUG("Joint Index Map: ");
     for(JointIndexMap::iterator it = joint_index_map_.begin(); it != joint_index_map_.end(); it++)
         LOG_DEBUG("%s::%i", it->first.c_str(), it->second);
@@ -188,9 +217,12 @@ bool WbcVelocity::configure(const KDL::Tree tree,
 }
 
 bool WbcVelocity::addTaskFrame(const std::string &frame_id){
-    if(task_frame_map_.count(frame_id) == 0){
+
+    if(task_frame_map_.count(frame_id) == 0)
+    {
         KDL::Chain chain;
-        if(!tree_.getChain(robot_root_, frame_id, chain)){
+        if(!tree_.getChain(robot_root_, frame_id, chain))
+        {
             LOG_ERROR("Could not extract kinematic chain between %s and %s from robot tree", robot_root_.c_str(), frame_id.c_str());
             return false;
         }
@@ -266,12 +298,12 @@ void WbcVelocity::update(const base::samples::Joints &status){
                         -(sub_task->H_.block(0, 0, nc, 6) * sub_task->tf_root_->jac_robot_.data);
             }
             else if(sub_task->config_.type == task_type_joint){
-                for(uint i = 0; i < sub_task->config_.joints.size(); i++){
+                for(uint i = 0; i < sub_task->config_.joint_names.size(); i++){
 
                     //Joint space tasks: Task matrix has only ones and Zeros
                     //IMPORTANT: The joint order in the tasks might be different than in wbc.
                     //Thus, for joint space tasks, the joint indices have to be mapped correctly.
-                    const std::string &joint_name = sub_task->config_.joints[i];
+                    const std::string &joint_name = sub_task->config_.joint_names[i];
                     uint idx = joint_index_map_[joint_name];
                     sub_task->A_(i,idx) = 1.0;
                 }

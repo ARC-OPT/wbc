@@ -21,7 +21,7 @@ public:
         if(config.type == task_type_cartesian)
             no_task_vars_ = 6;
         else
-            no_task_vars_ = config.joints.size();
+            no_task_vars_ = config.joint_names.size();
 
         y_des_.resize(no_task_vars_);
         y_des_.setZero();

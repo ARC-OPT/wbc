@@ -26,7 +26,6 @@ protected:
     KDL::Tree tree_;
     std::string robot_root_;
 
-    std::map<std::string, SubTask*> sub_task_map_; /** Map associating names of subtasks to subtask pointers */
     Eigen::VectorXd solver_output_; /** Control solution. Size: No of joints in kdl tree. Order of joints will be same as in status vector given in solve() */
 
     //Helpers
@@ -60,6 +59,7 @@ public:
     uint no_robot_joints_;
     std::vector<uint> no_task_vars_pp_;
     JointIndexMap joint_index_map_;
+    std::map<std::string, SubTask*> sub_task_map_; /** Map associating names of subtasks to subtask pointers */
     std::vector< std::vector<SubTask*> > sub_task_vector_; /** Vector containing all sub tasks (ordered by priority, highest priority first) */
 
 };
