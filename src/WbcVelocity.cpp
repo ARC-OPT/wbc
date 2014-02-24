@@ -319,4 +319,11 @@ void WbcVelocity::update(const base::samples::Joints &status){
         }
     }
 }
+
+std::vector<std::string> WbcVelocity::jointNames(){
+    std::vector<std::string> joint_names;
+    for(JointIndexMap::iterator it = joint_index_map_.begin(); it != joint_index_map_.end(); it++)
+        joint_names.push_back(it->first);
+    return joint_names;
+}
 }

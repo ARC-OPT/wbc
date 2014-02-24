@@ -53,6 +53,8 @@ public:
 
     void update(const base::samples::Joints &status);
 
+    std::vector<std::string> jointNames();
+
     std::vector<Eigen::MatrixXd> A_; /** Vector of task matrices per priority. These define, together with y, for each priority the linear equation system that has to be solved */
     std::vector<Eigen::VectorXd> y_ref_; /** Vector of desired task variables per priority */
     std::vector<Eigen::MatrixXd> Wy_; /** Vector of task weights per priority */
