@@ -11,18 +11,20 @@ using namespace std;
 namespace wbc{
 
 HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
-    epsilon_(1e-9),
-    norm_max_(1),
+    nx_(0),
     damping_(0),
-    configured_(false){
+    configured_(false),
+    joint_weight_mat_is_diagonal_(true),
+    epsilon_(1e-9),
+    norm_max_(1){
 
-}
-
-HierarchicalWDLSSolver::~HierarchicalWDLSSolver(){
 }
 
 bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
                                        const unsigned int nx){
+
+    priorities_.clear();
+
     if(nx == 0){
         LOG_ERROR("No of joint variables must be > 0");
         return false;
@@ -43,27 +45,36 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     for(uint prio = 0; prio < ny_per_prio.size(); prio++)
         priorities_.push_back(Priority(ny_per_prio[prio], nx));
 
+
     nx_ = nx;
     proj_mat_.resize(nx_, nx_);
+    proj_mat_.setIdentity();
     S_.resize(nx_);
     S_.setZero();
+    V_.resize(nx_, nx_);
+    V_.setIdentity();
     S_inv_.resize( nx_, nx_);
     S_inv_.setZero();
     Damped_S_inv_.resize( nx_, nx_);
-    S_inv_.setZero();
-    V_.resize(nx_, nx_);
-    V_.setIdentity();
-    tmp_.resize(nx_);
-    tmp_.setZero();
+    Damped_S_inv_.setZero();
     joint_weight_mat_.resize(nx_, nx_);
     joint_weight_mat_.setIdentity();
     Wq_V_.resize(nx_, nx_);
+    Wq_V_.setZero();
     Wq_V_S_inv_.resize(nx_, nx_);
+    Wq_V_S_inv_.setZero();
     Wq_V_Damped_S_inv_.resize(nx_, nx_);
+    Wq_V_Damped_S_inv_.setZero();
     L_.resize(nx_, nx_);
-    joint_weight_mat_is_diagonal_ = true;
+    L_.setZero();
 
+    damping_ = 0;
+    joint_weight_mat_is_diagonal_ = true;
     configured_ = true;
+
+    tmp_.resize(nx_);
+    tmp_.setZero();
+
     return true;
 }
 

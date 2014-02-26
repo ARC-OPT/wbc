@@ -26,8 +26,6 @@ protected:
     KDL::Tree tree_;
     std::string robot_root_;
 
-    Eigen::VectorXd solver_output_; /** Control solution. Size: No of joints in kdl tree. Order of joints will be same as in status vector given in solve() */
-
     //Helpers
     Eigen::VectorXd temp_;
 

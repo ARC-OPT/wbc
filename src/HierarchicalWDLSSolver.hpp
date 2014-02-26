@@ -29,41 +29,41 @@ public:
             A_proj_.resize(ny, nx);
             A_proj_.setZero();
             A_proj_w_.resize(ny,nx);
+            U_.resize(ny, nx);
+            U_.setZero();
             A_proj_w_.setZero();
             A_proj_inv_wls_.resize(ny, nx);
             A_proj_inv_wls_.setZero();
             A_proj_inv_wdls_.resize(ny, nx);
             A_proj_inv_wdls_.setZero();
-            U_.resize(ny, nx);
-            U_.setZero();
-            A_proj_.setZero();
             y_comp_.resize(ny);
+            y_comp_.setZero();
             task_weight_mat_.resize(ny, ny);
             task_weight_mat_.setIdentity();
             u_t_task_weight_mat_.resize(nx, ny);
             u_t_task_weight_mat_.setZero();
-            svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
             task_weight_mat_is_diagonal_ = true;
+            svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
         }
-        Eigen::MatrixXd A_proj_; /** A Matrix projected on nullspace of the higher priority*/
-        Eigen::MatrixXd A_proj_w_; /** A Matrix projected on nullspace of the higher priority with weighting*/
-        Eigen::MatrixXd A_proj_inv_wls_; /** Least square inverse of A_proj_w_*/
-        Eigen::MatrixXd A_proj_inv_wdls_;  /** Damped Least square inverse of A_proj_w_*/
-        Eigen::VectorXd y_comp_; /** Task variables which are compensated for the part of solution already met in higher priorities */
-        Eigen::MatrixXd task_weight_mat_; /** Matrix containing information about the task weights*/
+        Eigen::MatrixXd A_proj_;                /** A Matrix projected on nullspace of the higher priority*/
+        Eigen::MatrixXd A_proj_w_;              /** A Matrix projected on nullspace of the higher priority with weighting*/
+        Eigen::MatrixXd U_;                     /** Matrix of left singular vector of A_proj_w_ */
+        Eigen::MatrixXd A_proj_inv_wls_;        /** Least square inverse of A_proj_w_*/
+        Eigen::MatrixXd A_proj_inv_wdls_;       /** Damped Least square inverse of A_proj_w_*/
+        Eigen::VectorXd y_comp_;                /** Task variables which are compensated for the part of solution already met in higher priorities */
+        Eigen::MatrixXd task_weight_mat_;       /** Task weight matrix. Has to be positive definite*/
+        Eigen::MatrixXd u_t_task_weight_mat_;   /** Matrix U_transposed * task_weight_mat_*/
 
 
-        unsigned int ny_; /** Number of task variables*/
-        bool task_weight_mat_is_diagonal_;
+        unsigned int ny_;                   /** Number of task variables*/
+        bool task_weight_mat_is_diagonal_;  /**  Is the task weight mat a diagonal matrix. This is important regarding the computation time*/
 
         //Helpers
-        Eigen::MatrixXd U_;
-        Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_;
-        Eigen::MatrixXd u_t_task_weight_mat_; /** Matrix U_transposed * task_weight_mat_s*/
+        Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_; /** For singular value decomposition used in matrix inversion*/
     };
 
     HierarchicalWDLSSolver();
-    ~HierarchicalWDLSSolver();
+    ~HierarchicalWDLSSolver(){}
 
     /**
      * @brief configure Resizes member variables
@@ -106,24 +106,29 @@ public:
     bool configured(){return configured_;}
 
 protected:
-    Eigen::MatrixXd proj_mat_; /** Projection Matrix */
-    Eigen::MatrixXd S_inv_; /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix*/
-    Eigen::MatrixXd Damped_S_inv_; /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix with damping*/
-    std::vector<Priority> priorities_; /** Priority vector */
-    unsigned int nx_;
-    double damping_;
-    Eigen::MatrixXd joint_weight_mat_; /** Matrix containing joint weight information. */
-    Eigen::MatrixXd Wq_V_, Wq_V_S_inv_, Wq_V_Damped_S_inv_;
-    bool configured_;
-    bool joint_weight_mat_is_diagonal_;
+    std::vector<Priority> priorities_;  /** Contains priority specific matrices etc. */
+    Eigen::MatrixXd proj_mat_;          /** Projection Matrix */
+    Eigen::VectorXd S_;                 /** Eigenvalue vector of the task matrices */
+    Eigen::MatrixXd V_;                 /** Matrix of right singular vectors*/
+    Eigen::MatrixXd S_inv_;             /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix*/
+    Eigen::MatrixXd Damped_S_inv_;      /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix with damping*/
+    Eigen::MatrixXd joint_weight_mat_;  /** Joint weight matrix. Has to be positive definite */
+    Eigen::MatrixXd Wq_V_;              /** Joint weight mat times Matrix of Vectors of right singular vectors*/
+    Eigen::MatrixXd Wq_V_S_inv_;        /** Wq_V_ times S_inv_ */
+    Eigen::MatrixXd Wq_V_Damped_S_inv_; /** Wq_V_ times Damped_S_inv_ */
+    Eigen::MatrixXd L_;                 /** Choleski Decomposition: If the joint weight matrix is not diagonal, it has to be decomposed into lower triangular matrix and its transpose using method of Cholesky*/
+
+    unsigned int nx_;                   /** No of robot joints */
+    double damping_;                    /** Current damping factor, computed autmatically */
+    bool configured_;                   /** Has configure been called yet?*/
+    bool joint_weight_mat_is_diagonal_; /** Is the joint weight mat a diagonal matrix. This is important regarding the computation time*/
 
     //Properties
-    double epsilon_; /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
-    double norm_max_; /** Maximum norm of (J#) * y */
+    double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
+    double norm_max_;   /** Maximum norm of (J#) * y */
 
     //Helpers
-    Eigen::VectorXd S_, tmp_;
-    Eigen::MatrixXd V_, L_;
+    Eigen::VectorXd tmp_;
 
 };
 }

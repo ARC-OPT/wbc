@@ -8,9 +8,10 @@ using namespace std;
 
 namespace wbc{
 
-WbcVelocity::WbcVelocity(){
-    configured_ = false;
-    temp_ = Eigen::VectorXd(6);
+WbcVelocity::WbcVelocity() :
+    configured_(false),
+    temp_(Eigen::VectorXd(6)),
+    no_robot_joints_(0){
 }
 
 WbcVelocity::~WbcVelocity(){
@@ -31,6 +32,12 @@ void WbcVelocity::clear(){
     sub_task_map_.clear();
     sub_task_vector_.clear();
     task_frame_map_.clear();
+    joint_index_map_.clear();
+    no_task_vars_pp_.clear();
+    A_.clear();
+    y_ref_.clear();
+    Wy_.clear();
+    no_robot_joints_ = 0;
 }
 
 bool WbcVelocity::configure(const KDL::Tree tree,
