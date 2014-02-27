@@ -227,7 +227,7 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::MatrixXd& weights){
             joint_weight_mat_.setZero();
             for(uint i = 0; i < nx_; i++){
                 if(weights(i,i) == 0)
-                    joint_weight_mat_(i,i) = 1e10;
+                    throw std::invalid_argument("Joint weights are not allowed to be zero! Note that a high joint weight will make a joint move less");
                 else
                     joint_weight_mat_(i,i) = sqrt(1/weights(i,i));
             }
