@@ -26,7 +26,6 @@ public:
     KDL::ChainFkSolverPos_recursive* pos_fk_solver_;
     KDL::ChainJntToJacSolver* jac_solver_;
 
-    std::vector<uint> joint_index_vector_;
     std::string tf_name_;
     std::map<std::string, int> joint_index_map_;
 };

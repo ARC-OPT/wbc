@@ -39,24 +39,16 @@ TaskFrame::~TaskFrame(){
 
 void TaskFrame::update(const base::samples::Joints &status){
 
-    //if not done yet create joint index vector: Faster than map
-    if(joint_index_vector_.empty())
-    {
-        for(uint i = 0; i < joint_names_.size(); i++)
-        {
-            const std::string& joint_name = joint_names_[i];
-            if(joint_index_map_.count(joint_name) == 0)
-            {
-                LOG_ERROR("No such joint in status vector: %s", joint_name.c_str());
-                throw std::invalid_argument("Invalid joint status input");
-            }
-            joint_index_vector_.push_back(joint_index_map_[joint_name]);
-        }
-    }
-
     //Update joint variables
     for(uint i = 0; i < joint_names_.size(); i++){
-        uint idx = joint_index_vector_[i];
+        size_t idx;
+        try{
+            idx = status.mapNameToIndex(joint_names_[i]);
+        }
+        catch(std::exception e){
+            LOG_ERROR("Kin. Chain of task frame %s has joint %s, but this joint is not in joint state vector", tf_name_.c_str(), joint_names_[i].c_str());
+            throw e;
+        }
         q_(i) = status[idx].position;
         q_dot_(i) = status[idx].speed;
         q_dot_dot_(i) = status[idx].effort;
@@ -72,9 +64,9 @@ void TaskFrame::update(const base::samples::Joints &status){
     // This changes the reference point to the root frame
     jac_.changeRefPoint(-pose_.p);
 
-    //IMPORTANT: Fill in columns of Jacobian into the correct place of the full robot Jacobian.
+    //IMPORTANT: Fill in columns of Jacobian into the correct place of the full robot Jacobian using the joint_index_map
     for(uint i = 0; i < joint_names_.size(); i++){
-        uint idx = joint_index_vector_[i];
+        uint idx = joint_index_map_[joint_names_[i]];
         jac_robot_.setColumn(idx, jac_.getColumn(i));
     }
 }
