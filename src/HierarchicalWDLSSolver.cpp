@@ -239,7 +239,7 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::MatrixXd& weights){
         }
     }
     else{
-        LOG_ERROR("Cannot set joint weights. Size of weight matrix is %i x %i but should be %i x %s", weights.rows(), weights.cols(), nx_, nx_);
+        LOG_ERROR("Cannot set joint weights. Size of weight matrix is %i x %i but should be %i x %i", weights.rows(), weights.cols(), nx_, nx_);
         throw std::invalid_argument("Invalid Joint weight vector size");
     }
 }
