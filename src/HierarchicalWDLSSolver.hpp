@@ -7,6 +7,8 @@
 
 namespace wbc{
 
+enum svd_method{svd_eigen, svd_kdl};
+
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver may cope with several hierarchially organized
  *        tasks, which will be solved using nullspace projections. That is, the task with the highest priority will be solved fully if m <= n
@@ -104,6 +106,8 @@ public:
     void setNormMax(double norm_max){norm_max_ = norm_max;}
     Eigen::MatrixXd getJointWeights(){return joint_weight_mat_;}
     bool configured(){return configured_;}
+    void setSVDMethod(svd_method method){svd_method_ = method;}
+    bool isMatDiagonal(const Eigen::MatrixXd& mat);
 
 protected:
     std::vector<Priority> priorities_;  /** Contains priority specific matrices etc. */
@@ -126,6 +130,7 @@ protected:
     //Properties
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
     double norm_max_;   /** Maximum norm of (J#) * y */
+    svd_method svd_method_;
 
     //Helpers
     Eigen::VectorXd tmp_;

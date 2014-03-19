@@ -5,6 +5,7 @@
 #include <base/time.h>
 #include <Eigen/Cholesky>
 #include <Eigen/LU>
+#include <kdl/utilities/svd_eigen_HH.hpp>
 
 using namespace std;
 
@@ -107,6 +108,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
+        base::Time start = base::Time::now();
         priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
@@ -115,6 +117,9 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         //projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         //For the first priority P == Identity
         priorities_[prio].A_proj_ = A[prio] * proj_mat_;
+
+        LOG_DEBUG("Projection prio %i: %f", prio, (base::Time::now() - start).toSeconds());
+        start = base::Time::now();
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         // If the weight matrices are diagonal, there is no need for full matrix multiplication
@@ -133,19 +138,37 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         else
             priorities_[prio].A_proj_w_ = priorities_[prio].A_proj_w_ * joint_weight_mat_;
 
-        //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
-        priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
 
-        V_ = priorities_[prio].svd_.matrixV();
-        uint ns = priorities_[prio].svd_.singularValues().size(); //No of singular values
+        LOG_DEBUG("Weighting prio %i: %f", prio, (base::Time::now() - start).toSeconds());
+        start = base::Time::now();
 
-        //Entries of S that are not singular values will be zero
-        S_.setZero();
-        S_.block(0,0,ns,1) = priorities_[prio].svd_.singularValues();
+        if(svd_method_ == svd_eigen)
+        {
+            //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
+            priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
 
-        //U output of svd will have different size than required, copy only the first ns columns. They contain the relevant Eigenvectors
-        priorities_[prio].U_.block(0,0, priorities_[prio].ny_, ns) =
-                priorities_[prio].svd_.matrixU().block(0,0,priorities_[prio].ny_, ns);
+
+            LOG_DEBUG("SVD prio %i: %f", prio, (base::Time::now() - start).toSeconds());
+            start = base::Time::now();
+
+            V_ = priorities_[prio].svd_.matrixV();
+            uint ns = priorities_[prio].svd_.singularValues().size(); //No of singular values
+
+            //Entries of S that are not singular values will be zero
+            S_.setZero();
+            S_.block(0,0,ns,1) = priorities_[prio].svd_.singularValues();
+
+            //U output of svd will have different size than required, copy only the first ns columns. They contain the relevant Eigenvectors
+            priorities_[prio].U_.block(0,0, priorities_[prio].ny_, ns) =
+                    priorities_[prio].svd_.matrixU().block(0,0,priorities_[prio].ny_, ns);
+        }
+        else
+        {
+            KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
+
+            LOG_DEBUG("SVD prio %i: %f", prio, (base::Time::now() - start).toSeconds());
+            start = base::Time::now();
+        }
 
         //Compute damping factor based on
         //A.A. Maciejewski, C.A. Klein, “Numerical Filtering for the Operation of
@@ -204,9 +227,26 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         // Compute projection matrix for the next priority. Use here the undamped inverse to have a correct solution
         proj_mat_ -= priorities_[prio].A_proj_inv_wls_ * priorities_[prio].A_proj_;
 
+        LOG_DEBUG("Inversion prio %i: %f", prio, (base::Time::now() - start).toSeconds());
+
     } //priority loop
 
     ///////////////
+}
+
+bool HierarchicalWDLSSolver::isMatDiagonal(const Eigen::MatrixXd& mat)
+{
+    //Check if new matrix is diagonal
+    bool is_diagonal = true;
+    for(uint i = 0; i < mat.rows(); i++){
+        for(uint j = 0; j < mat.cols(); j++){
+            if(i != j){
+                if(mat(i,j) != 0)
+                    is_diagonal = false;
+            }
+        }
+    }
+    return is_diagonal;
 }
 
 void HierarchicalWDLSSolver::setJointWeights(const Eigen::MatrixXd& weights){
@@ -214,15 +254,7 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::MatrixXd& weights){
        weights.cols() == nx_){
 
         //Check if new matrix is diagonal
-        joint_weight_mat_is_diagonal_ = true;
-        for(uint i = 0; i < weights.rows(); i++){
-            for(uint j = 0; j < weights.cols(); j++){
-                if(i != j){
-                    if(weights(i,j) != 0)
-                        joint_weight_mat_is_diagonal_ = false;
-                }
-            }
-        }
+        joint_weight_mat_is_diagonal_ = isMatDiagonal(weights);
         if(joint_weight_mat_is_diagonal_){
             joint_weight_mat_.setZero();
             for(uint i = 0; i < nx_; i++){
@@ -256,15 +288,7 @@ void HierarchicalWDLSSolver::setTaskWeights(const Eigen::MatrixXd& weights, cons
     }
 
     //Check if new matrix is diagonal
-    priorities_[prio].task_weight_mat_is_diagonal_ = true;
-    for(uint i = 0; i < weights.rows(); i++){
-        for(uint j = 0; j < weights.cols(); j++){
-            if(i != j){
-                if(weights(i,j) != 0)
-                    priorities_[prio].task_weight_mat_is_diagonal_ = false;
-            }
-        }
-    }
+    priorities_[prio].task_weight_mat_is_diagonal_ = isMatDiagonal(weights);
 
     if(priorities_[prio].task_weight_mat_is_diagonal_){
         priorities_[prio].task_weight_mat_.setZero();
