@@ -2,7 +2,6 @@
 #include <base/logging.h>
 #include <stdexcept>
 #include <iostream>
-#include <base/time.h>
 #include <Eigen/Cholesky>
 #include <Eigen/LU>
 #include <kdl/utilities/svd_eigen_HH.hpp>
@@ -108,7 +107,8 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
-        base::Time start = base::Time::now();
+        priorities_[prio].comp_times_.init();
+
         priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
@@ -118,8 +118,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         //For the first priority P == Identity
         priorities_[prio].A_proj_ = A[prio] * proj_mat_;
 
-        LOG_DEBUG("Projection prio %i: %f", prio, (base::Time::now() - start).toSeconds());
-        start = base::Time::now();
+        priorities_[prio].comp_times_.set_proj_time(base::Time::now());
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         // If the weight matrices are diagonal, there is no need for full matrix multiplication
@@ -138,18 +137,14 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         else
             priorities_[prio].A_proj_w_ = priorities_[prio].A_proj_w_ * joint_weight_mat_;
 
-
-        LOG_DEBUG("Weighting prio %i: %f", prio, (base::Time::now() - start).toSeconds());
-        start = base::Time::now();
+        priorities_[prio].comp_times_.set_weighting_time(base::Time::now());
 
         if(svd_method_ == svd_eigen)
         {
             //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
             priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
 
-
-            LOG_DEBUG("SVD prio %i: %f", prio, (base::Time::now() - start).toSeconds());
-            start = base::Time::now();
+            priorities_[prio].comp_times_.set_svd_time(base::Time::now());
 
             V_ = priorities_[prio].svd_.matrixV();
             uint ns = priorities_[prio].svd_.singularValues().size(); //No of singular values
@@ -165,9 +160,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         else
         {
             KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
-
-            LOG_DEBUG("SVD prio %i: %f", prio, (base::Time::now() - start).toSeconds());
-            start = base::Time::now();
+            priorities_[prio].comp_times_.set_svd_time(base::Time::now());
         }
 
         //Compute damping factor based on
@@ -227,7 +220,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         // Compute projection matrix for the next priority. Use here the undamped inverse to have a correct solution
         proj_mat_ -= priorities_[prio].A_proj_inv_wls_ * priorities_[prio].A_proj_;
 
-        LOG_DEBUG("Inversion prio %i: %f", prio, (base::Time::now() - start).toSeconds());
+        priorities_[prio].comp_times_.set_compute_inverse_time(base::Time::now());
 
     } //priority loop
 
@@ -251,7 +244,7 @@ bool HierarchicalWDLSSolver::isMatDiagonal(const Eigen::MatrixXd& mat)
 
 void HierarchicalWDLSSolver::setJointWeights(const Eigen::MatrixXd& weights){
     if(weights.rows() == nx_ &&
-       weights.cols() == nx_){
+            weights.cols() == nx_){
 
         //Check if new matrix is diagonal
         joint_weight_mat_is_diagonal_ = isMatDiagonal(weights);
@@ -282,7 +275,7 @@ void HierarchicalWDLSSolver::setTaskWeights(const Eigen::MatrixXd& weights, cons
         throw std::invalid_argument("Invalid Priority");
     }
     if(priorities_[prio].ny_ != weights.rows() ||
-       priorities_[prio].ny_ != weights.cols()){
+            priorities_[prio].ny_ != weights.cols()){
         LOG_ERROR("Cannot set task weights. Size of weight mat is %i x %i but should be %i x %i", weights.rows(), weights.cols(), priorities_[prio].ny_, priorities_[prio].ny_);
         throw std::invalid_argument("Invalid Weight vector size");
     }

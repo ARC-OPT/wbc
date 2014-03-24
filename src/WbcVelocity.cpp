@@ -1,8 +1,10 @@
 #include "WbcVelocity.hpp"
-#include "SubTask.hpp"
+#include "ExtendedSubTask.hpp"
 #include "TaskFrame.hpp"
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <base/logging.h>
+#include <wbc/ExtendedSubTask.hpp>
+#include "HierarchicalWDLSSolver.hpp"
 
 using namespace std;
 
@@ -12,10 +14,12 @@ WbcVelocity::WbcVelocity() :
     configured_(false),
     temp_(Eigen::VectorXd(6)),
     no_robot_joints_(0){
+    solver_ = new HierarchicalWDLSSolver();
 }
 
 WbcVelocity::~WbcVelocity(){
     clear();
+    delete solver_;
 }
 
 void WbcVelocity::clear(){
@@ -33,7 +37,6 @@ void WbcVelocity::clear(){
     sub_task_vector_.clear();
     task_frame_map_.clear();
     joint_index_map_.clear();
-    no_task_vars_pp_.clear();
     A_.clear();
     y_ref_.clear();
     Wy_.clear();
@@ -42,9 +45,16 @@ void WbcVelocity::clear(){
 
 bool WbcVelocity::configure(const KDL::Tree tree,
                             const std::vector<SubTaskConfig> &config,
-                            const std::vector<std::string> &joint_names){
+                            const std::vector<std::string> &joint_names,
+                            bool tasks_active,
+                            double task_timeout){
 
     clear();
+
+    task_timeout_ = task_timeout;
+    has_timeout_ = true;
+    if(base::isUnset(task_timeout))
+        has_timeout_ = false;
 
     robot_root_ = tree.getRootSegment()->first;
     tree_ = tree;
@@ -114,7 +124,6 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     sub_task_vector_.resize(max_prio + 1);
     for(uint i = 0; i < config.size(); i++)
     {
-        TaskFrame* tf_root = 0, *tf_tip = 0;
         if(config[i].type == task_type_cartesian)
         {
             if(config[i].root.empty() || config[i].tip.empty())
@@ -125,9 +134,6 @@ bool WbcVelocity::configure(const KDL::Tree tree,
             if(!addTaskFrame(config[i].root) ||
                !addTaskFrame((config[i].tip)))
                 return false;
-
-            tf_root = task_frame_map_[config[i].root];
-            tf_tip = task_frame_map_[config[i].tip];
         }
         else
         {
@@ -137,7 +143,7 @@ bool WbcVelocity::configure(const KDL::Tree tree,
                 return false;
             }
         }
-        SubTask* sub_task = new SubTask(config[i], no_robot_joints_, tf_root, tf_tip);
+        ExtendedSubTask* sub_task = new ExtendedSubTask(config[i], no_robot_joints_, tasks_active);
         sub_task_vector_[config[i].priority].push_back(sub_task);
 
         //Also put subtasks in a map that associates them with their names (for easier access)
@@ -162,12 +168,14 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     //
     // Resize matrices and vectors
     //
+
+    std::vector<uint> no_task_vars_pp;
     for(uint prio = 0; prio < sub_task_vector_.size(); prio++)
     {
         uint no_task_vars_prio = 0;
         for(uint i = 0; i < sub_task_vector_[prio].size(); i++)
         {
-            SubTaskConfig conf = sub_task_vector_[prio][i]->config_;
+            SubTaskConfig conf = sub_task_vector_[prio][i]->config;
             uint type = conf.type;
             if(type == task_type_cartesian)
                 no_task_vars_prio += 6;
@@ -185,10 +193,13 @@ bool WbcVelocity::configure(const KDL::Tree tree,
         A_.push_back(A);
         y_ref_.push_back(y_ref);
         Wy_.push_back(Wy);
-        no_task_vars_pp_.push_back(y_ref.size());
+        no_task_vars_pp.push_back(y_ref.size());
     }
 
     configured_ = true;
+
+    if(!solver_->configure(no_task_vars_pp, no_robot_joints_))
+        return false;
 
     LOG_DEBUG("WBC Configuration:\n");
     LOG_DEBUG("No of robot joints is %i", no_robot_joints_);
@@ -208,8 +219,8 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     for(uint i = 0; i < sub_task_vector_.size(); i++){
         LOG_DEBUG("Prio: %i", i);
         for(uint j = 0; j < sub_task_vector_[i].size(); j++){
-            LOG_DEBUG("Task name: %s", sub_task_vector_[i][j]->config_.name.c_str());
-            LOG_DEBUG("No task vars: %i", sub_task_vector_[i][j]->y_des_.size());
+            LOG_DEBUG("Task name: %s", sub_task_vector_[i][j]->config.name.c_str());
+            LOG_DEBUG("No task vars: %i", sub_task_vector_[i][j]->y_des.size());
         }
     }
     LOG_DEBUG("");
@@ -255,15 +266,14 @@ SubTask* WbcVelocity::subTask(const std::string &name)
 
     if(sub_task_map_.count(name) == 0)
     {
-        std::stringstream ss;
-        ss<<"No such sub Task: "<<name<<endl;
-        throw std::invalid_argument(ss.str());
+        LOG_ERROR("No such sub task: %s", name.c_str());
+        throw std::invalid_argument("Invalid task name");
     }
     return sub_task_map_[name];
 }
 
 
-void WbcVelocity::update(const base::samples::Joints &status){
+void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ctrl_out){
 
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
@@ -279,52 +289,73 @@ void WbcVelocity::update(const base::samples::Joints &status){
         uint row_index = 0;
         for(uint i = 0; i < sub_task_vector_[prio].size(); i++)
         {
-            SubTask *sub_task = sub_task_vector_[prio][i];
-            if(sub_task->config_.type == task_type_cartesian){
+            ExtendedSubTask *sub_task = sub_task_vector_[prio][i];
+
+            if(has_timeout_)
+            {
+                double diff = (base::Time::now() - sub_task->last_task_input).toSeconds();
+
+                if( (diff > task_timeout_) &&
+                   !(sub_task->task_timed_out))
+                    LOG_DEBUG("Task %s has timed out! No new reference has been received for %f seconds. Timeout is %f seconds", sub_task->config.name.c_str(), diff, task_timeout_);
+
+                if(diff > task_timeout_)
+                   sub_task->task_timed_out = 1;
+                else
+                   sub_task->task_timed_out = 0;
+            }
+
+            if(sub_task->config.type == task_type_cartesian){
                 uint nc = 6; //Task is Cartesian: always 6 task variables
-                sub_task->pose_ = sub_task->tf_root_->pose_.Inverse() * sub_task->tf_tip_->pose_;
-                sub_task->task_jac_.data.setIdentity();
-                sub_task->task_jac_.changeRefPoint(-sub_task->pose_.p);
-                sub_task->task_jac_.changeRefFrame(sub_task->tf_root_->pose_);
+                TaskFrame* tf_root = task_frame_map_[sub_task->config.root];
+                TaskFrame* tf_tip = task_frame_map_[sub_task->config.tip];
+                sub_task->pose = tf_root->pose_.Inverse() * tf_tip->pose_;
+                sub_task->task_jac.data.setIdentity();
+                sub_task->task_jac.changeRefPoint(-sub_task->pose.p);
+                sub_task->task_jac.changeRefFrame(tf_root->pose_);
 
                 //Invert Task Jacobian
-                KDL::svd_eigen_HH(sub_task->task_jac_.data, sub_task->Uf_, sub_task->Sf_, sub_task->Vf_, temp_);
+                KDL::svd_eigen_HH(sub_task->task_jac.data, sub_task->Uf, sub_task->Sf, sub_task->Vf, temp_);
 
-                for (unsigned int j = 0; j < sub_task->Sf_.size(); j++)
+                for (unsigned int j = 0; j < sub_task->Sf.size(); j++)
                 {
-                    if (sub_task->Sf_(j) > 0)
-                        sub_task->Uf_.col(j) *= 1 / sub_task->Sf_(j);
+                    if (sub_task->Sf(j) > 0)
+                        sub_task->Uf.col(j) *= 1 / sub_task->Sf(j);
                     else
-                        sub_task->Uf_.col(j).setZero();
+                        sub_task->Uf.col(j).setZero();
                 }
-                sub_task->H_ = (sub_task->Vf_ * sub_task->Uf_.transpose());
+                sub_task->H = (sub_task->Vf * sub_task->Uf.transpose());
 
 
                 ///// A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root: Inverse Task Jacobian * Robot Jacobian of object frame one
-                sub_task->A_ = sub_task->H_.block(0, 0, nc, 6) * sub_task->tf_tip_->jac_robot_.data
-                        -(sub_task->H_.block(0, 0, nc, 6) * sub_task->tf_root_->jac_robot_.data);
+                sub_task->A = sub_task->H.block(0, 0, nc, 6) * tf_tip->jac_robot_.data
+                        -(sub_task->H.block(0, 0, nc, 6) * tf_root->jac_robot_.data);
             }
-            else if(sub_task->config_.type == task_type_joint){
-                for(uint i = 0; i < sub_task->config_.joint_names.size(); i++){
+            else if(sub_task->config.type == task_type_joint){
+                for(uint i = 0; i < sub_task->config.joint_names.size(); i++){
 
                     //Joint space tasks: Task matrix has only ones and Zeros
                     //IMPORTANT: The joint order in the tasks might be different than in wbc.
                     //Thus, for joint space tasks, the joint indices have to be mapped correctly.
-                    const std::string &joint_name = sub_task->config_.joint_names[i];
+                    const std::string &joint_name = sub_task->config.joint_names[i];
                     uint idx = joint_index_map_[joint_name];
-                    sub_task->A_(i,idx) = 1.0;
+                    sub_task->A(i,idx) = 1.0;
                 }
             }
-            uint n_vars = sub_task->no_task_vars_;
+            uint n_vars = sub_task->no_task_vars;
 
             //insert task equation into equation system of current priority
-            Wy_[prio].block(row_index, row_index, n_vars, n_vars) = sub_task->task_weights_;
-            A_[prio].block(row_index, 0, n_vars, no_robot_joints_) = sub_task->A_;
-            y_ref_[prio].segment(row_index, n_vars) = sub_task->y_des_;
+            Wy_[prio].block(row_index, row_index, n_vars, n_vars).diagonal() = sub_task->weights * sub_task->activation * (!sub_task->task_timed_out);
+            A_[prio].block(row_index, 0, n_vars, no_robot_joints_) = sub_task->A;
+            y_ref_[prio].segment(row_index, n_vars) = sub_task->y_des;
 
             row_index += n_vars;
         }
+
+        solver_->setTaskWeights(Wy_[prio], prio);
     }
+
+    solver_->solve(A_, y_ref_, ctrl_out);
 }
 
 std::vector<std::string> WbcVelocity::jointNames(){

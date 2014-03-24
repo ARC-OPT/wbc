@@ -1,72 +1,63 @@
-#include <Eigen/Core>
-#include <kdl/jacobian.hpp>
+#ifndef SUB_TASK_HPP
+#define SUB_TASK_HPP
+
+#include <base/Eigen.hpp>
 #include "SubTaskConfig.hpp"
+#include <base/time.h>
 
 namespace wbc{
-
-class TaskFrame;
 
 /**
  * @brief helper class to carry sub task specific information
  */
 class SubTask{
 public:
-    SubTask(const SubTaskConfig& config, const uint no_robot_joints,
-            TaskFrame* tf_root = 0, TaskFrame* tf_tip = 0){
+    SubTask(){}
+    SubTask(const SubTaskConfig& _config,
+            const uint _no_robot_joints,
+            bool _tasks_active  = true){
 
-        config_ = config;
-        tf_root_ = tf_root;
-        tf_tip_ = tf_tip;
+        config = _config;
 
         if(config.type == task_type_cartesian)
-            no_task_vars_ = 6;
+            no_task_vars = 6;
         else
-            no_task_vars_ = config.joint_names.size();
+            no_task_vars = config.joint_names.size();
 
-        y_des_.resize(no_task_vars_);
-        y_des_.setZero();
+        y_des.resize(no_task_vars);
+        y_des.setZero();
 
-        task_weights_.resize(no_task_vars_, no_task_vars_);
-        task_weights_.setIdentity();
+        y_solution.resize(no_task_vars);
+        y_solution.setZero();
 
-        task_jac_ = KDL::Jacobian(no_task_vars_);
-        task_jac_.data.setZero();
+        y.resize(no_task_vars);
+        y.setZero();
 
-        H_.resize(no_task_vars_,6);
-        H_.setZero();
+        weights = base::VectorXd::Ones(no_task_vars);
 
-        Uf_.resize(6, no_task_vars_);
-        Uf_.setIdentity();
+        A.resize(no_task_vars, _no_robot_joints);
+        A.setZero();
 
-        Vf_.resize(no_task_vars_, no_task_vars_);
-        Vf_.setIdentity();
-
-        Sf_.resize(no_task_vars_);
-        Sf_.setZero();
-
-        A_.resize(no_task_vars_, no_robot_joints);
-        A_.setZero();
+        task_timed_out = 0;
+        if(_tasks_active)
+            activation = 1;
+        else
+            activation = 0;
     }
 
-    ~SubTask(){}
+    SubTaskConfig config;
 
-    SubTaskConfig config_;
+    base::VectorXd y_des;
+    base::VectorXd y_solution;
+    base::VectorXd y;
+    base::VectorXd weights;
+    double activation;
+    int task_timed_out;
 
-    TaskFrame* tf_root_;
-    TaskFrame* tf_tip_;
-
-    Eigen::VectorXd y_des_;
-    Eigen::MatrixXd task_weights_;
-
-    KDL::Jacobian task_jac_;
-    KDL::Frame pose_;
-    Eigen::MatrixXd A_;
-    uint no_task_vars_;
-
-    //Helpers for inversion of the task Jacobian
-    Eigen::MatrixXd Uf_, Vf_;
-    Eigen::VectorXd Sf_;
-    Eigen::MatrixXd H_;
+    base::MatrixXd A;
+    uint no_task_vars;
+    base::Time last_task_input;
 };
 
 }
+#endif

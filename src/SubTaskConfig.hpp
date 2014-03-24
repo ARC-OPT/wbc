@@ -66,5 +66,6 @@ public:
      */
     std::string tip;
 };
+
 }
 #endif

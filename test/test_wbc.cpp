@@ -109,12 +109,12 @@ BOOST_AUTO_TEST_CASE(wbc_cart_aila)
             joint_names.push_back(seg.getJoint().getName());
     }
 
-    BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joint_names), true);
+    BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joint_names, true, 3), true);
 
     SubTask* sub_task = wbc.subTask(conf.name);
-    sub_task->y_des_ = Eigen::VectorXd(6);
+    sub_task->y_des = Eigen::VectorXd(6);
     for(uint i = 0; i < 6; i++)
-        sub_task->y_des_(i) = (rand()%1000)/1000.0;;
+        sub_task->y_des(i) = (rand()%1000)/1000.0;;
 
     base::samples::Joints status;
     status.resize(right_hand_chain.getNrOfJoints());
@@ -123,31 +123,26 @@ BOOST_AUTO_TEST_CASE(wbc_cart_aila)
     for(uint i = 0; i < status.size(); i++)
         status[i].position = 1.;
 
-    wbc.update(status);
-
-    HierarchicalWDLSSolver solver;
-    BOOST_CHECK_EQUAL(solver.configure(wbc.no_task_vars_pp_, wbc.no_robot_joints_), true);
-    solver.setNormMax(20.0);
-
     Eigen::VectorXd x(status.size());
-    solver.solve(wbc.A_, wbc.y_ref_, x);
+    wbc.solver()->setNormMax(20.0);
+    wbc.solve(status, x);
 
     Eigen::VectorXd y_act(6);
-    y_act = sub_task->A_ * x;
+    y_act = sub_task->A * x;
 
     for(uint i = 0; i < y_act.rows(); i++)
-        BOOST_CHECK_EQUAL(fabs(y_act(i) - sub_task->y_des_(i)) < 1e-5, true);
+        BOOST_CHECK_EQUAL(fabs(y_act(i) - sub_task->y_des(i)) < 1e-5, true);
 
     cout<<"..........................................................."<<endl;
     cout<<"Desired y: "<<endl;
-    cout<<sub_task->y_des_.transpose()<<endl<<endl;
+    cout<<sub_task->y_des.transpose()<<endl<<endl;
     cout<<"Joint names: "<<endl;
     for(uint i = 0; i <status.names.size(); i++) cout<<status.names[i]<<" "; cout<<endl<<endl;
     cout<<"Ctrl solution: "<<endl;
     cout<<x.transpose()<<endl<<endl;
     cout<<"Actual y: "<<endl;
     cout<<y_act.transpose()<<endl<<endl;
-    cout<<"Current damping: "<<solver.getCurDamping()<<endl<<endl;
+    cout<<"Current damping: "<<wbc.solver()->getCurDamping()<<endl<<endl;
     cout<<"..........................................................."<<endl;
 
 }
@@ -188,16 +183,16 @@ BOOST_AUTO_TEST_CASE(wbc_joint)
     conf.name = "Lower_limits";
     config.push_back(conf);
 
-    BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joints), true);
+    BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joints, true, 3), true);
 
     SubTask* sub_task = wbc.subTask("Upper_limits");
-    sub_task->y_des_(0) = 0.2;
-    sub_task->y_des_(1) = -0.3;
+    sub_task->y_des(0) = 0.2;
+    sub_task->y_des(1) = -0.3;
 
     sub_task = wbc.subTask("Lower_limits");
 
-    for(uint i = 0; i < sub_task->no_task_vars_; i++)
-        sub_task->task_weights_(i,i) = 0;
+    for(uint i = 0; i < sub_task->no_task_vars; i++)
+        sub_task->weights(i,i) = 0;
 
 
     base::samples::Joints status;
@@ -206,36 +201,30 @@ BOOST_AUTO_TEST_CASE(wbc_joint)
         status[i].position = 0.0;
     status.names = joints;
 
-    wbc.update(status);
-
-    HierarchicalWDLSSolver solver;
-    BOOST_CHECK_EQUAL(solver.configure(wbc.no_task_vars_pp_, wbc.no_robot_joints_), true);
-    solver.setNormMax(10000.0);
-
     Eigen::VectorXd x(status.size());
-    solver.setTaskWeights(wbc.Wy_[0], 0);
-    solver.solve(wbc.A_, wbc.y_ref_, x);
+    wbc.solver()->setNormMax(10000.0);
+    wbc.solve(status, x);
 
     for(uint task_no = 0; task_no < config.size(); task_no++){
 
         sub_task = wbc.subTask(config[task_no].name);
         Eigen::VectorXd y_act(11);
-        y_act = sub_task->A_ * x;
+        y_act = sub_task->A * x;
 
         for(uint i = 0; i < y_act.rows(); i++)
-            BOOST_CHECK_EQUAL(fabs(y_act(i) - sub_task->y_des_(i)) < 1e-5, true);
+            BOOST_CHECK_EQUAL(fabs(y_act(i) - sub_task->y_des(i)) < 1e-5, true);
 
         cout<<"..........................................................."<<endl;
         cout<<"Task: "<<config[task_no].name<<endl;
         cout<<"Desired y: "<<endl;
-        cout<<sub_task->y_des_.transpose()<<endl<<endl;
+        cout<<sub_task->y_des.transpose()<<endl<<endl;
         cout<<"Joint names: "<<endl;
         for(uint i = 0; i < status.names.size(); i++) cout<<status.names[i]<<" "; cout<<endl<<endl;
         cout<<"Ctrl solution: "<<endl;
         cout<<x.transpose()<<endl<<endl;
         cout<<"Actual y: "<<endl;
         cout<<y_act.transpose()<<endl<<endl;
-        cout<<"Current damping: "<<solver.getCurDamping()<<endl<<endl;
+        cout<<"Current damping: "<<wbc.solver()->getCurDamping()<<endl<<endl;
         cout<<"..........................................................."<<endl;
     }
 

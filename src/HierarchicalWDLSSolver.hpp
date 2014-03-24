@@ -3,9 +3,34 @@
 
 #include <vector>
 #include <Eigen/SVD>
-
+#include <base/time.h>
 
 namespace wbc{
+
+struct SolverCompTimes{
+    double proj_time;
+    double weighting_time;
+    double svd_time;
+    double compute_inverse_time;
+    base::Time stamp;
+    void init(){stamp = base::Time::now();}
+    void set_proj_time(const base::Time &now){
+        proj_time = (stamp - base::Time::now()).toMilliseconds();
+        stamp = base::Time::now();
+    }
+    void set_weighting_time(const base::Time &now){
+        weighting_time = (stamp - base::Time::now()).toMilliseconds();
+        stamp = base::Time::now();
+    }
+    void set_svd_time(const base::Time &now){
+        svd_time = (stamp - base::Time::now()).toMilliseconds();
+        stamp = base::Time::now();
+    }
+    void set_compute_inverse_time(const base::Time &now){
+        compute_inverse_time = (stamp - base::Time::now()).toMilliseconds();
+        stamp = base::Time::now();
+    }
+};
 
 enum svd_method{svd_eigen, svd_kdl};
 
@@ -56,12 +81,14 @@ public:
         Eigen::MatrixXd task_weight_mat_;       /** Task weight matrix. Has to be positive definite*/
         Eigen::MatrixXd u_t_task_weight_mat_;   /** Matrix U_transposed * task_weight_mat_*/
 
-
         unsigned int ny_;                   /** Number of task variables*/
         bool task_weight_mat_is_diagonal_;  /**  Is the task weight mat a diagonal matrix. This is important regarding the computation time*/
 
         //Helpers
         Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_; /** For singular value decomposition used in matrix inversion*/
+
+        //Debug
+        SolverCompTimes comp_times_;
     };
 
     HierarchicalWDLSSolver();
@@ -108,6 +135,7 @@ public:
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
     bool isMatDiagonal(const Eigen::MatrixXd& mat);
+    void getSolverCompTimes(const uint prio, SolverCompTimes& times){times = priorities_[prio].comp_times_;}
 
 protected:
     std::vector<Priority> priorities_;  /** Contains priority specific matrices etc. */
