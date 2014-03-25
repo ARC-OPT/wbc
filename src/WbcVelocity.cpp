@@ -344,10 +344,23 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
             }
             uint n_vars = sub_task->no_task_vars;
 
+            //If the task input is given in tip coordinates, convert to root
+            if(sub_task->config.ref_frame == task_ref_frame_tip)
+            {
+                for(uint i = 0; i < 6; i++)
+                    tw_(i) = sub_task->y_des(i);
+                tw_ = sub_task->pose.M * tw_;
+
+                for(uint i = 0; i < 6; i++)
+                    sub_task->y_des_root_frame(i) = tw_(i);
+            }
+            else
+                sub_task->y_des_root_frame = sub_task->y_des;
+
             //insert task equation into equation system of current priority
             Wy_[prio].block(row_index, row_index, n_vars, n_vars).diagonal() = sub_task->weights * sub_task->activation * (!sub_task->task_timed_out);
             A_[prio].block(row_index, 0, n_vars, no_robot_joints_) = sub_task->A;
-            y_ref_[prio].segment(row_index, n_vars) = sub_task->y_des;
+            y_ref_[prio].segment(row_index, n_vars) = sub_task->y_des_root_frame;
 
             row_index += n_vars;
         }

@@ -37,6 +37,7 @@ protected:
     //Helpers
     Eigen::VectorXd temp_;
     bool has_timeout_;
+    KDL::Twist tw_;
 
     std::vector<Eigen::MatrixXd> A_; /** Vector of task matrices per priority. These define, together with y, for each priority the linear equation system that has to be solved */
     std::vector<Eigen::VectorXd> y_ref_; /** Vector of desired task variables per priority */
