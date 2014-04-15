@@ -330,6 +330,19 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
                 ///// A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root: Inverse Task Jacobian * Robot Jacobian of object frame one
                 sub_task->A = sub_task->H.block(0, 0, nc, 6) * tf_tip->jac_robot_.data
                         -(sub_task->H.block(0, 0, nc, 6) * tf_root->jac_robot_.data);
+
+                //If the task input is given in tip coordinates, convert to root
+                if(sub_task->config.ref_frame == task_ref_frame_tip)
+                {
+                    for(uint i = 0; i < 6; i++)
+                        tw_(i) = sub_task->y_des(i);
+                    tw_ = sub_task->pose.M * tw_;
+
+                    for(uint i = 0; i < 6; i++)
+                        sub_task->y_des_root_frame(i) = tw_(i);
+                }
+                else
+                    sub_task->y_des_root_frame = sub_task->y_des;
             }
             else if(sub_task->config.type == task_type_joint){
                 for(uint i = 0; i < sub_task->config.joint_names.size(); i++){
@@ -341,21 +354,10 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
                     uint idx = joint_index_map_[joint_name];
                     sub_task->A(i,idx) = 1.0;
                 }
-            }
-            uint n_vars = sub_task->no_task_vars;
-
-            //If the task input is given in tip coordinates, convert to root
-            if(sub_task->config.ref_frame == task_ref_frame_tip)
-            {
-                for(uint i = 0; i < 6; i++)
-                    tw_(i) = sub_task->y_des(i);
-                tw_ = sub_task->pose.M * tw_;
-
-                for(uint i = 0; i < 6; i++)
-                    sub_task->y_des_root_frame(i) = tw_(i);
-            }
-            else
                 sub_task->y_des_root_frame = sub_task->y_des;
+            }
+
+            uint n_vars = sub_task->no_task_vars;
 
             //insert task equation into equation system of current priority
             Wy_[prio].block(row_index, row_index, n_vars, n_vars).diagonal() = sub_task->weights * sub_task->activation * (!sub_task->task_timed_out);
