@@ -3,34 +3,9 @@
 
 #include <vector>
 #include <Eigen/SVD>
-#include <base/time.h>
+#include "PriorityData.hpp"
 
 namespace wbc{
-
-struct SolverCompTimes{
-    double proj_time;
-    double weighting_time;
-    double svd_time;
-    double compute_inverse_time;
-    base::Time stamp;
-    void init(){stamp = base::Time::now();}
-    void set_proj_time(const base::Time &now){
-        proj_time = (stamp - base::Time::now()).toMilliseconds();
-        stamp = base::Time::now();
-    }
-    void set_weighting_time(const base::Time &now){
-        weighting_time = (stamp - base::Time::now()).toMilliseconds();
-        stamp = base::Time::now();
-    }
-    void set_svd_time(const base::Time &now){
-        svd_time = (stamp - base::Time::now()).toMilliseconds();
-        stamp = base::Time::now();
-    }
-    void set_compute_inverse_time(const base::Time &now){
-        compute_inverse_time = (stamp - base::Time::now()).toMilliseconds();
-        stamp = base::Time::now();
-    }
-};
 
 enum svd_method{svd_eigen, svd_kdl};
 
@@ -43,15 +18,20 @@ enum svd_method{svd_eigen, svd_kdl};
  */
 class HierarchicalWDLSSolver{
 public:
-    class Priority{
+
+    /**
+     * @brief The PriorityDataIntern class Manages all priority dependent information, i.e. all matrices that have to be resized according to
+     * the number of tasks per priority
+     */
+    class PriorityDataIntern{
     public:
-        Priority(){}
+        PriorityDataIntern(){}
         /**
          * @brief Priority Resizes members
          * @param ny Number of task variables of the current priority
          * @param nx Number of joint space variables
          */
-        Priority(const unsigned int ny, const unsigned int nx){
+        PriorityDataIntern(const unsigned int ny, const unsigned int nx){
             ny_ = ny;
             A_proj_.resize(ny, nx);
             A_proj_.setZero();
@@ -86,9 +66,6 @@ public:
 
         //Helpers
         Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_; /** For singular value decomposition used in matrix inversion*/
-
-        //Debug
-        SolverCompTimes comp_times_;
     };
 
     HierarchicalWDLSSolver();
@@ -128,17 +105,22 @@ public:
      */
     void setTaskWeights(const Eigen::MatrixXd& weights, const uint prio);
 
-    double getCurDamping(){return damping_;}
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
     Eigen::MatrixXd getJointWeights(){return joint_weight_mat_;}
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
     bool isMatDiagonal(const Eigen::MatrixXd& mat);
-    void getSolverCompTimes(const uint prio, SolverCompTimes& times){times = priorities_[prio].comp_times_;}
+    void setComputeDebug(const bool compute_debug){compute_debug_ = compute_debug;}
+    void getPrioDebugData(std::vector<PriorityData>& data){data = prio_debug_;}
+    std::vector<uint> getNyPerPriority(){return ny_per_prio_;}
+    uint getNoPriorities(){return ny_per_prio_.size();}
+
+    std::vector<PriorityDataIntern> priorities_;  /** Contains priority specific matrices etc. */
+    std::vector<PriorityData> prio_debug_;      /** Contains debug information for each priority */
+    std::vector<uint> ny_per_prio_;
 
 protected:
-    std::vector<Priority> priorities_;  /** Contains priority specific matrices etc. */
     Eigen::MatrixXd proj_mat_;          /** Projection Matrix */
     Eigen::VectorXd S_;                 /** Eigenvalue vector of the task matrices */
     Eigen::MatrixXd V_;                 /** Matrix of right singular vectors*/
@@ -151,9 +133,9 @@ protected:
     Eigen::MatrixXd L_;                 /** Choleski Decomposition: If the joint weight matrix is not diagonal, it has to be decomposed into lower triangular matrix and its transpose using method of Cholesky*/
 
     unsigned int nx_;                   /** No of robot joints */
-    double damping_;                    /** Current damping factor, computed autmatically */
     bool configured_;                   /** Has configure been called yet?*/
     bool joint_weight_mat_is_diagonal_; /** Is the joint weight mat a diagonal matrix. This is important regarding the computation time*/
+    bool compute_debug_;                /** Compute additional debug info */
 
     //Properties
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
@@ -162,7 +144,6 @@ protected:
 
     //Helpers
     Eigen::VectorXd tmp_;
-
 };
 }
 #endif

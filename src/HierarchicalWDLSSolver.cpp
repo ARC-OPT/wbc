@@ -5,6 +5,7 @@
 #include <Eigen/Cholesky>
 #include <Eigen/LU>
 #include <kdl/utilities/svd_eigen_HH.hpp>
+#include <base/time.h>
 
 using namespace std;
 
@@ -12,7 +13,7 @@ namespace wbc{
 
 HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
     nx_(0),
-    damping_(0),
+    compute_debug_(false),
     configured_(false),
     joint_weight_mat_is_diagonal_(true),
     epsilon_(1e-9),
@@ -42,9 +43,12 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
         }
     }
 
-    for(uint prio = 0; prio < ny_per_prio.size(); prio++)
-        priorities_.push_back(Priority(ny_per_prio[prio], nx));
+    ny_per_prio_ = ny_per_prio;
 
+    for(uint prio = 0; prio < ny_per_prio.size(); prio++){
+        priorities_.push_back(PriorityDataIntern(ny_per_prio[prio], nx));
+        prio_debug_.push_back(PriorityData(ny_per_prio[prio], nx, prio));
+    }
 
     nx_ = nx;
     proj_mat_.resize(nx_, nx_);
@@ -68,7 +72,6 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     L_.resize(nx_, nx_);
     L_.setZero();
 
-    damping_ = 0;
     joint_weight_mat_is_diagonal_ = true;
     configured_ = true;
 
@@ -107,7 +110,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
-        priorities_[prio].comp_times_.init();
+        base::Time start = base::Time::now();
 
         priorities_[prio].y_comp_.setZero();
 
@@ -118,7 +121,8 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         //For the first priority P == Identity
         priorities_[prio].A_proj_ = A[prio] * proj_mat_;
 
-        priorities_[prio].comp_times_.set_proj_time(base::Time::now());
+        double comp_time_proj = (base::Time::now() - start).toSeconds();
+        start = base::Time::now();
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         // If the weight matrices are diagonal, there is no need for full matrix multiplication
@@ -137,14 +141,13 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         else
             priorities_[prio].A_proj_w_ = priorities_[prio].A_proj_w_ * joint_weight_mat_;
 
-        priorities_[prio].comp_times_.set_weighting_time(base::Time::now());
+        double comp_time_weighting = (base::Time::now() - start).toSeconds();
+        start = base::Time::now();
 
         if(svd_method_ == svd_eigen)
         {
             //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
             priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
-
-            priorities_[prio].comp_times_.set_svd_time(base::Time::now());
 
             V_ = priorities_[prio].svd_.matrixV();
             uint ns = priorities_[prio].svd_.singularValues().size(); //No of singular values
@@ -157,28 +160,35 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
             priorities_[prio].U_.block(0,0, priorities_[prio].ny_, ns) =
                     priorities_[prio].svd_.matrixU().block(0,0,priorities_[prio].ny_, ns);
         }
-        else
+        else if(svd_method_ == svd_kdl)
         {
             KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
-            priorities_[prio].comp_times_.set_svd_time(base::Time::now());
         }
+        else{
+            LOG_ERROR("Invalid svd method: %i", svd_method_);
+            throw std::invalid_argument("Invalid svd method");
+        }
+
+        double comp_time_svd = (base::Time::now() - start).toSeconds();
+        start = base::Time::now();
 
         //Compute damping factor based on
         //A.A. Maciejewski, C.A. Klein, “Numerical Filtering for the Operation of
         //Robotic Manipulators through Kinematically Singular Configurations”,
         //Journal of Robotic Systems, Vol. 5, No. 6, pp. 527 - 552, 1988.
         double s_min = S_.block(0,0,min(nx_, priorities_[prio].ny_),1).minCoeff();
+        double damping;
         if(s_min <= (1/norm_max_)/2)
-            damping_ = (1/norm_max_)/2;
+            damping = (1/norm_max_)/2;
         else if(s_min >= (1/norm_max_))
-            damping_ = 0;
+            damping = 0;
         else
-            damping_ = sqrt(s_min*((1/norm_max_)-s_min));
+            damping = sqrt(s_min*((1/norm_max_)-s_min));
 
         // Damped Inverse of Eigenvalue matrix for computation of a singularity robust solution for the current priority
         Damped_S_inv_.setZero();
         for (uint i = 0; i < min(nx_, priorities_[prio].ny_); i++)
-            Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + damping_ * damping_));
+            Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + damping * damping));
 
         // Additionally compute normal Inverse of Eigenvalue matrix for correct computation of nullspace projection
         for(uint i = 0; i < S_.rows(); i++){
@@ -220,8 +230,21 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
         // Compute projection matrix for the next priority. Use here the undamped inverse to have a correct solution
         proj_mat_ -= priorities_[prio].A_proj_inv_wls_ * priorities_[prio].A_proj_;
 
-        priorities_[prio].comp_times_.set_compute_inverse_time(base::Time::now());
+        double comp_time_inv = (base::Time::now() - start).toSeconds();
 
+        if(compute_debug_)
+        {
+            prio_debug_[prio].y_des = y[prio];
+            prio_debug_[prio].y_solution = A[prio] * x;
+            prio_debug_[prio].singular_vals = S_;
+            prio_debug_[prio].manipulability = sqrt( (priorities_[prio].A_proj_w_ * priorities_[prio].A_proj_w_.transpose()).determinant() );
+            prio_debug_[prio].sqrt_err = sqrt((prio_debug_[prio].y_des - prio_debug_[prio].y_solution).norm());
+            prio_debug_[prio].damping = damping;
+            prio_debug_[prio].proj_time = comp_time_proj;
+            prio_debug_[prio].weighting_time = comp_time_weighting;
+            prio_debug_[prio].svd_time = comp_time_svd;
+            prio_debug_[prio].compute_inverse_time = comp_time_inv;
+        }
     } //priority loop
 
     ///////////////

@@ -47,10 +47,12 @@ bool WbcVelocity::configure(const KDL::Tree tree,
                             const std::vector<SubTaskConfig> &config,
                             const std::vector<std::string> &joint_names,
                             bool tasks_active,
-                            double task_timeout){
+                            double task_timeout,
+                            bool debug){
 
     clear();
 
+    debug_ = debug;
     task_timeout_ = task_timeout;
     has_timeout_ = true;
     if(base::isUnset(task_timeout))
@@ -124,8 +126,8 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     sub_task_vector_.resize(max_prio + 1);
     for(uint i = 0; i < config.size(); i++)
     {
-        if(config[i].type == task_type_cartesian)
-        {
+        switch(config[i].type){
+        case task_type_cartesian:{
             if(config[i].root.empty() || config[i].tip.empty())
             {
                 LOG_ERROR("Task %s has empty root or tip frame name", config[i].name.c_str());
@@ -134,15 +136,29 @@ bool WbcVelocity::configure(const KDL::Tree tree,
             if(!addTaskFrame(config[i].root) ||
                !addTaskFrame((config[i].tip)))
                 return false;
-        }
-        else
-        {
-            if(config[i].joint_names.size() == 0)
+
+            if(config[i].task_var_names.size() != 6)
             {
-                LOG_ERROR("Task %s is in joint space but joint_names vector is empty", config[i].name.c_str());
+                LOG_ERROR("Task %s is Cartesian but size of task variables is not 6. Check your configuration!", config[i].name.c_str());
                 return false;
             }
+            break;
         }
+        case task_type_joint:{
+            if(config[i].task_var_names.size() == 0)
+            {
+                LOG_ERROR("Task %s has no task variable name given. Check your configuration!", config[i].name.c_str());
+                return false;
+            }
+            break;
+        }
+        default:{
+            LOG_ERROR("Unknown task type: %i", config[i].type);
+            throw std::invalid_argument("Invalid task type");
+            break;
+        }
+        }
+
         ExtendedSubTask* sub_task = new ExtendedSubTask(config[i], no_robot_joints_, tasks_active);
         sub_task_vector_[config[i].priority].push_back(sub_task);
 
@@ -176,11 +192,7 @@ bool WbcVelocity::configure(const KDL::Tree tree,
         for(uint i = 0; i < sub_task_vector_[prio].size(); i++)
         {
             SubTaskConfig conf = sub_task_vector_[prio][i]->config;
-            uint type = conf.type;
-            if(type == task_type_cartesian)
-                no_task_vars_prio += 6;
-            else
-                no_task_vars_prio +=  conf.joint_names.size();
+            no_task_vars_prio +=  conf.task_var_names.size();
         }
 
         Eigen::MatrixXd A(no_task_vars_prio, no_robot_joints_);
@@ -200,36 +212,6 @@ bool WbcVelocity::configure(const KDL::Tree tree,
 
     if(!solver_->configure(no_task_vars_pp, no_robot_joints_))
         return false;
-
-    LOG_DEBUG("WBC Configuration:\n");
-    LOG_DEBUG("No of robot joints is %i", no_robot_joints_);
-    LOG_DEBUG("Joint Index Map: ");
-    for(JointIndexMap::iterator it = joint_index_map_.begin(); it != joint_index_map_.end(); it++)
-        LOG_DEBUG("%s::%i", it->first.c_str(), it->second);
-
-    LOG_DEBUG("Task Frames: ");
-    for(TaskFrameMap::iterator it = task_frame_map_.begin(); it != task_frame_map_.end(); it++){
-        LOG_DEBUG("Name: %s", it->first.c_str());
-        LOG_DEBUG("Joints: ");
-        for(uint i = 0; i < it->second->joint_names_.size(); i++)
-            LOG_DEBUG("%s", it->second->joint_names_[i].c_str());
-    }
-    LOG_DEBUG("");
-    LOG_DEBUG("Sub Task Vector: ");
-    for(uint i = 0; i < sub_task_vector_.size(); i++){
-        LOG_DEBUG("Prio: %i", i);
-        for(uint j = 0; j < sub_task_vector_[i].size(); j++){
-            LOG_DEBUG("Task name: %s", sub_task_vector_[i][j]->config.name.c_str());
-            LOG_DEBUG("No task vars: %i", sub_task_vector_[i][j]->y_des.size());
-        }
-    }
-    LOG_DEBUG("");
-    LOG_DEBUG("Sub Task Map: ");
-    for(SubTaskMap::iterator it = sub_task_map_.begin(); it != sub_task_map_.end(); it++)
-        LOG_DEBUG("Prio: %s", it->first.c_str());
-    LOG_DEBUG("");
-
-    LOG_DEBUG("... done configuration of WbcVelocity");
 
     return true;
 }
@@ -314,6 +296,10 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
                 sub_task->task_jac.changeRefPoint(-sub_task->pose.p);
                 sub_task->task_jac.changeRefFrame(tf_root->pose_);
 
+                //Compute manipulability index in debug mode
+                if(debug_)
+                    sub_task->manipulability = sqrt( (sub_task->task_jac.data * sub_task->task_jac.data.transpose() ).determinant());
+
                 //Invert Task Jacobian
                 KDL::svd_eigen_HH(sub_task->task_jac.data, sub_task->Uf, sub_task->Sf, sub_task->Vf, temp_);
 
@@ -345,12 +331,12 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
                     sub_task->y_des_root_frame = sub_task->y_des;
             }
             else if(sub_task->config.type == task_type_joint){
-                for(uint i = 0; i < sub_task->config.joint_names.size(); i++){
+                for(uint i = 0; i < sub_task->config.task_var_names.size(); i++){
 
                     //Joint space tasks: Task matrix has only ones and Zeros
                     //IMPORTANT: The joint order in the tasks might be different than in wbc.
                     //Thus, for joint space tasks, the joint indices have to be mapped correctly.
-                    const std::string &joint_name = sub_task->config.joint_names[i];
+                    const std::string &joint_name = sub_task->config.task_var_names[i];
                     uint idx = joint_index_map_[joint_name];
                     sub_task->A(i,idx) = 1.0;
                 }

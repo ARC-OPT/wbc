@@ -24,6 +24,7 @@ protected:
 
     HierarchicalWDLSSolver* solver_;
 
+    bool debug_;
     bool configured_;
     KDL::Tree tree_;
     std::string robot_root_;
@@ -65,7 +66,8 @@ public:
                    const std::vector<SubTaskConfig> &config,
                    const std::vector<std::string> &joint_names,
                    bool tasks_active,
-                   double task_timeout);
+                   double task_timeout,
+                   bool debug = false);
 
     /**
      * @brief solve Compute control solution given all the constraints

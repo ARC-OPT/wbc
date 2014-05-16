@@ -18,8 +18,8 @@ BOOST_AUTO_TEST_CASE(solver)
 {
     srand (time(NULL));
 
-    const uint NO_JOINTS = 4;
-    const uint NO_CONSTRAINTS = 2;
+    const uint NO_JOINTS = 2;
+    const uint NO_CONSTRAINTS = 3;
     const double NORM_MAX = 5.75;
 
     HierarchicalWDLSSolver solver;
@@ -42,6 +42,11 @@ BOOST_AUTO_TEST_CASE(solver)
         y.data()[i] = (rand()%1000)/1000.0;
     y_prio.push_back(y);
 
+    Eigen::MatrixXd weights(3,3);
+    weights.setIdentity();
+    weights(0,0) = 0.1;
+    solver.setTaskWeights(weights, 0);
+
     cout<<"............Testing Hierarchical Solver "<<endl<<endl;
     cout<<"Number of priorities: "<<ny_per_prio.size()<<endl;
     cout<<"Constraints per priority: "; for(uint i = 0; i < ny_per_prio.size(); i++) cout<<ny_per_prio[i]<<" "; cout<<endl;
@@ -62,7 +67,6 @@ BOOST_AUTO_TEST_CASE(solver)
         BOOST_ERROR("Solver.solve threw an exception");
     }
 
-    cout<<"Solver damping: "<<solver.getCurDamping()<<endl;
     cout<<"Solver Output: "<<solver_output<<endl;
     cout<<"\nTest: "<<endl;
     for(uint i = 0; i < ny_per_prio.size(); i++){
@@ -142,7 +146,6 @@ BOOST_AUTO_TEST_CASE(wbc_cart_aila)
     cout<<x.transpose()<<endl<<endl;
     cout<<"Actual y: "<<endl;
     cout<<y_act.transpose()<<endl<<endl;
-    cout<<"Current damping: "<<wbc.solver()->getCurDamping()<<endl<<endl;
     cout<<"..........................................................."<<endl;
 
 }
@@ -224,7 +227,6 @@ BOOST_AUTO_TEST_CASE(wbc_joint)
         cout<<x.transpose()<<endl<<endl;
         cout<<"Actual y: "<<endl;
         cout<<y_act.transpose()<<endl<<endl;
-        cout<<"Current damping: "<<wbc.solver()->getCurDamping()<<endl<<endl;
         cout<<"..........................................................."<<endl;
     }
 

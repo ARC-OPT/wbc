@@ -29,14 +29,14 @@ public:
     SubTaskConfig(const task_type _type,
                   const int _priority,
                   const std::string& _name,
-                  const std::vector<std::string>& _joint_names,
+                  const std::vector<std::string>& _task_var_names,
                   const std::string &_root = "",
                   const std::string &_tip = "",
                   const task_ref_frame& _ref_frame = task_ref_frame_root) :
         type(_type),
         priority(_priority),
         name(_name),
-        joint_names(_joint_names),
+        task_var_names(_task_var_names),
         root(_root),
         tip(_tip),
         ref_frame(_ref_frame){}
@@ -51,10 +51,8 @@ public:
     /** Unique identifier of the task*/
     std::string name;
 
-    /** Only Joint Space Tasks: In case the task is of type WBC_TASK_TYPE_JOINT,
-     * the joints used for this task have to be specified here.
-     */
-    std::vector<std::string> joint_names;
+    /** Names of the task variables. Joint names or names of the Cartesian directions */
+    std::vector<std::string> task_var_names;
 
     /**
      * Only Cartesian Tasks: Root frame associated with this task.
