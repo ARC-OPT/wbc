@@ -6,13 +6,13 @@
 
 namespace wbc{
 
-enum task_type{task_type_joint, task_type_cartesian};
+enum task_type{jnt, cart};
 enum task_ref_frame{task_ref_frame_root, task_ref_frame_tip};
 
 
 /**
  * @brief Defines a sub task in the whole body control problem. Valid Configuration are e.g.
- *        - task_type = task_type_cartesian
+ *        - task_type = cart
  *          name = "bla"
  *          priority = 0
  *          root_frame = "Robot_base"
@@ -20,7 +20,7 @@ enum task_ref_frame{task_ref_frame_root, task_ref_frame_tip};
  *
  *        - name = "bla"
  *          priority = 1
- *          task_type = task_type_joint
+ *          task_type = jnt
  *          joint_names = ["J_1", "J_2", "J_3"]
  */
 class SubTaskConfig{

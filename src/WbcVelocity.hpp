@@ -5,6 +5,7 @@
 #include <kdl/tree.hpp>
 #include <base/commands/joints.h>
 #include <Eigen/Core>
+#include <kdl/chainjnttojacsolver.hpp>
 
 namespace wbc{
 

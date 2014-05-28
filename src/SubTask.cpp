@@ -6,7 +6,7 @@
 namespace wbc{
 
 void SubTask::setReference(const base::samples::RigidBodyState &ref){
-    if(config.type != task_type_cartesian){
+    if(config.type != cart){
         LOG_ERROR("Reference input of task %s is Cartesian but task is not Cartesian", config.name.c_str());
         throw std::invalid_argument("Invalid reference input");
     }
@@ -23,7 +23,7 @@ void SubTask::setReference(const base::samples::RigidBodyState &ref){
 }
 
 void SubTask::setReference(const base::samples::Joints& ref){
-    if(config.type != task_type_joint){
+    if(config.type != jnt){
         LOG_ERROR("Reference input of task %s is in joint space but task is not in joint space", config.name.c_str());
         throw std::invalid_argument("Invalid reference input");
     }
@@ -90,13 +90,14 @@ void SubTask::reset()
     else
         activation = 0;
     task_timed_out = 0;
-    sqrt_wbc_err = 0;
-    sqrt_ctrl_err = 0;
+    sqrt_wbc_err = base::NaN<double>();;
+    sqrt_ctrl_err = base::NaN<double>();;
 
     A.setZero();
     last_task_input = base::Time::now();
-    update_timediff = 0;
+    update_timediff = base::NaN<double>();;
     avg_update_rate = 0;
+    manipulability = base::NaN<double>();
 }
 } //namespace wbc
 #endif // SUBTASK_CPP

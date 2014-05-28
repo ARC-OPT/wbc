@@ -110,7 +110,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
-        base::Time start = base::Time::now();
+        base::Time start = base::Time::now(), loop_start = base::Time::now();
 
         priorities_[prio].y_comp_.setZero();
 
@@ -238,12 +238,29 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
             prio_debug_[prio].y_solution = A[prio] * x;
             prio_debug_[prio].singular_vals = S_;
             prio_debug_[prio].manipulability = sqrt( (priorities_[prio].A_proj_w_ * priorities_[prio].A_proj_w_.transpose()).determinant() );
-            prio_debug_[prio].sqrt_err = sqrt((prio_debug_[prio].y_des - prio_debug_[prio].y_solution).norm());
+            prio_debug_[prio].sqrt_wbc_err = sqrt((prio_debug_[prio].y_des - prio_debug_[prio].y_solution).norm());
             prio_debug_[prio].damping = damping;
             prio_debug_[prio].proj_time = comp_time_proj;
             prio_debug_[prio].weighting_time = comp_time_weighting;
             prio_debug_[prio].svd_time = comp_time_svd;
             prio_debug_[prio].compute_inverse_time = comp_time_inv;
+            prio_debug_[prio].total_time = (base::Time::now() - loop_start).toSeconds();
+
+            //Get maximum and minimum singular value
+            double max_singular_val = 0;
+            double min_singular_val = 1e10;
+            for(uint i = 0 ; i < S_.rows(); i++)
+            {
+                if(S_(i) > max_singular_val)
+                    max_singular_val = S_(i);
+                if(S_(i) > 0 && S_(i) < min_singular_val)
+                    min_singular_val = S_(i);
+            }
+
+            prio_debug_[prio].max_singular_val = max_singular_val;
+            if(min_singular_val == 1e10)
+                min_singular_val = 0;
+            prio_debug_[prio].min_singular_val = min_singular_val;
         }
     } //priority loop
 

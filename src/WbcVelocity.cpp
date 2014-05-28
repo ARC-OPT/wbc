@@ -126,8 +126,10 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     sub_task_vector_.resize(max_prio + 1);
     for(uint i = 0; i < config.size(); i++)
     {
+        ExtendedSubTask* sub_task = 0;
+
         switch(config[i].type){
-        case task_type_cartesian:{
+        case cart:{
             if(config[i].root.empty() || config[i].tip.empty())
             {
                 LOG_ERROR("Task %s has empty root or tip frame name", config[i].name.c_str());
@@ -142,14 +144,20 @@ bool WbcVelocity::configure(const KDL::Tree tree,
                 LOG_ERROR("Task %s is Cartesian but size of task variables is not 6. Check your configuration!", config[i].name.c_str());
                 return false;
             }
+
+            KDL::Chain chain;
+            tree_.getChain(config[i].root, config[i].tip, chain);
+            sub_task = new ExtendedSubTask(config[i], chain, no_robot_joints_, tasks_active);
+
             break;
         }
-        case task_type_joint:{
+        case jnt:{
             if(config[i].task_var_names.size() == 0)
             {
                 LOG_ERROR("Task %s has no task variable name given. Check your configuration!", config[i].name.c_str());
                 return false;
             }
+            sub_task = new ExtendedSubTask(config[i], no_robot_joints_, tasks_active);
             break;
         }
         default:{
@@ -159,7 +167,6 @@ bool WbcVelocity::configure(const KDL::Tree tree,
         }
         }
 
-        ExtendedSubTask* sub_task = new ExtendedSubTask(config[i], no_robot_joints_, tasks_active);
         sub_task_vector_[config[i].priority].push_back(sub_task);
 
         //Also put subtasks in a map that associates them with their names (for easier access)
@@ -287,7 +294,7 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
                    sub_task->task_timed_out = 0;
             }
 
-            if(sub_task->config.type == task_type_cartesian){
+            if(sub_task->config.type == cart){
                 uint nc = 6; //Task is Cartesian: always 6 task variables
                 TaskFrame* tf_root = task_frame_map_[sub_task->config.root];
                 TaskFrame* tf_tip = task_frame_map_[sub_task->config.tip];
@@ -298,7 +305,7 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
 
                 //Compute manipulability index in debug mode
                 if(debug_)
-                    sub_task->manipulability = sqrt( (sub_task->task_jac.data * sub_task->task_jac.data.transpose() ).determinant());
+                    sub_task->manipulability = sub_task->computeManipulability(status);
 
                 //Invert Task Jacobian
                 KDL::svd_eigen_HH(sub_task->task_jac.data, sub_task->Uf, sub_task->Sf, sub_task->Vf, temp_);
@@ -330,7 +337,7 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
                 else
                     sub_task->y_des_root_frame = sub_task->y_des;
             }
-            else if(sub_task->config.type == task_type_joint){
+            else if(sub_task->config.type == jnt){
                 for(uint i = 0; i < sub_task->config.task_var_names.size(); i++){
 
                     //Joint space tasks: Task matrix has only ones and Zeros
@@ -341,7 +348,11 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
                     sub_task->A(i,idx) = 1.0;
                 }
                 sub_task->y_des_root_frame = sub_task->y_des;
+                if(debug_)
+                    sub_task->manipulability = base::NaN<double>();
             }
+
+            sub_task->time = base::Time::now();
 
             uint n_vars = sub_task->no_task_vars;
 

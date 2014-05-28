@@ -36,6 +36,7 @@ public:
     }
 
     SubTaskConfig config;
+    base::Time time;
 
     base::VectorXd y_des; /** Reference value for subtask */
     base::VectorXd y_des_root_frame; /** Reference value for subtask, transformed to root frame of subtask */

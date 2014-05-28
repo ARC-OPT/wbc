@@ -102,7 +102,7 @@ BOOST_AUTO_TEST_CASE(wbc_cart_aila)
 
     WbcVelocity wbc;
     std::vector<SubTaskConfig> config;
-    SubTaskConfig conf(task_type_cartesian, 0, "Cart_r", std::vector<std::string>(), "Chest", "Hand_r");
+    SubTaskConfig conf(cart, 0, "Cart_r", std::vector<std::string>(), "Chest", "Hand_r");
     config.push_back(conf);
 
     std::vector<std::string> joint_names;
@@ -181,7 +181,7 @@ BOOST_AUTO_TEST_CASE(wbc_joint)
     joints.push_back("J_Forearm_r");
     joints.push_back("J_Wrist1_r");
     joints.push_back("J_Wrist2_r");
-    SubTaskConfig conf(task_type_joint, 0, "Upper_limits", joints);
+    SubTaskConfig conf(jnt, 0, "Upper_limits", joints);
     config.push_back(conf);
     conf.name = "Lower_limits";
     config.push_back(conf);
