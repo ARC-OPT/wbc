@@ -204,7 +204,7 @@ bool WbcVelocity::configure(const KDL::Tree tree,
 
         Eigen::MatrixXd A(no_task_vars_prio, no_robot_joints_);
         Eigen::VectorXd y_ref(no_task_vars_prio);
-        Eigen::MatrixXd Wy(no_task_vars_prio, no_task_vars_prio);
+        Eigen::VectorXd Wy(no_task_vars_prio);
 
         Wy.setIdentity(); //Set all task weights to 1 in the beginning
         A.setZero();
@@ -357,7 +357,7 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
             uint n_vars = sub_task->no_task_vars;
 
             //insert task equation into equation system of current priority
-            Wy_[prio].block(row_index, row_index, n_vars, n_vars).diagonal() = sub_task->weights * sub_task->activation * (!sub_task->task_timed_out);
+            Wy_[prio].segment(row_index, n_vars) = sub_task->weights * sub_task->activation * (!sub_task->task_timed_out);
             A_[prio].block(row_index, 0, n_vars, no_robot_joints_) = sub_task->A;
             y_ref_[prio].segment(row_index, n_vars) = sub_task->y_des_root_frame;
 

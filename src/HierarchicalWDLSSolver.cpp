@@ -267,71 +267,29 @@ void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
     ///////////////
 }
 
-bool HierarchicalWDLSSolver::isMatDiagonal(const Eigen::MatrixXd& mat)
-{
-    //Check if new matrix is diagonal
-    bool is_diagonal = true;
-    for(uint i = 0; i < mat.rows(); i++){
-        for(uint j = 0; j < mat.cols(); j++){
-            if(i != j){
-                if(mat(i,j) != 0)
-                    is_diagonal = false;
-            }
-        }
-    }
-    return is_diagonal;
-}
-
-void HierarchicalWDLSSolver::setJointWeights(const Eigen::MatrixXd& weights){
-    if(weights.rows() == nx_ &&
-            weights.cols() == nx_){
-
-        //Check if new matrix is diagonal
-        joint_weight_mat_is_diagonal_ = isMatDiagonal(weights);
-        if(joint_weight_mat_is_diagonal_){
-            joint_weight_mat_.setZero();
-            for(uint i = 0; i < nx_; i++){
-                if(weights(i,i) == 0)
-                    throw std::invalid_argument("Joint weights are not allowed to be zero! Note that a high joint weight will make a joint move less");
-                else
-                    joint_weight_mat_(i,i) = sqrt(1/weights(i,i));
-            }
-        }
-        else{
-            Eigen::LLT<Eigen::MatrixXd> llt(weights); // compute the Cholesky decomposition of A
-            L_ = llt.matrixL(); // retrieve factor L  in the decomposition
-            joint_weight_mat_ =  L_.transpose().inverse();
-        }
+void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
+    if(weights.size() == nx_){
+        joint_weight_mat_.setZero();
+        for(uint i = 0; i < nx_; i++)
+            joint_weight_mat_(i,i) = sqrt(weights(i));
     }
     else{
-        LOG_ERROR("Cannot set joint weights. Size of weight matrix is %i x %i but should be %i x %i", weights.rows(), weights.cols(), nx_, nx_);
+        LOG_ERROR("Cannot set joint weights. Size of weight vector %i but should be %i", weights.size(), nx_);
         throw std::invalid_argument("Invalid Joint weight vector size");
     }
 }
 
-void HierarchicalWDLSSolver::setTaskWeights(const Eigen::MatrixXd& weights, const uint prio){
+void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
     if(prio >= priorities_.size()){
         LOG_ERROR("Cannot set task weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
     }
-    if(priorities_[prio].ny_ != weights.rows() ||
-            priorities_[prio].ny_ != weights.cols()){
-        LOG_ERROR("Cannot set task weights. Size of weight mat is %i x %i but should be %i x %i", weights.rows(), weights.cols(), priorities_[prio].ny_, priorities_[prio].ny_);
+    if(priorities_[prio].ny_ != weights.size()){
+        LOG_ERROR("Cannot set task weights. Size of weight mat is %i but should be %i", weights.size(), priorities_[prio].ny_);
         throw std::invalid_argument("Invalid Weight vector size");
     }
-
-    //Check if new matrix is diagonal
-    priorities_[prio].task_weight_mat_is_diagonal_ = isMatDiagonal(weights);
-
-    if(priorities_[prio].task_weight_mat_is_diagonal_){
-        priorities_[prio].task_weight_mat_.setZero();
-        for(uint i = 0; i < priorities_[prio].ny_; i++)
-            priorities_[prio].task_weight_mat_(i,i) = sqrt(weights(i,i));
-    }
-    else{
-        // compute the Cholesky decomposition of weights
-        Eigen::LLT<Eigen::MatrixXd> llt(weights);
-        priorities_[prio].task_weight_mat_ = llt.matrixL().transpose();
-    }
+    priorities_[prio].task_weight_mat_.setZero();
+    for(uint i = 0; i < priorities_[prio].ny_; i++)
+        priorities_[prio].task_weight_mat_(i,i) = sqrt(weights(i));
 }
 }

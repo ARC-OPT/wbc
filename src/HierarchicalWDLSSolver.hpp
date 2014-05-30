@@ -95,7 +95,7 @@ public:
      *                If matrix is not diagonal, computation will increase a lot. If matrix is diagonal, a very HIGH entry means that
      *                the corresponding joint is not used at all for the solution. If matrix is diagonal, entries must be >= 0.
      */
-    void setJointWeights(const Eigen::MatrixXd& weights);
+    void setJointWeights(const Eigen::VectorXd& weights);
 
     /**
      * @brief setTaskWeights Set full task weight matrix of the given priority. Note that, by using this method to set the task weights, the algorithm assumes that
@@ -103,14 +103,13 @@ public:
      * @param weights Size must be ny * ny. Matrix must be symmetric and positive definite! This is not checked by the algorithm.
      * @param prio Priority (>= 0) according to what was passed to configure() method
      */
-    void setTaskWeights(const Eigen::MatrixXd& weights, const uint prio);
+    void setTaskWeights(const Eigen::VectorXd& weights, const uint prio);
 
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
     Eigen::MatrixXd getJointWeights(){return joint_weight_mat_;}
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
-    bool isMatDiagonal(const Eigen::MatrixXd& mat);
     void setComputeDebug(const bool compute_debug){compute_debug_ = compute_debug;}
     void getPrioDebugData(std::vector<PriorityData>& data){data = prio_debug_;}
     std::vector<uint> getNyPerPriority(){return ny_per_prio_;}
