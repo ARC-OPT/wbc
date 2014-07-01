@@ -1,34 +1,40 @@
-#ifndef EXTENDED_SUB_TASK_HPP
-#define EXTENDED_SUB_TASK_HPP
+#ifndef EXTENDED_CONSTRAINT_HPP
+#define EXTENDED_CONSTRAINT_HPP
 
-#include "SubTask.hpp"
+#include "Constraint.hpp"
 
 #include <kdl/jacobian.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 
 namespace wbc{
 
-class ExtendedSubTask : public SubTask{
+class ExtendedConstraint : public Constraint{
 public:
 
-    ExtendedSubTask(const SubTaskConfig& _config,
+    ExtendedConstraint(const ConstraintConfig& _config,
                     const uint _no_robot_joints,
-                    bool _tasks_active  = true) :
-        SubTask(_config, _no_robot_joints, _tasks_active)
+                    bool _constraints_active  = true) :
+        Constraint(_config, _no_robot_joints, _constraints_active)
     {
-       no_task_vars = _config.task_var_names.size();
-       init(no_task_vars);
+        if(_config.type == jnt)
+            no_variables = _config.joint_names.size();
+        else
+            no_variables = 6;
+       init(no_variables);
        solver = 0;
     }
 
-    ExtendedSubTask(const SubTaskConfig& _config,
+    ExtendedConstraint(const ConstraintConfig& _config,
                     KDL::Chain _chain,
                     const uint _no_robot_joints,
-                    bool _tasks_active  = true) :
-        SubTask(_config, _no_robot_joints, _tasks_active)
+                    bool _constraints_active  = true) :
+        Constraint(_config, _no_robot_joints, _constraints_active)
     {
-        no_task_vars = _config.task_var_names.size();
-        init(no_task_vars);
+        if(_config.type == jnt)
+            no_variables = _config.joint_names.size();
+        else
+            no_variables = 6;
+        init(no_variables);
 
         chain = _chain;
         q.resize(chain.getNrOfJoints());
@@ -36,14 +42,14 @@ public:
         jac = KDL::Jacobian(chain.getNrOfJoints());
     }
 
-    ~ExtendedSubTask(){
+    ~ExtendedConstraint(){
         if(solver)
             delete solver;
     }
 
     void init(uint no_vars){
-        task_jac = KDL::Jacobian(no_vars);
-        task_jac.data.setZero();
+        full_jac = KDL::Jacobian(no_vars);
+        full_jac.data.setZero();
 
         H.resize(no_vars,6);
         H.setZero();
@@ -73,10 +79,10 @@ public:
         return manip;
     }
 
-    KDL::Jacobian task_jac;
+    KDL::Jacobian full_jac;
     KDL::Frame pose;
 
-    //Helpers for inversion of the task Jacobian
+    //Helpers for inversion of the Jacobian
     Eigen::MatrixXd Uf, Vf;
     Eigen::VectorXd Sf;
     Eigen::MatrixXd H;

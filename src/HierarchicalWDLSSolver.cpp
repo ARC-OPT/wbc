@@ -38,7 +38,7 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
 
     for(uint i = 0; i < ny_per_prio.size(); i++){
         if(ny_per_prio[i] == 0){
-            LOG_ERROR("No of task variables on each priority level must be > 0");
+            LOG_ERROR("No of constraint variables on each priority level must be > 0");
             return false;
         }
     }
@@ -281,11 +281,11 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
 
 void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
     if(prio >= priorities_.size()){
-        LOG_ERROR("Cannot set task weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
+        LOG_ERROR("Cannot set constraint weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
     }
     if(priorities_[prio].ny_ != weights.size()){
-        LOG_ERROR("Cannot set task weights. Size of weight mat is %i but should be %i", weights.size(), priorities_[prio].ny_);
+        LOG_ERROR("Cannot set constraint weights. Size of weight mat is %i but should be %i", weights.size(), priorities_[prio].ny_);
         throw std::invalid_argument("Invalid Weight vector size");
     }
     priorities_[prio].task_weight_mat_.setZero();

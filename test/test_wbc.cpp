@@ -4,7 +4,7 @@
 #include <boost/test/unit_test.hpp>
 #include <stdlib.h>
 #include <kdl_parser/kdl_parser.hpp>
-#include "../src/SubTask.hpp"
+#include "../src/Constraint.hpp"
 #include "../src/WbcVelocity.hpp"
 #include "../src/HierarchicalWDLSSolver.hpp"
 
@@ -101,8 +101,8 @@ BOOST_AUTO_TEST_CASE(wbc_cart_aila)
     reduced_tree.addChain(right_hand_chain, "Rover_base");
 
     WbcVelocity wbc;
-    std::vector<SubTaskConfig> config;
-    SubTaskConfig conf(cart, 0, "Cart_r", std::vector<std::string>(), "Chest", "Hand_r");
+    std::vector<ConstraintConfig> config;
+    ConstraintConfig conf(cart, 0, "Cart_r", "Chest", "Hand_r");
     config.push_back(conf);
 
     std::vector<std::string> joint_names;
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(wbc_cart_aila)
 
     BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joint_names, true, 3), true);
 
-    SubTask* sub_task = wbc.subTask(conf.name);
+    Constraint* sub_task = wbc.constraint(conf.name);
     sub_task->y_des = Eigen::VectorXd(6);
     for(uint i = 0; i < 6; i++)
         sub_task->y_des(i) = (rand()%1000)/1000.0;;
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(wbc_joint)
     reduced_tree.addChain(right_hand_chain, "Rover_base");
 
     WbcVelocity wbc;
-    std::vector<SubTaskConfig> config;
+    std::vector<ConstraintConfig> config;
     std::vector<std::string> joints;
     joints.push_back("J_Foot");
     joints.push_back("J_Knees");
@@ -181,20 +181,20 @@ BOOST_AUTO_TEST_CASE(wbc_joint)
     joints.push_back("J_Forearm_r");
     joints.push_back("J_Wrist1_r");
     joints.push_back("J_Wrist2_r");
-    SubTaskConfig conf(jnt, 0, "Upper_limits", joints);
+    ConstraintConfig conf(jnt, 0, "Upper_limits", "", "",  joints);
     config.push_back(conf);
     conf.name = "Lower_limits";
     config.push_back(conf);
 
     BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joints, true, 3), true);
 
-    SubTask* sub_task = wbc.subTask("Upper_limits");
+    Constraint* sub_task = wbc.constraint("Upper_limits");
     sub_task->y_des(0) = 0.2;
     sub_task->y_des(1) = -0.3;
 
-    sub_task = wbc.subTask("Lower_limits");
+    sub_task = wbc.constraint("Lower_limits");
 
-    for(uint i = 0; i < sub_task->no_task_vars; i++)
+    for(uint i = 0; i < sub_task->config.joint_names.size(); i++)
         sub_task->weights(i,i) = 0;
 
 
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE(wbc_joint)
 
     for(uint task_no = 0; task_no < config.size(); task_no++){
 
-        sub_task = wbc.subTask(config[task_no].name);
+        sub_task = wbc.constraint(config[task_no].name);
         Eigen::VectorXd y_act(11);
         y_act = sub_task->A * x;
 

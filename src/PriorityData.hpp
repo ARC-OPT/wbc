@@ -46,7 +46,7 @@ public:
 
     double max_singular_val; /** Biggest singular value*/
     double min_singular_val; /** Smallest singular value*/
-    double manipulability; /** Manipulability index of the nullspace projected task mat of this priority, computed as M = det( J * J^T ) */
+    double manipulability; /** Manipulability index of the nullspace projected constraint mat of this priority, computed as M = det( J * J^T ) */
     double sqrt_wbc_err; /** Square root error between desired reference and computed solution*/
     double damping; /** Damping used on that priority for inverse computation */
 
