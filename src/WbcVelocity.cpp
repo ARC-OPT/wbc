@@ -4,7 +4,6 @@
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <base/logging.h>
 #include <wbc/ExtendedConstraint.hpp>
-#include "HierarchicalWDLSSolver.hpp"
 
 using namespace std;
 
@@ -37,9 +36,7 @@ void WbcVelocity::clear(){
     constraint_vector_.clear();
     task_frame_map_.clear();
     joint_index_map_.clear();
-    A_.clear();
-    y_ref_.clear();
-    Wy_.clear();
+    solver_input_.clear();
     no_robot_joints_ = 0;
 }
 
@@ -199,17 +196,10 @@ bool WbcVelocity::configure(const KDL::Tree tree,
                 no_constr_vars += 6;
         }
 
-        Eigen::MatrixXd A(no_constr_vars, no_robot_joints_);
-        Eigen::VectorXd y_ref(no_constr_vars);
-        Eigen::VectorXd Wy(no_constr_vars);
+        SolverInput solver_input_prio(no_constr_vars, no_robot_joints_);
+        solver_input_.push_back(solver_input_prio);
 
-        Wy.setIdentity(); //Set all task weights to 1 in the beginning
-        A.setZero();
-        y_ref.setZero();
-        A_.push_back(A);
-        y_ref_.push_back(y_ref);
-        Wy_.push_back(Wy);
-        no_constr_vars_pp.push_back(y_ref.size());
+        no_constr_vars_pp.push_back(no_constr_vars);
     }
 
     configured_ = true;
@@ -355,17 +345,15 @@ void WbcVelocity::solve(const base::samples::Joints &status, Eigen::VectorXd &ct
             uint n_vars = constraint->no_variables;
 
             //insert constraint equation into equation system of current priority
-            Wy_[prio].segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
-            A_[prio].block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
-            y_ref_[prio].segment(row_index, n_vars) = constraint->y_des_root_frame;
+            solver_input_[prio].Wy.segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
+            solver_input_[prio].A.block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
+            solver_input_[prio].y_ref.segment(row_index, n_vars) = constraint->y_des_root_frame;
 
             row_index += n_vars;
         }
-
-        solver_->setTaskWeights(Wy_[prio], prio);
     }
 
-    solver_->solve(A_, y_ref_, ctrl_out);
+    solver_->solve(solver_input_, ctrl_out);
 }
 
 std::vector<std::string> WbcVelocity::jointNames(){

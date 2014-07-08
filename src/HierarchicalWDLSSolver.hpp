@@ -9,6 +9,23 @@ namespace wbc{
 
 enum svd_method{svd_eigen, svd_kdl};
 
+struct SolverInput{
+    SolverInput(){}
+    SolverInput(uint ny, uint nx){
+        A.resize(ny, nx);
+        y_ref.resize(ny);
+        Wy.resize(ny);
+
+        A.setZero();
+        y_ref.setZero();
+        Wy.setIdentity(); //Set all task weights to 1 in the beginning
+    }
+
+    base::MatrixXd A;  /** Prioritized equation system constructed from Task Jacobians */
+    base::VectorXd Wy; /** Task Weight Vectors per priority */
+    base::VectorXd y_ref;  /** Constraint variables */
+};
+
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver may cope with several hierarchially organized
  *        tasks, which will be solved using nullspace projections. That is, the task with the highest priority will be solved fully if m <= n
@@ -85,9 +102,8 @@ public:
      * @param y Task variables, sorted by priority levels. The first element of the vector corresponds to the highest priority
      * @param x Control solution in joint space
      */
-    void solve(const std::vector<Eigen::MatrixXd> &A,
-                       const std::vector<Eigen::VectorXd> &y,
-                       Eigen::VectorXd &x);
+    void solve(const std::vector<SolverInput>& input, Eigen::VectorXd &x);
+
 
     /**
      * @brief setJointWeights Set full joint weight matrix.

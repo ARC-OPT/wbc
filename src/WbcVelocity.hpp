@@ -6,13 +6,13 @@
 #include <base/commands/joints.h>
 #include <Eigen/Core>
 #include <kdl/chainjnttojacsolver.hpp>
+#include "HierarchicalWDLSSolver.hpp"
 
 namespace wbc{
 
 class TaskFrame;
 class ExtendedConstraint;
 class Constraint;
-class HierarchicalWDLSSolver;
 
 typedef std::map<std::string, ExtendedConstraint*> ConstraintMap;
 typedef std::map<std::string, int> JointIndexMap;
@@ -41,9 +41,8 @@ protected:
     bool has_timeout_;
     KDL::Twist tw_;
 
-    std::vector<Eigen::MatrixXd> A_; /** Vector of constraint matrices per priority. These define, together with y, for each priority the linear equation system that has to be solved */
-    std::vector<Eigen::VectorXd> y_ref_; /** Vector of desired constraint variables per priority */
-    std::vector<Eigen::VectorXd> Wy_; /** Vector of weights per priority */
+    std::vector<SolverInput> solver_input_;
+
 public:
     /**
      * @brief Create Robot Model and Solver
