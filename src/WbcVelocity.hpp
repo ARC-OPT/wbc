@@ -7,6 +7,7 @@
 #include <Eigen/Core>
 #include <kdl/chainjnttojacsolver.hpp>
 #include "HierarchicalWDLSSolver.hpp"
+#include "TaskFrameKDL.hpp"
 
 namespace wbc{
 
@@ -15,7 +16,6 @@ class ExtendedConstraint;
 class Constraint;
 
 typedef std::map<std::string, ExtendedConstraint*> ConstraintMap;
-typedef std::map<std::string, int> JointIndexMap;
 typedef std::map<std::string, TaskFrame*> TaskFrameMap;
 
 class WbcVelocity{

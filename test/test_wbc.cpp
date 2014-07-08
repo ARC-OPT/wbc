@@ -74,7 +74,7 @@ BOOST_AUTO_TEST_CASE(solver)
     cout<<"\n............................."<<endl;
 }
 
-
+/*
 BOOST_AUTO_TEST_CASE(wbc_cart_aila)
 {
     srand (time(NULL));
@@ -244,3 +244,4 @@ BOOST_AUTO_TEST_CASE(test_wbc_invalid_sub_task)
 
     //TODO
 }
+*/
