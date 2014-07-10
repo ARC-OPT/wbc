@@ -1,30 +1,13 @@
 #ifndef HIERARCHICAL_WDLS_SOLVER_HPP
 #define HIERARCHICAL_WDLS_SOLVER_HPP
 
+#include "SolverTypes.hpp"
 #include <vector>
 #include <Eigen/SVD>
 #include "PriorityData.hpp"
 
 namespace wbc{
 
-enum svd_method{svd_eigen, svd_kdl};
-
-struct SolverInput{
-    SolverInput(){}
-    SolverInput(uint ny, uint nx){
-        A.resize(ny, nx);
-        y_ref.resize(ny);
-        Wy.resize(ny);
-
-        A.setZero();
-        y_ref.setZero();
-        Wy.setIdentity(); //Set all task weights to 1 in the beginning
-    }
-
-    base::MatrixXd A;  /** Prioritized equation system constructed from Task Jacobians */
-    base::VectorXd Wy; /** Task Weight Vectors per priority */
-    base::VectorXd y_ref;  /** Constraint variables */
-};
 
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver may cope with several hierarchially organized
@@ -123,7 +106,7 @@ public:
 
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
-    Eigen::MatrixXd getJointWeights(){return joint_weight_mat_;}
+    void getJointWeights(Eigen::VectorXd &weights){weights = joint_weight_mat_.diagonal();}
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
     void setComputeDebug(const bool compute_debug){compute_debug_ = compute_debug;}

@@ -5,7 +5,7 @@
 #include <map>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
-#include "TaskFrameKDL.hpp"
+#include "TaskFrame.hpp"
 
 namespace wbc{
 
@@ -19,7 +19,7 @@ public:
     void update(const base::samples::Joints &status);
 
     KDL::Chain chain_;
-    KDL::Jacobian jac_kdl_;  /** Jacobian of kinematic chain expressed in root frame and with ref point in root frame */
+    KDL::Jacobian tmp_jac_kdl_;  /** Jacobian of kinematic chain expressed in root frame and with ref point in root frame */
     KDL::JntArray q_, q_dot_, q_dot_dot_;
 
     std::vector<std::string> joint_names_; /** Names of joints in the kinematic chain */
@@ -28,8 +28,7 @@ public:
 
     JointIndexMap joint_index_map_;
 
-    KDL::Jacobian jac_robot_kdl_;
-    KDL::Frame pose_kdl_;
+    TaskFrameKDL* tf;
 };
 }
 

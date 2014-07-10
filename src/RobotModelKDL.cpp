@@ -45,12 +45,12 @@ RobotModelKDL::RobotModelKDL(const KDL::Tree& tree, const std::vector<std::strin
 }
 
 RobotModelKDL::~RobotModelKDL(){
-    for(TaskFrameKDLMap::iterator it = tf_kdl_map_.begin(); it != tf_kdl_map_.end(); it++)
+    for(KinChainMap::iterator it = kin_chain_map_.begin(); it != kin_chain_map_.end(); it++)
         delete it->second;
 }
 
 bool RobotModelKDL::addTaskFrame(const std::string &id){
-    if(tf_kdl_map_.count(id) == 0)
+    if(kin_chain_map_.count(id) == 0)
     {
         KDL::Chain chain;
         std::string robot_root = tree_.getRootSegment()->first;
@@ -59,12 +59,12 @@ bool RobotModelKDL::addTaskFrame(const std::string &id){
             LOG_ERROR("Could not extract kinematic chain between %s and %s from robot tree", robot_root.c_str(), id.c_str());
             return false;
         }
-        TaskFrameKDL* tf_kdl = new TaskFrameKDL(chain, joint_index_map_);
-        tf_kdl_map_[id] = tf_kdl;
+        KinematicChainKDL* tf_chain_kdl = new KinematicChainKDL(chain, joint_index_map_);
+        kin_chain_map_[id] = tf_chain_kdl;
 
         LOG_DEBUG("Sucessfully added task frame %s", id.c_str());
         LOG_DEBUG("TF Map now contains:");
-        for(TaskFrameKDLMap::iterator it = tf_kdl_map_.begin(); it != tf_kdl_map_.end(); it++)
+        for(KinChainMap::iterator it = kin_chain_map_.begin(); it != kin_chain_map_.end(); it++)
             LOG_DEBUG("%s", it->first.c_str());
         LOG_DEBUG("\n");
     }
@@ -75,17 +75,17 @@ bool RobotModelKDL::addTaskFrame(const std::string &id){
 }
 
 void RobotModelKDL::update(const base::samples::Joints &joint_state){
-    for(TaskFrameKDLMap::iterator it = tf_kdl_map_.begin(); it != tf_kdl_map_.end(); it++)
+    for(KinChainMap::iterator it = kin_chain_map_.begin(); it != kin_chain_map_.end(); it++)
         it->second->update(joint_state);
 }
 
 TaskFrameKDL* RobotModelKDL::getTaskFrame(const std::string &id){
-    if(tf_kdl_map_.count(id) == 0){
+    if(kin_chain_map_.count(id) == 0){
         LOG_ERROR("Task Frame %s does not exist in Robot model", id.c_str());
         throw std::invalid_argument("Invalid task frame id");
     }
 
-    return tf_kdl_map_[id];
+    return kin_chain_map_[id]->tf;
 }
 
 }

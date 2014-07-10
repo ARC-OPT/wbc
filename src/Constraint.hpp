@@ -51,6 +51,7 @@ public:
     base::MatrixXd A; /** constraint matrix */
     bool constraints_initially_active;
     uint no_variables; /** Number of constraint variables */
+    uint no_robot_joints;
     base::Time last_ref_input; /** last time a new reference sample arrived*/
 
     void setReference(const base::samples::RigidBodyState &ref);

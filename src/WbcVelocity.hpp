@@ -2,39 +2,31 @@
 #define WBC_HPP
 
 #include "ConstraintConfig.hpp"
-#include <kdl/tree.hpp>
 #include <base/commands/joints.h>
-#include <Eigen/Core>
-#include <kdl/chainjnttojacsolver.hpp>
-#include "HierarchicalWDLSSolver.hpp"
-#include "TaskFrameKDL.hpp"
+#include "TaskFrame.hpp"
+#include "SolverTypes.hpp"
+#include <map>
 
 namespace wbc{
 
-class TaskFrame;
 class ExtendedConstraint;
 class Constraint;
 
-typedef std::map<std::string, ExtendedConstraint*> ConstraintMap;
-typedef std::map<std::string, TaskFrame*> TaskFrameMap;
-
 class WbcVelocity{
+
+    typedef std::map<std::string, ExtendedConstraint*> ConstraintMap;
+    typedef std::map<std::string, uint> JointIndexMap;
+    typedef std::map<std::string, TaskFrameKDL> TaskFrameKDLMap;
+
 protected:
-    bool addTaskFrame(const std::string &frame_id);
     void clear();
-
-    HierarchicalWDLSSolver* solver_;
-
-    bool debug_;
     bool configured_;
-    KDL::Tree tree_;
-    std::string robot_root_;
     ConstraintMap constraint_map_; /** Map associating names of Constraints to Constraint pointers */
     std::vector< std::vector<ExtendedConstraint*> > constraint_vector_;  /** Vector containing all constraints (ordered by priority, highest priority first) */
-    TaskFrameMap task_frame_map_; /** Map containing all task frames, that are associated with the cartesian constraints*/
     double constraint_timeout_; /** In seconds. A constraint will be deactivated if no new reference comes in for such a long time. If set to .nan, no timeout will be used. */
     uint no_robot_joints_;
     JointIndexMap joint_index_map_; /** Maps joint names to indices. Order will be either as in KDL::Tree, or as in joint_names parameter given to configure() */
+    TaskFrameKDLMap tf_map_;
 
     //Helpers
     Eigen::VectorXd temp_;
@@ -62,12 +54,10 @@ public:
      *                     not disturb the active constraints anymore. If constraint_timeout == .nan no timeout will be used.
      * @return True in case of success, false else
      */
-    bool configure(const KDL::Tree tree,
-                   const std::vector<ConstraintConfig> &config,
+    bool configure(const std::vector<ConstraintConfig> &config,
                    const std::vector<std::string> &joint_names,
                    bool constraints_active,
-                   double constraint_timeout,
-                   bool debug = false);
+                   double constraint_timeout);
 
     /**
      * @brief solve Compute control solution given all the constraints
@@ -75,11 +65,10 @@ public:
      *               and all task frames. Order may be arbitrary. The joints will be mapped correctly according to the given names.
      * @param ctrl_out Control output. Size will be same as total no of joints as returned by noOfJoints()
      */
-    void solve(const base::samples::Joints &status, Eigen::VectorXd &ctrl_out);
+    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<SolverInput> &solver_input);
 
     uint noOfJoints(){return no_robot_joints_;}
     Constraint* constraint(const std::string &name);
-    HierarchicalWDLSSolver* solver(){return solver_;}
     std::vector<std::string> jointNames();
     uint jointIndex(const std::string &joint_name){return joint_index_map_[joint_name];}
 
