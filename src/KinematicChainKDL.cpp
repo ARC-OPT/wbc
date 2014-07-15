@@ -3,16 +3,11 @@
 
 namespace wbc{
 
-KinematicChainKDL::KinematicChainKDL(const KDL::Chain& chain, const JointIndexMap& joint_index_map)
+KinematicChainKDL::KinematicChainKDL(const KDL::Chain& chain)
 {
     chain_ = chain;
     pos_fk_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
     jac_solver_ = new KDL::ChainJntToJacSolver(chain_);
-
-    tmp_jac_kdl_ = KDL::Jacobian(chain_.getNrOfJoints());
-    tmp_jac_kdl_.data.setZero(6,chain_.getNrOfJoints());
-
-    tf = new TaskFrameKDL(joint_index_map.size(), chain.getSegment(chain.getNrOfSegments()-1).getName());
 
     q_.resize(chain.getNrOfJoints());
     q_dot_.resize(chain.getNrOfJoints());
@@ -24,7 +19,8 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain& chain, const JointIndexMa
             joint_names_.push_back(joint.getName());
     }
 
-    joint_index_map_ = joint_index_map;
+    //Create task Frame, name will be same as last name in kin chain
+    tf = new TaskFrameKDL(chain.getSegment(chain.getNrOfSegments()-1).getName(), joint_names_);
 }
 
 KinematicChainKDL::~KinematicChainKDL(){
@@ -54,16 +50,11 @@ void KinematicChainKDL::update(const base::samples::Joints &status){
     pos_fk_solver_->JntToCart(q_, tf->pose);
 
     //Compute Jacobian
-    jac_solver_->JntToJac(q_, tmp_jac_kdl_);
+    jac_solver_->JntToJac(q_, tf->jac);
 
     // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip.
     // This changes the reference point to the root frame
-    tmp_jac_kdl_.changeRefPoint(-tf->pose.p);
+    tf->jac.changeRefPoint(-tf->pose.p);
 
-    //IMPORTANT: Fill in columns of Jacobian into the correct place of the full robot Jacobian using the joint_index_map
-    for(uint i = 0; i < joint_names_.size(); i++){
-        uint idx = joint_index_map_[joint_names_[i]];
-        tf->jac.setColumn(idx, tmp_jac_kdl_.getColumn(i));
-    }
 }
 }

@@ -2,13 +2,15 @@
 #define SOLVERTYPES_HPP
 
 #include <base/Eigen.hpp>
+#include <vector>
 
 namespace wbc{
 enum svd_method{svd_eigen, svd_kdl};
 
-struct SolverInput{
-    SolverInput(){}
-    SolverInput(uint ny, uint nx){
+
+struct SolverInputPrio{
+    SolverInputPrio(){}
+    SolverInputPrio(uint ny, uint nx){
         A.resize(ny, nx);
         y_ref.resize(ny);
         Wy.resize(ny);
@@ -22,5 +24,11 @@ struct SolverInput{
     base::VectorXd Wy; /** Task Weight Vectors per priority */
     base::VectorXd y_ref;  /** Constraint variables */
 };
+
+struct SolverInput{
+    std::vector<std::string> joint_names;
+    std::vector<SolverInputPrio> priorities;
+};
+
 }
 #endif // SOLVERTYPES_HPP

@@ -83,7 +83,7 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     return true;
 }
 
-void HierarchicalWDLSSolver::solve(const std::vector<SolverInput>& input, Eigen::VectorXd &x){
+void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x){
 
     //Check valid input
     if(x.rows() != nx_){
@@ -91,14 +91,14 @@ void HierarchicalWDLSSolver::solve(const std::vector<SolverInput>& input, Eigen:
         x.resize(nx_);
     }
 
-    if(input.size() != priorities_.size())
+    if(input.priorities.size() != priorities_.size())
         throw std::invalid_argument("Invalid number of priority levels in input");
     for(uint i = 0; i < priorities_.size(); i++){
-        if(input[i].A.rows() != priorities_[i].ny_ ||
-                input[i].A.cols() != nx_ ||
-                input[i].y_ref.rows() != priorities_[i].ny_){
+        if(input.priorities[i].A.rows() != priorities_[i].ny_ ||
+                input.priorities[i].A.cols() != nx_ ||
+                input.priorities[i].y_ref.rows() != priorities_[i].ny_){
             LOG_ERROR("Expected input size: A: %i x %i, y: %i x 1, actual input: A: %i x %i, y: %i x 1",
-                      priorities_[i].ny_, nx_, priorities_[i].ny_, input[i].A.rows(), input[i].A.cols(), input[i].y_ref.rows());
+                      priorities_[i].ny_, nx_, priorities_[i].ny_, input.priorities[i].A.rows(), input.priorities[i].A.cols(), input.priorities[i].y_ref.rows());
             throw std::invalid_argument("Invalid size of input variables");
         }
     }
@@ -113,16 +113,16 @@ void HierarchicalWDLSSolver::solve(const std::vector<SolverInput>& input, Eigen:
 
         base::Time start = base::Time::now(), loop_start = base::Time::now();
 
-        setTaskWeights(input[prio].Wy, prio);
+        setTaskWeights(input.priorities[prio].Wy, prio);
 
         priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
-        priorities_[prio].y_comp_ = input[prio].y_ref - input[prio].A*x;
+        priorities_[prio].y_comp_ = input.priorities[prio].y_ref - input.priorities[prio].A*x;
 
         //projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         //For the first priority P == Identity
-        priorities_[prio].A_proj_ = input[prio].A * proj_mat_;
+        priorities_[prio].A_proj_ = input.priorities[prio].A * proj_mat_;
 
         double comp_time_proj = (base::Time::now() - start).toSeconds();
         start = base::Time::now();
@@ -237,8 +237,8 @@ void HierarchicalWDLSSolver::solve(const std::vector<SolverInput>& input, Eigen:
 
         if(compute_debug_)
         {
-            prio_debug_[prio].y_des = input[prio].y_ref;
-            prio_debug_[prio].y_solution = input[prio].A * x;
+            prio_debug_[prio].y_des = input.priorities[prio].y_ref;
+            prio_debug_[prio].y_solution = input.priorities[prio].A * x;
             prio_debug_[prio].singular_vals = S_;
             prio_debug_[prio].manipulability = sqrt( (priorities_[prio].A_proj_w_ * priorities_[prio].A_proj_w_.transpose()).determinant() );
             prio_debug_[prio].sqrt_wbc_err = sqrt((prio_debug_[prio].y_des - prio_debug_[prio].y_solution).norm());

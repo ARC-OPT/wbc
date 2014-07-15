@@ -85,7 +85,7 @@ public:
      * @param y Task variables, sorted by priority levels. The first element of the vector corresponds to the highest priority
      * @param x Control solution in joint space
      */
-    void solve(const std::vector<SolverInput>& input, Eigen::VectorXd &x);
+    void solve(const SolverInput& input, Eigen::VectorXd &x);
 
 
     /**

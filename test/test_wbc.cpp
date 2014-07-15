@@ -29,17 +29,16 @@ BOOST_AUTO_TEST_CASE(solver)
 
     cout<<"............Testing Hierarchical Solver ............ "<<endl<<endl;
 
-    std::vector<SolverInput> solver_input;
-    SolverInput input_prio(NO_CONSTRAINTS,NO_JOINTS);
-    solver_input.push_back(input_prio);
+    SolverInput input;
+    input.priorities.push_back(SolverInputPrio(NO_CONSTRAINTS,NO_JOINTS));
 
     for(uint i = 0; i < NO_CONSTRAINTS*NO_JOINTS; i++ )
-        solver_input[0].A.data()[i] = (rand()%1000)/1000.0;
+        input.priorities[0].A.data()[i] = (rand()%1000)/1000.0;
 
     for(uint i = 0; i < NO_CONSTRAINTS; i++ )
-        solver_input[0].y_ref.data()[i] = (rand()%1000)/1000.0;
+        input.priorities[0].y_ref.data()[i] = (rand()%1000)/1000.0;
 
-    solver_input[0].Wy(0) = 0.1;
+    input.priorities[0].Wy(0) = 0.1;
 
     cout<<"............Testing Hierarchical Solver "<<endl<<endl;
     cout<<"Number of priorities: "<<ny_per_prio.size()<<endl;
@@ -48,14 +47,14 @@ BOOST_AUTO_TEST_CASE(solver)
     cout<<"\nSolver Input: "<<endl;
     for(uint i = 0; i < ny_per_prio.size(); i++){
         cout<<"Priority: "<<i<<endl;
-        cout<<"A: "<<endl; cout<<solver_input[i].A<<endl;
-        cout<<"y: "<<endl; cout<<solver_input[i].y_ref<<endl;
+        cout<<"A: "<<endl; cout<<input.priorities[i].A<<endl;
+        cout<<"y: "<<endl; cout<<input.priorities[i].y_ref<<endl;
         cout<<endl;
     }
 
     Eigen::VectorXd solver_output;
     try{
-        solver.solve(solver_input,  solver_output);
+        solver.solve(input,  solver_output);
     }
     catch(std::exception e){
         BOOST_ERROR("Solver.solve threw an exception");
@@ -65,10 +64,10 @@ BOOST_AUTO_TEST_CASE(solver)
     cout<<"\nTest: "<<endl;
     for(uint i = 0; i < ny_per_prio.size(); i++){
         cout<<"Priority: "<<i<<endl;
-        Eigen::VectorXd test = solver_input[i].A*solver_output;
+        Eigen::VectorXd test = input.priorities[i].A*solver_output;
         cout<<"A*q: "<<test<<endl; cout<<endl;
         for(uint j = 0; j < NO_CONSTRAINTS; j++)
-            BOOST_CHECK_EQUAL(fabs(test(j) - solver_input[i].y_ref(j)) < 1e-9, true);
+            BOOST_CHECK_EQUAL(fabs(test(j) - input.priorities[i].y_ref(j)) < 1e-9, true);
     }
 
     cout<<"\n............................."<<endl;
