@@ -49,7 +49,6 @@ public:
             task_weight_mat_.setIdentity();
             u_t_task_weight_mat_.resize(nx, ny);
             u_t_task_weight_mat_.setZero();
-            task_weight_mat_is_diagonal_ = true;
             svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
         }
         Eigen::MatrixXd A_proj_;                /** A Matrix projected on nullspace of the higher priority*/
@@ -62,7 +61,6 @@ public:
         Eigen::MatrixXd u_t_task_weight_mat_;   /** Matrix U_transposed * task_weight_mat_*/
 
         unsigned int ny_;                   /** Number of task variables*/
-        bool task_weight_mat_is_diagonal_;  /**  Is the task weight mat a diagonal matrix. This is important regarding the computation time*/
 
         //Helpers
         Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_; /** For singular value decomposition used in matrix inversion*/
@@ -132,7 +130,6 @@ protected:
 
     unsigned int nx_;                   /** No of robot joints */
     bool configured_;                   /** Has configure been called yet?*/
-    bool joint_weight_mat_is_diagonal_; /** Is the joint weight mat a diagonal matrix. This is important regarding the computation time*/
     bool compute_debug_;                /** Compute additional debug info */
 
     //Properties

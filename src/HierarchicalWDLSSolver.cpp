@@ -15,7 +15,6 @@ HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
     nx_(0),
     compute_debug_(false),
     configured_(false),
-    joint_weight_mat_is_diagonal_(true),
     epsilon_(1e-9),
     norm_max_(1){
 
@@ -74,7 +73,6 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     L_.resize(nx_, nx_);
     L_.setZero();
 
-    joint_weight_mat_is_diagonal_ = true;
     configured_ = true;
 
     tmp_.resize(nx_);
@@ -128,21 +126,13 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
         start = base::Time::now();
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
-        // If the weight matrices are diagonal, there is no need for full matrix multiplication
+        // Since the weight matrices are diagonal, there is no need for full matrix multiplication
 
-        if(priorities_[prio].task_weight_mat_is_diagonal_){
-            for(uint i = 0; i < priorities_[prio].ny_; i++)
-                priorities_[prio].A_proj_w_.row(i) = priorities_[prio].task_weight_mat_(i,i) * priorities_[prio].A_proj_.row(i);
-        }
-        else
-            priorities_[prio].A_proj_w_ = priorities_[prio].task_weight_mat_ *  priorities_[prio].A_proj_;
+        for(uint i = 0; i < priorities_[prio].ny_; i++)
+            priorities_[prio].A_proj_w_.row(i) = priorities_[prio].task_weight_mat_(i,i) * priorities_[prio].A_proj_.row(i);
 
-        if(joint_weight_mat_is_diagonal_){
-            for(uint i = 0; i < nx_; i++)
-                priorities_[prio].A_proj_w_.col(i) = joint_weight_mat_(i,i) * priorities_[prio].A_proj_w_.col(i);
-        }
-        else
-            priorities_[prio].A_proj_w_ = priorities_[prio].A_proj_w_ * joint_weight_mat_;
+        for(uint i = 0; i < nx_; i++)
+            priorities_[prio].A_proj_w_.col(i) = joint_weight_mat_(i,i) * priorities_[prio].A_proj_w_.col(i);
 
         double comp_time_weighting = (base::Time::now() - start).toSeconds();
         start = base::Time::now();
@@ -202,22 +192,13 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
         }
 
         // A^# = Wq^-1 * V * S^# * U^T * Wy
-        // If the weight matrices are diagonal, there is no need for full matrix multiplication (saves a lot of computation!)
+        // Since the weight matrices are diagonal, there is no need for full matrix multiplication (saves a lot of computation!)
+        priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose();
+        for(uint i = 0; i < priorities_[prio].ny_; i++)
+            priorities_[prio].u_t_task_weight_mat_.col(i) = priorities_[prio].u_t_task_weight_mat_.col(i) * priorities_[prio].task_weight_mat_(i,i);
 
-        if(priorities_[prio].task_weight_mat_is_diagonal_){
-            priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose();
-            for(uint i = 0; i < priorities_[prio].ny_; i++)
-                priorities_[prio].u_t_task_weight_mat_.col(i) = priorities_[prio].u_t_task_weight_mat_.col(i) * priorities_[prio].task_weight_mat_(i,i);
-        }
-        else
-            priorities_[prio].u_t_task_weight_mat_ = priorities_[prio].U_.transpose() * priorities_[prio].task_weight_mat_;
-
-        if(joint_weight_mat_is_diagonal_){
-            for(uint i = 0; i < nx_; i++)
-                Wq_V_.row(i) = joint_weight_mat_(i,i) * V_.row(i);
-        }
-        else
-            Wq_V_ = joint_weight_mat_ * V_;
+        for(uint i = 0; i < nx_; i++)
+            Wq_V_.row(i) = joint_weight_mat_(i,i) * V_.row(i);
 
         for(uint i = 0; i < nx_; i++)
             Wq_V_S_inv_.col(i) = Wq_V_.col(i) * S_inv_(i,i);

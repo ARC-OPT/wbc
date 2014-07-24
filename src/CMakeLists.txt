@@ -14,7 +14,7 @@ rock_library(wbc
             ExtendedConstraint.hpp
             PriorityData.hpp
             SolverTypes.hpp
-            KinematicChainKDL.cpp
+            KinematicChainKDL.hpp
             TaskFrame.hpp
             RobotModelKDL.hpp
             WbcVelocity.hpp

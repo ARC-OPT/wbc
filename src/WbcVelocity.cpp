@@ -210,12 +210,14 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, Sol
 
                 if(tf_map_.count(constraint->config.root) == 0)
                 {
-                    LOG_ERROR("Root frame of constraint %s is %s, but this frame is not in task frame vector!", constraint->config.name.c_str(), constraint->config.root.c_str());
+                    LOG_ERROR("Root frame of constraint %s is %s, but this frame is not in task frame vector! Check the configuration of your robot model!",
+                              constraint->config.name.c_str(), constraint->config.root.c_str());
                     throw std::invalid_argument("Missing task frame");
                 }
                 if(tf_map_.count(constraint->config.tip) == 0)
                 {
-                    LOG_ERROR("Task frame of constraint %s is %s, but this frame is not in task frame vector!", constraint->config.name.c_str(), constraint->config.tip.c_str());
+                    LOG_ERROR("Task frame of constraint %s is %s, but this frame is not in task frame vector! Check the configuration of your robot model!",
+                              constraint->config.name.c_str(), constraint->config.tip.c_str());
                     throw std::invalid_argument("Missing task frame");
                 }
                 const TaskFrameKDL& tf_root = tf_map_[constraint->config.root];
