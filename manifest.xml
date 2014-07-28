@@ -6,7 +6,7 @@
   <license></license>
   <url>http://</url>
   <logo>http://</logo>
-  <tags>stable</tags>
+  <!--tags>stable</tags-->
   <depend package="base/cmake" />
   <depend package="base/types" />
   <depend package="control/kdl" />

@@ -63,6 +63,8 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     if(joint_weight_mat_.rows() != nx_ || joint_weight_mat_.cols() != nx_){
         joint_weight_mat_.resize(nx_, nx_);
         joint_weight_mat_.setIdentity();
+        joint_weights_.resize(nx_);
+        joint_weights_.setOnes(nx_);
     }
     Wq_V_.resize(nx_, nx_);
     Wq_V_.setZero();
@@ -253,6 +255,7 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
 
 void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
     if(weights.size() == nx_){
+        joint_weights_ = weights;
         joint_weight_mat_.setZero();
         for(uint i = 0; i < nx_; i++)
             joint_weight_mat_(i,i) = sqrt(weights(i));

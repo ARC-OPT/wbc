@@ -104,7 +104,7 @@ public:
 
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
-    void getJointWeights(Eigen::VectorXd &weights){weights = joint_weight_mat_.diagonal();}
+    void getJointWeights(Eigen::VectorXd &weights){weights = joint_weights_;}
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
     void setComputeDebug(const bool compute_debug){compute_debug_ = compute_debug;}
@@ -136,6 +136,7 @@ protected:
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
     double norm_max_;   /** Maximum norm of (J#) * y */
     svd_method svd_method_;
+    Eigen::VectorXd joint_weights_;
 
     //Helpers
     Eigen::VectorXd tmp_;
