@@ -5,6 +5,7 @@
 #include <vector>
 #include <Eigen/SVD>
 #include "PriorityData.hpp"
+#include "GeneralizedInverse.hpp"
 
 namespace wbc{
 
@@ -33,6 +34,8 @@ public:
          */
         PriorityDataIntern(const unsigned int ny, const unsigned int nx){
             ny_ = ny;
+            x_prio_.resize(nx);
+            x_prio_.setZero();
             A_proj_.resize(ny, nx);
             A_proj_.setZero();
             A_proj_w_.resize(ny,nx);
@@ -51,6 +54,7 @@ public:
             u_t_task_weight_mat_.setZero();
             svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
         }
+        Eigen::VectorXd x_prio_;
         Eigen::MatrixXd A_proj_;                /** A Matrix projected on nullspace of the higher priority*/
         Eigen::MatrixXd A_proj_w_;              /** A Matrix projected on nullspace of the higher priority with weighting*/
         Eigen::MatrixXd U_;                     /** Matrix of left singular vector of A_proj_w_ */
@@ -101,7 +105,6 @@ public:
      * @param prio Priority (>= 0) according to what was passed to configure() method
      */
     void setTaskWeights(const Eigen::VectorXd& weights, const uint prio);
-
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
     void getJointWeights(Eigen::VectorXd &weights){weights = joint_weights_;}
@@ -126,7 +129,6 @@ protected:
     Eigen::MatrixXd Wq_V_;              /** Joint weight mat times Matrix of Vectors of right singular vectors*/
     Eigen::MatrixXd Wq_V_S_inv_;        /** Wq_V_ times S_inv_ */
     Eigen::MatrixXd Wq_V_Damped_S_inv_; /** Wq_V_ times Damped_S_inv_ */
-    Eigen::MatrixXd L_;                 /** Choleski Decomposition: If the joint weight matrix is not diagonal, it has to be decomposed into lower triangular matrix and its transpose using method of Cholesky*/
 
     unsigned int nx_;                   /** No of robot joints */
     bool configured_;                   /** Has configure been called yet?*/

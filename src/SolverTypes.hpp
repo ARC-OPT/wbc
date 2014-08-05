@@ -5,8 +5,6 @@
 #include <vector>
 
 namespace wbc{
-enum svd_method{svd_eigen, svd_kdl};
-
 
 struct SolverInputPrio{
     SolverInputPrio(){}

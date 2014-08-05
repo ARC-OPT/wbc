@@ -7,6 +7,7 @@
 #include "../src/Constraint.hpp"
 #include "../src/WbcVelocity.hpp"
 #include "../src/HierarchicalWDLSSolver.hpp"
+#include "../src/GeneralizedInverse.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -71,6 +72,221 @@ BOOST_AUTO_TEST_CASE(solver)
     }
 
     cout<<"\n............................."<<endl;
+}
+
+BOOST_AUTO_TEST_CASE(pseudo_inverse)
+{
+    srand (time(NULL));
+    const uint N_ROWS = 3;
+    const uint N_COLS = 5;
+
+    GeneralizedInverse inv(N_ROWS, N_COLS);
+
+    Eigen::MatrixXd in(N_ROWS, N_COLS);
+    Eigen::MatrixXd out(N_COLS, N_ROWS);
+
+    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
+        in.data()[i] = (rand()%1000)/1000.0;
+
+    inv.computeInverse(in, out);
+
+    Eigen::MatrixXd res(N_ROWS,N_ROWS);
+    res = in * out;
+
+    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
+    std::cout << in << std::endl << std::endl;
+
+    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
+    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
+    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
+    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
+
+    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
+    std::cout<< out << std::endl << std::endl;
+
+    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
+    std::cout<< res << std::endl;
+
+    for(uint i = 0; i < N_ROWS; i++)
+    {
+        for(uint j = 0; j < N_ROWS; j++)
+        {
+            if(i == j)
+                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 1e-5, true);
+            else
+                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 1e-5, true);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(damped_pseudo_inverse)
+{
+    srand (time(NULL));
+    const uint N_ROWS = 3;
+    const uint N_COLS = 5;
+
+    GeneralizedInverse inv(N_ROWS, N_COLS);
+    inv.setConstantDamping(0.01);
+
+    Eigen::MatrixXd in(N_ROWS, N_COLS);
+    Eigen::MatrixXd out(N_COLS, N_ROWS);
+
+    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
+        in.data()[i] = (rand()%1000)/1000.0;
+
+    inv.computeInverse(in, out);
+
+    Eigen::MatrixXd res(N_ROWS,N_ROWS);
+    res = in * out;
+
+    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
+    std::cout << in << std::endl << std::endl;
+
+    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
+    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
+    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
+    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
+    std::cout << " Current Damping: " << inv.damping_ << std::endl << std::endl;
+
+    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
+    std::cout<< out << std::endl << std::endl;
+
+    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
+    std::cout<< res << std::endl;
+
+    for(uint i = 0; i < N_ROWS; i++)
+    {
+        for(uint j = 0; j < N_ROWS; j++)
+        {
+            if(i == j)
+                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 0.01, true);
+            else
+                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 0.01, true);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(auto_damped_pseudo_inverse)
+{
+    srand (time(NULL));
+    const uint N_ROWS = 3;
+    const uint N_COLS = 5;
+    const double NORM_MAX = 2.0;
+
+    GeneralizedInverse inv(N_ROWS, N_COLS);
+    inv.setNormMaxDamping(NORM_MAX);
+
+    Eigen::MatrixXd in(N_ROWS, N_COLS);
+    Eigen::MatrixXd out(N_COLS, N_ROWS);
+
+    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
+        in.data()[i] = (rand()%1000)/1000.0;
+
+    inv.computeInverse(in, out);
+
+    Eigen::MatrixXd res(N_ROWS,N_ROWS);
+    res = in * out;
+
+    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
+    std::cout << in << std::endl << std::endl;
+
+    std::cout << "Norm Max: " << NORM_MAX << std::endl << std::endl;
+    std::cout << "1 /Norm Max: " << 1/inv.norm_max_ << std::endl << std::endl;
+    std::cout << "Current Damping: " << inv.damping_ << std::endl << std::endl;
+
+    std::cout << "--------- Singular Values --------" << std::endl << std::endl;
+    std::cout << inv.singular_vals_ << std::endl << std::endl;
+
+    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
+    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
+    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
+    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
+
+    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
+    std::cout<< out << std::endl << std::endl;
+
+    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
+    std::cout<< res << std::endl;
+
+    for(uint i = 0; i < N_ROWS; i++)
+    {
+        for(uint j = 0; j < N_ROWS; j++)
+        {
+            if(i == j)
+                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 0.01, true);
+            else
+                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 0.01, true);
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE(weighted_pseudo_inverse)
+{
+    srand (time(NULL));
+    const uint N_ROWS = 3;
+    const uint N_COLS = 5;
+    const uint COL_NUMBER_WITH_ZERO_WEIGHT = 3;
+    const uint ROW_NUMBER_WITH_ZERO_WEIGHT = 1;
+
+    GeneralizedInverse inv(N_ROWS, N_COLS);
+
+    Eigen::MatrixXd in(N_ROWS, N_COLS);
+    Eigen::MatrixXd out(N_COLS, N_ROWS);
+
+    Eigen::VectorXd col_weights, row_weights;
+    col_weights.setOnes(N_COLS);
+    row_weights.setOnes(N_ROWS);
+
+    col_weights(COL_NUMBER_WITH_ZERO_WEIGHT) = 0;
+    row_weights(ROW_NUMBER_WITH_ZERO_WEIGHT) = 0;
+
+    inv.setColWeights(col_weights);
+    inv.setRowWeights(row_weights);
+
+    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
+        in.data()[i] = (rand()%1000)/1000.0;
+
+    inv.computeInverse(in, out);
+
+    Eigen::MatrixXd res(N_ROWS,N_ROWS);
+    res = in * out;
+
+    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
+    std::cout << in << std::endl << std::endl;
+
+    std::cout << "---------- Column weights -------- " << std::endl << std::endl;
+    std::cout << inv.col_weights_ << std::endl << std::endl;
+
+    std::cout << "---------- Row weights -------- " << std::endl << std::endl;
+    std::cout << inv.row_weights_ << std::endl << std::endl;
+
+    std::cout << "--------- Weighted input Mat --------" << std::endl << std::endl;
+    std::cout << inv.weighted_mat_ << std::endl << std::endl;
+
+    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
+    std::cout<< out << std::endl << std::endl;
+
+    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
+    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
+    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
+    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
+
+    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
+    std::cout<< res << std::endl;
+
+    for(uint i = 0; i < N_ROWS; i++)
+    {
+        for(uint j = 0; j < N_ROWS; j++)
+        {
+            if( i == ROW_NUMBER_WITH_ZERO_WEIGHT)
+                continue;
+
+            if(i == j)
+                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 1e-5, true);
+            else
+                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 1e-5, true);
+        }
+    }
 }
 
 /*

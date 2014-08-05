@@ -2,8 +2,6 @@
 #include <base/logging.h>
 #include <stdexcept>
 #include <iostream>
-#include <Eigen/Cholesky>
-#include <Eigen/LU>
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <base/time.h>
 
@@ -72,8 +70,6 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     Wq_V_S_inv_.setZero();
     Wq_V_Damped_S_inv_.resize(nx_, nx_);
     Wq_V_Damped_S_inv_.setZero();
-    L_.resize(nx_, nx_);
-    L_.setZero();
 
     configured_ = true;
 
@@ -211,7 +207,8 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
         priorities_[prio].A_proj_inv_wdls_ = Wq_V_Damped_S_inv_ * priorities_[prio].u_t_task_weight_mat_; //Damped inverse with weighting
 
         // x = x + A^# * y
-        x += priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;
+        priorities_[prio].x_prio_ = priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;
+        x += priorities_[prio].x_prio_;
 
         // Compute projection matrix for the next priority. Use here the undamped inverse to have a correct solution
         proj_mat_ -= priorities_[prio].A_proj_inv_wls_ * priorities_[prio].A_proj_;
@@ -223,14 +220,17 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
             prio_debug_[prio].y_des = input.priorities[prio].y_ref;
             prio_debug_[prio].y_solution = input.priorities[prio].A * x;
             prio_debug_[prio].singular_vals = S_;
-            prio_debug_[prio].manipulability = sqrt( (priorities_[prio].A_proj_w_ * priorities_[prio].A_proj_w_.transpose()).determinant() );
-            prio_debug_[prio].sqrt_wbc_err = sqrt((prio_debug_[prio].y_des - prio_debug_[prio].y_solution).norm());
+            prio_debug_[prio].manipulability = sqrt( (input.priorities[prio].A * input.priorities[prio].A.transpose()).determinant() );
+            prio_debug_[prio].projected_manipulability = sqrt( (priorities_[prio].A_proj_w_ * priorities_[prio].A_proj_w_.transpose()).determinant() );
+            prio_debug_[prio].error_ratio = prio_debug_[prio].y_des.norm()/prio_debug_[prio].y_solution.norm();
             prio_debug_[prio].damping = damping;
             prio_debug_[prio].proj_time = comp_time_proj;
             prio_debug_[prio].weighting_time = comp_time_weighting;
             prio_debug_[prio].svd_time = comp_time_svd;
             prio_debug_[prio].compute_inverse_time = comp_time_inv;
             prio_debug_[prio].total_time = (base::Time::now() - loop_start).toSeconds();
+            prio_debug_[prio].damping_error_ratio = priorities_[prio].x_prio_.norm() / (priorities_[prio].A_proj_inv_wls_ * priorities_[prio].y_comp_).norm();
+            prio_debug_[prio].projected_manipulability_ratio = prio_debug_[prio].projected_manipulability / prio_debug_[prio].manipulability;
 
             //Get maximum and minimum singular value
             double max_singular_val = 0;
@@ -266,7 +266,7 @@ void HierarchicalWDLSSolver::setJointWeights(const Eigen::VectorXd& weights){
     }
 }
 
-void HierarchicalWDLSSolver::   setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalWDLSSolver::setTaskWeights(const Eigen::VectorXd& weights, const uint prio){
     if(prio >= priorities_.size()){
         LOG_ERROR("Cannot set constraint weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
