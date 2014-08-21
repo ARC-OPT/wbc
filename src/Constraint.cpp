@@ -87,7 +87,6 @@ void Constraint::reset()
 
     A.setZero();
     last_ref_input = base::Time::now();
-    manipulability = base::NaN<double>();
 }
 } //namespace wbc
 #endif // Constraint_CPP

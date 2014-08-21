@@ -124,7 +124,7 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
         start = base::Time::now();
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
-        // Since the weight matrices are diagonal, there is no need for full matrix multiplication
+        //Since the weight matrices are diagonal, there is no need for full matrix multiplication
 
         for(uint i = 0; i < priorities_[prio].ny_; i++)
             priorities_[prio].A_proj_w_.row(i) = priorities_[prio].task_weight_mat_(i,i) * priorities_[prio].A_proj_.row(i);

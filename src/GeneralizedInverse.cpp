@@ -188,7 +188,7 @@ void GeneralizedInverse::setColWeights(const Eigen::VectorXd& col_weights)
         sqrt_col_weights_(i) = sqrt(col_weights(i));
 }
 
-bool GeneralizedInverse::setSVDMethod(const svd_method method)
+void GeneralizedInverse::setSVDMethod(const svd_method method)
 {
     svd_method_ = method;
 }

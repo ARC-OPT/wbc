@@ -19,10 +19,10 @@ public:
         joint_names = jt_names;
     }
     base::Time time;
-    std::string tf_name;
-    base::MatrixXd jac;
-    std::vector<std::string> joint_names;
-    base::samples::RigidBodyState pose;
+    std::string tf_name; /** Unique identifier of this task frame */
+    base::MatrixXd jac;  /** Jacobian of this task frame with respect to the robot base frame*/
+    std::vector<std::string> joint_names; /** Names of the joints that correspond to the columns of the Jacobian */
+    base::samples::RigidBodyState pose; /** Pose of the task frame wrt to robot base*/
 };
 
 class TaskFrameKDL{

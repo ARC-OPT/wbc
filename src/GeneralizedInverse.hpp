@@ -13,7 +13,7 @@ class GeneralizedInverse{
 public:
     GeneralizedInverse(const uint n_rows, const uint n_cols);
 
-    /** Perform inversion. Both, input matrix has to have size n_rows x n_cols, output matrix size n_cols x n_rows */
+    /** Perform inversion. Input matrix has to have size n_rows x n_cols, output matrix has to have size n_cols x n_rows */
     void computeInverse(const Eigen::MatrixXd& in, Eigen::MatrixXd& out);
 
     /** Set row weights. Has to be same size as n_rows */
@@ -23,7 +23,7 @@ public:
     void setColWeights(const Eigen::VectorXd& col_weights);
 
     /** Set SVD method to used. Can be either svd_eigen or svd_kdl. The latter seems to be faster for large matrices */
-    bool setSVDMethod(const svd_method method);
+    void setSVDMethod(const svd_method method);
 
     /** Set Maximum norm for automatic damping computation. A low value will provide a strongly damped solution near singularities,
      *  a very high value will provide the undamped solution. However, this should better be achived by setting a constant damping of zero */

@@ -46,7 +46,6 @@ public:
     base::VectorXd weights; /** constraint weights, a 0 means that the reference of the corresponding constraint variable will be ignored while computing the solution*/
     double activation; /** Between 0 .. 1. Will be multiplied with the constraint weights. Can be used to (smoothly) switch on/off the constraints */
     int constraint_timed_out; /** May be 0 or 1. Will be multiplied with the constraint weights. If no new reference values arrive for a certain time,the constraint times out*/
-    double manipulability; /** Manipulability of the kinematic chain connected with this sub constraint*/
 
     base::MatrixXd A; /** constraint matrix */
     bool constraints_initially_active;
