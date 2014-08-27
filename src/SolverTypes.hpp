@@ -21,9 +21,10 @@ struct SolverInputPrio{
         Wy.setIdentity(); //Set all task weights to 1 in the beginning
     }
 
-    base::MatrixXd A;      /** Task Jacobians for one priority level */
-    base::VectorXd Wy;     /** Task Weight Vector for one priority level */
-    base::VectorXd y_ref;  /** Constraint variables */
+    base::MatrixXd A;      /** m x n Task Jacobian matrix for one priority level */
+    base::VectorXd Wy;     /** m x 1 Task Weight Vector for one priority level */
+    base::VectorXd y_ref;  /** m x 1 Constraint variables for one priority level */
+
 };
 
 
@@ -32,7 +33,8 @@ struct SolverInputPrio{
  */
 struct SolverInput{
     std::vector<std::string> joint_names;
-    std::vector<SolverInputPrio> priorities;
+    std::vector<SolverInputPrio> priorities; /** Priority vector, ordered by priority, 0 = highest */
+    base::VectorXd Wx;                       /** n x 1 Joint weight vector */
 };
 
 }

@@ -37,6 +37,7 @@ public:
         error_ratio = base::NaN<double>();
         damping = base::NaN<double>();
         damping_error_ratio = base::NaN<double>();
+        condition_number = base::NaN<double>();
     }
     base::Time time;
     uint priority;
@@ -51,6 +52,7 @@ public:
     double min_singular_val; /** Smallest singular value*/
     double projected_manipulability;   /** Manipulability index of the nullspace projected constraint mat of this priority, computed as M = det( J * J^T ) */
     double manipulability;   /** Manipulability index of the constraint mat of this priority, computed as M = det( J * J^T ) */
+    double condition_number; /** Ratio between highest and lowest singular value */
     double damping;          /** Damping used on that priority for inverse computation */
 
     double error_ratio;                    /** Ratio of vector magnitude between desired and actual solution ||y_des|| / ||y_solution|| */
