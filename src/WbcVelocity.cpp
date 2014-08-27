@@ -73,38 +73,26 @@ bool WbcVelocity::configure(const KDL::Tree tree,
     // This order will be kept in all constraint matrices, weight matrices, status vectors, etc.
     // If no joint names are given, the order will be the same as in the KDL tree
     joint_index_map_.clear();
-    if(joint_names.empty())
-    {
-        KDL::SegmentMap segments = tree_.getSegments();
-        uint idx = 0;
-        for(KDL::SegmentMap::iterator it = segments.begin(); it != segments.end(); it++)
-        {
-            KDL::Segment seg = it->second.segment;
-            if(seg.getJoint().getType() != KDL::Joint::None)
-                joint_index_map_[seg.getJoint().getName()] = idx++;
-        }
-    }
-    else
-    {
-        for(uint i = 0; i < joint_names.size(); i++)
-            joint_index_map_[joint_names[i]] = i;
 
-        //Check if all joints in tree are in joint index map
-        KDL::SegmentMap segments = tree_.getSegments();
-        for(KDL::SegmentMap::iterator it = segments.begin(); it != segments.end(); it++)
+    for(uint i = 0; i < joint_names.size(); i++)
+        joint_index_map_[joint_names[i]] = i;
+
+    //Check if all joints in tree are in joint index map
+    KDL::SegmentMap segments = tree_.getSegments();
+    for(KDL::SegmentMap::iterator it = segments.begin(); it != segments.end(); it++)
+    {
+        KDL::Segment seg = it->second.segment;
+        if(seg.getJoint().getType() != KDL::Joint::None)
         {
-            KDL::Segment seg = it->second.segment;
-            if(seg.getJoint().getType() != KDL::Joint::None)
+            if(joint_index_map_.count(seg.getJoint().getName()) == 0)
             {
-                if(joint_index_map_.count(seg.getJoint().getName()) == 0)
-                {
-                    LOG_ERROR("Joint with name %s is in KDL::Tree but not in joint names parameter", seg.getJoint().getName().c_str());
-                    LOG_ERROR("If the order of joints shall be fixed with the joint names parameter, all joints in tree have to be given here");
-                    return false;
-                }
+                LOG_ERROR("Joint with name %s is in KDL::Tree but not in joint names parameter", seg.getJoint().getName().c_str());
+                LOG_ERROR("If the order of joints shall be fixed with the joint names parameter, all joints in tree have to be given here");
+                return false;
             }
         }
     }
+
 
     //
     // Create Constraints and sort them by priority
