@@ -3,6 +3,7 @@
 
 #include <base/Eigen.hpp>
 #include <vector>
+#include "Constraint.hpp"
 
 namespace wbc{
 

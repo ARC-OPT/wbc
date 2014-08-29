@@ -129,10 +129,13 @@ Constraint* WbcVelocity::constraint(const std::string &name)
 }
 
 
-void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, SolverInput &solver_input){
+void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio> &constraints){
 
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
+
+    if(constraints.size() != constraint_vector_.size())
+        constraints.resize(constraint_vector_.size());
 
     //If called for the first time, create Task frame map
     if(tf_map_.empty())
@@ -182,6 +185,9 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, Sol
     //Walk through all priorities and update equation system
     for(uint prio = 0; prio < constraint_vector_.size(); prio++)
     {
+        if(constraints[prio].size() != constraint_vector_[prio].size())
+            constraints[prio].resize(constraint_vector_[prio].size());
+
         //Walk through all tasks of current priority
         uint row_index = 0;
         for(uint i = 0; i < constraint_vector_[prio].size(); i++)
@@ -252,14 +258,12 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, Sol
                 if(constraint->config.ref_frame == constraint_ref_frame_tip)
                 {
                     for(uint i = 0; i < 6; i++)
-                        tw_(i) = constraint->y_des(i);
+                        tw_(i) = constraint->y_ref(i);
                     tw_ = constraint->pose.M * tw_;
 
                     for(uint i = 0; i < 6; i++)
-                        constraint->y_des_root_frame(i) = tw_(i);
+                        constraint->y_ref(i) = tw_(i);
                 }
-                else
-                    constraint->y_des_root_frame = constraint->y_des;
             }
             else if(constraint->config.type == jnt){
                 for(uint i = 0; i < constraint->config.joint_names.size(); i++){
@@ -271,23 +275,20 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, Sol
                     uint idx = joint_index_map_[joint_name];
                     constraint->A(i,idx) = 1.0;
                 }
-                constraint->y_des_root_frame = constraint->y_des;
             }
 
             constraint->time = base::Time::now();
 
             uint n_vars = constraint->no_variables;
 
-            //insert constraint equation into equation system of current priority
-            solver_input_.priorities[prio].Wy.segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
-            solver_input_.priorities[prio].A.block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
-            solver_input_.priorities[prio].y_ref.segment(row_index, n_vars) = constraint->y_des_root_frame;
+            constraints[prio][i] = *constraint;
+
 
             row_index += n_vars;
         }
     }
 
-    solver_input = solver_input_;
+   // solver_input = solver_input_;
 }
 
 std::vector<std::string> WbcVelocity::jointNames(){

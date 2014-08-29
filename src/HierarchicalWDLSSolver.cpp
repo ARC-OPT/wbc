@@ -11,7 +11,6 @@ namespace wbc{
 
 HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
     nx_(0),
-    compute_debug_(false),
     configured_(false),
     epsilon_(1e-9),
     norm_max_(1){
@@ -44,7 +43,6 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
 
     for(uint prio = 0; prio < ny_per_prio.size(); prio++){
         priorities_.push_back(PriorityDataIntern(ny_per_prio[prio], nx));
-        prio_debug_.push_back(PriorityData(ny_per_prio[prio], nx, prio));
     }
 
     nx_ = nx;
@@ -79,25 +77,38 @@ bool HierarchicalWDLSSolver::configure(const std::vector<uint> &ny_per_prio,
     return true;
 }
 
-void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x){
+void HierarchicalWDLSSolver::solve(const std::vector<Eigen::MatrixXd> &A,
+                                   const std::vector<Eigen::VectorXd> &Wy,
+                                   const std::vector<Eigen::VectorXd> &y_ref,
+                                   const Eigen::VectorXd &Wx,
+                                   Eigen::VectorXd &x){
 
     //Check valid input
+
+    if(A.size() != priorities_.size() ||
+       Wy.size() != priorities_.size() ||
+       y_ref.size() != priorities_.size()){
+        LOG_ERROR("Number of priorities in solver: %i, Size of input vectors: A-vector: %i, Wy-vector: %i, y_ref-vector: %i", priorities_.size(), A.size(), Wy.size(), y_ref.size());
+        throw std::invalid_argument("Invalid solver input");
+    }
+
     if(x.rows() != nx_){
         LOG_WARN("Size of output vector does not match number of joint variables. Will do a resize!");
         x.resize(nx_);
     }
 
-    if(input.priorities.size() != priorities_.size())
-        throw std::invalid_argument("Invalid number of priority levels in input");
-    for(uint i = 0; i < priorities_.size(); i++){
-        if(input.priorities[i].A.rows() != priorities_[i].ny_ ||
-                input.priorities[i].A.cols() != nx_ ||
-                input.priorities[i].y_ref.rows() != priorities_[i].ny_){
-            LOG_ERROR("Expected input size: A: %i x %i, y: %i x 1, actual input: A: %i x %i, y: %i x 1",
-                      priorities_[i].ny_, nx_, priorities_[i].ny_, input.priorities[i].A.rows(), input.priorities[i].A.cols(), input.priorities[i].y_ref.rows());
+    for(uint i = 0; i < priorities_.size(); i++)
+    {
+        if(A[i].rows() != priorities_[i].ny_ ||
+           A[i].cols() != nx_ ||
+           y_ref[i].rows() != priorities_[i].ny_){
+            LOG_ERROR("Expected input size on priority level %i: A: %i x %i, y: %i x 1, actual input: A: %i x %i, y: %i x 1",
+                      i, priorities_[i].ny_, nx_, priorities_[i].ny_, A[i].rows(), A[i].cols(), y_ref[i].rows());
             throw std::invalid_argument("Invalid size of input variables");
         }
     }
+
+    setJointWeights(Wx);
 
     //Init projection matrix as identity, so that the highest priority can look for a solution in whole configuration space
     proj_mat_.setIdentity();
@@ -107,21 +118,16 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
-        base::Time start = base::Time::now(), loop_start = base::Time::now();
-
-        setTaskWeights(input.priorities[prio].Wy, prio);
+        setTaskWeights(Wy[prio], prio);
 
         priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
-        priorities_[prio].y_comp_ = input.priorities[prio].y_ref - input.priorities[prio].A*x;
+        priorities_[prio].y_comp_ = y_ref[prio] - A[prio]*x;
 
         //projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         //For the first priority P == Identity
-        priorities_[prio].A_proj_ = input.priorities[prio].A * proj_mat_;
-
-        double comp_time_proj = (base::Time::now() - start).toSeconds();
-        start = base::Time::now();
+        priorities_[prio].A_proj_ = A[prio] * proj_mat_;
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         //Since the weight matrices are diagonal, there is no need for full matrix multiplication
@@ -131,9 +137,6 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
 
         for(uint i = 0; i < nx_; i++)
             priorities_[prio].A_proj_w_.col(i) = joint_weight_mat_(i,i) * priorities_[prio].A_proj_w_.col(i);
-
-        double comp_time_weighting = (base::Time::now() - start).toSeconds();
-        start = base::Time::now();
 
         if(svd_method_ == svd_eigen)
         {
@@ -160,26 +163,22 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
             throw std::invalid_argument("Invalid svd method");
         }
 
-        double comp_time_svd = (base::Time::now() - start).toSeconds();
-        start = base::Time::now();
-
         //Compute damping factor based on
         //A.A. Maciejewski, C.A. Klein, “Numerical Filtering for the Operation of
         //Robotic Manipulators through Kinematically Singular Configurations”,
         //Journal of Robotic Systems, Vol. 5, No. 6, pp. 527 - 552, 1988.
         double s_min = S_.block(0,0,min(nx_, priorities_[prio].ny_),1).minCoeff();
-        double damping;
         if(s_min <= (1/norm_max_)/2)
-            damping = (1/norm_max_)/2;
+            priorities_[prio].damping_ = (1/norm_max_)/2;
         else if(s_min >= (1/norm_max_))
-            damping = 0;
+            priorities_[prio].damping_ = 0;
         else
-            damping = sqrt(s_min*((1/norm_max_)-s_min));
+            priorities_[prio].damping_ = sqrt(s_min*((1/norm_max_)-s_min));
 
         // Damped Inverse of Eigenvalue matrix for computation of a singularity robust solution for the current priority
         Damped_S_inv_.setZero();
         for (uint i = 0; i < min(nx_, priorities_[prio].ny_); i++)
-            Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + damping * damping));
+            Damped_S_inv_(i,i) = (S_(i) / (S_(i) * S_(i) + priorities_[prio].damping_ * priorities_[prio].damping_));
 
         // Additionally compute normal Inverse of Eigenvalue matrix for correct computation of nullspace projection
         for(uint i = 0; i < S_.rows(); i++){
@@ -213,41 +212,11 @@ void HierarchicalWDLSSolver::solve(const SolverInput& input, Eigen::VectorXd &x)
         // Compute projection matrix for the next priority. Use here the undamped inverse to have a correct solution
         proj_mat_ -= priorities_[prio].A_proj_inv_wls_ * priorities_[prio].A_proj_;
 
-        double comp_time_inv = (base::Time::now() - start).toSeconds();
+        //store eigenvalues for this priority
+        priorities_[prio].singular_values_.setZero();
+        for(uint i = 0; i < min(nx_, priorities_[prio].ny_); i++)
+            priorities_[prio].singular_values_(i) = S_(i);
 
-        if(compute_debug_)
-        {
-            prio_debug_[prio].y_des = input.priorities[prio].y_ref;
-            prio_debug_[prio].y_solution = input.priorities[prio].A * x;
-            prio_debug_[prio].singular_vals = S_;
-            prio_debug_[prio].manipulability = sqrt( (input.priorities[prio].A * input.priorities[prio].A.transpose()).determinant() );
-            prio_debug_[prio].projected_manipulability = sqrt( (priorities_[prio].A_proj_w_ * priorities_[prio].A_proj_w_.transpose()).determinant() );
-            prio_debug_[prio].error_ratio = prio_debug_[prio].y_des.norm()/prio_debug_[prio].y_solution.norm();
-            prio_debug_[prio].damping = damping;
-            prio_debug_[prio].proj_time = comp_time_proj;
-            prio_debug_[prio].weighting_time = comp_time_weighting;
-            prio_debug_[prio].svd_time = comp_time_svd;
-            prio_debug_[prio].compute_inverse_time = comp_time_inv;
-            prio_debug_[prio].total_time = (base::Time::now() - loop_start).toSeconds();
-            prio_debug_[prio].damping_error_ratio = priorities_[prio].x_prio_.norm() / (priorities_[prio].A_proj_inv_wls_ * priorities_[prio].y_comp_).norm();
-            prio_debug_[prio].projected_manipulability_ratio = prio_debug_[prio].projected_manipulability / prio_debug_[prio].manipulability;
-
-            //Get maximum and minimum singular value
-            double max_singular_val = 0;
-            double min_singular_val = 1e10;
-            for(uint i = 0 ; i < S_.rows(); i++)
-            {
-                if(S_(i) > max_singular_val)
-                    max_singular_val = S_(i);
-                if(S_(i) > 0 && S_(i) < min_singular_val)
-                    min_singular_val = S_(i);
-            }
-
-            prio_debug_[prio].max_singular_val = max_singular_val;
-            if(min_singular_val == 1e10)
-                min_singular_val = 0;
-            prio_debug_[prio].min_singular_val = min_singular_val;
-        }
     } //priority loop
 
     ///////////////

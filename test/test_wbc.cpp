@@ -15,6 +15,7 @@ using namespace wbc;
 /**
  * Test hierarchical solver with random input data
  */
+/*
 BOOST_AUTO_TEST_CASE(solver)
 {
     srand (time(NULL));
@@ -72,7 +73,7 @@ BOOST_AUTO_TEST_CASE(solver)
     }
 
     cout<<"\n............................."<<endl;
-}
+}*/
 
 BOOST_AUTO_TEST_CASE(pseudo_inverse)
 {

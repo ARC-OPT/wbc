@@ -71,7 +71,7 @@ public:
      *               and all task frames. Order may be arbitrary. The joints will be mapped correctly according to the given names.
      * @param ctrl_out Control output. Size will be same as total no of joints as returned by noOfJoints()
      */
-    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, SolverInput &solver_input);
+    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio> &constraints);
 
     uint noOfJoints(){return no_robot_joints_;}
     Constraint* constraint(const std::string &name);

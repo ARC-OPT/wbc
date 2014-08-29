@@ -4,7 +4,6 @@
 #include "SolverTypes.hpp"
 #include <vector>
 #include <Eigen/SVD>
-#include "PriorityData.hpp"
 #include "GeneralizedInverse.hpp"
 
 namespace wbc{
@@ -53,6 +52,7 @@ public:
             u_t_task_weight_mat_.resize(nx, ny);
             u_t_task_weight_mat_.setZero();
             svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
+            singular_values_.resize(ny);
         }
         Eigen::VectorXd x_prio_;
         Eigen::MatrixXd A_proj_;                /** A Matrix projected on nullspace of the higher priority*/
@@ -63,6 +63,8 @@ public:
         Eigen::VectorXd y_comp_;                /** Task variables which are compensated for the part of solution already met in higher priorities */
         Eigen::MatrixXd task_weight_mat_;       /** Task weight matrix. Has to be positive definite*/
         Eigen::MatrixXd u_t_task_weight_mat_;   /** Matrix U_transposed * task_weight_mat_*/
+        Eigen::VectorXd singular_values_;       /** Singular values of this priprity */
+        double damping_;                         /** Damping factor for matrix inversion on this priority */
 
         unsigned int ny_;                   /** Number of task variables*/
 
@@ -87,7 +89,11 @@ public:
      * @param y Task variables, sorted by priority levels. The first element of the vector corresponds to the highest priority
      * @param x Control solution in joint space
      */
-    void solve(const SolverInput& input, Eigen::VectorXd &x);
+    void solve(const std::vector<Eigen::MatrixXd> &A,
+               const std::vector<Eigen::VectorXd> &Wy,
+               const std::vector<Eigen::VectorXd> &y_ref,
+               const Eigen::VectorXd &Wx,
+               Eigen::VectorXd &x);
 
 
     /**
@@ -110,13 +116,10 @@ public:
     void getJointWeights(Eigen::VectorXd &weights){weights = joint_weights_;}
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
-    void setComputeDebug(const bool compute_debug){compute_debug_ = compute_debug;}
-    void getPrioDebugData(std::vector<PriorityData>& data){data = prio_debug_;}
     std::vector<uint> getNyPerPriority(){return ny_per_prio_;}
     uint getNoPriorities(){return ny_per_prio_.size();}
 
     std::vector<PriorityDataIntern> priorities_;  /** Contains priority specific matrices etc. */
-    std::vector<PriorityData> prio_debug_;      /** Contains debug information for each priority */
     std::vector<uint> ny_per_prio_;
 
 protected:
@@ -132,7 +135,6 @@ protected:
 
     unsigned int nx_;                   /** No of robot joints */
     bool configured_;                   /** Has configure been called yet?*/
-    bool compute_debug_;                /** Compute additional debug info */
 
     //Properties
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/

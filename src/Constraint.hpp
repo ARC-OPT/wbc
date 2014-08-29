@@ -11,7 +11,7 @@
 namespace wbc{
 
 /**
- * @brief helper class to carry sub constraint specific information
+ * @brief Class to carry constraint specific information
  */
 class Constraint{
 public:
@@ -26,10 +26,7 @@ public:
             no_variables = _config.joint_names.size();
         else
             no_variables = 6;
-        y_des.resize(no_variables);
-        y_solution.resize(no_variables);
-        y.resize(no_variables);
-        y_des_root_frame.resize(no_variables);
+        y_ref.resize(no_variables);
         weights = base::VectorXd::Ones(no_variables);
         A.resize(no_variables, _no_robot_joints);
 
@@ -39,10 +36,7 @@ public:
     ConstraintConfig config;
     base::Time time;
 
-    base::VectorXd y_des; /** Reference value for Constraint */
-    base::VectorXd y_des_root_frame; /** Reference value for Constraint, transformed to root frame of Constraint */
-    base::VectorXd y_solution; /** Solution for this Constraint from wbc */
-    base::VectorXd y; /** Actual value of a constraint (on the real robot)*/
+    base::VectorXd y_ref; /** Reference value for Constraint */
     base::VectorXd weights; /** constraint weights, a 0 means that the reference of the corresponding constraint variable will be ignored while computing the solution*/
     double activation; /** Between 0 .. 1. Will be multiplied with the constraint weights. Can be used to (smoothly) switch on/off the constraints */
     int constraint_timed_out; /** May be 0 or 1. Will be multiplied with the constraint weights. If no new reference values arrive for a certain time,the constraint times out*/
@@ -57,9 +51,10 @@ public:
     void setReference(const base::samples::Joints& ref);
     void updateTime();
     void validate();
-    void computeDebug(const base::VectorXd& solver_output, const base::VectorXd& robot_vel);
     void reset();
 };
+
+typedef std::vector<Constraint> ConstraintsPerPrio;
 
 }
 #endif
