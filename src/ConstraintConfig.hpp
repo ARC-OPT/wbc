@@ -25,22 +25,6 @@ enum constraint_ref_frame{constraint_ref_frame_root, constraint_ref_frame_tip};
  */
 class ConstraintConfig{
 public:
-    ConstraintConfig(){}
-    ConstraintConfig(const constraint_type _type,
-                  const int _priority,
-                  const std::string& _name,
-                  const std::string &_root = "",
-                  const std::string &_tip = "",
-                  const std::vector<std::string>& _joint_names = std::vector<std::string>(),
-                  const constraint_ref_frame& _ref_frame = constraint_ref_frame_root) :
-        type(_type),
-        priority(_priority),
-        name(_name),
-        joint_names(_joint_names),
-        root(_root),
-        tip(_tip),
-        ref_frame(_ref_frame){}
-
 
     /** Constraint type, can be one of 'jnt' (joint space) or 'cart' (Cartesian) */
     constraint_type type;
@@ -53,6 +37,14 @@ public:
 
     /** Only joint space constraints: names of the involved joints */
     std::vector<std::string> joint_names;
+
+    /** Initial weights for this constraint. Entries have to be >= 0. Can be used to balance contributions of the constraint variables.
+     *  A value of 0 means that the reference of the corresponding constraint variable will be ignored while computing the solution
+     */
+    std::vector<double> weights;
+
+    /** Initial activation for this constraint. Has to be between 0..1. Can be used to enable(1)/disable(0) the whole constraint. */
+    double activation;
 
     /**
      * Only Cartesian Constraints: Root frame associated with this Constraint.

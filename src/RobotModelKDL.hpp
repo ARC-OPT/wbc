@@ -20,10 +20,12 @@ public:
     bool addTaskFrame(const std::string& id);
     void update(const base::samples::Joints& joint_state);
     TaskFrameKDL* getTaskFrame(const std::string &id);
+    const std::vector<TaskFrame>& getTFVector();
     std::string robotRoot(){return tree_.getRootSegment()->second.segment.getName();}
 
     KDL::Tree tree_;
     KinChainMap kin_chain_map_;
+    std::vector<TaskFrame> tf_vector_;
 };
 }
 

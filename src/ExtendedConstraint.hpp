@@ -12,15 +12,15 @@ class ExtendedConstraint : public Constraint{
 public:
 
     ExtendedConstraint(const ConstraintConfig& _config,
-                    const uint _no_robot_joints,
-                    bool _constraints_active  = true) :
-        Constraint(_config, _no_robot_joints, _constraints_active)
+                       const std::vector<std::string> &_robot_joint_names) :
+        Constraint(_config, _robot_joint_names)
     {
+        uint no_vars;
         if(_config.type == jnt)
-            no_variables = _config.joint_names.size();
+            no_vars = _config.joint_names.size();
         else
-            no_variables = 6;
-       init(no_variables);
+            no_vars = 6;
+        init(no_vars);
     }
 
     ~ExtendedConstraint(){

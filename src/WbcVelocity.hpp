@@ -1,10 +1,9 @@
 #ifndef WBC_HPP
 #define WBC_HPP
 
-#include "ConstraintConfig.hpp"
+#include "Constraint.hpp"
 #include <base/commands/joints.h>
 #include "TaskFrame.hpp"
-#include "SolverTypes.hpp"
 #include <map>
 
 namespace wbc{
@@ -39,9 +38,6 @@ protected:
     Eigen::VectorXd temp_;
     bool has_timeout_;
     KDL::Twist tw_;
-
-    SolverInput solver_input_;
-
 public:
     /**
      * @brief Create Robot Model and Solver
@@ -62,7 +58,6 @@ public:
      */
     bool configure(const std::vector<ConstraintConfig> &config,
                    const std::vector<std::string> &joint_names,
-                   bool constraints_active,
                    double constraint_timeout);
 
     /**
@@ -71,12 +66,14 @@ public:
      *               and all task frames. Order may be arbitrary. The joints will be mapped correctly according to the given names.
      * @param ctrl_out Control output. Size will be same as total no of joints as returned by noOfJoints()
      */
-    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio> &constraints);
+    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio>& constraints);
 
     uint noOfJoints(){return no_robot_joints_;}
     Constraint* constraint(const std::string &name);
     std::vector<std::string> jointNames();
     uint jointIndex(const std::string &joint_name){return joint_index_map_[joint_name];}
+    std::vector<std::string> getTaskFrameIDs();
+    std::vector<int> getNumberOfConstraints();
 
 };
 }

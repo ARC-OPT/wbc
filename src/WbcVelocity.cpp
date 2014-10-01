@@ -31,21 +31,19 @@ void WbcVelocity::clear(){
     constraint_map_.clear();
     constraint_vector_.clear();
     joint_index_map_.clear();
-    solver_input_.priorities.clear();
     no_robot_joints_ = 0;
 }
 
 bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
                             const std::vector<std::string> &joint_names,
-                            bool constraints_active,
-                            double constraints_timeout){
+                            double constraint_timeout){
 
     //Erase constraints, jacobians and joint indices
     clear();
 
-    constraint_timeout_ = constraints_timeout;
+    constraint_timeout_ = constraint_timeout;
     has_timeout_ = true;
-    if(base::isUnset(constraints_timeout))
+    if(base::isUnset(constraint_timeout))
         has_timeout_ = false;
 
     no_robot_joints_ = joint_names.size();
@@ -70,7 +68,7 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     constraint_vector_.resize(max_prio + 1);
     for(uint i = 0; i < config.size(); i++)
     {
-        ExtendedConstraint* constraint = new ExtendedConstraint(config[i], no_robot_joints_, constraints_active);
+        ExtendedConstraint* constraint = new ExtendedConstraint(config[i], joint_names);
         constraint_vector_[config[i].priority].push_back(constraint);
 
         //Also put Constraints in a map that associates them with their names (for easier access)
@@ -92,28 +90,47 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
         }
     }
 
-    // Resize matrices and vectors
-    solver_input_.joint_names = joint_names;
-    for(uint prio = 0; prio < constraint_vector_.size(); prio++)
+    //For each Cartesian constraint, we have two task frames. Store them in a map!
+    for(ConstraintMap::iterator it = constraint_map_.begin(); it != constraint_map_.end(); it++)
     {
-        uint no_constr_vars = 0;
-        for(uint i = 0; i < constraint_vector_[prio].size(); i++)
-        {
-            ConstraintConfig conf = constraint_vector_[prio][i]->config;
-            if(conf.type == jnt)
-                no_constr_vars +=  conf.joint_names.size();
-            else
-                no_constr_vars += 6;
+        if(it->second->config.type == cart){
+
+            std::string tf_name = it->second->config.root;
+            if(tf_map_.count(tf_name) == 0)
+            {
+                tf_map_[tf_name] = TaskFrameKDL();
+                KDL::Jacobian jac(joint_index_map_.size());
+                jac.data.setZero();
+                jac_map_[tf_name] = jac;
+            }
+
+            tf_name = it->second->config.tip;
+            if(tf_map_.count(tf_name) == 0)
+            {
+                tf_map_[tf_name] = TaskFrameKDL();
+                KDL::Jacobian jac(joint_index_map_.size());
+                jac.data.setZero();
+                jac_map_[tf_name] = jac;
+            }
         }
-        SolverInputPrio input_pp(no_constr_vars, no_robot_joints_);
-        solver_input_.priorities.push_back(input_pp);
     }
+
+    LOG_DEBUG("Joint Index Map: \n");
+    for(JointIndexMap::iterator it = joint_index_map_.begin(); it != joint_index_map_.end(); it++)
+        LOG_DEBUG_S<<it->first.c_str()<<": "<<it->second;
+
+    LOG_DEBUG("\nTask Frame Map: \n");
+    for(TaskFrameKDLMap::iterator it = tf_map_.begin(); it != tf_map_.end(); it++)
+        LOG_DEBUG_S<<it->first.c_str();
+
+    LOG_DEBUG("\nConstraint Map: \n");
+    for(ConstraintMap::iterator it = constraint_map_.begin(); it != constraint_map_.end(); it++)
+        LOG_DEBUG_S<<it->first.c_str()<<": prio: "<<it->second->config.priority<<", type: "<<it->second->config.type;
 
     configured_ = true;
 
     return true;
 }
-
 
 Constraint* WbcVelocity::constraint(const std::string &name)
 {
@@ -128,28 +145,10 @@ Constraint* WbcVelocity::constraint(const std::string &name)
     return constraint_map_[name];
 }
 
-
-void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio> &constraints){
-
+void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio>& constraints)
+{
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
-
-    if(constraints.size() != constraint_vector_.size())
-        constraints.resize(constraint_vector_.size());
-
-    //If called for the first time, create Task frame map
-    if(tf_map_.empty())
-    {
-        for(uint i = 0; i < task_frames.size(); i++)
-        {
-            const TaskFrame &tf = task_frames[i];
-            tf_map_[tf.tf_name] = TaskFrameKDL();
-
-            KDL::Jacobian jac(joint_index_map_.size());
-            jac.data.setZero();
-            jac_map_[tf.tf_name] = jac;
-        }
-    }
 
     //Convert task frames and create full robot Jacobians
     for(uint i = 0; i < task_frames.size(); i++)
@@ -181,6 +180,9 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std
             jac_map_[tf_name].setColumn(idx, tf_map_[tf_name].jac.getColumn(j));
         }
     }
+
+    if(constraints.size() != constraint_vector_.size())
+        constraints.resize(constraint_vector_.size());
 
     //Walk through all priorities and update equation system
     for(uint prio = 0; prio < constraint_vector_.size(); prio++)
@@ -279,16 +281,9 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std
 
             constraint->time = base::Time::now();
 
-            uint n_vars = constraint->no_variables;
-
             constraints[prio][i] = *constraint;
-
-
-            row_index += n_vars;
         }
     }
-
-   // solver_input = solver_input_;
 }
 
 std::vector<std::string> WbcVelocity::jointNames(){
@@ -297,4 +292,25 @@ std::vector<std::string> WbcVelocity::jointNames(){
         joint_names[it->second] = it->first;
     return joint_names;
 }
+
+std::vector<std::string> WbcVelocity::getTaskFrameIDs()
+{
+    std::vector<std::string> task_frame_ids;
+    TaskFrameKDLMap::iterator it;
+    for(it = tf_map_.begin(); it != tf_map_.end(); it++)
+        task_frame_ids.push_back(it->first);
+    return task_frame_ids;
+}
+
+std::vector<int> WbcVelocity::getNumberOfConstraints()
+{
+    std::vector<int> ny_per_prio(constraint_vector_.size(),0);
+    for(uint i = 0; i < constraint_vector_.size(); i++)
+    {
+        for(uint j = 0; j < constraint_vector_[i].size(); j++)
+            ny_per_prio[i] += constraint_vector_[i][j]->y_ref.size();
+    }
+    return ny_per_prio;
+}
+
 }

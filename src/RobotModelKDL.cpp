@@ -25,6 +25,10 @@ bool RobotModelKDL::addTaskFrame(const std::string &id){
         KinematicChainKDL* tf_chain_kdl = new KinematicChainKDL(chain);
         kin_chain_map_[id] = tf_chain_kdl;
 
+        TaskFrame tf;
+        TfKDLToTf(*tf_chain_kdl->tf, tf);
+        tf_vector_.push_back(tf);
+
         LOG_DEBUG("Sucessfully added task frame %s", id.c_str());
         LOG_DEBUG("TF Map now contains:");
         for(KinChainMap::iterator it = kin_chain_map_.begin(); it != kin_chain_map_.end(); it++)
@@ -49,6 +53,16 @@ TaskFrameKDL* RobotModelKDL::getTaskFrame(const std::string &id){
     }
 
     return kin_chain_map_[id]->tf;
+}
+
+const std::vector<TaskFrame>& RobotModelKDL::getTFVector(){
+
+    for(uint i = 0; i < tf_vector_.size(); i++)
+    {
+        TfKDLToTf(*getTaskFrame(tf_vector_[i].tf_name), tf_vector_[i]);
+        tf_vector_[i].time = tf_vector_[i].pose.time = base::Time::now();
+    }
+    return tf_vector_;
 }
 
 }

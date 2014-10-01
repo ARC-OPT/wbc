@@ -70,13 +70,10 @@ void Constraint::validate()
 void Constraint::reset()
 {
     y_ref.setZero();
-    weights.setOnes();
-    if(constraints_initially_active)
-        activation = 1;
-    else
-        activation = 0;
+    activation = config.activation;
+    for(uint i = 0; i < no_variables; i++)
+        weights(i) = config.weights[i];
     constraint_timed_out = 0;
-
     A.setZero();
     last_ref_input = base::Time::now();
 }

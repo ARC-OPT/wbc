@@ -1,7 +1,6 @@
 #ifndef HIERARCHICAL_WDLS_SOLVER_HPP
 #define HIERARCHICAL_WDLS_SOLVER_HPP
 
-#include "SolverTypes.hpp"
 #include <vector>
 #include <Eigen/SVD>
 #include "GeneralizedInverse.hpp"
@@ -12,9 +11,9 @@ namespace wbc{
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver may cope with several hierarchially organized
  *        tasks, which will be solved using nullspace projections. That is, the task with the highest priority will be solved fully if m <= n
- *        (where m is the number of task variables and n the number of independent joint variables), the task of the next priority will be
+ *        (where m is the number of task variables and n the number of independent solution variables), the task of the next priority will be
  *        solved as good as possible (depending on the degree of redundancy) and so on.
- *        The solver may also include weights in joint and task space.
+ *        The solver may also include weights in solution and input space.
  */
 class HierarchicalWDLSSolver{
 public:
@@ -29,7 +28,7 @@ public:
         /**
          * @brief Priority Resizes members
          * @param ny Number of task variables of the current priority
-         * @param nx Number of joint space variables
+         * @param nx Number of solution space variables
          */
         PriorityDataIntern(const unsigned int ny, const unsigned int nx){
             ny_ = ny;
@@ -47,10 +46,10 @@ public:
             A_proj_inv_wdls_.setZero();
             y_comp_.resize(ny);
             y_comp_.setZero();
-            task_weight_mat_.resize(ny, ny);
-            task_weight_mat_.setIdentity();
-            u_t_task_weight_mat_.resize(nx, ny);
-            u_t_task_weight_mat_.setZero();
+            row_weight_mat_.resize(ny, ny);
+            row_weight_mat_.setIdentity();
+            u_t_row_weight_mat_.resize(nx, ny);
+            u_t_row_weight_mat_.setZero();
             svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(ny, nx);
             singular_values_.resize(ny);
         }
@@ -61,8 +60,8 @@ public:
         Eigen::MatrixXd A_proj_inv_wls_;        /** Least square inverse of A_proj_w_*/
         Eigen::MatrixXd A_proj_inv_wdls_;       /** Damped Least square inverse of A_proj_w_*/
         Eigen::VectorXd y_comp_;                /** Task variables which are compensated for the part of solution already met in higher priorities */
-        Eigen::MatrixXd task_weight_mat_;       /** Task weight matrix. Has to be positive definite*/
-        Eigen::MatrixXd u_t_task_weight_mat_;   /** Matrix U_transposed * task_weight_mat_*/
+        Eigen::MatrixXd row_weight_mat_;       /** Task weight matrix. Has to be positive definite*/
+        Eigen::MatrixXd u_t_row_weight_mat_;   /** Matrix U_transposed * row_weight_mat_*/
         Eigen::VectorXd singular_values_;       /** Singular values of this priprity */
         double damping_;                         /** Damping factor for matrix inversion on this priority */
 
@@ -78,16 +77,16 @@ public:
     /**
      * @brief configure Resizes member variables
      * @param ny_per_prio Number of task variables per priority
-     * @param nx Number of joint space variables
+     * @param nx Number of solution space variables
      * @return True in case of successful initialization, false else
      */
-    bool configure(const std::vector<uint>& ny_per_prio, const unsigned int nx);
+    bool configure(const std::vector<int>& ny_per_prio, const unsigned int nx);
 
     /**
      * @brief solve Compute optimal control solution
      * @param A Linear equation system describing the tasks, sorted by priority levels. The first element of the vector corresponds to the highest priority
      * @param y Task variables, sorted by priority levels. The first element of the vector corresponds to the highest priority
-     * @param x Control solution in joint space
+     * @param x Control solution
      */
     void solve(const std::vector<Eigen::MatrixXd> &A,
                const std::vector<Eigen::VectorXd> &Wy,
@@ -96,51 +95,40 @@ public:
                Eigen::VectorXd &x);
 
 
-    /**
-     * @brief setJointWeights Set full joint weight matrix.
-     * @param weights Size must be no_joints * no_joints. Matrix must be symmetric and positive definite! This is not checked by the algorithm.
-     *                If matrix is not diagonal, computation will increase a lot. If matrix is diagonal, a very HIGH entry means that
-     *                the corresponding joint is not used at all for the solution. If matrix is diagonal, entries must be >= 0.
-     */
-    void setJointWeights(const Eigen::VectorXd& weights);
-
-    /**
-     * @brief setTaskWeights Set full task weight matrix of the given priority. Note that, by using this method to set the task weights, the algorithm assumes that
-     *                        the task weight matrix is not diagonal, which affects computation time a lot.
-     * @param weights Size must be ny * ny. Matrix must be symmetric and positive definite! This is not checked by the algorithm.
-     * @param prio Priority (>= 0) according to what was passed to configure() method
-     */
-    void setTaskWeights(const Eigen::VectorXd& weights, const uint prio);
+    void setColumnWeights(const Eigen::VectorXd& weights);
+    void setRowWeights(const Eigen::VectorXd& weights, const uint prio);
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
-    void getJointWeights(Eigen::VectorXd &weights){weights = joint_weights_;}
+    void getColumnWeights(Eigen::VectorXd &weights){weights = column_weights_;}
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
-    std::vector<uint> getNyPerPriority(){return ny_per_prio_;}
+    std::vector<int> getNyPerPriority(){return ny_per_prio_;}
     uint getNoPriorities(){return ny_per_prio_.size();}
+    const PriorityDataIntern& getPriorityData(const uint prio);
 
-    std::vector<PriorityDataIntern> priorities_;  /** Contains priority specific matrices etc. */
-    std::vector<uint> ny_per_prio_;
+
 
 protected:
+    std::vector<PriorityDataIntern> priorities_;  /** Contains priority specific matrices etc. */
+    std::vector<int> ny_per_prio_;
     Eigen::MatrixXd proj_mat_;          /** Projection Matrix */
     Eigen::VectorXd S_;                 /** Eigenvalue vector of the task matrices */
     Eigen::MatrixXd V_;                 /** Matrix of right singular vectors*/
     Eigen::MatrixXd S_inv_;             /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix*/
     Eigen::MatrixXd Damped_S_inv_;      /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix with damping*/
-    Eigen::MatrixXd joint_weight_mat_;  /** Joint weight matrix. Has to be positive definite */
-    Eigen::MatrixXd Wq_V_;              /** Joint weight mat times Matrix of Vectors of right singular vectors*/
+    Eigen::MatrixXd column_weight_mat_;  /** Column weight matrix. Has to be positive definite */
+    Eigen::MatrixXd Wq_V_;              /** Column weight mat times Matrix of Vectors of right singular vectors*/
     Eigen::MatrixXd Wq_V_S_inv_;        /** Wq_V_ times S_inv_ */
     Eigen::MatrixXd Wq_V_Damped_S_inv_; /** Wq_V_ times Damped_S_inv_ */
 
-    unsigned int nx_;                   /** No of robot joints */
+    unsigned int nx_;                   /** No of columns */
     bool configured_;                   /** Has configure been called yet?*/
 
     //Properties
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
     double norm_max_;   /** Maximum norm of (J#) * y */
     svd_method svd_method_;
-    Eigen::VectorXd joint_weights_;
+    Eigen::VectorXd column_weights_;
 
     //Helpers
     Eigen::VectorXd tmp_;
