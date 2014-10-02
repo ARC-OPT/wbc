@@ -59,7 +59,7 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     {
         if(config[i].priority < 0)
         {
-            LOG_ERROR("Constraint Priorities must be >= 0. Constraint priority of constraint %s is %i", config[i].name.c_str(), config[i].priority);
+            LOG_ERROR("Constraint Priorities must be >= 0. Constraint priority of constraint '%s'' is %i", config[i].name.c_str(), config[i].priority);
             return false;
         }
         if(config[i].priority > max_prio)
@@ -90,7 +90,15 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
         }
     }
 
-    //For each Cartesian constraint, we have two task frames. Store them in a map!
+    n_constraints_per_prio_ = std::vector<uint>(constraint_vector_.size(), 0);
+    n_prios_ = n_constraints_per_prio_.size();
+    for(uint prio = 0; prio < constraint_vector_.size(); prio++)
+    {
+        for(uint j = 0; j < constraint_vector_[prio].size(); j++)
+            n_constraints_per_prio_[prio] += constraint_vector_[prio][j]->y_ref.size();
+    }
+
+    //Create TF map
     for(ConstraintMap::iterator it = constraint_map_.begin(); it != constraint_map_.end(); it++)
     {
         if(it->second->config.type == cart){
@@ -145,20 +153,36 @@ Constraint* WbcVelocity::constraint(const std::string &name)
     return constraint_map_[name];
 }
 
-void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio>& constraints)
+void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<LinearEqnSystem> &equations)
 {
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
+
+    //Check if all required task frame are available
+    for(TaskFrameKDLMap::iterator it = tf_map_.begin(); it != tf_map_.end(); it++)
+    {
+        bool found = false;
+        for(uint i = 0; i < task_frames.size(); i++)
+        {
+            if(it->first.compare(task_frames[i].tf_name) == 0)
+                found = true;
+        }
+
+        if(!found){
+            LOG_ERROR("Wbc config requires Task Frame %s, but this task frame is not in task_frame vector", it->first.c_str());
+            throw std::invalid_argument("Incomplete task frame input");
+        }
+    }
 
     //Convert task frames and create full robot Jacobians
     for(uint i = 0; i < task_frames.size(); i++)
     {
         const TaskFrame &tf = task_frames[i];
 
-        if(tf_map_.count(tf.tf_name) == 0)
-        {
-            LOG_ERROR("Task frame with id %s is not in the task frame map.", tf.tf_name.c_str());
-            throw std::invalid_argument("Invalid task frame");
+        //Ignore task frame that are not used in wbc config
+        if(tf_map_.count(task_frames[i].tf_name) == 0){
+            LOG_INFO("Task frame %s it not needed for given wbc config", task_frames[i].tf_name.c_str());
+            continue;
         }
 
         //Convert Task frame to KDL
@@ -181,20 +205,29 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std
         }
     }
 
-    if(constraints.size() != constraint_vector_.size())
-        constraints.resize(constraint_vector_.size());
+    if(equations.size() != n_prios_)
+        equations.resize(n_prios_);
 
     //Walk through all priorities and update equation system
-    for(uint prio = 0; prio < constraint_vector_.size(); prio++)
+    for(uint prio = 0; prio < n_prios_; prio++)
     {
-        if(constraints[prio].size() != constraint_vector_[prio].size())
-            constraints[prio].resize(constraint_vector_[prio].size());
+        uint n_vars_prio = n_constraints_per_prio_[prio]; //Number of constraint variables on the whole priority
+
+        if(equations[prio].A.rows() != n_vars_prio ||
+                equations[prio].A.cols() != no_robot_joints_ ||
+                equations[prio].y_ref.size() != n_vars_prio ||
+                equations[prio].W_row.size() != n_vars_prio ||
+                equations[prio].W_col.size() != no_robot_joints_)
+        {
+            equations[prio].resize(n_vars_prio, no_robot_joints_);
+        }
 
         //Walk through all tasks of current priority
         uint row_index = 0;
         for(uint i = 0; i < constraint_vector_[prio].size(); i++)
         {
             ExtendedConstraint *constraint = constraint_vector_[prio][i];
+            const uint n_vars = constraint->no_variables;
 
             //Check task timeout
             if(has_timeout_)
@@ -214,20 +247,6 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std
 
             if(constraint->config.type == cart)
             {
-                uint nc = 6; //constraint is Cartesian: always 6 task variables
-
-                if(tf_map_.count(constraint->config.root) == 0)
-                {
-                    LOG_ERROR("Root frame of constraint %s is %s, but this frame is not in task frame vector! Check the configuration of your robot model!",
-                              constraint->config.name.c_str(), constraint->config.root.c_str());
-                    throw std::invalid_argument("Missing task frame");
-                }
-                if(tf_map_.count(constraint->config.tip) == 0)
-                {
-                    LOG_ERROR("Task frame of constraint %s is %s, but this frame is not in task frame vector! Check the configuration of your robot model!",
-                              constraint->config.name.c_str(), constraint->config.tip.c_str());
-                    throw std::invalid_argument("Missing task frame");
-                }
                 const TaskFrameKDL& tf_root = tf_map_[constraint->config.root];
                 const TaskFrameKDL& tf_tip = tf_map_[constraint->config.tip];
 
@@ -253,8 +272,8 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std
                 const KDL::Jacobian& jac_tip =  jac_map_[tf_tip.tf_name];
 
                 ///// A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root:
-                constraint->A = constraint->H.block(0, 0, nc, 6) * jac_tip.data
-                        -(constraint->H.block(0, 0, nc, 6) * jac_root.data);
+                constraint->A = constraint->H.block(0, 0, n_vars, 6) * jac_tip.data
+                        -(constraint->H.block(0, 0, n_vars, 6) * jac_root.data);
 
                 //If the constraint input is given in tip coordinates, convert to root
                 if(constraint->config.ref_frame == constraint_ref_frame_tip)
@@ -281,7 +300,12 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std
 
             constraint->time = base::Time::now();
 
-            constraints[prio][i] = *constraint;
+            // Insert constraints into equation system of current priority at the correct position
+            equations[prio].W_row.segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
+            equations[prio].A.block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
+            equations[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref;
+
+            row_index += n_vars;
         }
     }
 }
@@ -302,15 +326,18 @@ std::vector<std::string> WbcVelocity::getTaskFrameIDs()
     return task_frame_ids;
 }
 
-std::vector<int> WbcVelocity::getNumberOfConstraints()
+void WbcVelocity::getConstraintVector(std::vector<ConstraintsPerPrio>& constraints)
 {
-    std::vector<int> ny_per_prio(constraint_vector_.size(),0);
-    for(uint i = 0; i < constraint_vector_.size(); i++)
+    if(constraints.size() != n_prios_)
+        constraints.resize(n_prios_);
+    for(uint prio = 0; prio < n_prios_; prio++)
     {
-        for(uint j = 0; j < constraint_vector_[i].size(); j++)
-            ny_per_prio[i] += constraint_vector_[i][j]->y_ref.size();
+        if(constraints[prio].size() != constraint_vector_[prio].size())
+            constraints[prio].resize(constraint_vector_[prio].size());
+
+        for(uint i = 0; i < constraints[prio].size(); i++)
+            constraints[prio][i] = *constraint_vector_[prio][i];
     }
-    return ny_per_prio;
 }
 
 }

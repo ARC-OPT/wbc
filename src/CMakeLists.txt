@@ -17,4 +17,5 @@ rock_library(wbc
             TaskFrame.hpp
             RobotModelKDL.hpp
             WbcVelocity.hpp
+            LinearEqnSystem.hpp
     DEPS_PKGCONFIG orocos-kdl base-lib kdl_conversions)

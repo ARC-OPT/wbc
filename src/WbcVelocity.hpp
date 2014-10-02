@@ -5,6 +5,7 @@
 #include <base/commands/joints.h>
 #include "TaskFrame.hpp"
 #include <map>
+#include "LinearEqnSystem.hpp"
 
 namespace wbc{
 
@@ -28,10 +29,12 @@ protected:
     bool configured_;
     ConstraintMap constraint_map_; /** Map associating names of Constraints to Constraint pointers */
     std::vector< std::vector<ExtendedConstraint*> > constraint_vector_;  /** Vector containing all constraints (ordered by priority, highest priority first) */
+    std::vector<uint> n_constraints_per_prio_; /** Number of constraint variables per priority*/
+    uint n_prios_; /** Number of priprities */
     double constraint_timeout_; /** In seconds. A constraint will be deactivated if no new reference comes in for such a long time. If set to .nan, no timeout will be used. */
-    uint no_robot_joints_;
+    uint no_robot_joints_; /** Number of configured robot joints*/
     JointIndexMap joint_index_map_; /** Maps joint names to indices. Order will be either as in KDL::Tree, or as in joint_names parameter given to configure() */
-    TaskFrameKDLMap tf_map_;   /** Map of task frames, will be created with the first call of configure() */
+    TaskFrameKDLMap tf_map_;   /** Map of task frames, will be created with the first call of configure(), These TFs are required by the constraints */
     RobotJacobianMap jac_map_; /** Full robot jacobians, order of joints will be as defined in joint_names (see configure()*/
 
     //Helpers
@@ -66,14 +69,15 @@ public:
      *               and all task frames. Order may be arbitrary. The joints will be mapped correctly according to the given names.
      * @param ctrl_out Control output. Size will be same as total no of joints as returned by noOfJoints()
      */
-    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<ConstraintsPerPrio>& constraints);
+    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<LinearEqnSystem> &equations);
 
     uint noOfJoints(){return no_robot_joints_;}
     Constraint* constraint(const std::string &name);
     std::vector<std::string> jointNames();
     uint jointIndex(const std::string &joint_name){return joint_index_map_[joint_name];}
     std::vector<std::string> getTaskFrameIDs();
-    std::vector<int> getNumberOfConstraints();
+    std::vector<uint> getNumberOfConstraintsPP(){return n_constraints_per_prio_;}
+    void getConstraintVector(std::vector<ConstraintsPerPrio>& constraints);
 
 };
 }

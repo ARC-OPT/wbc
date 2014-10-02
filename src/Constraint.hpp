@@ -28,12 +28,12 @@ public:
             no_variables = 6;
 
         if(config.weights.size() != no_variables){
-            LOG_ERROR("Constraint %s has %i variables, but initial_weights vector from config has size %i",
+            LOG_ERROR("Constraint '%s'' has %i variables, but its weights vector has size %i",
                       config.name.c_str(), no_variables, config.weights.size());
             throw std::invalid_argument("Invalid WBC config");
         }
         if(config.activation < 0 || config.activation > 1){
-            LOG_ERROR("Constraint %s: Activation has to be between 0 and 1, but is %i",
+            LOG_ERROR("Activation of constraint '%s' is %f. It has to be be between 0 and 1",
                       config.name.c_str(),config.activation);
             throw std::invalid_argument("Invalid WBC config");
         }
@@ -41,8 +41,8 @@ public:
         for(uint i = 0; i < config.weights.size(); i++)
         {
             if(config.weights[i] < 0){
-                LOG_ERROR("Constraint %s: Weight values have to be between 0 and 1, but element %i has a value of %i",
-                          config.name.c_str(), i, config.weights[i]);
+                LOG_ERROR("Weight no %i of constraint '%s' is %f. It has to be >= 0",
+                         i, config.name.c_str(), config.weights[i]);
                 throw std::invalid_argument("Invalid WBC config");
 
             }
@@ -98,7 +98,6 @@ public:
     void validate();
     void reset();
 };
-
 typedef std::vector<Constraint> ConstraintsPerPrio;
 
 }
