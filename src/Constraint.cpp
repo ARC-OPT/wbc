@@ -69,6 +69,10 @@ void Constraint::validate()
 
 void Constraint::reset()
 {
+    y.setConstant(base::NaN<double>());
+    y_solution.setConstant(base::NaN<double>());
+    error_y.setConstant(base::NaN<double>());
+    error_y_solution.setConstant(base::NaN<double>());
     y_ref.setZero();
     activation = config.activation;
     for(uint i = 0; i < no_variables; i++)
