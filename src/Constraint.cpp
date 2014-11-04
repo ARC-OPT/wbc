@@ -77,7 +77,10 @@ void Constraint::reset()
     activation = config.activation;
     for(uint i = 0; i < no_variables; i++)
         weights(i) = config.weights[i];
-    constraint_timed_out = 0;
+
+     //Set timeout to true in the beginning. Like this, Constraints have to get a
+    //reference value first to be activated, independent of the activation value
+    constraint_timed_out = 1;
     A.setZero();
     last_ref_input = base::Time::now();
 }

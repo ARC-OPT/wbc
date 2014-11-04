@@ -3,6 +3,7 @@
 #include <stdexcept>
 #include <iostream>
 #include <kdl/utilities/svd_eigen_HH.hpp>
+#include <kdl/utilities/svd_eigen_Macie.hpp>
 #include <base/time.h>
 
 using namespace std;
@@ -56,12 +57,6 @@ bool HierarchicalWDLSSolver::configure(const std::vector<int> &n_rows_per_prio,
     S_inv_.setZero();
     Damped_S_inv_.resize( n_cols_, n_cols_);
     Damped_S_inv_.setZero();
-    if(column_weight_mat_.rows() != n_cols_ || column_weight_mat_.cols() != n_cols_){
-        column_weight_mat_.resize(n_cols_, n_cols_);
-        column_weight_mat_.setIdentity();
-        column_weights_.resize(n_cols_);
-        column_weights_.setOnes(n_cols_);
-    }
     Wq_V_.resize(n_cols_, n_cols_);
     Wq_V_.setZero();
     Wq_V_S_inv_.resize(n_cols_, n_cols_);
@@ -96,8 +91,6 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
     proj_mat_.setIdentity();
     x.setZero();
 
-    setColumnWeights(linear_eqn_pp[0].W_col);
-
     //////// Loop through all priorities
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
@@ -110,6 +103,8 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
             throw std::invalid_argument("Invalid size of input variables");
         }
 
+        //Set weights for this prioritiy
+        setColumnWeights(linear_eqn_pp[prio].W_col, prio);
         setRowWeights(linear_eqn_pp[prio].W_row, prio);
 
         priorities_[prio].y_comp_.setZero();
@@ -128,10 +123,10 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
             priorities_[prio].A_proj_w_.row(i) = priorities_[prio].row_weight_mat_(i,i) * priorities_[prio].A_proj_.row(i);
 
         for(uint i = 0; i < n_cols_; i++)
-            priorities_[prio].A_proj_w_.col(i) = column_weight_mat_(i,i) * priorities_[prio].A_proj_w_.col(i);
+            priorities_[prio].A_proj_w_.col(i) = priorities_[prio].col_weight_mat_(i,i) * priorities_[prio].A_proj_w_.col(i);
 
-        if(svd_method_ == svd_eigen)
-        {
+        switch(svd_method_){
+        case svd_eigen:{
             //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
             priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
 
@@ -145,14 +140,16 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
             //U output of svd will have different size than required, copy only the first ns columns. They contain the relevant Eigenvectors
             priorities_[prio].U_.block(0,0, priorities_[prio].n_rows_, ns) =
                     priorities_[prio].svd_.matrixU().block(0,0,priorities_[prio].n_rows_, ns);
+            break;
         }
-        else if(svd_method_ == svd_kdl)
-        {
+        case svd_kdl:{
             KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
+            break;
         }
-        else{
+        default:{
             LOG_ERROR("Invalid svd method: %i", svd_method_);
             throw std::invalid_argument("Invalid svd method");
+        }
         }
 
         //Compute damping factor based on
@@ -187,7 +184,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
             priorities_[prio].u_t_row_weight_mat_.col(i) = priorities_[prio].u_t_row_weight_mat_.col(i) * priorities_[prio].row_weight_mat_(i,i);
 
         for(uint i = 0; i < n_cols_; i++)
-            Wq_V_.row(i) = column_weight_mat_(i,i) * V_.row(i);
+            Wq_V_.row(i) = priorities_[prio].col_weight_mat_(i,i) * V_.row(i);
 
         for(uint i = 0; i < n_cols_; i++)
             Wq_V_S_inv_.col(i) = Wq_V_.col(i) * S_inv_(i,i);
@@ -206,7 +203,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
 
         //store eigenvalues for this priority
         priorities_[prio].singular_values_.setZero();
-        for(uint i = 0; i < min(n_cols_, priorities_[prio].n_rows_); i++)
+        for(uint i = 0; i < n_cols_; i++)
             priorities_[prio].singular_values_(i) = S_(i);
 
     } //priority loop
@@ -214,14 +211,17 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
     ///////////////
 }
 
-void HierarchicalWDLSSolver::setColumnWeights(const Eigen::VectorXd& weights){
+void HierarchicalWDLSSolver::setColumnWeights(const Eigen::VectorXd& weights, const uint prio){
+    if(prio < 0 ||prio >= priorities_.size()){
+        LOG_ERROR("Cannot set constraint weights to priority %i. Number of priority levels is %i", prio, priorities_.size());
+        throw std::invalid_argument("Invalid Priority");
+    }
     if(weights.size() == n_cols_){
-        column_weights_ = weights;
-        column_weight_mat_.setZero();
+        priorities_[prio].col_weight_mat_.setZero();
         for(uint i = 0; i < n_cols_; i++)
         {
             if(weights(i) >= 0)
-                column_weight_mat_(i,i) = sqrt(weights(i));
+                priorities_[prio].col_weight_mat_(i,i) = sqrt(weights(i));
             else{
                 LOG_ERROR("Entries of column weight vector have to >= 0, but element %i is %f", i, weights(i));
                 throw std::invalid_argument("Invalid Joint weight vector");
@@ -235,8 +235,8 @@ void HierarchicalWDLSSolver::setColumnWeights(const Eigen::VectorXd& weights){
 }
 
 void HierarchicalWDLSSolver::setRowWeights(const Eigen::VectorXd& weights, const uint prio){
-    if(prio >= priorities_.size()){
-        LOG_ERROR("Cannot set constraint weights. Given Priority is %i but number of priority levels is %i", prio, priorities_.size());
+    if(prio < 0 ||prio >= priorities_.size()){
+        LOG_ERROR("Cannot set constraint weights to priority %i. Number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
     }
     if(priorities_[prio].n_rows_ != weights.size()){

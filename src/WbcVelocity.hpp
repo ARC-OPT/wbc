@@ -5,7 +5,7 @@
 #include <base/commands/joints.h>
 #include "TaskFrame.hpp"
 #include <map>
-#include "LinearEqnSystem.hpp"
+#include "SolverTypes.hpp"
 
 namespace wbc{
 

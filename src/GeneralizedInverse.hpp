@@ -3,11 +3,9 @@
 
 #include <Eigen/Core>
 #include <Eigen/SVD>
+#include "SolverTypes.hpp"
 
 namespace wbc{
-
-enum svd_method{svd_eigen, svd_kdl};
-enum damping_method{constant_damping, variable_damping};
 
 class GeneralizedInverse{
 public:

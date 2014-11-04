@@ -3,11 +3,9 @@
 
 #include <vector>
 #include <Eigen/SVD>
-#include "GeneralizedInverse.hpp"
-#include "LinearEqnSystem.hpp"
+#include "SolverTypes.hpp"
 
 namespace wbc{
-
 
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver compute the solution for several hierarchially organized
@@ -42,10 +40,12 @@ public:
             y_comp_.setZero();
             row_weight_mat_.resize(n_rows, n_rows);
             row_weight_mat_.setIdentity();
+            col_weight_mat_.resize(n_cols, n_cols);
+            col_weight_mat_.setIdentity();
             u_t_row_weight_mat_.resize(n_cols, n_rows);
             u_t_row_weight_mat_.setZero();
             svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(n_rows, n_cols);
-            singular_values_.resize(n_rows);
+            singular_values_.resize(n_cols);
         }
         Eigen::VectorXd x_prio_;
         Eigen::MatrixXd A_proj_;                /** A Matrix projected on nullspace of the higher priority*/
@@ -55,6 +55,7 @@ public:
         Eigen::MatrixXd A_proj_inv_wdls_;       /** Damped Least square inverse of A_proj_w_*/
         Eigen::VectorXd y_comp_;                /** Input variables which are compensated for the part of solution already met in higher priorities */
         Eigen::MatrixXd row_weight_mat_;       /** Row (input) weight matrix. Has to be positive definite*/
+        Eigen::MatrixXd col_weight_mat_;       /** Row (input) weight matrix. Has to be positive definite*/
         Eigen::MatrixXd u_t_row_weight_mat_;   /** Matrix U_transposed * row_weight_mat_*/
         Eigen::VectorXd singular_values_;       /** Singular values of this priprity */
         double damping_;                         /** Damping factor for matrix inversion on this priority */
@@ -85,11 +86,10 @@ public:
                Eigen::VectorXd &x);
 
 
-    void setColumnWeights(const Eigen::VectorXd& weights);
+    void setColumnWeights(const Eigen::VectorXd& weights, const uint prio);
     void setRowWeights(const Eigen::VectorXd& weights, const uint prio);
     void setEpsilon(double epsilon){epsilon_ = epsilon;}
     void setNormMax(double norm_max){norm_max_ = norm_max;}
-    void getColumnWeights(Eigen::VectorXd &weights){weights = column_weights_;}
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
     std::vector<int> getNyPerPriority(){return n_rows_per_prio_;}
@@ -106,7 +106,6 @@ protected:
     Eigen::MatrixXd V_;                 /** Matrix of right singular vectors*/
     Eigen::MatrixXd S_inv_;             /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix*/
     Eigen::MatrixXd Damped_S_inv_;      /** Diagonal matrix containing the reciprocal eigenvalues of the A matrix with damping*/
-    Eigen::MatrixXd column_weight_mat_;  /** Column weight matrix. Has to be positive definite */
     Eigen::MatrixXd Wq_V_;              /** Column weight mat times Matrix of Vectors of right singular vectors*/
     Eigen::MatrixXd Wq_V_S_inv_;        /** Wq_V_ times S_inv_ */
     Eigen::MatrixXd Wq_V_Damped_S_inv_; /** Wq_V_ times Damped_S_inv_ */
@@ -118,7 +117,6 @@ protected:
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
     double norm_max_;   /** Maximum norm of (J#) * y */
     svd_method svd_method_;
-    Eigen::VectorXd column_weights_;
 
     //Helpers
     Eigen::VectorXd tmp_;

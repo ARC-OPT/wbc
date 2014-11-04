@@ -8,49 +8,54 @@
 #include "../src/WbcVelocity.hpp"
 #include "../src/HierarchicalWDLSSolver.hpp"
 #include "../src/GeneralizedInverse.hpp"
+#include "../src/SolverTypes.hpp"
 
 using namespace std;
 using namespace wbc;
 
+BOOST_AUTO_TEST_CASE(acc)
+{
+
+}
+
 /**
  * Test hierarchical solver with random input data
  */
-/*
+
 BOOST_AUTO_TEST_CASE(solver)
 {
     srand (time(NULL));
 
-    const uint NO_JOINTS = 2;
-    const uint NO_CONSTRAINTS = 3;
+    const uint NO_JOINTS = 3;
+    const uint NO_CONSTRAINTS = 2;
     const double NORM_MAX = 5.75;
 
     HierarchicalWDLSSolver solver;
-    std::vector<uint> ny_per_prio(1,NO_CONSTRAINTS);
-    BOOST_CHECK_EQUAL(solver.configure(ny_per_prio, NO_JOINTS), true);
+    std::vector<int> ny_per_prio(1,NO_CONSTRAINTS);
+    BOOST_CHECK(solver.configure(ny_per_prio, NO_JOINTS) == true);
     solver.setNormMax(NORM_MAX);
 
-    cout<<"............Testing Hierarchical Solver ............ "<<endl<<endl;
-
-    SolverInput input;
-    input.priorities.push_back(SolverInputPrio(NO_CONSTRAINTS,NO_JOINTS));
+    std::vector<LinearEqnSystem> input(1);
+    input[0].resize(NO_CONSTRAINTS, NO_JOINTS);
 
     for(uint i = 0; i < NO_CONSTRAINTS*NO_JOINTS; i++ )
-        input.priorities[0].A.data()[i] = (rand()%1000)/1000.0;
+        input[0].A.data()[i] = (rand()%1000)/1000.0;
 
     for(uint i = 0; i < NO_CONSTRAINTS; i++ )
-        input.priorities[0].y_ref.data()[i] = (rand()%1000)/1000.0;
+        input[0].y_ref.data()[i] = (rand()%1000)/1000.0;
 
-    input.priorities[0].Wy(0) = 0.1;
+    input[0].W_row.setConstant(1);
+    input[0].W_col.setConstant(1);
 
     cout<<"............Testing Hierarchical Solver "<<endl<<endl;
     cout<<"Number of priorities: "<<ny_per_prio.size()<<endl;
     cout<<"Constraints per priority: "; for(uint i = 0; i < ny_per_prio.size(); i++) cout<<ny_per_prio[i]<<" "; cout<<endl;
     cout<<"No of joints: "<<NO_JOINTS<<endl;
-    cout<<"\nSolver Input: "<<endl;
+    cout<<"\n----------------------- Solver Input ----------------------"<<endl<<endl;
     for(uint i = 0; i < ny_per_prio.size(); i++){
         cout<<"Priority: "<<i<<endl;
-        cout<<"A: "<<endl; cout<<input.priorities[i].A<<endl;
-        cout<<"y: "<<endl; cout<<input.priorities[i].y_ref<<endl;
+        cout<<"A: "<<endl; cout<<input[i].A<<endl;
+        cout<<"y_ref: "<<endl; cout<<input[i].y_ref<<endl;
         cout<<endl;
     }
 
@@ -62,18 +67,21 @@ BOOST_AUTO_TEST_CASE(solver)
         BOOST_ERROR("Solver.solve threw an exception");
     }
 
-    cout<<"Solver Output: "<<solver_output<<endl;
+    cout<<"----------------- Solver Output: ------------------------"<<endl;
+    cout<<"q_ref = "<<endl;
+    cout<<solver_output<<endl;
     cout<<"\nTest: "<<endl;
     for(uint i = 0; i < ny_per_prio.size(); i++){
-        cout<<"Priority: "<<i<<endl;
-        Eigen::VectorXd test = input.priorities[i].A*solver_output;
-        cout<<"A*q: "<<test<<endl; cout<<endl;
+        cout<<"----------------- Priority: "<<i<<" ------------------"<<endl;
+        Eigen::VectorXd test = input[i].A*solver_output;
+        cout<<"A * q_ref: "<<endl;
+        cout<<test<<endl; cout<<endl;
         for(uint j = 0; j < NO_CONSTRAINTS; j++)
-            BOOST_CHECK_EQUAL(fabs(test(j) - input.priorities[i].y_ref(j)) < 1e-9, true);
+            BOOST_CHECK(fabs(test(j) - input[i].y_ref(j)) < 1e-9);
     }
 
     cout<<"\n............................."<<endl;
-}*/
+}
 
 BOOST_AUTO_TEST_CASE(pseudo_inverse)
 {
@@ -113,9 +121,9 @@ BOOST_AUTO_TEST_CASE(pseudo_inverse)
         for(uint j = 0; j < N_ROWS; j++)
         {
             if(i == j)
-                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 1e-5, true);
+                BOOST_CHECK(fabs(res(i,j) - 1 )  < 1e-5);
             else
-                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 1e-5, true);
+                BOOST_CHECK(fabs(res(i,j))  < 1e-5);
         }
     }
 }
@@ -160,9 +168,9 @@ BOOST_AUTO_TEST_CASE(damped_pseudo_inverse)
         for(uint j = 0; j < N_ROWS; j++)
         {
             if(i == j)
-                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 0.01, true);
+                BOOST_CHECK(fabs(res(i,j) - 1 )  < 0.01);
             else
-                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 0.01, true);
+                BOOST_CHECK(fabs(res(i,j))  < 0.01);
         }
     }
 }
@@ -214,9 +222,9 @@ BOOST_AUTO_TEST_CASE(auto_damped_pseudo_inverse)
         for(uint j = 0; j < N_ROWS; j++)
         {
             if(i == j)
-                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 0.01, true);
+                BOOST_CHECK(fabs(res(i,j) - 1 )  < 0.01);
             else
-                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 0.01, true);
+                BOOST_CHECK(fabs(res(i,j))  < 0.01);
         }
     }
 }
@@ -283,9 +291,9 @@ BOOST_AUTO_TEST_CASE(weighted_pseudo_inverse)
                 continue;
 
             if(i == j)
-                BOOST_CHECK_EQUAL(fabs(res(i,j) - 1 )  < 1e-5, true);
+                BOOST_CHECK(fabs(res(i,j) - 1 )  < 1e-5);
             else
-                BOOST_CHECK_EQUAL(fabs(res(i,j))  < 1e-5, true);
+                BOOST_CHECK(fabs(res(i,j))  < 1e-5);
         }
     }
 }
