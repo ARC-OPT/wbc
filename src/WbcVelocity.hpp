@@ -2,8 +2,7 @@
 #define WBC_HPP
 
 #include "Constraint.hpp"
-#include <base/commands/joints.h>
-#include "TaskFrame.hpp"
+#include "TaskFrameKDL.hpp"
 #include <map>
 #include "SolverTypes.hpp"
 
@@ -29,7 +28,7 @@ protected:
     bool configured_;
     ConstraintMap constraint_map_; /** Map associating names of Constraints to Constraint pointers */
     std::vector< std::vector<ExtendedConstraint*> > constraint_vector_;  /** Vector containing all constraints (ordered by priority, highest priority first) */
-    std::vector<uint> n_constraints_per_prio_; /** Number of constraint variables per priority*/
+    std::vector<int> n_constraints_per_prio_; /** Number of constraint variables per priority*/
     uint n_prios_; /** Number of priprities */
     double constraint_timeout_; /** In seconds. A constraint will be deactivated if no new reference comes in for such a long time. If set to .nan, no timeout will be used. */
     uint no_robot_joints_; /** Number of configured robot joints*/
@@ -69,14 +68,14 @@ public:
      *               and all task frames. Order may be arbitrary. The joints will be mapped correctly according to the given names.
      * @param ctrl_out Control output. Size will be same as total no of joints as returned by noOfJoints()
      */
-    void prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<LinearEqnSystem> &equations);
+    void prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, std::vector<LinearEqnSystem> &equations);
 
     uint noOfJoints(){return no_robot_joints_;}
     Constraint* constraint(const std::string &name);
     std::vector<std::string> jointNames();
     uint jointIndex(const std::string &joint_name){return joint_index_map_[joint_name];}
     std::vector<std::string> getTaskFrameIDs();
-    std::vector<uint> getNumberOfConstraintsPP(){return n_constraints_per_prio_;}
+    std::vector<int> getNumberOfConstraintsPP(){return n_constraints_per_prio_;}
     void getConstraintVector(std::vector<ConstraintsPerPrio>& constraints);
 
 };

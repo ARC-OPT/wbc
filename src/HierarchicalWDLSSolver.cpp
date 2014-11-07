@@ -14,7 +14,8 @@ HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
     n_cols_(0),
     configured_(false),
     epsilon_(1e-9),
-    norm_max_(1){
+    norm_max_(10),
+    svd_method_(svd_kdl){
 
 }
 

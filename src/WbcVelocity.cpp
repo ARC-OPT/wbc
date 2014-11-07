@@ -1,6 +1,5 @@
 #include "WbcVelocity.hpp"
 #include "ExtendedConstraint.hpp"
-#include "TaskFrame.hpp"
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <base/logging.h>
 
@@ -90,7 +89,7 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
         }
     }
 
-    n_constraints_per_prio_ = std::vector<uint>(constraint_vector_.size(), 0);
+    n_constraints_per_prio_ = std::vector<int>(constraint_vector_.size(), 0);
     n_prios_ = n_constraints_per_prio_.size();
     for(uint prio = 0; prio < constraint_vector_.size(); prio++)
     {
@@ -153,19 +152,21 @@ Constraint* WbcVelocity::constraint(const std::string &name)
     return constraint_map_[name];
 }
 
-void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std::vector<LinearEqnSystem> &equations)
+void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, std::vector<LinearEqnSystem> &equations)
 {
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
 
-    //Check if all required task frame are available
+    //Check if all required task frames are available
     for(TaskFrameKDLMap::iterator it = tf_map_.begin(); it != tf_map_.end(); it++)
     {
         bool found = false;
         for(uint i = 0; i < task_frames.size(); i++)
         {
-            if(it->first.compare(task_frames[i].tf_name) == 0)
+            if(it->first.compare(task_frames[i].tf_name) == 0){
                 found = true;
+                tf_map_[task_frames[i].tf_name] = task_frames[i];
+            }
         }
 
         if(!found){
@@ -174,19 +175,11 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrame> &task_frames, std
         }
     }
 
-    //Convert task frames and create full robot Jacobians
+    //update task frame map and create full robot Jacobians
     for(uint i = 0; i < task_frames.size(); i++)
     {
-        const TaskFrame &tf = task_frames[i];
-
-        //Ignore task frame that are not used in wbc config
-        if(tf_map_.count(task_frames[i].tf_name) == 0){
-            LOG_INFO("Task frame %s it not needed for given wbc config", task_frames[i].tf_name.c_str());
-            continue;
-        }
-
-        //Convert Task frame to KDL
-        TfToTfKDL(tf, tf_map_[tf.tf_name]);
+        const TaskFrameKDL &tf = task_frames[i];
+        tf_map_[tf.tf_name] = tf;
 
         //IMPORTANT: Fill in columns of task frame Jacobian into the correct place of the full robot Jacobian using the joint_index_map
         for(uint j = 0; j < tf.joint_names.size(); j++)

@@ -5,7 +5,7 @@
 #include <map>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
-#include "TaskFrame.hpp"
+#include "TaskFrameKDL.hpp"
 
 namespace wbc{
 

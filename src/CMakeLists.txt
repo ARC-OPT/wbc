@@ -1,7 +1,6 @@
 rock_library(wbc
     SOURCES HierarchicalWDLSSolver.cpp
             GeneralizedInverse.cpp
-            TaskFrame.cpp
             ConstraintConfig.hpp
             Constraint.cpp
             ExtendedConstraint.hpp
@@ -14,7 +13,7 @@ rock_library(wbc
             Constraint.hpp
             ExtendedConstraint.hpp
             KinematicChainKDL.hpp
-            TaskFrame.hpp
+            TaskFrameKDL.hpp
             RobotModelKDL.hpp
             WbcVelocity.hpp
             SolverTypes.hpp
