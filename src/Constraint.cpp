@@ -16,8 +16,8 @@ void Constraint::setReference(const base::samples::RigidBodyState &ref){
         throw std::invalid_argument("Invalid Cartesian reference input");
     }
 
-    y_des.segment(0,3) = ref.velocity;
-    y_des.segment(3,3) = ref.angular_velocity;
+    y_ref.segment(0,3) = ref.velocity;
+    y_ref.segment(3,3) = ref.angular_velocity;
 
     updateTime();
 }
@@ -37,7 +37,7 @@ void Constraint::setReference(const base::samples::Joints& ref){
             LOG_ERROR("Reference input for joint %s of constraint %s has invalid speed value(s)", ref.names[i].c_str(), config.name.c_str());
             throw std::invalid_argument("Invalid joint reference input");
         }
-        y_des(i) = ref[i].speed;
+        y_ref(i) = ref[i].speed;
     }
 
     updateTime();
@@ -67,27 +67,22 @@ void Constraint::validate()
     }
 }
 
-void Constraint::computeDebug(const base::VectorXd& solver_output, const base::VectorXd& robot_vel){
-    y_solution = A * solver_output;
-    y = A * robot_vel;
-}
-
 void Constraint::reset()
 {
-    y_des.setZero();
-    y_des_root_frame.setZero();
-    y_solution.setZero();
-    y.setZero();
-    weights.setOnes();
-    if(constraints_initially_active)
-        activation = 1;
-    else
-        activation = 0;
-    constraint_timed_out = 0;
+    y.setConstant(base::NaN<double>());
+    y_solution.setConstant(base::NaN<double>());
+    error_y.setConstant(base::NaN<double>());
+    error_y_solution.setConstant(base::NaN<double>());
+    y_ref.setZero();
+    activation = config.activation;
+    for(uint i = 0; i < no_variables; i++)
+        weights(i) = config.weights[i];
 
+     //Set timeout to true in the beginning. Like this, Constraints have to get a
+    //reference value first to be activated, independent of the activation value
+    constraint_timed_out = 1;
     A.setZero();
     last_ref_input = base::Time::now();
-    manipulability = base::NaN<double>();
 }
 } //namespace wbc
 #endif // Constraint_CPP
