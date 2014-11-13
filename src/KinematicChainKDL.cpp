@@ -38,7 +38,7 @@ void KinematicChainKDL::update(const base::samples::Joints &status){
             idx = status.mapNameToIndex(joint_names_[i]);
         }
         catch(std::exception e){
-            LOG_ERROR("Kin. Chain of task frame %s has joint %s, but this joint is not in joint state vector", tf->tf_name.c_str(), joint_names_[i].c_str());
+            LOG_ERROR("Kin. Chain of task frame %s has joint %s, but this joint is not in joint state vector", tf->tf_name_.c_str(), joint_names_[i].c_str());
             throw e;
         }
         q_(i) = status[idx].position;
@@ -47,14 +47,42 @@ void KinematicChainKDL::update(const base::samples::Joints &status){
     }
 
     //Compute FK
-    pos_fk_solver_->JntToCart(q_, tf->pose);
+    pos_fk_solver_->JntToCart(q_, tf->pose_);
 
     //Compute Jacobian
-    jac_solver_->JntToJac(q_, tf->jac);
+    jac_solver_->JntToJac(q_, tf->jac_);
 
     // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip.
     // This changes the reference point to the root frame
-    tf->jac.changeRefPoint(-tf->pose.p);
+    tf->jac_.changeRefPoint(-tf->pose_.p);
+}
 
+KinematicChainKDLDyn::KinematicChainKDLDyn(const KDL::Chain &chain, const Eigen::Vector3d &gravity) :
+    KinematicChainKDL(chain)
+{
+    dyn_param_solver_ = new KDL::ChainDynParam(chain, KDL::Vector(gravity(0), gravity(1), gravity(2)));
+    jnt_inertia_.resize(chain.getNrOfJoints());
+    jnt_gravity_.resize(chain.getNrOfJoints());
+    jnt_coriolis_.resize(chain.getNrOfJoints());
+
+}
+
+KinematicChainKDLDyn::~KinematicChainKDLDyn()
+{
+    delete dyn_param_solver_;
+}
+
+void KinematicChainKDLDyn::update(const base::samples::Joints &status)
+{
+    KinematicChainKDL::update(status);
+
+    dyn_param_solver_->JntToMass(q_, jnt_inertia_);
+    tf->jnt_inertia_ = jnt_inertia_.data;
+
+    dyn_param_solver_->JntToGravity(q_, jnt_gravity_);
+    tf->jnt_gravity_ = jnt_gravity_.data;
+
+    dyn_param_solver_->JntToCoriolis(q_, q_dot_, jnt_coriolis_);
+    tf->jnt_coriolis_ = jnt_coriolis_.data;
 }
 }

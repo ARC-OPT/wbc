@@ -9,13 +9,50 @@
 #include "../src/HierarchicalWDLSSolver.hpp"
 #include "../src/GeneralizedInverse.hpp"
 #include "../src/SolverTypes.hpp"
+#include "../src/RobotModelKDL.hpp"
+#include <kdl/utilities/svd_eigen_HH.hpp>
+#include <string>
 
 using namespace std;
 using namespace wbc;
 
-BOOST_AUTO_TEST_CASE(acc)
-{
 
+BOOST_AUTO_TEST_CASE(derived)
+{
+    class A{
+    public:
+        A(){
+            std::cout<<"Calling constructor of A"<<std::endl;
+        }
+        virtual ~A(){
+            std::cout<<"Calling destructor of A"<<std::endl;
+        }
+        virtual void testFunc(){
+            std::cout<<"Calling testFunc of A"<<std::endl;
+        }
+    };
+
+    class Derived : public A{
+    public:
+        Derived(){
+            std::cout<<"Calling constructor of Derived"<<std::endl;
+        }
+        virtual ~Derived(){
+            std::cout<<"Calling destructor of Derived"<<std::endl;
+        }
+        virtual void testFunc(){
+            std::cout<<"Calling testFunc of Derived"<<std::endl;
+        }
+    };
+
+    std::cout<<"Constructing Derived: "<<std::endl;
+    A* derived = new Derived();
+
+    std::cout<<"Calling testFunc(): "<<std::endl;
+    derived->testFunc();
+
+    std::cout<<"detroying derived: "<<std::endl;
+    delete derived;
 }
 
 /**
@@ -298,174 +335,59 @@ BOOST_AUTO_TEST_CASE(weighted_pseudo_inverse)
     }
 }
 
-/*
-BOOST_AUTO_TEST_CASE(wbc_cart_aila)
+BOOST_AUTO_TEST_CASE(robot_model_dynamic)
 {
+
     srand (time(NULL));
 
-    int argc = boost::unit_test::framework::master_test_suite().argc;
-    char **argv = boost::unit_test::framework::master_test_suite().argv;
-
-    argc-=2;
-    argv+=2;
-
-    std::string urdf_file = argv[0];
-
-    KDL::Tree tree, reduced_tree;
-    BOOST_CHECK_EQUAL(kdl_parser::treeFromFile(urdf_file, tree), true);
-    KDL::Chain right_hand_chain;
-    tree.getChain("Rover_base", "Hand_r", right_hand_chain);
-    reduced_tree.addSegment(KDL::Segment("Rover_base", KDL::Joint("Rover_base",KDL::Joint::None),KDL::Frame::Identity()), "root");
-    reduced_tree.addChain(right_hand_chain, "Rover_base");
-
-    WbcVelocity wbc;
-    std::vector<ConstraintConfig> config;
-    ConstraintConfig conf(cart, 0, "Cart_r", "Chest", "Hand_r");
-    config.push_back(conf);
-
-    std::vector<std::string> joint_names;
-    for(uint i = 0; i < right_hand_chain.getNrOfSegments(); i++)
-    {
-        KDL::Segment seg = right_hand_chain.getSegment(i);
-        if(seg.getJoint().getType() != KDL::Joint::None)
-            joint_names.push_back(seg.getJoint().getName());
+    if(boost::unit_test::framework::master_test_suite().argc <= 1){
+        std::cerr<<"Invalid number of command line args. Usage: ./test --run-test=robot_model_dynamic <file.urdf>"<<std::endl;
+        return;
     }
+    std::string urdf_file = boost::unit_test::framework::master_test_suite().argv[1];
 
-    BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joint_names, true, 3), true);
-
-    Constraint* sub_task = wbc.constraint(conf.name);
-    sub_task->y_des = Eigen::VectorXd(6);
-    for(uint i = 0; i < 6; i++)
-        sub_task->y_des(i) = (rand()%1000)/1000.0;;
-
-    base::samples::Joints status;
-    status.resize(right_hand_chain.getNrOfJoints());
-    status.names = joint_names;
-
-    for(uint i = 0; i < status.size(); i++)
-        status[i].position = 1.;
-
-    Eigen::VectorXd x(status.size());
-    wbc.solver()->setNormMax(20.0);
-    wbc.solve(status, x);
-
-    Eigen::VectorXd y_act(6);
-    y_act = sub_task->A * x;
-
-    for(uint i = 0; i < y_act.rows(); i++)
-        BOOST_CHECK_EQUAL(fabs(y_act(i) - sub_task->y_des(i)) < 1e-5, true);
-
-    cout<<"..........................................................."<<endl;
-    cout<<"Desired y: "<<endl;
-    cout<<sub_task->y_des.transpose()<<endl<<endl;
-    cout<<"Joint names: "<<endl;
-    for(uint i = 0; i <status.names.size(); i++) cout<<status.names[i]<<" "; cout<<endl<<endl;
-    cout<<"Ctrl solution: "<<endl;
-    cout<<x.transpose()<<endl<<endl;
-    cout<<"Actual y: "<<endl;
-    cout<<y_act.transpose()<<endl<<endl;
-    cout<<"..........................................................."<<endl;
-
-}
-
-BOOST_AUTO_TEST_CASE(wbc_joint)
-{
-    int argc = boost::unit_test::framework::master_test_suite().argc;
-    char **argv = boost::unit_test::framework::master_test_suite().argv;
-
-    argc-=2;
-    argv+=2;
-
-    std::string urdf_file = argv[0];
-
-    KDL::Tree tree, reduced_tree;
-    BOOST_CHECK_EQUAL(kdl_parser::treeFromFile(urdf_file, tree), true);
-    KDL::Chain right_hand_chain;
-    tree.getChain("Rover_base", "Hand_r", right_hand_chain);
-    reduced_tree.addSegment(KDL::Segment("Rover_base", KDL::Joint("Rover_base",KDL::Joint::None),KDL::Frame::Identity()), "root");
-    reduced_tree.addChain(right_hand_chain, "Rover_base");
-
-    WbcVelocity wbc;
-    std::vector<ConstraintConfig> config;
-    std::vector<std::string> joints;
-    joints.push_back("J_Foot");
-    joints.push_back("J_Knees");
-    joints.push_back("J_Hip");
-    joints.push_back("J_Waist");
-    joints.push_back("J_Shoulder1_r");
-    joints.push_back("J_Shoulder2_r");
-    joints.push_back("J_UpperArm_r");
-    joints.push_back("J_Elbow_r");
-    joints.push_back("J_Forearm_r");
-    joints.push_back("J_Wrist1_r");
-    joints.push_back("J_Wrist2_r");
-    ConstraintConfig conf(jnt, 0, "Upper_limits", "", "",  joints);
-    config.push_back(conf);
-    conf.name = "Lower_limits";
-    config.push_back(conf);
-
-    BOOST_CHECK_EQUAL(wbc.configure(reduced_tree, config, joints, true, 3), true);
-
-    Constraint* sub_task = wbc.constraint("Upper_limits");
-    sub_task->y_des(0) = 0.2;
-    sub_task->y_des(1) = -0.3;
-
-    sub_task = wbc.constraint("Lower_limits");
-
-    for(uint i = 0; i < sub_task->config.joint_names.size(); i++)
-        sub_task->weights(i,i) = 0;
-
-
-    base::samples::Joints status;
-    status.resize(right_hand_chain.getNrOfJoints());
-    for(uint i = 0; i < status.size(); i++)
-        status[i].position = 0.0;
-    status.names = joints;
-
-    Eigen::VectorXd x(status.size());
-    wbc.solver()->setNormMax(10000.0);
-    wbc.solve(status, x);
-
-    for(uint task_no = 0; task_no < config.size(); task_no++){
-
-        sub_task = wbc.constraint(config[task_no].name);
-        Eigen::VectorXd y_act(11);
-        y_act = sub_task->A * x;
-
-        for(uint i = 0; i < y_act.rows(); i++)
-            BOOST_CHECK_EQUAL(fabs(y_act(i) - sub_task->y_des(i)) < 1e-5, true);
-
-        cout<<"..........................................................."<<endl;
-        cout<<"Task: "<<config[task_no].name<<endl;
-        cout<<"Desired y: "<<endl;
-        cout<<sub_task->y_des.transpose()<<endl<<endl;
-        cout<<"Joint names: "<<endl;
-        for(uint i = 0; i < status.names.size(); i++) cout<<status.names[i]<<" "; cout<<endl<<endl;
-        cout<<"Ctrl solution: "<<endl;
-        cout<<x.transpose()<<endl<<endl;
-        cout<<"Actual y: "<<endl;
-        cout<<y_act.transpose()<<endl<<endl;
-        cout<<"..........................................................."<<endl;
-    }
-
-
-}
-
-
-
-BOOST_AUTO_TEST_CASE(test_wbc_invalid_sub_task)
-{
-    int argc = boost::unit_test::framework::master_test_suite().argc;
-    char **argv = boost::unit_test::framework::master_test_suite().argv;
-
-    argc-=2;
-    argv+=2;
-
-    std::string urdf_file = argv[0];
-
+    KDL::Tree full_tree;
+    KDL::Chain chain;
+    BOOST_CHECK(kdl_parser::treeFromFile(urdf_file, full_tree)  == true);
     KDL::Tree tree;
-    BOOST_CHECK_EQUAL(kdl_parser::treeFromFile(urdf_file, tree), true);
+    BOOST_CHECK(full_tree.getChain("Chest", "Hand_l", chain) == true);
 
-    //TODO
+    tree.addSegment(KDL::Segment("Chest", KDL::Joint("Chest",KDL::Joint::None),KDL::Frame::Identity()), "root");
+    tree.addChain(chain, "Chest");
+
+    Eigen::Vector3d grav(0,0,-9.81);
+    RobotModelKDLDyn model(tree,grav);
+    BOOST_CHECK(model.addTaskFrame("Hand_l") == true);
+
+    base::samples::Joints joint_state;
+    TaskFrameKDL* tf = model.getTaskFrame("Hand_l");
+    BOOST_CHECK(tf != 0);
+
+    joint_state.resize(tf->joint_names_.size());
+    joint_state.names = tf->joint_names_;
+
+    for(uint i = 0; i < joint_state.size(); i++){
+        joint_state[i].position = 0;
+        joint_state[i].speed = 0;
+    }
+    joint_state[0].position = M_PI/2;
+    model.update(joint_state);
+
+    std::cout<<"Jacobian: "<<tf->jac_.data<<std::endl<<std::endl;
+    std::cout<<"Pose: "<<tf->pose_<<std::endl<<std::endl;
+    std::cout<<"Gravity: "<<tf->jnt_gravity_<<std::endl<<std::endl;
+    std::cout<<"Inertia: "<<tf->jnt_inertia_<<std::endl<<std::endl;
+    std::cout<<"Coriolis: "<<tf->jnt_coriolis_<<std::endl<<std::endl;
+
+    //Check if inertia mat is positive definite
+    Eigen::MatrixXd U, V;
+    Eigen::VectorXd S, tmp;
+    U.resize(tf->jnt_inertia_.rows(), tf->jnt_inertia_.cols());
+    V.resize(tf->jnt_inertia_.cols(), tf->jnt_inertia_.cols());
+    S.resize(tf->jnt_inertia_.cols());
+    tmp.resize(tf->jnt_inertia_.cols());
+    KDL::svd_eigen_HH(tf->jnt_inertia_, U, S, V, tmp);
+
+    for(uint i = 0; i < S.size(); i++)
+        BOOST_CHECK(S(i) > 0);
 }
-*/

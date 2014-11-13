@@ -30,10 +30,7 @@ bool RobotModelKDL::addTaskFrame(const std::string &id){
             LOG_ERROR("Could not extract kinematic chain between %s and %s from robot tree", robot_root.c_str(), id.c_str());
             return false;
         }
-        KinematicChainKDL* tf_chain_kdl = new KinematicChainKDL(chain);
-        kin_chain_map_[id] = tf_chain_kdl;
-
-        tf_vector_.push_back(tf_chain_kdl->tf);
+        addKinChain(chain, id);
 
         LOG_DEBUG("Sucessfully added task frame %s", id.c_str());
         LOG_DEBUG("TF Map now contains:");
@@ -45,6 +42,12 @@ bool RobotModelKDL::addTaskFrame(const std::string &id){
         LOG_WARN("Task Frame with id %s has already been added", id.c_str());
 
     return true;
+}
+
+void RobotModelKDL::addKinChain(const KDL::Chain& chain, const std::string &id)
+{
+    KinematicChainKDL* tf_chain_kdl = new KinematicChainKDL(chain);
+    kin_chain_map_[id] = tf_chain_kdl;
 }
 
 void RobotModelKDL::update(const base::samples::Joints &joint_state){

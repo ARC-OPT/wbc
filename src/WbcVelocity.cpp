@@ -9,8 +9,8 @@ namespace wbc{
 
 WbcVelocity::WbcVelocity() :
     configured_(false),
-    temp_(Eigen::VectorXd(6)),
-    no_robot_joints_(0){
+    no_robot_joints_(0),
+    temp_(Eigen::VectorXd(6)){
 }
 
 WbcVelocity::~WbcVelocity(){
@@ -163,9 +163,9 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
         bool found = false;
         for(uint i = 0; i < task_frames.size(); i++)
         {
-            if(it->first.compare(task_frames[i].tf_name) == 0){
+            if(it->first.compare(task_frames[i].tf_name_) == 0){
                 found = true;
-                tf_map_[task_frames[i].tf_name] = task_frames[i];
+                tf_map_[task_frames[i].tf_name_] = task_frames[i];
             }
         }
 
@@ -179,13 +179,13 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
     for(uint i = 0; i < task_frames.size(); i++)
     {
         const TaskFrameKDL &tf = task_frames[i];
-        tf_map_[tf.tf_name] = tf;
+        tf_map_[tf.tf_name_] = tf;
 
         //IMPORTANT: Fill in columns of task frame Jacobian into the correct place of the full robot Jacobian using the joint_index_map
-        for(uint j = 0; j < tf.joint_names.size(); j++)
+        for(uint j = 0; j < tf.joint_names_.size(); j++)
         {
-            const std::string& tf_name = tf.tf_name;
-            const std::string& jt_name =  tf.joint_names[j];
+            const std::string& tf_name = tf.tf_name_;
+            const std::string& jt_name =  tf.joint_names_[j];
 
             if(joint_index_map_.count(jt_name) == 0)
             {
@@ -194,7 +194,7 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
             }
 
             uint idx = joint_index_map_[jt_name];
-            jac_map_[tf_name].setColumn(idx, tf_map_[tf_name].jac.getColumn(j));
+            jac_map_[tf_name].setColumn(idx, tf_map_[tf_name].jac_.getColumn(j));
         }
     }
 
@@ -244,10 +244,10 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 const TaskFrameKDL& tf_tip = tf_map_[constraint->config.tip];
 
                 //Create constraint jacobian
-                constraint->pose = tf_root.pose.Inverse() * tf_tip.pose;
+                constraint->pose = tf_root.pose_.Inverse() * tf_tip.pose_;
                 constraint->full_jac.data.setIdentity();
                 constraint->full_jac.changeRefPoint(-constraint->pose.p);
-                constraint->full_jac.changeRefFrame(tf_root.pose);
+                constraint->full_jac.changeRefFrame(tf_root.pose_);
 
                 //Invert constraint Jacobian
                 KDL::svd_eigen_HH(constraint->full_jac.data, constraint->Uf, constraint->Sf, constraint->Vf, temp_);
@@ -261,8 +261,8 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 }
                 constraint->H = (constraint->Vf * constraint->Uf.transpose());
 
-                const KDL::Jacobian& jac_root =  jac_map_[tf_root.tf_name];
-                const KDL::Jacobian& jac_tip =  jac_map_[tf_tip.tf_name];
+                const KDL::Jacobian& jac_root =  jac_map_[tf_root.tf_name_];
+                const KDL::Jacobian& jac_tip =  jac_map_[tf_tip.tf_name_];
 
                 ///// A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root:
                 constraint->A = constraint->H.block(0, 0, n_vars, 6) * jac_tip.data
