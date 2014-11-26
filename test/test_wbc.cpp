@@ -17,6 +17,41 @@ using namespace std;
 using namespace wbc;
 
 
+BOOST_AUTO_TEST_CASE(four_link)
+{
+    if(boost::unit_test::framework::master_test_suite().argc <= 1){
+        std::cerr<<"Invalid number of command line args. Usage: ./test --run-test=robot_model_dynamic <file.urdf>"<<std::endl;
+        return;
+    }
+    std::string urdf_file = boost::unit_test::framework::master_test_suite().argv[1];
+
+    KDL::Tree tree;
+    KDL::Chain chain;
+    BOOST_CHECK(kdl_parser::treeFromFile(urdf_file, tree)  == true);
+    BOOST_CHECK(tree.getChain("AH1", "PanToTilt", chain) == true);
+
+    KDL::ChainFkSolverPos_recursive pos_solver(chain);
+    KDL::ChainFkSolverVel_recursive vel_solver(chain);
+
+    KDL::JntArray q(1);
+    q(0) = -1.57;
+    KDL::Frame pose;
+    pos_solver.JntToCart(q, pose);
+
+    double euler[3];
+    pose.M.GetEulerZYX(euler[2], euler[1], euler[0]);
+    std::cout<<euler[0]<<" "<<euler[1]<<" "<<euler[2]<<std::endl;
+
+    KDL::JntArrayVel q_dot(1);
+    KDL::FrameVel frame_vel;
+    q_dot.q(0) = 0.0;
+    q_dot.qdot(0) = 0.5;
+    vel_solver.JntToCart(q_dot, frame_vel);
+
+    std::cout<<frame_vel.deriv()<<std::endl;
+
+}
+
 BOOST_AUTO_TEST_CASE(derived)
 {
     class A{

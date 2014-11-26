@@ -59,7 +59,12 @@ public:
      */
     std::string tip;
 
-    /** Only Cartesian constraints: Reference frame. If reference frame is choosen to be tip, the input will be converted to root internally. */
+    /** Only Cartesian constraints: Reference frame of the constraint input (base to which the input twist is expressed).
+     *  If ref_frame==constraint_ref_frame_tip the input will be automatically transformed to the robot root.
+     *  Note that the reference point of the input velocity will
+     *  still be ref_frame. This means that the rotational velocity will describe a rotation around the origin of ref_frame,
+     *  but expressed with respect to the robot base.
+     */
     constraint_ref_frame ref_frame;
 };
 

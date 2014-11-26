@@ -268,7 +268,16 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 constraint->A = constraint->H.block(0, 0, n_vars, 6) * jac_tip.data
                         -(constraint->H.block(0, 0, n_vars, 6) * jac_root.data);
 
-                //If the constraint input is given in tip coordinates, convert to root
+                //Convert input to root of the robot.
+                //IMPORTANT: In KDL there are two ways to transform a twist:
+                //    - KDL::Frame*KDL::Twist transforms both the reference point in which the twist is expressed AND the reference frame
+                //    - KDL::Rotation*KDL::Twist transform only the reference frame!
+                //    - We use KDL::Rotation*KDL::Twist here!
+                //    - The difference is that with second method, after transformation, the rotational components of the twist will act like a rotation around the origin
+                //      of ref_frame, expressed in the root frame of the robot. With the first method the ref_frame would rotate around the root
+                //      frame (e.g. like a satellite rotates around earth), which means that rotational components, would produce translational
+                //      velocities after transformation to root frame. If the twist has only translational components there is no difference between
+                //      the two methods
                 if(constraint->config.ref_frame == constraint_ref_frame_tip)
                 {
                     for(uint i = 0; i < 6; i++)

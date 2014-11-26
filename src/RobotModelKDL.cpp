@@ -48,6 +48,7 @@ void RobotModelKDL::addKinChain(const KDL::Chain& chain, const std::string &id)
 {
     KinematicChainKDL* tf_chain_kdl = new KinematicChainKDL(chain);
     kin_chain_map_[id] = tf_chain_kdl;
+    tf_vector_.push_back(tf_chain_kdl->tf);
 }
 
 void RobotModelKDL::update(const base::samples::Joints &joint_state){
