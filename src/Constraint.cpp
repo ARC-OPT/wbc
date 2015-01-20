@@ -70,6 +70,7 @@ void Constraint::validate()
 void Constraint::reset()
 {
     y.setConstant(base::NaN<double>());
+    y_ref_root.setConstant(base::NaN<double>());
     y_solution.setConstant(base::NaN<double>());
     error_y.setConstant(base::NaN<double>());
     error_y_solution.setConstant(base::NaN<double>());

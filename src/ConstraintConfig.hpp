@@ -47,25 +47,25 @@ public:
     double activation;
 
     /**
-     * Only Cartesian Constraints: Root frame associated with this Constraint.
+     * Only Cartesian Constraints: Root frame of the kinematic chain associated with this Constraint.
      * Has to be the name of a link available in robot`s KDL tree.
-     * This parameter is neglected if the Constraint is in joint space
+     * This parameter is neglected if the Constraint is defined in joint space
      */
     std::string root;
 
-    /** Only Cartesian constraints: Tip frame associated with this constraint.
+    /** Only Cartesian constraints: Tip frame of the kinematic chain associated with this constraint.
      *  Has to be the name of a link available in robot`s KDL tree or an empty string.
-     *  If empty, the constraint is assumed to in joint space
+     *  This parameter is neglected if the Constraint is defined in joint space
      */
     std::string tip;
 
-    /** Only Cartesian constraints: Reference frame of the constraint input (base to which the input twist is expressed).
-     *  If ref_frame==constraint_ref_frame_tip the input will be automatically transformed to the robot root.
-     *  Note that the reference point of the input velocity will
-     *  still be ref_frame. This means that the rotational velocity will describe a rotation around the origin of ref_frame,
-     *  but expressed with respect to the robot base.
+    /** Only Cartesian constraints: Reference frame of the constraint input (base with respect to which the input twist is expressed).
+     *  This has to be the name of a link available in robot`s KDL tree.
+     *  If ref_frame==root the input is assumed to be given in root frame. Otherwise it will be transformed to root.
+     *  Note that the reference point of the input velocity will still be ref_frame. This means that the rotational velocity will
+     *  describe a rotation around the origin of ref_frame, but expressed with respect to the robot base.
      */
-    constraint_ref_frame ref_frame;
+    std::string ref_frame;
 };
 
 }

@@ -119,6 +119,15 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
                 jac.data.setZero();
                 jac_map_[tf_name] = jac;
             }
+
+            tf_name = it->second->config.ref_frame;
+            if(tf_map_.count(tf_name) == 0)
+            {
+                tf_map_[tf_name] = TaskFrameKDL();
+                KDL::Jacobian jac(joint_index_map_.size());
+                jac.data.setZero();
+                jac_map_[tf_name] = jac;
+            }
         }
     }
 
@@ -242,6 +251,7 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
             {
                 const TaskFrameKDL& tf_root = tf_map_[constraint->config.root];
                 const TaskFrameKDL& tf_tip = tf_map_[constraint->config.tip];
+                const TaskFrameKDL& tf_ref_frame = tf_map_[constraint->config.ref_frame];
 
                 //Create constraint jacobian
                 constraint->pose = tf_root.pose_.Inverse() * tf_tip.pose_;
@@ -268,7 +278,7 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 constraint->A = constraint->H.block(0, 0, n_vars, 6) * jac_tip.data
                         -(constraint->H.block(0, 0, n_vars, 6) * jac_root.data);
 
-                //Convert input to root of the robot.
+                //Convert input twist from ref_frame to root of the kinematic chain
                 //IMPORTANT: In KDL there are two ways to transform a twist:
                 //    - KDL::Frame*KDL::Twist transforms both the reference point in which the twist is expressed AND the reference frame
                 //    - KDL::Rotation*KDL::Twist transform only the reference frame!
@@ -278,15 +288,11 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 //      frame (e.g. like a satellite rotates around earth), which means that rotational components, would produce translational
                 //      velocities after transformation to root frame. If the twist has only translational components there is no difference between
                 //      the two methods
-                if(constraint->config.ref_frame == constraint_ref_frame_tip)
-                {
-                    for(uint i = 0; i < 6; i++)
-                        tw_(i) = constraint->y_ref(i);
-                    tw_ = constraint->pose.M * tw_;
-
-                    for(uint i = 0; i < 6; i++)
-                        constraint->y_ref(i) = tw_(i);
-                }
+                for(uint i = 0; i < 6; i++)
+                    tw_(i) = constraint->y_ref(i);
+                tw_ = (tf_root.pose_.M.Inverse() * tf_ref_frame.pose_.M) * tw_;
+                for(uint i = 0; i < 6; i++)
+                    constraint->y_ref_root(i) = tw_(i);
             }
             else if(constraint->config.type == jnt){
                 for(uint i = 0; i < constraint->config.joint_names.size(); i++){
@@ -297,6 +303,7 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                     const std::string &joint_name = constraint->config.joint_names[i];
                     uint idx = joint_index_map_[joint_name];
                     constraint->A(i,idx) = 1.0;
+                    constraint->y_ref_root = constraint->y_ref; // In joint space, y_ref is of yourse equal to y_ref_root
                 }
             }
 
@@ -305,7 +312,7 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
             // Insert constraints into equation system of current priority at the correct position
             equations[prio].W_row.segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
             equations[prio].A.block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
-            equations[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref;
+            equations[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
 
             row_index += n_vars;
         }
