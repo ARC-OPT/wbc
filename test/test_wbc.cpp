@@ -16,6 +16,57 @@
 using namespace std;
 using namespace wbc;
 
+void eulerToQuaternion(const base::Vector3d &euler, base::Quaterniond &q)
+{
+    q =  Eigen::Quaternion<double>(Eigen::AngleAxisd(euler(0),
+                                                       Eigen::Vector3d::UnitZ()) *
+                                     Eigen::AngleAxisd(euler(1), Eigen::Vector3d::UnitY()) *
+                                     Eigen::AngleAxisd(euler(2), Eigen::Vector3d::UnitX()));
+}
+
+void quaternionToEuler(const base::Quaterniond &q, base::Vector3d &euler)
+{
+    euler = base::getEuler(q);
+}
+
+void posAndEulerToRbs(const base::Vector3d& pos, const base::Vector3d& euler, base::samples::RigidBodyState& rbs)
+{
+    rbs.position = pos;
+    eulerToQuaternion(euler, rbs.orientation);
+}
+
+void rbsToPosAndEuler(const base::samples::RigidBodyState& rbs, base::Vector3d& pos, base::Vector3d& euler)
+{
+    pos = rbs.position;
+    quaternionToEuler(rbs.orientation, euler);
+}
+
+BOOST_AUTO_TEST_CASE(conversion)
+{
+    base::samples::RigidBodyState rbs;
+    base::Vector3d position;
+    base::Vector3d euler;
+    position(0) = 1.0;
+    position(1) = 0.5;
+    position(2) = 0.3;
+    euler(0) = 0.7;
+    euler(1) = 0.3;
+    euler(2) = 0.1;
+
+    std::cout<<"Initial Position: "<<position<<std::endl;
+    std::cout<<"Initial euler: "<<euler<<std::endl;
+
+    posAndEulerToRbs(position, euler, rbs);
+
+    std::cout<<"Position rbs: "<<rbs.position<<std::endl;
+    std::cout<<"Orientation rbs: x: "<<rbs.orientation.x()<<" y: "<<rbs.orientation.y()<<" z: "<<rbs.orientation.z()<<" w: "<<rbs.orientation.w()<<std::endl;
+
+    base::Vector3d new_pos, new_euler;
+    rbsToPosAndEuler(rbs, new_pos, new_euler);
+
+    std::cout<<"Final Position: "<<new_pos<<std::endl;
+    std::cout<<"Final euler: "<<new_euler<<std::endl;
+}
 
 BOOST_AUTO_TEST_CASE(four_link)
 {
