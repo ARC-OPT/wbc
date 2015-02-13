@@ -33,11 +33,21 @@ void Constraint::setReference(const base::samples::Joints& ref){
     }
 
     for(uint i = 0; i < config.joint_names.size(); i++){
-        if(!ref[i].hasSpeed()){
-            LOG_ERROR("Reference input for joint %s of constraint %s has invalid speed value(s)", ref.names[i].c_str(), config.name.c_str());
+        uint idx;
+        try{
+            idx = ref.mapNameToIndex(config.joint_names[i]);
+        }
+        catch(std::exception e){
+            LOG_ERROR_S << "Constraint::setReference: Constraint with name " << config.name << " expects joint " << config.joint_names[i] << ", but this joint is not in reference vector!";
             throw std::invalid_argument("Invalid joint reference input");
         }
-        y_ref(i) = ref[i].speed;
+
+        if(!ref[idx].hasSpeed()){
+            LOG_ERROR("Reference input for joint %s of constraint %s has invalid speed value(s)", ref.names[idx].c_str(), config.name.c_str());
+            throw std::invalid_argument("Invalid joint reference input");
+        }
+
+        y_ref(i) = ref[idx].speed;
     }
 
     updateTime();
