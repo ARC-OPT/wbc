@@ -28,7 +28,7 @@ public:
             no_variables = 6;
 
         if(config.weights.size() != no_variables){
-            LOG_ERROR("Constraint '%s'' has %i variables, but its weights vector has size %i",
+            LOG_ERROR("Constraint '%s' has %i variables, but its weights vector has size %i",
                       config.name.c_str(), no_variables, config.weights.size());
             throw std::invalid_argument("Invalid WBC config");
         }

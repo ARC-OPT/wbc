@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <Eigen/SVD>
+#include <stdexcept>
 #include "SolverTypes.hpp"
 
 namespace wbc{
@@ -88,8 +89,8 @@ public:
 
     void setColumnWeights(const Eigen::VectorXd& weights, const uint prio);
     void setRowWeights(const Eigen::VectorXd& weights, const uint prio);
-    void setEpsilon(double epsilon){epsilon_ = epsilon;}
-    void setNormMax(double norm_max){norm_max_ = norm_max;}
+    void setEpsilon(double epsilon);
+    void setNormMax(double norm_max);
     bool configured(){return configured_;}
     void setSVDMethod(svd_method method){svd_method_ = method;}
     std::vector<int> getNyPerPriority(){return n_rows_per_prio_;}

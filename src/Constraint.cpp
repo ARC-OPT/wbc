@@ -38,7 +38,7 @@ void Constraint::setReference(const base::samples::Joints& ref){
             idx = ref.mapNameToIndex(config.joint_names[i]);
         }
         catch(std::exception e){
-            LOG_ERROR_S << "Constraint::setReference: Constraint with name " << config.name << " expects joint " << config.joint_names[i] << ", but this joint is not in reference vector!";
+            LOG_ERROR("Constraint::setReference: Constraint with name %s expects joint %s, but this joint is not in reference vector!", config.name.c_str(), config.joint_names[i].c_str());
             throw std::invalid_argument("Invalid joint reference input");
         }
 

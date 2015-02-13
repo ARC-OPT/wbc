@@ -44,6 +44,13 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     has_timeout_ = true;
     if(base::isUnset(constraint_timeout))
         has_timeout_ = false;
+    else
+    {
+        if(constraint_timeout <= 0){
+            LOG_ERROR("Constrainted timeout should be a value > 0, but is %f", constraint_timeout);
+            return false;
+        }
+    }
 
     no_robot_joints_ = joint_names.size();
 
@@ -301,6 +308,11 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                     //IMPORTANT: The joint order in the constraints might be different than in wbc.
                     //Thus, for joint space constraints, the joint indices have to be mapped correctly.
                     const std::string &joint_name = constraint->config.joint_names[i];
+                    if(joint_index_map_.count(joint_name) == 0)
+                    {
+                        LOG_ERROR("Constraint %s contains joint %s, but this joint has not been configured in joint names", constraint->config.name.c_str(), joint_name.c_str());
+                        throw std::invalid_argument("Invalid Constraint config");
+                    }
                     uint idx = joint_index_map_[joint_name];
                     constraint->A(i,idx) = 1.0;
                     constraint->y_ref_root = constraint->y_ref; // In joint space, y_ref is of yourse equal to y_ref_root

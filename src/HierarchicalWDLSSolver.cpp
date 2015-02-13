@@ -1,6 +1,5 @@
 #include "HierarchicalWDLSSolver.hpp"
 #include <base/logging.h>
-#include <stdexcept>
 #include <iostream>
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <kdl/utilities/svd_eigen_Macie.hpp>
@@ -257,5 +256,17 @@ const HierarchicalWDLSSolver::PriorityDataIntern& HierarchicalWDLSSolver::getPri
         throw std::invalid_argument("Invalid priority");
     }
     return priorities_[prio];
+}
+void HierarchicalWDLSSolver::setEpsilon(double epsilon){
+    if(epsilon <= 0){
+        throw std::invalid_argument("Epsilon has to be > 0!");
+    }
+    epsilon_ = epsilon;
+}
+void HierarchicalWDLSSolver::setNormMax(double norm_max){
+    if(norm_max <= 0){
+        throw std::invalid_argument("Norm Max has to be > 0!");
+    }
+    norm_max_ = norm_max;
 }
 }
