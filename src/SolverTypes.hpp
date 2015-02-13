@@ -5,7 +5,7 @@
 
 namespace wbc{
 
-enum svd_method{svd_eigen, svd_kdl, svd_macie};
+enum svd_method{svd_eigen, svd_kdl};
 enum damping_method{constant_damping, variable_damping};
 
 /** Describes a linear eqaution system Ax=y_ref */
