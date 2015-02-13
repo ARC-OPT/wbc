@@ -12,7 +12,7 @@ typedef std::map<std::string, TaskFrameKDL*> TFMap;
 class RobotModelKDL{
 
 public:
-    RobotModelKDL(const KDL::Tree& tree);
+    RobotModelKDL(const KDL::Tree& tree, const std::string& root_frame);
     virtual ~RobotModelKDL();
 
     bool hasTaskFrame(const std::string& id){return kin_chain_map_.count(id) > 0;}
@@ -22,24 +22,24 @@ public:
     TaskFrameKDL* getTaskFrame(const std::string &id);
     void getTFVector(std::vector<TaskFrameKDL>& task_frames);
     std::string robotRoot(){return tree_.getRootSegment()->second.segment.getName();}
-
     virtual void addKinChain(const KDL::Chain& chain, const std::string &id);
 
-    KDL::Tree tree_;
+    KDL::Tree tree_, reduced_tree_;
+    std::string root_frame_;
     KinChainMap kin_chain_map_;
     std::vector<TaskFrameKDL*> tf_vector_;
 };
 
 class RobotModelKDLDyn : public RobotModelKDL{
 public:
-    RobotModelKDLDyn(const KDL::Tree& tree, const Eigen::Vector3d& gravity) :
-        RobotModelKDL(tree),
+    RobotModelKDLDyn(const KDL::Tree& tree, const Eigen::Vector3d& gravity, const std::string &root_frame) :
+        RobotModelKDL(tree, root_frame),
         gravity_(gravity){}
     ~RobotModelKDLDyn(){}
 
     virtual void addKinChain(const KDL::Chain& chain, const std::string &id)
     {
-        KinematicChainKDLDyn* tf_chain_kdl = new KinematicChainKDLDyn(chain, gravity_);
+        KinematicChainKDLDyn* tf_chain_kdl = new KinematicChainKDLDyn(chain, gravity_, id);
         kin_chain_map_[id] = tf_chain_kdl;
         tf_vector_.push_back(tf_chain_kdl->tf);
     }

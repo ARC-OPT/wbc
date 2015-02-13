@@ -3,7 +3,7 @@
 
 namespace wbc{
 
-KinematicChainKDL::KinematicChainKDL(const KDL::Chain& chain)
+KinematicChainKDL::KinematicChainKDL(const KDL::Chain& chain, const std::string &id)
 {
     chain_ = chain;
     pos_fk_solver_ = new KDL::ChainFkSolverPos_recursive(chain_);
@@ -20,7 +20,7 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain& chain)
     }
 
     //Create task Frame, name will be same as last name in kin chain
-    tf = new TaskFrameKDL(chain.getSegment(chain.getNrOfSegments()-1).getName(), joint_names_);
+    tf = new TaskFrameKDL(id, joint_names_);
 }
 
 KinematicChainKDL::~KinematicChainKDL(){
@@ -57,8 +57,8 @@ void KinematicChainKDL::update(const base::samples::Joints &status){
     tf->jac_.changeRefPoint(-tf->pose_.p);
 }
 
-KinematicChainKDLDyn::KinematicChainKDLDyn(const KDL::Chain &chain, const Eigen::Vector3d &gravity) :
-    KinematicChainKDL(chain)
+KinematicChainKDLDyn::KinematicChainKDLDyn(const KDL::Chain &chain, const Eigen::Vector3d &gravity, const std::string &id) :
+    KinematicChainKDL(chain, id)
 {
     dyn_param_solver_ = new KDL::ChainDynParam(chain, KDL::Vector(gravity(0), gravity(1), gravity(2)));
     jnt_inertia_.resize(chain.getNrOfJoints());

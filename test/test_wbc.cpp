@@ -442,7 +442,7 @@ BOOST_AUTO_TEST_CASE(robot_model_dynamic)
     tree.addChain(chain, "Chest");
 
     Eigen::Vector3d grav(0,0,-9.81);
-    RobotModelKDLDyn model(tree,grav);
+    RobotModelKDLDyn model(tree,grav,"Chest");
     BOOST_CHECK(model.addTaskFrame("Hand_l") == true);
 
     base::samples::Joints joint_state;

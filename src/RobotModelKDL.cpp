@@ -3,8 +3,9 @@
 
 namespace wbc{
 
-RobotModelKDL::RobotModelKDL(const KDL::Tree& tree){
+RobotModelKDL::RobotModelKDL(const KDL::Tree& tree, const std::string& root_frame){
     tree_ = tree;
+    root_frame_ = root_frame;
 }
 
 RobotModelKDL::~RobotModelKDL(){
@@ -24,10 +25,9 @@ bool RobotModelKDL::addTaskFrame(const std::string &id){
     if(kin_chain_map_.count(id) == 0)
     {
         KDL::Chain chain;
-        std::string robot_root = tree_.getRootSegment()->first;
-        if(!tree_.getChain(robot_root, id, chain))
+        if(!tree_.getChain(root_frame_, id, chain))
         {
-            LOG_ERROR("Could not extract kinematic chain between %s and %s from robot tree", robot_root.c_str(), id.c_str());
+            LOG_ERROR("Could not extract kinematic chain between %s and %s from robot tree", root_frame_.c_str(), id.c_str());
             return false;
         }
         addKinChain(chain, id);
@@ -46,7 +46,7 @@ bool RobotModelKDL::addTaskFrame(const std::string &id){
 
 void RobotModelKDL::addKinChain(const KDL::Chain& chain, const std::string &id)
 {
-    KinematicChainKDL* tf_chain_kdl = new KinematicChainKDL(chain);
+    KinematicChainKDL* tf_chain_kdl = new KinematicChainKDL(chain, id);
     kin_chain_map_[id] = tf_chain_kdl;
     tf_vector_.push_back(tf_chain_kdl->tf);
 }

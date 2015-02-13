@@ -15,7 +15,7 @@ typedef std::map<std::string, uint> JointIndexMap;
 
 class KinematicChainKDL{
 public:
-    KinematicChainKDL(const KDL::Chain& chain);
+    KinematicChainKDL(const KDL::Chain& chain, const std::string& id);
     virtual ~KinematicChainKDL();
 
     virtual void update(const base::samples::Joints &status);
@@ -33,7 +33,7 @@ public:
 
 class KinematicChainKDLDyn : public KinematicChainKDL{
 public:
-    KinematicChainKDLDyn(const KDL::Chain& chain, const Eigen::Vector3d &gravity);
+    KinematicChainKDLDyn(const KDL::Chain& chain, const Eigen::Vector3d &gravity, const std::string &id);
     ~KinematicChainKDLDyn();
 
     virtual void update(const base::samples::Joints &status);
