@@ -477,3 +477,55 @@ BOOST_AUTO_TEST_CASE(robot_model_dynamic)
     for(uint i = 0; i < S.size(); i++)
         BOOST_CHECK(S(i) > 0);
 }
+
+
+BOOST_AUTO_TEST_CASE(kdl_diff)
+{
+    KDL::Frame f_one, f_two;
+    f_one.Identity();
+    f_two.Identity();
+
+    srand (time(NULL));
+
+    for(uint i = 0; i < 100; i++)
+    {
+
+        double x_rot = (rand() % 1000) / 1000.0;
+        double y_rot = (rand() % 1000) / 1000.0;
+        double z_rot = (rand() % 1000) / 1000.0;
+
+        f_one.M.DoRotX(x_rot);
+        f_one.M.DoRotY(y_rot);
+        f_one.M.DoRotZ(z_rot);
+
+        std::cout<<"Rotating f_one by x: "<<x_rot<<" y: "<<y_rot<<" z: "<<z_rot<<std::endl;
+
+        x_rot = (rand() % 1000) / 1000.0;
+        y_rot = (rand() % 1000) / 1000.0;
+        z_rot = (rand() % 1000) / 1000.0;
+
+        f_two.M.DoRotX(x_rot);
+        f_two.M.DoRotY(y_rot);
+        f_two.M.DoRotZ(z_rot);
+
+        std::cout<<"Rotating f_two by x: "<<x_rot<<" y: "<<y_rot<<" z: "<<z_rot<<std::endl;
+
+        KDL::Twist diff = KDL::diff(f_two, f_one);
+        std::cout<<"KDL::diff gives "<<diff(0)<<" "<<diff(1)<<" "<<diff(2)<<" "<<diff(3)<<" "<<diff(4)<<" "<<diff(5)<<std::endl;
+
+        double euler_one[3];
+        double euler_two[3];
+        f_one.M.GetEulerZYX(euler_one[2], euler_one[1], euler_one[0]);
+        f_two.M.GetEulerZYX(euler_two[2], euler_two[1], euler_two[0]);
+
+        double diff_euler[3] = {euler_one[2] - euler_two[2], euler_one[1] - euler_two[1], euler_one[0] - euler_two[0]};
+
+        std::cout<<"Diff from euler is "<<diff_euler[2]<<" "<<diff_euler[1]<<" "<<diff_euler[0]<<std::endl;
+
+        BOOST_CHECK(diff_euler[2] == diff(3));
+        BOOST_CHECK(diff_euler[1] == diff(4));
+        BOOST_CHECK(diff_euler[0] == diff(5));
+
+    }
+
+}
