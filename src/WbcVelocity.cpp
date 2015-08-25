@@ -253,6 +253,8 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 else
                     constraint->constraint_timed_out = 0;
             }
+            else
+                constraint->constraint_timed_out = 0;
 
             if(constraint->config.type == cart)
             {
