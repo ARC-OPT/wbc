@@ -17,14 +17,21 @@ enum constraint_ref_frame{constraint_ref_frame_root, constraint_ref_frame_tip};
  *          priority = 0
  *          root_frame = "Robot_base"
  *          tip_frame = "Gripper"
+ *          activation = 0
  *
  *        - name = "bla"
  *          priority = 1
  *          constraint_type = jnt
  *          joint_names = ["J_1", "J_2", "J_3"]
+ *          activation = 1
+ *          timeout = 3.0
  */
 class ConstraintConfig{
+
 public:
+    ConstraintConfig(){
+        timeout = 0;
+    }
 
     /** Constraint type, can be one of 'jnt' (joint space) or 'cart' (Cartesian) */
     constraint_type type;
@@ -45,6 +52,10 @@ public:
 
     /** Initial activation for this constraint. Has to be between 0..1. Can be used to enable(1)/disable(0) the whole constraint. */
     double activation;
+
+    /** Timeout of this constraint in seconds. Output for this constraint will be set to zero if, for more than this amount of time, no new reference is set.
+        A value of <= 0 will be interpreted as infinite, which means the task never goes into timeout. Default is zero*/
+    double timeout;
 
     /**
      * Only Cartesian Constraints: Root frame of the kinematic chain associated with this Constraint.

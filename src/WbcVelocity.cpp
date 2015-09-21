@@ -34,23 +34,10 @@ void WbcVelocity::clear(){
 }
 
 bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
-                            const std::vector<std::string> &joint_names,
-                            double constraint_timeout){
+                            const std::vector<std::string> &joint_names){
 
     //Erase constraints, jacobians and joint indices
     clear();
-
-    constraint_timeout_ = constraint_timeout;
-    has_timeout_ = true;
-    if(base::isUnset(constraint_timeout))
-        has_timeout_ = false;
-    else
-    {
-        if(constraint_timeout <= 0){
-            LOG_ERROR("Constrainted timeout should be a value > 0, but is %f", constraint_timeout);
-            return false;
-        }
-    }
 
     no_robot_joints_ = joint_names.size();
 
@@ -239,16 +226,15 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
             const uint n_vars = constraint->no_variables;
 
             //Check task timeout
-            if(has_timeout_)
-            {
+            if(constraint->config.timeout > 0){
                 double diff = (base::Time::now() - constraint->last_ref_input).toSeconds();
 
-                if( (diff > constraint_timeout_) &&
+                if( (diff > constraint->config.timeout) &&
                         !(constraint->constraint_timed_out))
                     LOG_DEBUG("Constraint %s has timed out! No new reference has been received for %f seconds. Timeout is %f seconds",
                               constraint->config.name.c_str(), diff, constraint_timeout_);
 
-                if(diff > constraint_timeout_)
+                if(diff > constraint->config.timeout)
                     constraint->constraint_timed_out = 1;
                 else
                     constraint->constraint_timed_out = 0;

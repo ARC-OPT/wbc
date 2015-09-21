@@ -30,7 +30,6 @@ protected:
     std::vector< std::vector<ExtendedConstraint*> > constraint_vector_;  /** Vector containing all constraints (ordered by priority, highest priority first) */
     std::vector<int> n_constraints_per_prio_; /** Number of constraint variables per priority*/
     uint n_prios_; /** Number of priprities */
-    double constraint_timeout_; /** In seconds. A constraint will be deactivated if no new reference comes in for such a long time. If set to .nan, no timeout will be used. */
     uint no_robot_joints_; /** Number of configured robot joints*/
     JointIndexMap joint_index_map_; /** Maps joint names to indices. Order will be either as in KDL::Tree, or as in joint_names parameter given to configure() */
     TaskFrameKDLMap tf_map_;   /** Map of task frames, will be created with the first call of configure(), These TFs are required by the constraints */
@@ -59,8 +58,7 @@ public:
      * @return True in case of success, false else
      */
     bool configure(const std::vector<ConstraintConfig> &config,
-                   const std::vector<std::string> &joint_names,
-                   double constraint_timeout);
+                   const std::vector<std::string> &joint_names);
 
     /**
      * @brief solve Compute control solution given all the constraints
