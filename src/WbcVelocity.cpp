@@ -229,11 +229,6 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
             if(constraint->config.timeout > 0){
                 double diff = (base::Time::now() - constraint->last_ref_input).toSeconds();
 
-                if( (diff > constraint->config.timeout) &&
-                        !(constraint->constraint_timed_out))
-                    LOG_DEBUG("Constraint %s has timed out! No new reference has been received for %f seconds. Timeout is %f seconds",
-                              constraint->config.name.c_str(), diff, constraint_timeout_);
-
                 if(diff > constraint->config.timeout)
                     constraint->constraint_timed_out = 1;
                 else
