@@ -304,6 +304,12 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
 
             constraint->time = base::Time::now();
 
+            // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
+            // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
+            if(!constraint->activation){
+                constraint->y_ref.setZero();
+                constraint->y_ref_root.setZero();
+            }
             // Insert constraints into equation system of current priority at the correct position
             equations[prio].W_row.segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
             equations[prio].A.block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
