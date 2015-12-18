@@ -2,9 +2,8 @@
 #define HIERARCHICAL_WDLS_SOLVER_HPP
 
 #include <vector>
-#include <Eigen/SVD>
 #include <stdexcept>
-#include "SolverTypes.hpp"
+#include "LinearEquationSystem.hpp"
 
 namespace wbc{
 
@@ -45,7 +44,6 @@ public:
             col_weight_mat_.setIdentity();
             u_t_row_weight_mat_.resize(n_cols, n_rows);
             u_t_row_weight_mat_.setZero();
-            svd_ = Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner>(n_rows, n_cols);
             singular_values_.resize(n_cols);
         }
         Eigen::VectorXd x_prio_;
@@ -62,9 +60,6 @@ public:
         double damping_;                         /** Damping factor for matrix inversion on this priority */
 
         unsigned int n_rows_;                   /** Number of input variables of this priority*/
-
-        //Helpers
-        Eigen::JacobiSVD<Eigen::MatrixXd, Eigen::HouseholderQRPreconditioner> svd_; /** For singular value decomposition used in matrix inversion*/
     };
 
     HierarchicalWDLSSolver();
@@ -83,7 +78,7 @@ public:
      * @param linear_eqn_pp A Linear equation system, sorted by priority
      * @param x solution
      */
-    void solve(const std::vector<LinearEqnSystem> &linear_eqn_pp,
+    void solve(const std::vector<LinearEquationSystem> &linear_eqn_pp,
                Eigen::VectorXd &x);
 
 
@@ -92,7 +87,6 @@ public:
     void setEpsilon(double epsilon);
     void setNormMax(double norm_max);
     bool configured(){return configured_;}
-    void setSVDMethod(svd_method method){svd_method_ = method;}
     std::vector<int> getNyPerPriority(){return n_rows_per_prio_;}
     uint getNoPriorities(){return n_rows_per_prio_.size();}
     const PriorityDataIntern& getPriorityData(const uint prio);
@@ -117,7 +111,6 @@ protected:
     //Properties
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/
     double norm_max_;   /** Maximum norm of (J#) * y */
-    svd_method svd_method_;
 
     //Helpers
     Eigen::VectorXd tmp_;

@@ -1,145 +1,12 @@
-#include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/frames_io.hpp>
-#include <kdl/chainfksolvervel_recursive.hpp>
 #include <boost/test/unit_test.hpp>
-#include <stdlib.h>
 #include <kdl_parser/kdl_parser.hpp>
-#include "../src/Constraint.hpp"
 #include "../src/WbcVelocity.hpp"
 #include "../src/HierarchicalWDLSSolver.hpp"
-#include "../src/GeneralizedInverse.hpp"
-#include "../src/SolverTypes.hpp"
-#include "../src/RobotModelKDL.hpp"
-#include <kdl/utilities/svd_eigen_HH.hpp>
-#include <string>
+#include "../src/KinematicModel.hpp"
 
 using namespace std;
 using namespace wbc;
-
-void eulerToQuaternion(const base::Vector3d &euler, base::Quaterniond &q)
-{
-    q =  Eigen::Quaternion<double>(Eigen::AngleAxisd(euler(0),
-                                                       Eigen::Vector3d::UnitZ()) *
-                                     Eigen::AngleAxisd(euler(1), Eigen::Vector3d::UnitY()) *
-                                     Eigen::AngleAxisd(euler(2), Eigen::Vector3d::UnitX()));
-}
-
-void quaternionToEuler(const base::Quaterniond &q, base::Vector3d &euler)
-{
-    euler = base::getEuler(q);
-}
-
-void posAndEulerToRbs(const base::Vector3d& pos, const base::Vector3d& euler, base::samples::RigidBodyState& rbs)
-{
-    rbs.position = pos;
-    eulerToQuaternion(euler, rbs.orientation);
-}
-
-void rbsToPosAndEuler(const base::samples::RigidBodyState& rbs, base::Vector3d& pos, base::Vector3d& euler)
-{
-    pos = rbs.position;
-    quaternionToEuler(rbs.orientation, euler);
-}
-
-BOOST_AUTO_TEST_CASE(conversion)
-{
-    base::samples::RigidBodyState rbs;
-    base::Vector3d position;
-    base::Vector3d euler;
-    position(0) = 1.0;
-    position(1) = 0.5;
-    position(2) = 0.3;
-    euler(0) = 0.7;
-    euler(1) = 0.3;
-    euler(2) = 0.1;
-
-    std::cout<<"Initial Position: "<<position<<std::endl;
-    std::cout<<"Initial euler: "<<euler<<std::endl;
-
-    posAndEulerToRbs(position, euler, rbs);
-
-    std::cout<<"Position rbs: "<<rbs.position<<std::endl;
-    std::cout<<"Orientation rbs: x: "<<rbs.orientation.x()<<" y: "<<rbs.orientation.y()<<" z: "<<rbs.orientation.z()<<" w: "<<rbs.orientation.w()<<std::endl;
-
-    base::Vector3d new_pos, new_euler;
-    rbsToPosAndEuler(rbs, new_pos, new_euler);
-
-    std::cout<<"Final Position: "<<new_pos<<std::endl;
-    std::cout<<"Final euler: "<<new_euler<<std::endl;
-}
-
-BOOST_AUTO_TEST_CASE(four_link)
-{
-    if(boost::unit_test::framework::master_test_suite().argc <= 1){
-        std::cerr<<"Invalid number of command line args. Usage: ./test --run-test=robot_model_dynamic <file.urdf>"<<std::endl;
-        return;
-    }
-    std::string urdf_file = boost::unit_test::framework::master_test_suite().argv[1];
-
-    KDL::Tree tree;
-    KDL::Chain chain;
-    BOOST_CHECK(kdl_parser::treeFromFile(urdf_file, tree)  == true);
-    BOOST_CHECK(tree.getChain("AH1", "PanToTilt", chain) == true);
-
-    KDL::ChainFkSolverPos_recursive pos_solver(chain);
-    KDL::ChainFkSolverVel_recursive vel_solver(chain);
-
-    KDL::JntArray q(1);
-    q(0) = -1.57;
-    KDL::Frame pose;
-    pos_solver.JntToCart(q, pose);
-
-    double euler[3];
-    pose.M.GetEulerZYX(euler[2], euler[1], euler[0]);
-    std::cout<<euler[0]<<" "<<euler[1]<<" "<<euler[2]<<std::endl;
-
-    KDL::JntArrayVel q_dot(1);
-    KDL::FrameVel frame_vel;
-    q_dot.q(0) = 0.0;
-    q_dot.qdot(0) = 0.5;
-    vel_solver.JntToCart(q_dot, frame_vel);
-
-    std::cout<<frame_vel.deriv()<<std::endl;
-
-}
-
-BOOST_AUTO_TEST_CASE(derived)
-{
-    class A{
-    public:
-        A(){
-            std::cout<<"Calling constructor of A"<<std::endl;
-        }
-        virtual ~A(){
-            std::cout<<"Calling destructor of A"<<std::endl;
-        }
-        virtual void testFunc(){
-            std::cout<<"Calling testFunc of A"<<std::endl;
-        }
-    };
-
-    class Derived : public A{
-    public:
-        Derived(){
-            std::cout<<"Calling constructor of Derived"<<std::endl;
-        }
-        virtual ~Derived(){
-            std::cout<<"Calling destructor of Derived"<<std::endl;
-        }
-        virtual void testFunc(){
-            std::cout<<"Calling testFunc of Derived"<<std::endl;
-        }
-    };
-
-    std::cout<<"Constructing Derived: "<<std::endl;
-    A* derived = new Derived();
-
-    std::cout<<"Calling testFunc(): "<<std::endl;
-    derived->testFunc();
-
-    std::cout<<"detroying derived: "<<std::endl;
-    delete derived;
-}
 
 /**
  * Test hierarchical solver with random input data
@@ -158,7 +25,7 @@ BOOST_AUTO_TEST_CASE(solver)
     BOOST_CHECK(solver.configure(ny_per_prio, NO_JOINTS) == true);
     solver.setNormMax(NORM_MAX);
 
-    std::vector<LinearEqnSystem> input(1);
+    std::vector<LinearEquationSystem> input(1);
     input[0].resize(NO_CONSTRAINTS, NO_JOINTS);
 
     for(uint i = 0; i < NO_CONSTRAINTS*NO_JOINTS; i++ )
@@ -206,326 +73,51 @@ BOOST_AUTO_TEST_CASE(solver)
     cout<<"\n............................."<<endl;
 }
 
-BOOST_AUTO_TEST_CASE(pseudo_inverse)
-{
-    srand (time(NULL));
-    const uint N_ROWS = 3;
-    const uint N_COLS = 5;
+BOOST_AUTO_TEST_CASE(kinematic_model){
 
-    GeneralizedInverse inv(N_ROWS, N_COLS);
+    KDL::Tree robot_tree;
+    BOOST_CHECK(kdl_parser::treeFromFile("/home/dfki.uni-bremen.de/dmronga/rock/bundles/kuka_lbr/data/urdf/kuka_lbr.urdf", robot_tree) == true);
 
-    Eigen::MatrixXd in(N_ROWS, N_COLS);
-    Eigen::MatrixXd out(N_COLS, N_ROWS);
+    KDL::Tree obj_tree;
+    BOOST_CHECK(kdl_parser::treeFromFile("/home/dfki.uni-bremen.de/dmronga/rock_aila/bundles/iss_demo/data/urdf/iss_drawer.urdf", obj_tree) == true);
 
-    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
-        in.data()[i] = (rand()%1000)/1000.0;
+    KinematicModel model;
+    BOOST_CHECK(model.addTree(robot_tree, base::samples::RigidBodyState()) == true);
+    BOOST_CHECK(model.addTree(obj_tree, base::samples::RigidBodyState(), "kuka_lbr_top_right_camera") == true);
 
-    inv.computeInverse(in, out);
-
-    Eigen::MatrixXd res(N_ROWS,N_ROWS);
-    res = in * out;
-
-    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
-    std::cout << in << std::endl << std::endl;
-
-    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
-    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
-    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
-    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
-
-    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
-    std::cout<< out << std::endl << std::endl;
-
-    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
-    std::cout<< res << std::endl;
-
-    for(uint i = 0; i < N_ROWS; i++)
-    {
-        for(uint j = 0; j < N_ROWS; j++)
-        {
-            if(i == j)
-                BOOST_CHECK(fabs(res(i,j) - 1 )  < 1e-5);
-            else
-                BOOST_CHECK(fabs(res(i,j))  < 1e-5);
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(damped_pseudo_inverse)
-{
-    srand (time(NULL));
-    const uint N_ROWS = 3;
-    const uint N_COLS = 5;
-
-    GeneralizedInverse inv(N_ROWS, N_COLS);
-    inv.setConstantDamping(0.01);
-
-    Eigen::MatrixXd in(N_ROWS, N_COLS);
-    Eigen::MatrixXd out(N_COLS, N_ROWS);
-
-    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
-        in.data()[i] = (rand()%1000)/1000.0;
-
-    inv.computeInverse(in, out);
-
-    Eigen::MatrixXd res(N_ROWS,N_ROWS);
-    res = in * out;
-
-    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
-    std::cout << in << std::endl << std::endl;
-
-    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
-    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
-    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
-    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
-    std::cout << " Current Damping: " << inv.damping_ << std::endl << std::endl;
-
-    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
-    std::cout<< out << std::endl << std::endl;
-
-    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
-    std::cout<< res << std::endl;
-
-    for(uint i = 0; i < N_ROWS; i++)
-    {
-        for(uint j = 0; j < N_ROWS; j++)
-        {
-            if(i == j)
-                BOOST_CHECK(fabs(res(i,j) - 1 )  < 0.01);
-            else
-                BOOST_CHECK(fabs(res(i,j))  < 0.01);
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(auto_damped_pseudo_inverse)
-{
-    srand (time(NULL));
-    const uint N_ROWS = 3;
-    const uint N_COLS = 5;
-    const double NORM_MAX = 2.0;
-
-    GeneralizedInverse inv(N_ROWS, N_COLS);
-    inv.setNormMaxDamping(NORM_MAX);
-
-    Eigen::MatrixXd in(N_ROWS, N_COLS);
-    Eigen::MatrixXd out(N_COLS, N_ROWS);
-
-    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
-        in.data()[i] = (rand()%1000)/1000.0;
-
-    inv.computeInverse(in, out);
-
-    Eigen::MatrixXd res(N_ROWS,N_ROWS);
-    res = in * out;
-
-    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
-    std::cout << in << std::endl << std::endl;
-
-    std::cout << "Norm Max: " << NORM_MAX << std::endl << std::endl;
-    std::cout << "1 /Norm Max: " << 1/inv.norm_max_ << std::endl << std::endl;
-    std::cout << "Current Damping: " << inv.damping_ << std::endl << std::endl;
-
-    std::cout << "--------- Singular Values --------" << std::endl << std::endl;
-    std::cout << inv.singular_vals_ << std::endl << std::endl;
-
-    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
-    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
-    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
-    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
-
-    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
-    std::cout<< out << std::endl << std::endl;
-
-    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
-    std::cout<< res << std::endl;
-
-    for(uint i = 0; i < N_ROWS; i++)
-    {
-        for(uint j = 0; j < N_ROWS; j++)
-        {
-            if(i == j)
-                BOOST_CHECK(fabs(res(i,j) - 1 )  < 0.01);
-            else
-                BOOST_CHECK(fabs(res(i,j))  < 0.01);
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(weighted_pseudo_inverse)
-{
-    srand (time(NULL));
-    const uint N_ROWS = 3;
-    const uint N_COLS = 5;
-    const uint COL_NUMBER_WITH_ZERO_WEIGHT = 3;
-    const uint ROW_NUMBER_WITH_ZERO_WEIGHT = 1;
-
-    GeneralizedInverse inv(N_ROWS, N_COLS);
-
-    Eigen::MatrixXd in(N_ROWS, N_COLS);
-    Eigen::MatrixXd out(N_COLS, N_ROWS);
-
-    Eigen::VectorXd col_weights, row_weights;
-    col_weights.setOnes(N_COLS);
-    row_weights.setOnes(N_ROWS);
-
-    col_weights(COL_NUMBER_WITH_ZERO_WEIGHT) = 0;
-    row_weights(ROW_NUMBER_WITH_ZERO_WEIGHT) = 0;
-
-    inv.setColWeights(col_weights);
-    inv.setRowWeights(row_weights);
-
-    for(uint i = 0; i < N_ROWS*N_COLS; i++ )
-        in.data()[i] = (rand()%1000)/1000.0;
-
-    inv.computeInverse(in, out);
-
-    Eigen::MatrixXd res(N_ROWS,N_ROWS);
-    res = in * out;
-
-    std::cout << "--------- Input Mat --------" << std::endl << std::endl;
-    std::cout << in << std::endl << std::endl;
-
-    std::cout << "---------- Column weights -------- " << std::endl << std::endl;
-    std::cout << inv.col_weights_ << std::endl << std::endl;
-
-    std::cout << "---------- Row weights -------- " << std::endl << std::endl;
-    std::cout << inv.row_weights_ << std::endl << std::endl;
-
-    std::cout << "--------- Weighted input Mat --------" << std::endl << std::endl;
-    std::cout << inv.weighted_mat_ << std::endl << std::endl;
-
-    std::cout << "--------- Output Mat --------" << std::endl << std::endl;
-    std::cout<< out << std::endl << std::endl;
-
-    std::cout << "Weighting time: " << inv.time_weighting_ << " seconds " << std::endl << std::endl;
-    std::cout << "SVD time: " << inv.time_svd_ << " seconds " << std::endl << std::endl;
-    std::cout << "Multiplication time: " << inv.time_multiplying_ << " seconds " << std::endl << std::endl;
-    std::cout << "Total Computation time: " << inv.time_total_ << " seconds " << std::endl << std::endl;
-
-    std::cout << " ----- Input * Output Mat: ----- " << std::endl << std::endl;
-    std::cout<< res << std::endl;
-
-    for(uint i = 0; i < N_ROWS; i++)
-    {
-        for(uint j = 0; j < N_ROWS; j++)
-        {
-            if( i == ROW_NUMBER_WITH_ZERO_WEIGHT)
-                continue;
-
-            if(i == j)
-                BOOST_CHECK(fabs(res(i,j) - 1 )  < 1e-5);
-            else
-                BOOST_CHECK(fabs(res(i,j))  < 1e-5);
-        }
-    }
-}
-
-BOOST_AUTO_TEST_CASE(robot_model_dynamic)
-{
-
-    srand (time(NULL));
-
-    if(boost::unit_test::framework::master_test_suite().argc <= 1){
-        std::cerr<<"Invalid number of command line args. Usage: ./test --run-test=robot_model_dynamic <file.urdf>"<<std::endl;
-        return;
-    }
-    std::string urdf_file = boost::unit_test::framework::master_test_suite().argv[1];
-
-    KDL::Tree full_tree;
-    KDL::Chain chain;
-    BOOST_CHECK(kdl_parser::treeFromFile(urdf_file, full_tree)  == true);
-    KDL::Tree tree;
-    BOOST_CHECK(full_tree.getChain("Chest", "Hand_l", chain) == true);
-
-    tree.addSegment(KDL::Segment("Chest", KDL::Joint("Chest",KDL::Joint::None),KDL::Frame::Identity()), "root");
-    tree.addChain(chain, "Chest");
-
-    Eigen::Vector3d grav(0,0,-9.81);
-    RobotModelKDLDyn model(tree,grav,"Chest");
-    BOOST_CHECK(model.addTaskFrame("Hand_l") == true);
+    BOOST_CHECK(model.addTaskFrame("iss_drawer_base") == true);
+    const TaskFrame &tf = model.getTaskFrame("iss_drawer_base");
 
     base::samples::Joints joint_state;
-    TaskFrameKDL* tf = model.getTaskFrame("Hand_l");
-    BOOST_CHECK(tf != 0);
-
-    joint_state.resize(tf->joint_names_.size());
-    joint_state.names = tf->joint_names_;
-
-    for(uint i = 0; i < joint_state.size(); i++){
+    joint_state.resize(tf.joint_names.size());
+    joint_state.names = tf.joint_names;
+    for(uint i = 0; i < tf.joint_names.size(); i++)
         joint_state[i].position = 0;
-        joint_state[i].speed = 0;
-    }
-    joint_state[0].position = M_PI/2;
-    model.update(joint_state);
+    model.updateJoints(joint_state);
 
-    std::cout<<"Jacobian: "<<tf->jac_.data<<std::endl<<std::endl;
-    std::cout<<"Pose: "<<tf->pose_<<std::endl<<std::endl;
-    std::cout<<"Gravity: "<<tf->jnt_gravity_<<std::endl<<std::endl;
-    std::cout<<"Inertia: "<<tf->jnt_inertia_<<std::endl<<std::endl;
-    std::cout<<"Coriolis: "<<tf->jnt_coriolis_<<std::endl<<std::endl;
+    std::cout<<"Initial Object Pose: "<<std::endl;
+    std::cout<<tf.pose.p<<std::endl;
+    double qx,qy,qz,qw;
+    tf.pose.M.GetQuaternion(qx,qy,qz,qw);
+    std::cout<<"qx: "<<qx<<" qy: "<<qy<<" qz: "<<qz<<" qw: "<<qw<<std::endl;
 
-    //Check if inertia mat is positive definite
-    Eigen::MatrixXd U, V;
-    Eigen::VectorXd S, tmp;
-    U.resize(tf->jnt_inertia_.rows(), tf->jnt_inertia_.cols());
-    V.resize(tf->jnt_inertia_.cols(), tf->jnt_inertia_.cols());
-    S.resize(tf->jnt_inertia_.cols());
-    tmp.resize(tf->jnt_inertia_.cols());
-    KDL::svd_eigen_HH(tf->jnt_inertia_, U, S, V, tmp);
+    std::cout<<"Initial Jacobian: "<<std::endl;
+    std::cout<<tf.jacobian.data<<std::endl;
 
-    for(uint i = 0; i < S.size(); i++)
-        BOOST_CHECK(S(i) > 0);
-}
+    base::samples::RigidBodyState segment_pose;
+    segment_pose.position.setZero();
+    segment_pose.position(2) = 0.5;
+    segment_pose.orientation.setIdentity();
+    model.updateLink(segment_pose);
+    joint_state.elements.pop_back();
+    joint_state.names.pop_back();
+    model.updateJoints(joint_state);
 
+    std::cout<<"Modified Object Pose: "<<std::endl;
+    std::cout<<tf.pose.p<<std::endl;
+    tf.pose.M.GetQuaternion(qx,qy,qz,qw);
+    std::cout<<"qx: "<<qx<<" qy: "<<qy<<" qz: "<<qz<<" qw: "<<qw<<std::endl;
 
-BOOST_AUTO_TEST_CASE(kdl_diff)
-{
-    KDL::Frame f_one, f_two;
-    f_one.Identity();
-    f_two.Identity();
-
-    srand (time(NULL));
-
-    for(uint i = 0; i < 100; i++)
-    {
-
-        double x_rot = (rand() % 1000) / 1000.0;
-        double y_rot = (rand() % 1000) / 1000.0;
-        double z_rot = (rand() % 1000) / 1000.0;
-
-        f_one.M.DoRotX(x_rot);
-        f_one.M.DoRotY(y_rot);
-        f_one.M.DoRotZ(z_rot);
-
-        std::cout<<"Rotating f_one by x: "<<x_rot<<" y: "<<y_rot<<" z: "<<z_rot<<std::endl;
-
-        x_rot = (rand() % 1000) / 1000.0;
-        y_rot = (rand() % 1000) / 1000.0;
-        z_rot = (rand() % 1000) / 1000.0;
-
-        f_two.M.DoRotX(x_rot);
-        f_two.M.DoRotY(y_rot);
-        f_two.M.DoRotZ(z_rot);
-
-        std::cout<<"Rotating f_two by x: "<<x_rot<<" y: "<<y_rot<<" z: "<<z_rot<<std::endl;
-
-        KDL::Twist diff = KDL::diff(f_two, f_one);
-        std::cout<<"KDL::diff gives "<<diff(0)<<" "<<diff(1)<<" "<<diff(2)<<" "<<diff(3)<<" "<<diff(4)<<" "<<diff(5)<<std::endl;
-
-        double euler_one[3];
-        double euler_two[3];
-        f_one.M.GetEulerZYX(euler_one[2], euler_one[1], euler_one[0]);
-        f_two.M.GetEulerZYX(euler_two[2], euler_two[1], euler_two[0]);
-
-        double diff_euler[3] = {euler_one[2] - euler_two[2], euler_one[1] - euler_two[1], euler_one[0] - euler_two[0]};
-
-        std::cout<<"Diff from euler is "<<diff_euler[2]<<" "<<diff_euler[1]<<" "<<diff_euler[0]<<std::endl;
-
-        BOOST_CHECK(diff_euler[2] == diff(3));
-        BOOST_CHECK(diff_euler[1] == diff(4));
-        BOOST_CHECK(diff_euler[0] == diff(5));
-
-    }
-
+    std::cout<<"Modified Jacobian: "<<std::endl;
+    std::cout<<tf.jacobian.data<<std::endl;
 }

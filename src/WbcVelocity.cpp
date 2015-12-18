@@ -25,12 +25,12 @@ void WbcVelocity::clear(){
         constraint_vector_[prio].clear();
     }
 
-    tf_map_.clear();
     jac_map_.clear();
     constraint_map_.clear();
     constraint_vector_.clear();
     joint_index_map_.clear();
     no_robot_joints_ = 0;
+    task_frame_ids.clear();
 }
 
 bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
@@ -97,30 +97,30 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
         if(it->second->config.type == cart){
 
             std::string tf_name = it->second->config.root;
-            if(tf_map_.count(tf_name) == 0)
+            if(jac_map_.count(tf_name) == 0)
             {
-                tf_map_[tf_name] = TaskFrameKDL();
                 KDL::Jacobian jac(joint_index_map_.size());
                 jac.data.setZero();
                 jac_map_[tf_name] = jac;
+                task_frame_ids.push_back(tf_name);
             }
 
             tf_name = it->second->config.tip;
-            if(tf_map_.count(tf_name) == 0)
+            if(jac_map_.count(tf_name) == 0)
             {
-                tf_map_[tf_name] = TaskFrameKDL();
                 KDL::Jacobian jac(joint_index_map_.size());
                 jac.data.setZero();
                 jac_map_[tf_name] = jac;
+                task_frame_ids.push_back(tf_name);
             }
 
             tf_name = it->second->config.ref_frame;
-            if(tf_map_.count(tf_name) == 0)
+            if(jac_map_.count(tf_name) == 0)
             {
-                tf_map_[tf_name] = TaskFrameKDL();
                 KDL::Jacobian jac(joint_index_map_.size());
                 jac.data.setZero();
                 jac_map_[tf_name] = jac;
+                task_frame_ids.push_back(tf_name);
             }
         }
     }
@@ -129,9 +129,9 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     for(JointIndexMap::iterator it = joint_index_map_.begin(); it != joint_index_map_.end(); it++)
         LOG_DEBUG_S<<it->first.c_str()<<": "<<it->second;
 
-    LOG_DEBUG("\nTask Frame Map: \n");
-    for(TaskFrameKDLMap::iterator it = tf_map_.begin(); it != tf_map_.end(); it++)
-        LOG_DEBUG_S<<it->first.c_str();
+    LOG_DEBUG("\nTask Frames: \n");
+    for(size_t i = 0; i < task_frame_ids.size(); i++)
+        LOG_DEBUG_S<<task_frame_ids[i];
 
     LOG_DEBUG("\nConstraint Map: \n");
     for(ConstraintMap::iterator it = constraint_map_.begin(); it != constraint_map_.end(); it++)
@@ -155,40 +155,31 @@ Constraint* WbcVelocity::constraint(const std::string &name)
     return constraint_map_[name];
 }
 
-void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, std::vector<LinearEqnSystem> &equations)
+void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
+                                  std::vector<LinearEquationSystem> &equations)
 {
     if(!configured_)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
 
-    //Check if all required task frames are available
-    for(TaskFrameKDLMap::iterator it = tf_map_.begin(); it != tf_map_.end(); it++)
+    //Check if all required task frames are in input vector
+    for(size_t i = 0; i < task_frame_ids.size(); i++)
     {
-        bool found = false;
-        for(uint i = 0; i < task_frames.size(); i++)
-        {
-            if(it->first.compare(task_frames[i].tf_name_) == 0){
-                found = true;
-                tf_map_[task_frames[i].tf_name_] = task_frames[i];
-            }
-        }
-
-        if(!found){
-            LOG_ERROR("Wbc config requires Task Frame %s, but this task frame is not in task_frame vector", it->first.c_str());
+        if(task_frames.count(task_frame_ids[i]) == 0){
+            LOG_ERROR("Wbc config requires Task Frame %s, but this task frame is not in task_frame vector", task_frame_ids[i].c_str());
             throw std::invalid_argument("Incomplete task frame input");
         }
     }
 
     //update task frame map and create full robot Jacobians
-    for(uint i = 0; i < task_frames.size(); i++)
+    for(TaskFrameMap::const_iterator it = task_frames.begin(); it != task_frames.end(); it++)
     {
-        const TaskFrameKDL &tf = task_frames[i];
-        tf_map_[tf.tf_name_] = tf;
+        const std::string& tf_name = it->first;
+        const TaskFrame& tf = it->second;
 
         //IMPORTANT: Fill in columns of task frame Jacobian into the correct place of the full robot Jacobian using the joint_index_map
-        for(uint j = 0; j < tf.joint_names_.size(); j++)
+        for(uint j = 0; j < tf.joint_names.size(); j++)
         {
-            const std::string& tf_name = tf.tf_name_;
-            const std::string& jt_name =  tf.joint_names_[j];
+            const std::string& jt_name =  tf.joint_names[j];
 
             if(joint_index_map_.count(jt_name) == 0)
             {
@@ -197,7 +188,7 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
             }
 
             uint idx = joint_index_map_[jt_name];
-            jac_map_[tf_name].setColumn(idx, tf_map_[tf_name].jac_.getColumn(j));
+            jac_map_[tf_name].setColumn(idx, tf.jacobian.getColumn(j));
         }
     }
 
@@ -239,15 +230,19 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
 
             if(constraint->config.type == cart)
             {
-                const TaskFrameKDL& tf_root = tf_map_[constraint->config.root];
-                const TaskFrameKDL& tf_tip = tf_map_[constraint->config.tip];
-                const TaskFrameKDL& tf_ref_frame = tf_map_[constraint->config.ref_frame];
+                const std::string &tf_root_name = constraint->config.root;
+                const std::string &tf_tip_name = constraint->config.tip;
+                const std::string &tf_ref_name = constraint->config.ref_frame;
+
+                const TaskFrame& tf_root = task_frames.find(tf_root_name)->second;
+                const TaskFrame& tf_tip = task_frames.find(tf_tip_name)->second;
+                const TaskFrame& tf_ref_frame = task_frames.find(tf_ref_name)->second;
 
                 //Create constraint jacobian
-                constraint->pose = tf_root.pose_.Inverse() * tf_tip.pose_;
+                constraint->pose = tf_root.pose.Inverse() * tf_tip.pose;
                 constraint->full_jac.data.setIdentity();
                 constraint->full_jac.changeRefPoint(-constraint->pose.p);
-                constraint->full_jac.changeRefFrame(tf_root.pose_);
+                constraint->full_jac.changeRefFrame(tf_root.pose);
 
                 //Invert constraint Jacobian
                 KDL::svd_eigen_HH(constraint->full_jac.data, constraint->Uf, constraint->Sf, constraint->Vf, temp_);
@@ -261,8 +256,8 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 }
                 constraint->H = (constraint->Vf * constraint->Uf.transpose());
 
-                const KDL::Jacobian& jac_root =  jac_map_[tf_root.tf_name_];
-                const KDL::Jacobian& jac_tip =  jac_map_[tf_tip.tf_name_];
+                const KDL::Jacobian& jac_root =  jac_map_[tf_root_name];
+                const KDL::Jacobian& jac_tip =  jac_map_[tf_tip_name];
 
                 ///// A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root:
                 constraint->A = constraint->H.block(0, 0, n_vars, 6) * jac_tip.data
@@ -280,7 +275,7 @@ void WbcVelocity::prepareEqSystem(const std::vector<TaskFrameKDL> &task_frames, 
                 //      the two methods
                 for(uint i = 0; i < 6; i++)
                     tw_(i) = constraint->y_ref(i);
-                tw_ = (tf_root.pose_.M.Inverse() * tf_ref_frame.pose_.M) * tw_;
+                tw_ = (tf_root.pose.M.Inverse() * tf_ref_frame.pose.M) * tw_;
                 for(uint i = 0; i < 6; i++)
                     constraint->y_ref_root(i) = tw_(i);
             }
@@ -325,15 +320,6 @@ std::vector<std::string> WbcVelocity::jointNames(){
     for(JointIndexMap::iterator it = joint_index_map_.begin(); it != joint_index_map_.end(); it++)
         joint_names[it->second] = it->first;
     return joint_names;
-}
-
-std::vector<std::string> WbcVelocity::getTaskFrameIDs()
-{
-    std::vector<std::string> task_frame_ids;
-    TaskFrameKDLMap::iterator it;
-    for(it = tf_map_.begin(); it != tf_map_.end(); it++)
-        task_frame_ids.push_back(it->first);
-    return task_frame_ids;
 }
 
 void WbcVelocity::getConstraintVector(std::vector<ConstraintsPerPrio>& constraints)

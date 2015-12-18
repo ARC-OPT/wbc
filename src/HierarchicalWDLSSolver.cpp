@@ -2,8 +2,6 @@
 #include <base/logging.h>
 #include <iostream>
 #include <kdl/utilities/svd_eigen_HH.hpp>
-#include <kdl/utilities/svd_eigen_Macie.hpp>
-#include <base/time.h>
 
 using namespace std;
 
@@ -13,9 +11,7 @@ HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
     n_cols_(0),
     configured_(false),
     epsilon_(1e-9),
-    norm_max_(10),
-    svd_method_(svd_kdl){
-
+    norm_max_(10){
 }
 
 bool HierarchicalWDLSSolver::configure(const std::vector<int> &n_rows_per_prio,
@@ -72,7 +68,7 @@ bool HierarchicalWDLSSolver::configure(const std::vector<int> &n_rows_per_prio,
     return true;
 }
 
-void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eqn_pp,
+void HierarchicalWDLSSolver::solve(const std::vector<LinearEquationSystem> &linear_eqn_pp,
                                    Eigen::VectorXd &x){
 
     //Check valid input
@@ -125,32 +121,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEqnSystem> &linear_eq
         for(uint i = 0; i < n_cols_; i++)
             priorities_[prio].A_proj_w_.col(i) = priorities_[prio].col_weight_mat_(i,i) * priorities_[prio].A_proj_w_.col(i);
 
-        switch(svd_method_){
-        case svd_eigen:{
-            //Compute svd of A Matrix: A = U*Sigma*V^T, where Sigma contains the singular values on its main diagonal
-            priorities_[prio].svd_.compute(priorities_[prio].A_proj_w_, Eigen::ComputeFullV | Eigen::ComputeFullU);
-
-            V_ = priorities_[prio].svd_.matrixV();
-            uint ns = priorities_[prio].svd_.singularValues().size(); //No of singular values
-
-            //Entries of S that are not singular values will be zero
-            S_.setZero();
-            S_.block(0,0,ns,1) = priorities_[prio].svd_.singularValues();
-
-            //U output of svd will have different size than required, copy only the first ns columns. They contain the relevant Eigenvectors
-            priorities_[prio].U_.block(0,0, priorities_[prio].n_rows_, ns) =
-                    priorities_[prio].svd_.matrixU().block(0,0,priorities_[prio].n_rows_, ns);
-            break;
-        }
-        case svd_kdl:{
-            KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
-            break;
-        }
-        default:{
-            LOG_ERROR("Invalid svd method: %i", svd_method_);
-            throw std::invalid_argument("Invalid svd method");
-        }
-        }
+        KDL::svd_eigen_HH(priorities_[prio].A_proj_w_, priorities_[prio].U_, S_, V_, tmp_);
 
         //Compute damping factor based on
         //A.A. Maciejewski, C.A. Klein, “Numerical Filtering for the Operation of

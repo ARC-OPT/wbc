@@ -1,20 +1,18 @@
 rock_library(wbc
     SOURCES HierarchicalWDLSSolver.cpp
-            GeneralizedInverse.cpp
             ConstraintConfig.hpp
             Constraint.cpp
             ExtendedConstraint.hpp
-            KinematicChainKDL.cpp
-            RobotModelKDL.cpp
             WbcVelocity.cpp
+            TaskFrame.cpp
+            KinematicModel.cpp
+            LinearEquationSystem.hpp
     HEADERS HierarchicalWDLSSolver.hpp
-            GeneralizedInverse.hpp
             ConstraintConfig.hpp
             Constraint.hpp
             ExtendedConstraint.hpp
-            KinematicChainKDL.hpp
-            TaskFrameKDL.hpp
-            RobotModelKDL.hpp
             WbcVelocity.hpp
-            SolverTypes.hpp
+            LinearEquationSystem.hpp
+            TaskFrame.hpp
+            KinematicModel.hpp
     DEPS_PKGCONFIG orocos-kdl base-lib kdl_conversions)

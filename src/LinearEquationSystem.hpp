@@ -1,15 +1,12 @@
-#ifndef SOLVERTYPES_HPP
-#define SOLVERTYPES_HPP
+#ifndef LINEAREQUATIONSYSTEM_HPP
+#define LINEAREQUATIONSYSTEM_HPP
 
 #include <base/Eigen.hpp>
 
 namespace wbc{
 
-enum svd_method{svd_eigen, svd_kdl};
-enum damping_method{constant_damping, variable_damping};
-
 /** Describes a linear eqaution system Ax=y_ref */
-struct LinearEqnSystem{
+struct LinearEquationSystem{
 
     base::MatrixXd A;     /** System matrix */
     base::VectorXd y_ref; /** Desired solution*/
@@ -26,4 +23,4 @@ struct LinearEqnSystem{
 };
 }
 
-#endif // SOLVERTYPES_HPP
+#endif // LINEAREQUATIONSYSTEM_HPP
