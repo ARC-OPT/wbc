@@ -8,6 +8,10 @@
 
 namespace wbc{
 
+/** The kinematic model describes the kinemetic relationships required for wbc. It is based on a single KDL Tree, although it is possible to add an arbitrary
+ *  number of trees (e.g. for controlling multiple robots at the same time or to described robot-object relationships). Particularly, the kinematic contains
+ *  the task frames (see TaskFrame.hpp for details), which are used to describe the control problem.
+ */
 class KinematicModel{
 
 protected:
