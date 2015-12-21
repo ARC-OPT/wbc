@@ -274,7 +274,7 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
                 KDL::Twist tmp_twist;
                 for(uint i = 0; i < 6; i++)
                     tmp_twist(i) = constraint->y_ref(i);
-                tmp_twist = constraint->pose_ref_frame_in_root * tmp_twist;
+                tmp_twist = constraint->pose_ref_frame_in_root.M * tmp_twist;
                 for(uint i = 0; i < 6; i++)
                     constraint->y_ref_root(i) = tmp_twist(i);
             }
