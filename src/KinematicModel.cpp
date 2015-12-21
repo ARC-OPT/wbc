@@ -5,7 +5,6 @@
 
 namespace wbc{
 
-
 bool KinematicModel::addTree(const KDL::Tree &tree,
                              const base::samples::RigidBodyState& initial_pose,
                              const std::string hook){
@@ -33,10 +32,13 @@ bool KinematicModel::addTree(const KDL::Tree &tree,
         }
     }
 
+    LOG_DEBUG("Successfully added tree with root '%s' to hook '%s'", tree.getRootSegment()->second.segment.getName().c_str(), hook.c_str());
+
     return true;
 }
 
 bool KinematicModel::addTaskFrame(const std::string &tf_name){
+
     if(tf_map.count(tf_name) == 0)
     {
         KDL::Chain chain;

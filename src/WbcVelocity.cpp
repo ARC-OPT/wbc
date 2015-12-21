@@ -134,8 +134,13 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
         LOG_DEBUG_S<<task_frame_ids[i];
 
     LOG_DEBUG("\nConstraint Map: \n");
-    for(ConstraintMap::iterator it = constraint_map_.begin(); it != constraint_map_.end(); it++)
-        LOG_DEBUG_S<<it->first.c_str()<<": prio: "<<it->second->config.priority<<", type: "<<it->second->config.type;
+    for(ConstraintMap::iterator it = constraint_map_.begin(); it != constraint_map_.end(); it++){
+        if(it->second->config.type == cart)
+            LOG_DEBUG_S<<it->first.c_str()<<": prio: "<<it->second->config.priority<<", type: "<<it->second->config.type
+                      <<" root: '"<<it->second->config.root<<"'' tip: '"<<it->second->config.tip<<"'' ref frame: '"<<it->second->config.ref_frame<<"'";
+        else
+            LOG_DEBUG_S<<it->first.c_str()<<": prio: "<<it->second->config.priority<<", type: "<<it->second->config.type;
+    }
 
     configured_ = true;
 
@@ -199,15 +204,7 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
     for(uint prio = 0; prio < n_prios_; prio++)
     {
         uint n_vars_prio = n_constraints_per_prio_[prio]; //Number of constraint variables on the whole priority
-
-        if(equations[prio].A.rows() != n_vars_prio ||
-                equations[prio].A.cols() != no_robot_joints_ ||
-                equations[prio].y_ref.size() != n_vars_prio ||
-                equations[prio].W_row.size() != n_vars_prio ||
-                equations[prio].W_col.size() != no_robot_joints_)
-        {
-            equations[prio].resize(n_vars_prio, no_robot_joints_);
-        }
+        equations[prio].resize(n_vars_prio, no_robot_joints_);
 
         //Walk through all tasks of current priority
         uint row_index = 0;
@@ -239,13 +236,13 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
                 const TaskFrame& tf_ref_frame = task_frames.find(tf_ref_name)->second;
 
                 //Create constraint jacobian
-                constraint->pose = tf_root.pose.Inverse() * tf_tip.pose;
-                constraint->full_jac.data.setIdentity();
-                constraint->full_jac.changeRefPoint(-constraint->pose.p);
-                constraint->full_jac.changeRefFrame(tf_root.pose);
+                constraint->pose_tip_in_root = tf_root.pose.Inverse() * tf_tip.pose;
+                constraint->jac_helper.data.setIdentity();
+                constraint->jac_helper.changeRefPoint(-constraint->pose_tip_in_root.p);
+                constraint->jac_helper.changeRefFrame(tf_root.pose);
 
                 //Invert constraint Jacobian
-                KDL::svd_eigen_HH(constraint->full_jac.data, constraint->Uf, constraint->Sf, constraint->Vf, temp_);
+                KDL::svd_eigen_HH(constraint->jac_helper.data, constraint->Uf, constraint->Sf, constraint->Vf, temp_);
 
                 for (unsigned int j = 0; j < constraint->Sf.size(); j++)
                 {
@@ -273,11 +270,13 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
                 //      frame (e.g. like a satellite rotates around earth), which means that rotational components, would produce translational
                 //      velocities after transformation to root frame. If the twist has only translational components there is no difference between
                 //      the two methods
+                constraint->pose_ref_frame_in_root = tf_root.pose.Inverse() * tf_ref_frame.pose;
+                KDL::Twist tmp_twist;
                 for(uint i = 0; i < 6; i++)
-                    tw_(i) = constraint->y_ref(i);
-                tw_ = (tf_root.pose.M.Inverse() * tf_ref_frame.pose.M) * tw_;
+                    tmp_twist(i) = constraint->y_ref(i);
+                tmp_twist = constraint->pose_ref_frame_in_root * tmp_twist;
                 for(uint i = 0; i < 6; i++)
-                    constraint->y_ref_root(i) = tw_(i);
+                    constraint->y_ref_root(i) = tmp_twist(i);
             }
             else if(constraint->config.type == jnt){
                 for(uint i = 0; i < constraint->config.joint_names.size(); i++){

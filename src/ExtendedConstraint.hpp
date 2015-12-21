@@ -27,8 +27,8 @@ public:
     }
 
     void init(uint no_vars){
-        full_jac = KDL::Jacobian(no_vars);
-        full_jac.data.setZero();
+        jac_helper = KDL::Jacobian(no_vars);
+        jac_helper.data.setZero();
 
         H.resize(no_vars,6);
         H.setZero();
@@ -42,11 +42,13 @@ public:
         Sf.resize(no_vars);
         Sf.setZero();
     }
+    /** Pose of the tip of the kinematic chain associated with this constraint expressed in root coordinates */
+    KDL::Frame pose_tip_in_root;
+    /** Pose of the ref frame of the kinematic chain associated with this constraint expressed in root coordinates */
+    KDL::Frame pose_ref_frame_in_root;
 
-    KDL::Jacobian full_jac;
-    KDL::Frame pose;
-
-    //Helpers for inversion of the Jacobian
+    //Helper variables
+    KDL::Jacobian jac_helper;
     Eigen::MatrixXd Uf, Vf;
     Eigen::VectorXd Sf;
     Eigen::MatrixXd H;

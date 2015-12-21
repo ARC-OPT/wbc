@@ -34,8 +34,6 @@ protected:
 
     //Helpers
     Eigen::VectorXd temp_;
-    bool has_timeout_;
-    KDL::Twist tw_;
 public:
     /**
      * @brief Create Robot Model and Solver
