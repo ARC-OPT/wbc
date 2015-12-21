@@ -45,6 +45,16 @@ public:
      * @param segment_pose New segment pose. SourceFrame has to be the same as the segments name.
      */
     void updateLink(const base::samples::RigidBodyState &new_pose);
+
+    /**
+     * @brief Returns root frame of the chain associated with this task frame
+     */
+    const std::string& rootFrame() const;
+
+    /**
+     * @brief Returns tip frame of the chain associated with this task frame
+     */
+    const std::string& tipFrame() const;
 };
 
 typedef std::map<std::string, TaskFrame> TaskFrameMap;
