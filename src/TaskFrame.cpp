@@ -6,8 +6,9 @@
 
 namespace wbc{
 
-TaskFrame::TaskFrame(const KDL::Chain& _chain){
+TaskFrame::TaskFrame(const KDL::Chain& _chain, const std::string &_name){
 
+    name = _name;
     chain = _chain;
     pose = KDL::Frame::Identity();
     jacobian = KDL::Jacobian(chain.getNrOfJoints());
@@ -67,13 +68,13 @@ void TaskFrame::updateLink(const base::samples::RigidBodyState &new_pose){
 
 const std::string& TaskFrame::rootFrame() const{
     if(chain.segments.empty())
-        throw std::runtime_error("TaskFrame: Call of rootFrame() failed because the associated chain is empty");
+        return name;
     return chain.getSegment(0).getName();
 }
 
 const std::string& TaskFrame::tipFrame() const{
     if(chain.segments.empty())
-        throw std::runtime_error("TaskFrame: Call of tipFrame() failed because the associated chain is empty");
+        return name;
     return chain.getSegment(chain.getNrOfSegments()-1).getName();
 }
 }

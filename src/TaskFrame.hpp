@@ -20,8 +20,10 @@ namespace wbc{
 class TaskFrame{
 public:
     TaskFrame(){}
-    TaskFrame(const KDL::Chain& chain);
+    TaskFrame(const KDL::Chain& chain, const std::string &name);
 
+    /** Name of the task frame*/
+    std::string name;
     /** Pose of the Task frame wrt the base of the robot */
     KDL::Frame pose;
     /** Jacobian associated with task frame wrt to the base of the robot */

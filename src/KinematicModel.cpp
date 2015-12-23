@@ -49,7 +49,7 @@ bool KinematicModel::addTaskFrame(const std::string &tf_name){
             return false;
         }
 
-        tf_map[tf_name] = TaskFrame(chain);
+        tf_map[tf_name] = TaskFrame(chain, tf_name);
 
         LOG_DEBUG("Sucessfully added task frame %s", tf_name.c_str());
         LOG_DEBUG("TF Map now contains:");
