@@ -18,10 +18,14 @@ bool KinematicModel::addTree(const KDL::Tree &tree,
         }
 
         KDL::Frame initial_pose_kdl = KDL::Frame::Identity();
+        std::string root = tree.getRootSegment()->first;
         if(initial_pose.hasValidPosition() && initial_pose.hasValidOrientation())
             kdl_conversions::RigidBodyState2KDL(initial_pose, initial_pose_kdl);
+        else{
+            LOG_ERROR("Trying to add urdf model with root %s at hook %s, but ist initial pose is invalid!", root.c_str(), hook.c_str());
+            return false;
+        }
 
-        std::string root = tree.getRootSegment()->first;
         if(!full_tree.addSegment(KDL::Segment(root, KDL::Joint(KDL::Joint::None), initial_pose_kdl), hook)){
             LOG_ERROR("Unable to hook segment %s to segment %s", root.c_str(), hook.c_str());
             return false;
