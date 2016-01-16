@@ -84,6 +84,9 @@ public:
      * @brief Chech if a frame is available in the model
      */
     bool hasFrame(const std::string &name);
+
+    /** Return root segment of the overall kinematic tree*/
+    const std::string& getRootName(){return full_tree.getRootSegment()->first;}
 };
 
 }
