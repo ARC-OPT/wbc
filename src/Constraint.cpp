@@ -79,11 +79,7 @@ void Constraint::validate()
 
 void Constraint::reset()
 {
-    y.setConstant(base::NaN<double>());
     y_ref_root.setConstant(base::NaN<double>());
-    y_solution.setConstant(base::NaN<double>());
-    error_y.setConstant(base::NaN<double>());
-    error_y_solution.setConstant(base::NaN<double>());
     y_ref.setZero();
     activation = config.activation;
     for(uint i = 0; i < no_variables; i++)
@@ -94,6 +90,70 @@ void Constraint::reset()
     constraint_timed_out = 1;
     A.setZero();
     last_ref_input = base::Time::now();
+    resetEvaluation();
 }
+
+void Constraint::resetEvaluation(){
+
+    y_solution.setConstant(base::NaN<double>());
+    y.setConstant(base::NaN<double>());
+    error_y_solution.setZero();
+    error_y.setZero();
+    sqrt_sum_error_y_solution.setZero();
+    sqrt_sum_error_y.setZero();
+    n_samples.setZero();
+    mask.setOnes();
+}
+
+void Constraint::evaluate(const base::VectorXd &solver_output, const base::VectorXd &actual_robot_vel){
+    time = base::Time::now();
+
+    // Set Errors to zero if the constraint is deactivated
+    if(activation == 0){
+        resetEvaluation();
+        return;
+    }
+
+    mask.setOnes();
+
+    // Also set errors of single constraint variables to zero if the corresponding weight is zero
+    for(uint i = 0; i < no_variables; i++){
+        if( weights(i) == 0)
+            mask(i) = 0;
+    }
+
+    n_samples = n_samples + mask;
+
+    y_solution       = A * solver_output;
+    y                = A * actual_robot_vel;
+    error_y_solution = mask.cwiseProduct(y_ref_root - y_solution);
+    error_y          = mask.cwiseProduct(y_ref_root - y);
+    VectAbs(error_y_solution);
+    VectAbs(error_y);
+
+    sqrt_sum_error_y_solution += error_y_solution.cwiseProduct(error_y_solution);
+    sqrt_sum_error_y          += error_y.cwiseProduct(error_y);
+
+    for(uint i = 0; i < no_variables; i++){
+        if(n_samples(i) == 0)
+            rms_error_y_solution(i) = 0;
+        else
+            rms_error_y_solution(i) = sqrt_sum_error_y_solution(i) / n_samples(i);
+        rms_error_y_solution(i) = sqrt(rms_error_y_solution(i));
+    }
+
+    for(uint i = 0; i < no_variables; i++){
+        if(n_samples(i) == 0)
+            rms_error_y(i) = 0;
+        else
+            rms_error_y(i) = sqrt_sum_error_y(i) / n_samples(i);
+        rms_error_y(i) = sqrt(rms_error_y(i));
+    }
+}
+void Constraint::VectAbs(base::VectorXd& in){
+    for(uint i = 0; i < in.size(); i++)
+        in(i) = fabs(in(i));
+}
+
 } //namespace wbc
 #endif // Constraint_CPP

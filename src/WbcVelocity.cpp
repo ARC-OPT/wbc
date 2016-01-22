@@ -1,5 +1,4 @@
 #include "WbcVelocity.hpp"
-#include "ExtendedConstraint.hpp"
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <base/logging.h>
 
@@ -61,15 +60,16 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     constraint_vector_.resize(max_prio + 1);
     for(uint i = 0; i < config.size(); i++)
     {
-        ExtendedConstraint* constraint = new ExtendedConstraint(config[i], joint_names);
-        constraint_vector_[config[i].priority].push_back(constraint);
-
         //Also put Constraints in a map that associates them with their names (for easier access)
         if(constraint_map_.count(config[i].name) != 0)
         {
             LOG_ERROR("Constraint with name %s already exists! Constraint names must be unique", config[i].name.c_str());
             return false;
         }
+
+        ExtendedConstraint* constraint = new ExtendedConstraint(config[i], joint_names.size());
+        constraint_vector_[config[i].priority].push_back(constraint);
+
         constraint_map_[config[i].name] = constraint;
     }
 
@@ -89,6 +89,7 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     {
         for(uint j = 0; j < constraint_vector_[prio].size(); j++)
             n_constraints_per_prio_[prio] += constraint_vector_[prio][j]->y_ref.size();
+
     }
 
     //Create TF map
@@ -300,10 +301,11 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
 
             // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
             // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
-            if(!constraint->activation){
+            if(constraint->activation == 0){
                 constraint->y_ref.setZero();
                 constraint->y_ref_root.setZero();
             }
+
             // Insert constraints into equation system of current priority at the correct position
             equations[prio].W_row.segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
             equations[prio].A.block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
@@ -332,6 +334,15 @@ void WbcVelocity::getConstraintVector(std::vector<ConstraintsPerPrio>& constrain
 
         for(uint i = 0; i < constraints[prio].size(); i++)
             constraints[prio][i] = *constraint_vector_[prio][i];
+    }
+}
+
+void WbcVelocity::evaluateConstraints(const base::VectorXd& solver_output, const base::VectorXd& robot_vel){
+
+    for(uint prio = 0; prio < n_prios_; prio++)
+    {
+        for(uint i = 0; i < constraint_vector_[prio].size(); i++)
+            constraint_vector_[prio][i]->evaluate(solver_output, robot_vel);
     }
 }
 

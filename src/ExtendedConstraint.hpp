@@ -12,8 +12,8 @@ class ExtendedConstraint : public Constraint{
 public:
 
     ExtendedConstraint(const ConstraintConfig& _config,
-                       const std::vector<std::string> &_robot_joint_names) :
-        Constraint(_config, _robot_joint_names)
+                       const uint n_robot_joints) :
+        Constraint(_config, n_robot_joints)
     {
         uint no_vars;
         if(_config.type == jnt)

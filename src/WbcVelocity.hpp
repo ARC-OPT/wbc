@@ -1,13 +1,11 @@
 #ifndef WBC_HPP
 #define WBC_HPP
 
-#include "Constraint.hpp"
+#include "ExtendedConstraint.hpp"
 #include "LinearEquationSystem.hpp"
 #include "TaskFrame.hpp"
 
 namespace wbc{
-
-class ExtendedConstraint;
 
 /**
  * @brief The WbcVelocity class creates the equation system for the solver. It retrieves task frames that contain information about poses and Jacobians
@@ -71,6 +69,7 @@ public:
     std::vector<std::string> getTaskFrameIDs(){return task_frame_ids;}
     std::vector<int> getNumberOfConstraintsPP(){return n_constraints_per_prio_;}
     void getConstraintVector(std::vector<ConstraintsPerPrio>& constraints);
+    void evaluateConstraints(const base::VectorXd& solver_output, const base::VectorXd& robot_vel);
 
 };
 }
