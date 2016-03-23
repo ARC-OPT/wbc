@@ -53,6 +53,7 @@ public:
         y_ref_root.resize(no_variables);
         A.resize(no_variables, n_robot_joints);
         weights.resize(no_variables);
+        weights_root.resize(no_variables);
         y_solution.resize(no_variables);
         y.resize(no_variables);
         error_y_solution.resize(no_variables);
@@ -80,6 +81,9 @@ public:
 
     /** Constraint weights, a 0 means that the reference of the corresponding constraint variable will be ignored while computing the solution*/
     base::VectorXd weights;
+
+    /** Constraint weights, converted to root coordinates */
+    base::VectorXd weights_root;
 
     /** Between 0 .. 1. Will be multiplied with the constraint weights. Can be used to (smoothly) switch on/off the constraints */
     double activation;

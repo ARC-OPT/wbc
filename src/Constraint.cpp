@@ -82,8 +82,10 @@ void Constraint::reset()
     y_ref_root.setConstant(base::NaN<double>());
     y_ref.setZero();
     activation = config.activation;
-    for(uint i = 0; i < no_variables; i++)
+    for(uint i = 0; i < no_variables; i++){
         weights(i) = config.weights[i];
+        weights_root(i) = config.weights[i];
+    }
 
      //Set timeout to true in the beginning. Like this, Constraints have to get a
     //reference value first to be activated, independent of the activation value

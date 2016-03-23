@@ -226,6 +226,8 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
             else
                 constraint->constraint_timed_out = 0;
 
+            constraint->weights_root = constraint->weights;
+
             if(constraint->config.type == cart)
             {
                 const std::string &tf_root_name = constraint->config.root;
@@ -278,6 +280,13 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
                 tmp_twist = constraint->pose_ref_frame_in_root.M * tmp_twist;
                 for(uint i = 0; i < 6; i++)
                     constraint->y_ref_root(i) = tmp_twist(i);
+
+                // Also convert the weight vector to the root frame. Weights are, as all other inputs, defined in ref_frame.
+                for(uint i = 0; i < 6; i++)
+                    tmp_twist(i) = constraint->weights(i);
+                tmp_twist = constraint->pose_ref_frame_in_root.M * tmp_twist;
+                for(uint i = 0; i < 6; i++)
+                    constraint->weights_root(i) = fabs(tmp_twist(i)); //Take absolute value of weight, since weights must be positive
             }
             else if(constraint->config.type == jnt){
                 for(uint i = 0; i < constraint->config.joint_names.size(); i++){
@@ -307,7 +316,7 @@ void WbcVelocity::prepareEqSystem(const TaskFrameMap &task_frames,
             }
 
             // Insert constraints into equation system of current priority at the correct position
-            equations[prio].W_row.segment(row_index, n_vars) = constraint->weights * constraint->activation * (!constraint->constraint_timed_out);
+            equations[prio].W_row.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->constraint_timed_out);
             equations[prio].A.block(row_index, 0, n_vars, no_robot_joints_) = constraint->A;
             equations[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
 
