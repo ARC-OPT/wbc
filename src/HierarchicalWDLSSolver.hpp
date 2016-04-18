@@ -90,6 +90,8 @@ public:
     std::vector<int> getNyPerPriority(){return n_rows_per_prio_;}
     uint getNoPriorities(){return n_rows_per_prio_.size();}
     const PriorityDataIntern& getPriorityData(const uint prio);
+    void setMaxSolverOutput(const Eigen::VectorXd& max_solver_output);
+    void applySaturation(Eigen::VectorXd& solver_output);
 
 
 
@@ -107,6 +109,7 @@ protected:
 
     unsigned int n_cols_;                   /** No of columns */
     bool configured_;                   /** Has configure been called yet?*/
+    Eigen::VectorXd max_solver_output;
 
     //Properties
     double epsilon_;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/

@@ -65,6 +65,8 @@ bool HierarchicalWDLSSolver::configure(const std::vector<int> &n_rows_per_prio,
     tmp_.resize(n_cols_);
     tmp_.setZero();
 
+    max_solver_output.setConstant(n_cols_, std::numeric_limits<double>::infinity());
+
     return true;
 }
 
@@ -179,6 +181,9 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEquationSystem> &line
 
     } //priority loop
 
+    // If a max solver output is given, scale all values according to the maximum allowed values
+    applySaturation(x);
+
     ///////////////
 }
 
@@ -239,5 +244,21 @@ void HierarchicalWDLSSolver::setNormMax(double norm_max){
         throw std::invalid_argument("Norm Max has to be > 0!");
     }
     norm_max_ = norm_max;
+}
+void HierarchicalWDLSSolver::setMaxSolverOutput(const Eigen::VectorXd& max_solver_output){
+    if(max_solver_output.size() > 0 && max_solver_output.size() != n_cols_)
+        throw std::invalid_argument("Size of max solver output vector has to be same as number of joints");
+    for(uint i = 0; i < max_solver_output.size(); i++){
+        if(max_solver_output(i) <= 0)
+            throw std::invalid_argument("All entries of max solver output have to > 0!");
+    }
+    this->max_solver_output = max_solver_output;
+}
+void HierarchicalWDLSSolver::applySaturation(Eigen::VectorXd& solver_output){
+    //Apply saturation. Scale all values according to the maximum output
+    double scale = 1;
+    for(uint i = 0; i < solver_output.size(); i++)
+        scale = std::min( scale, max_solver_output(i)/fabs(solver_output(i)) );
+    solver_output = scale * solver_output;
 }
 }
