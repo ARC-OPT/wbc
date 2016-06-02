@@ -1,21 +1,20 @@
-#include "HierarchicalWDLSSolver.hpp"
+#include "HierarchicalLeastSquaresSolver.hpp"
 #include <base/logging.h>
-#include <iostream>
 #include <kdl/utilities/svd_eigen_HH.hpp>
+#include "OptProblem.hpp"
 
 using namespace std;
 
 namespace wbc{
 
-HierarchicalWDLSSolver::HierarchicalWDLSSolver() :
+HierarchicalLeastSquaresSolver::HierarchicalLeastSquaresSolver() :
     n_cols_(0),
     configured_(false),
     epsilon_(1e-9),
     norm_max_(10){
 }
 
-bool HierarchicalWDLSSolver::configure(const std::vector<int> &n_rows_per_prio,
-                                       const unsigned int nx){
+bool HierarchicalLeastSquaresSolver::configure(const std::vector<int> &n_rows_per_prio, const unsigned int nx){
 
     priorities_.clear();
 
@@ -70,49 +69,46 @@ bool HierarchicalWDLSSolver::configure(const std::vector<int> &n_rows_per_prio,
     return true;
 }
 
-void HierarchicalWDLSSolver::solve(const std::vector<LinearEquationSystem> &linear_eqn_pp,
-                                   Eigen::VectorXd &x){
+void HierarchicalLeastSquaresSolver::solve(const std::vector<OptProblem*> &opt_problem, Eigen::VectorXd &solver_output){
 
     //Check valid input
 
-    if(linear_eqn_pp.size() != priorities_.size()){
-        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities_.size(), linear_eqn_pp.size());
+    if(opt_problem.size() != priorities_.size()){
+        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities_.size(), opt_problem.size());
         throw std::invalid_argument("Invalid solver input");
     }
 
-    if(x.size() != n_cols_){
-        LOG_WARN("Size of output vector does not match number of joint variables. Will do a resize!");
-        x.resize(n_cols_);
-    }
+    solver_output.resize(n_cols_);
+    solver_output.setZero();
 
     //Init projection matrix as identity, so that the highest priority can look for a solution in whole configuration space
     proj_mat_.setIdentity();
-    x.setZero();
 
     //////// Loop through all priorities
 
     for(uint prio = 0; prio < priorities_.size(); prio++){
 
-        if(linear_eqn_pp[prio].A.rows() != priorities_[prio].n_rows_ ||
-           linear_eqn_pp[prio].A.cols() != n_cols_ ||
-           linear_eqn_pp[prio].y_ref.size() != priorities_[prio].n_rows_){
+        WeightedLSSimple* opt_problem_prio = (WeightedLSSimple*)opt_problem[prio];
+
+        if(opt_problem_prio->A.rows()     != priorities_[prio].n_rows_ ||
+           opt_problem_prio->A.cols()     != n_cols_ ||
+           opt_problem_prio->y_ref.size() != priorities_[prio].n_rows_){
             LOG_ERROR("Expected input size on priority level %i: A: %i x %i, b: %i x 1, actual input: A: %i x %i, b: %i x 1",
-                      prio, priorities_[prio].n_rows_, n_cols_, priorities_[prio].n_rows_, linear_eqn_pp[prio].A.rows(), linear_eqn_pp[prio].A.cols(), linear_eqn_pp[prio].y_ref.size());
+                      prio, priorities_[prio].n_rows_, n_cols_, priorities_[prio].n_rows_, opt_problem_prio->A.rows(), opt_problem_prio->A.cols(), opt_problem_prio->y_ref.size());
             throw std::invalid_argument("Invalid size of input variables");
         }
 
         //Set weights for this prioritiy
-        setColumnWeights(linear_eqn_pp[prio].W_col, prio);
-        setRowWeights(linear_eqn_pp[prio].W_row, prio);
+        setRowWeights(opt_problem_prio->W, prio);
 
         priorities_[prio].y_comp_.setZero();
 
         //Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
-        priorities_[prio].y_comp_ = linear_eqn_pp[prio].y_ref - linear_eqn_pp[prio].A*x;
+        priorities_[prio].y_comp_ = opt_problem_prio->y_ref - opt_problem_prio->A*solver_output;
 
         //projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         //For the first priority P == Identity
-        priorities_[prio].A_proj_ = linear_eqn_pp[prio].A * proj_mat_;
+        priorities_[prio].A_proj_ = opt_problem_prio->A * proj_mat_;
 
         //Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         //Since the weight matrices are diagonal, there is no need for full matrix multiplication
@@ -169,7 +165,7 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEquationSystem> &line
 
         // x = x + A^# * y
         priorities_[prio].x_prio_ = priorities_[prio].A_proj_inv_wdls_ * priorities_[prio].y_comp_;
-        x += priorities_[prio].x_prio_;
+        solver_output += priorities_[prio].x_prio_;
 
         // Compute projection matrix for the next priority. Use here the undamped inverse to have a correct solution
         proj_mat_ -= priorities_[prio].A_proj_inv_wls_ * priorities_[prio].A_proj_;
@@ -182,12 +178,12 @@ void HierarchicalWDLSSolver::solve(const std::vector<LinearEquationSystem> &line
     } //priority loop
 
     // If a max solver output is given, scale all values according to the maximum allowed values
-    applySaturation(x);
+    applySaturation(solver_output);
 
     ///////////////
 }
 
-void HierarchicalWDLSSolver::setColumnWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalLeastSquaresSolver::setColumnWeights(const Eigen::VectorXd& weights, const uint prio){
     if(prio < 0 ||prio >= priorities_.size()){
         LOG_ERROR("Cannot set constraint weights to priority %i. Number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
@@ -210,7 +206,7 @@ void HierarchicalWDLSSolver::setColumnWeights(const Eigen::VectorXd& weights, co
     }
 }
 
-void HierarchicalWDLSSolver::setRowWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalLeastSquaresSolver::setRowWeights(const Eigen::VectorXd& weights, const uint prio){
     if(prio < 0 ||prio >= priorities_.size()){
         LOG_ERROR("Cannot set constraint weights to priority %i. Number of priority levels is %i", prio, priorities_.size());
         throw std::invalid_argument("Invalid Priority");
@@ -224,7 +220,7 @@ void HierarchicalWDLSSolver::setRowWeights(const Eigen::VectorXd& weights, const
         priorities_[prio].row_weight_mat_(i,i) = sqrt(weights(i));
 }
 
-const HierarchicalWDLSSolver::PriorityDataIntern& HierarchicalWDLSSolver::getPriorityData(const uint prio)
+const HierarchicalLeastSquaresSolver::PriorityDataIntern& HierarchicalLeastSquaresSolver::getPriorityData(const uint prio)
 {
     if(prio < 0 || prio >= priorities_.size())
     {
@@ -233,19 +229,19 @@ const HierarchicalWDLSSolver::PriorityDataIntern& HierarchicalWDLSSolver::getPri
     }
     return priorities_[prio];
 }
-void HierarchicalWDLSSolver::setEpsilon(double epsilon){
+void HierarchicalLeastSquaresSolver::setEpsilon(double epsilon){
     if(epsilon <= 0){
         throw std::invalid_argument("Epsilon has to be > 0!");
     }
     epsilon_ = epsilon;
 }
-void HierarchicalWDLSSolver::setNormMax(double norm_max){
+void HierarchicalLeastSquaresSolver::setNormMax(double norm_max){
     if(norm_max <= 0){
         throw std::invalid_argument("Norm Max has to be > 0!");
     }
     norm_max_ = norm_max;
 }
-void HierarchicalWDLSSolver::setMaxSolverOutput(const Eigen::VectorXd& max_solver_output){
+void HierarchicalLeastSquaresSolver::setMaxSolverOutput(const Eigen::VectorXd& max_solver_output){
     if(max_solver_output.size() > 0 && max_solver_output.size() != n_cols_)
         throw std::invalid_argument("Size of max solver output vector has to be same as number of joints");
     for(uint i = 0; i < max_solver_output.size(); i++){
@@ -254,7 +250,7 @@ void HierarchicalWDLSSolver::setMaxSolverOutput(const Eigen::VectorXd& max_solve
     }
     this->max_solver_output = max_solver_output;
 }
-void HierarchicalWDLSSolver::applySaturation(Eigen::VectorXd& solver_output){
+void HierarchicalLeastSquaresSolver::applySaturation(Eigen::VectorXd& solver_output){
     //Apply saturation. Scale all values according to the maximum output
     double scale = 1;
     for(uint i = 0; i < solver_output.size(); i++)

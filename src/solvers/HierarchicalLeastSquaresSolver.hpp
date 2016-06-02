@@ -3,16 +3,19 @@
 
 #include <vector>
 #include <stdexcept>
-#include "LinearEquationSystem.hpp"
+#include <base/Eigen.hpp>
+#include "Solver.hpp"
 
 namespace wbc{
+
+class OptProblem;
 
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver compute the solution for several hierarchially organized
  *        equation systems using nullspace projections. That is, the eqn system with the highest priority will be solved fully if n_rows <= n_cols
  *        the eqn system of the next priority will be solved as good as possible and so on. The solver may also include weights in solution (column) and input (row) space.
  */
-class HierarchicalWDLSSolver{
+class HierarchicalLeastSquaresSolver : public Solver{
 public:
 
     /**
@@ -62,8 +65,8 @@ public:
         unsigned int n_rows_;                   /** Number of input variables of this priority*/
     };
 
-    HierarchicalWDLSSolver();
-    ~HierarchicalWDLSSolver(){}
+    HierarchicalLeastSquaresSolver();
+    ~HierarchicalLeastSquaresSolver(){}
 
     /**
      * @brief configure Resizes member variables
@@ -78,8 +81,7 @@ public:
      * @param linear_eqn_pp A Linear equation system, sorted by priority
      * @param x solution
      */
-    void solve(const std::vector<LinearEquationSystem> &linear_eqn_pp,
-               Eigen::VectorXd &x);
+    virtual void solve(const std::vector<OptProblem*> &opt_problem, Eigen::VectorXd &solver_output);
 
 
     void setColumnWeights(const Eigen::VectorXd& weights, const uint prio);

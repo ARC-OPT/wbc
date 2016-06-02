@@ -3,10 +3,6 @@
 
 #include <base/samples/Joints.hpp>
 #include <base/samples/RigidBodyState.hpp>
-#include <kdl/jacobian.hpp>
-#include <kdl/chain.hpp>
-#include <kdl/jntarray.hpp>
-#include <map>
 
 namespace wbc{
 
@@ -20,46 +16,28 @@ namespace wbc{
 class TaskFrame{
 public:
     TaskFrame(){}
-    TaskFrame(const KDL::Chain& chain, const std::string &name);
+    TaskFrame(const std::string &name) : name(name){
+    }
 
     /** Name of the task frame*/
     std::string name;
+
     /** Pose of the Task frame wrt the base of the robot */
-    KDL::Frame pose;
-    /** Jacobian associated with task frame wrt to the base of the robot */
-    KDL::Jacobian jacobian;
-    /** Joint names in the kinematic chain associated with the task frame */
-    std::vector<std::string> joint_names;
-    /** Current joint positions in radians */
-    KDL::JntArray joint_positions;
-    /** Kinematic associated with the task frame and the base of the robot*/
-    KDL::Chain chain;
+    base::samples::RigidBodyState pose;
 
     /**
-     * @brief Update the task frame with the current joint state. This will trigger computation of the Task Frame's pose and the Jacobian
+     * @brief Update the task frame with the current joint state
      * @param joint_state Current joint state. Has to contain at least all joints within the kinematic chain associated with this task frame.
      * Names will be mapped to correct indices internally
      */
-    void updateJoints(const base::samples::Joints &joint_state);
+    virtual void update(const base::samples::Joints &joint_state) = 0;
 
     /**
      * @brief Update the pose of a particular segment in the kinematic chain
      * @param segment_pose New segment pose. SourceFrame has to be the same as the segments name.
      */
-    void updateLink(const base::samples::RigidBodyState &new_pose);
-
-    /**
-     * @brief Returns root frame of the chain associated with this task frame
-     */
-    const std::string& rootFrame() const;
-
-    /**
-     * @brief Returns tip frame of the chain associated with this task frame
-     */
-    const std::string& tipFrame() const;
+    virtual void update(const base::samples::RigidBodyState &new_pose) = 0;
 };
-
-typedef std::map<std::string, TaskFrame> TaskFrameMap;
 
 }
 

@@ -6,20 +6,26 @@
 
 namespace wbc{
 
+/**
+ * Two type of constraints are possible:
+ *  - Cartesian constraints: The motion between two coordinate frames (root, tip) will be constrained by a given twist (translational
+ *                           and rotational velocity in Cartesian space). This can be used for operational space control, e.g.
+ *                           Cartesian force/position control, obstacle avoidance, ...
+ *  - Joint constraints: The motion for the given joints will be constrained by a joint space velocity. This can be used for joint space
+ *                       control, e.g. avoiding the joint limits, maintaining a certain elbow position, joint position control, ...
+ */
 enum constraint_type{jnt, cart};
-enum constraint_ref_frame{constraint_ref_frame_root, constraint_ref_frame_tip};
-
 
 /**
  * @brief Defines a constraint in the whole body control problem. Valid Configuration are e.g.
  *        - constraint_type = cart
- *          name = "bla"
+ *          name = "cartesian_position_contol"
  *          priority = 0
  *          root_frame = "Robot_base"
  *          tip_frame = "Gripper"
  *          activation = 0
  *
- *        - name = "bla"
+ *        - name = "joint_position_control"
  *          priority = 1
  *          constraint_type = jnt
  *          joint_names = ["J_1", "J_2", "J_3"]
@@ -31,6 +37,7 @@ class ConstraintConfig{
 public:
     ConstraintConfig(){
         timeout = 0;
+        activation = 0;
     }
 
     /** Constraint type, can be one of 'jnt' (joint space) or 'cart' (Cartesian) */
@@ -46,11 +53,11 @@ public:
     std::vector<std::string> joint_names;
 
     /** Initial weights for this constraint. Entries have to be >= 0. Can be used to balance contributions of the constraint variables.
-     *  A value of 0 means that the reference of the corresponding constraint variable will be ignored while computing the solution
+     *  A value of 0 means that the reference of the corresponding constraint variable will be ignored while computing the solution.
      */
     std::vector<double> weights;
 
-    /** Initial activation for this constraint. Has to be between 0..1. Can be used to enable(1)/disable(0) the whole constraint. */
+    /** Initial activation for this constraint. Has to be between 0..1. Can be used to enable(1)/disable(0) the whole constraint. Default is zero.*/
     double activation;
 
     /** Timeout of this constraint in seconds. Output for this constraint will be set to zero if, for more than this amount of time, no new reference is set.

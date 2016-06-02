@@ -1,4 +1,4 @@
-#include "TaskFrame.hpp"
+#include "TaskFrameKDL.hpp"
 #include <base/Logging.hpp>
 #include <kdl_conversions/KDLConversions.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
@@ -6,11 +6,14 @@
 
 namespace wbc{
 
-TaskFrame::TaskFrame(const KDL::Chain& _chain, const std::string &_name){
+TaskFrameKDL::TaskFrameKDL(const std::string &_name) : TaskFrame(_name){
+}
+
+TaskFrameKDL::TaskFrameKDL(const KDL::Chain& _chain, const std::string &_name) : TaskFrame(_name){
 
     name = _name;
     chain = _chain;
-    pose = KDL::Frame::Identity();
+    pose_kdl = KDL::Frame::Identity();
     jacobian = KDL::Jacobian(chain.getNrOfJoints());
     jacobian.data.setZero();
     joint_positions.resize(chain.getNrOfJoints());
@@ -22,7 +25,7 @@ TaskFrame::TaskFrame(const KDL::Chain& _chain, const std::string &_name){
     }
 }
 
-void TaskFrame::updateJoints(const base::samples::Joints &joint_state){
+void TaskFrameKDL::update(const base::samples::Joints &joint_state){
 
     KDL::ChainFkSolverPos_recursive pos_fk_solver(chain);
     KDL::ChainJntToJacSolver jac_solver(chain);
@@ -41,40 +44,34 @@ void TaskFrame::updateJoints(const base::samples::Joints &joint_state){
     }
 
     //Compute FK
-    pos_fk_solver.JntToCart(joint_positions, pose);
+    pos_fk_solver.JntToCart(joint_positions, pose_kdl);
+    kdl_conversions::KDL2RigidBodyState(pose_kdl, pose);
+    pose.sourceFrame = name;
 
     //Compute Jacobian
     jac_solver.JntToJac(joint_positions, jacobian);
 
     // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip.
     // This changes the reference point to the root frame
-    jacobian.changeRefPoint(-pose.p);
+    jacobian.changeRefPoint(-pose_kdl.p);
 
 }
 
-void TaskFrame::updateLink(const base::samples::RigidBodyState &new_pose){
+void TaskFrameKDL::update(const base::samples::RigidBodyState &new_pose){
 
     KDL::Frame new_pose_kdl;
     kdl_conversions::RigidBodyState2KDL(new_pose, new_pose_kdl);
 
     for(uint i = 0; i < chain.getNrOfSegments(); i++)
     {
-        if(chain.segments[i].getName().compare(new_pose.sourceFrame) == 0)
+        if(chain.segments[i].getName().compare(new_pose.sourceFrame) == 0){
             chain.segments[i] = KDL::Segment(new_pose.sourceFrame,
                                              KDL::Joint(KDL::Joint::None),
                                              new_pose_kdl);
+            return;
+        }
+        LOG_ERROR("Trying to update pose of segment %s, but this segment does not exist in cgain", new_pose.sourceFrame.c_str());
+        throw std::invalid_argument("Invalid segment pose");
     }
-}
-
-const std::string& TaskFrame::rootFrame() const{
-    if(chain.segments.empty())
-        return name;
-    return chain.getSegment(0).getName();
-}
-
-const std::string& TaskFrame::tipFrame() const{
-    if(chain.segments.empty())
-        return name;
-    return chain.getSegment(chain.getNrOfSegments()-1).getName();
 }
 }

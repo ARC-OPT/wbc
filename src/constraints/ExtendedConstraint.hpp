@@ -21,6 +21,8 @@ public:
         else
             no_vars = 6;
         init(no_vars);
+        A.resize(no_variables, n_robot_joints);
+        A.setZero();
     }
 
     ~ExtendedConstraint(){
@@ -46,6 +48,8 @@ public:
     KDL::Frame pose_tip_in_root;
     /** Pose of the ref frame of the kinematic chain associated with this constraint expressed in root coordinates */
     KDL::Frame pose_ref_frame_in_root;
+    /** Constraint matrix */
+    base::MatrixXd A;
 
     //Helper variables
     KDL::Jacobian jac_helper;
