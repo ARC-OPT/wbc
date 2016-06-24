@@ -2,8 +2,9 @@
 #include <boost/test/unit_test.hpp>
 #include <kdl_parser/kdl_parser.hpp>
 #include "../src/WbcVelocity.hpp"
-#include "../src/HierarchicalWDLSSolver.hpp"
-#include "../src/KinematicModel.hpp"
+#include "../src/solvers/HierarchicalLeastSquaresSolver.hpp"
+#include "../src/robot_models/KinematicRobotModelKDL.hpp"
+#include "../src/common/OptProblem.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -12,67 +13,71 @@ using namespace wbc;
  * Test hierarchical solver with random input data
  */
 
-BOOST_AUTO_TEST_CASE(solver)
+BOOST_AUTO_TEST_CASE(hierarchical_solver)
 {
     srand (time(NULL));
 
     const uint NO_JOINTS = 3;
     const uint NO_CONSTRAINTS = 2;
     const double NORM_MAX = 5.75;
+    const double MIN_EIGENVALUE = 1e-9;
 
-    HierarchicalWDLSSolver solver;
+    HierarchicalLeastSquaresSolver solver;
     std::vector<int> ny_per_prio(1,NO_CONSTRAINTS);
-    BOOST_CHECK(solver.configure(ny_per_prio, NO_JOINTS) == true);
-    solver.setNormMax(NORM_MAX);
 
-    std::vector<LinearEquationSystem> input(1);
-    input[0].resize(NO_CONSTRAINTS, NO_JOINTS);
+    BOOST_CHECK(solver.configure(ny_per_prio, NO_JOINTS) == true);
+
+    BOOST_NOEXCEPT(solver.setMaxSolverOutputNorm(NORM_MAX));
+    BOOST_NOEXCEPT(solver.setMinEigenvalue(MIN_EIGENVALUE));
+
+    std::vector<OptProblem*> input;
+    WeightedLSSimple prio_0;
+    prio_0.resize(NO_CONSTRAINTS, NO_JOINTS);
 
     for(uint i = 0; i < NO_CONSTRAINTS*NO_JOINTS; i++ )
-        input[0].A.data()[i] = (rand()%1000)/1000.0;
-
+        prio_0.A.data()[i] = (rand()%1000)/1000.0;
     for(uint i = 0; i < NO_CONSTRAINTS; i++ )
-        input[0].y_ref.data()[i] = (rand()%1000)/1000.0;
+        prio_0.y_ref.data()[i] = (rand()%1000)/1000.0;
+    prio_0.W.setConstant(1);
 
-    input[0].W_row.setConstant(1);
-    input[0].W_col.setConstant(1);
+    input.push_back(&prio_0);
 
-    cout<<"............Testing Hierarchical Solver "<<endl<<endl;
+    cout<<"\n----------------------- Testing Hierarchical Solver ----------------------"<<endl<<endl;
     cout<<"Number of priorities: "<<ny_per_prio.size()<<endl;
     cout<<"Constraints per priority: "; for(uint i = 0; i < ny_per_prio.size(); i++) cout<<ny_per_prio[i]<<" "; cout<<endl;
     cout<<"No of joints: "<<NO_JOINTS<<endl;
     cout<<"\n----------------------- Solver Input ----------------------"<<endl<<endl;
     for(uint i = 0; i < ny_per_prio.size(); i++){
         cout<<"Priority: "<<i<<endl;
-        cout<<"A: "<<endl; cout<<input[i].A<<endl;
-        cout<<"y_ref: "<<endl; cout<<input[i].y_ref<<endl;
+        cout<<"Constraint Matrix: "<<endl; cout<<prio_0.A<<endl;
+        cout<<"Reference: "<<endl; cout<<prio_0.y_ref<<endl;
         cout<<endl;
     }
 
     Eigen::VectorXd solver_output;
     try{
-        solver.solve(input,  solver_output);
+        solver.solve(input, solver_output);
     }
     catch(std::exception e){
         BOOST_ERROR("Solver.solve threw an exception");
     }
 
-    cout<<"----------------- Solver Output: ------------------------"<<endl;
-    cout<<"q_ref = "<<endl;
+    cout<<"---------------------- Solver Output ------------------------"<<endl;
+    cout<<"q_dot = "<<endl;
     cout<<solver_output<<endl;
-    cout<<"\nTest: "<<endl;
+    cout<<"---------------------- TEST ------------------------"<<endl<<endl;
     for(uint i = 0; i < ny_per_prio.size(); i++){
-        cout<<"----------------- Priority: "<<i<<" ------------------"<<endl;
-        Eigen::VectorXd test = input[i].A*solver_output;
-        cout<<"A * q_ref: "<<endl;
+        cout<<" ---- Priority: "<<i<<" ----"<<endl<<endl;
+        Eigen::VectorXd test = prio_0.A*solver_output;
+        cout<<"A * q_dot: "<<endl;
         cout<<test<<endl; cout<<endl;
         for(uint j = 0; j < NO_CONSTRAINTS; j++)
-            BOOST_CHECK(fabs(test(j) - input[i].y_ref(j)) < 1e-9);
+            BOOST_CHECK(fabs(test(j) - prio_0.y_ref(j)) < 1e-9);
     }
 
     cout<<"\n............................."<<endl;
 }
-
+/*
 BOOST_AUTO_TEST_CASE(kinematic_model){
 
     KDL::Tree robot_tree;
@@ -121,3 +126,4 @@ BOOST_AUTO_TEST_CASE(kinematic_model){
     std::cout<<"Modified Jacobian: "<<std::endl;
     std::cout<<tf.jacobian.data<<std::endl;
 }
+*/

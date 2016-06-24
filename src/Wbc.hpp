@@ -63,6 +63,11 @@ public:
      *                           Will throw if the task frame does not exists.
      */
     TaskFrame* getTaskFrameByName(const std::vector<TaskFrame*> task_frames, const std::string& tf_name);
+
+    /**
+     * @brief getNumberOfPriorities Returns number of priority levels
+     */
+    size_t getNumberOfPriorities(){return constraints.size();}
 };
 }
 
