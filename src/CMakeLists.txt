@@ -3,24 +3,26 @@ rock_library(wbc
             WbcVelocity.cpp
             solvers/Solver.hpp
             solvers/HierarchicalLeastSquaresSolver.cpp
-            constraints/ConstraintConfig.hpp
-            constraints/Constraint.cpp
-            constraints/ExtendedConstraint.hpp
-            models/TaskFrame.hpp
-            models/TaskFrameKDL.cpp
-            models/RobotModel.cpp
-            models/KinematicRobotModelKDL.cpp
-            solvers/OptProblem.hpp
+            common/ConstraintConfig.hpp
+            common/Constraint.cpp
+            common/KinematicConstraintKDL.hpp
+            common/TaskFrame.hpp
+            common/TaskFrameKDL.cpp
+            common/OptProblem.hpp
+            robot_models/RobotModel.cpp
+            robot_models/KinematicRobotModelKDL.cpp
+            robot_models/RobotModelConfig.hpp
     HEADERS Wbc.hpp
             WbcVelocity.hpp
             solvers/Solver.hpp
             solvers/HierarchicalLeastSquaresSolver.hpp
-            constraints/ConstraintConfig.hpp
-            constraints/Constraint.hpp
-            constraints/ExtendedConstraint.hpp
-            solvers/OptProblem.hpp
-            models/TaskFrame.hpp
-            models/TaskFrameKDL.hpp
-            models/RobotModel.hpp
-            models/KinematicRobotModelKDL.hpp
-    DEPS_PKGCONFIG orocos-kdl base-lib kdl_conversions)
+            common/ConstraintConfig.hpp
+            common/Constraint.hpp
+            common/KinematicConstraintKDL.hpp
+            common/TaskFrame.hpp
+            common/TaskFrameKDL.hpp
+            common/OptProblem.hpp
+            robot_models/RobotModel.hpp
+            robot_models/KinematicRobotModelKDL.hpp
+            robot_models/RobotModelConfig.hpp
+    DEPS_PKGCONFIG orocos-kdl base-lib kdl_conversions kdl_parser)

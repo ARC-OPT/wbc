@@ -1,6 +1,7 @@
 #include "TaskFrameKDL.hpp"
 #include <base/Logging.hpp>
 #include <kdl_conversions/KDLConversions.hpp>
+#include <base/samples/Joints.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 
@@ -25,7 +26,7 @@ TaskFrameKDL::TaskFrameKDL(const KDL::Chain& _chain, const std::string &_name) :
     }
 }
 
-void TaskFrameKDL::update(const base::samples::Joints &joint_state){
+void TaskFrameKDL::updateTaskFrame(const base::samples::Joints &joint_state, const std::vector<std::string> &robot_joint_names){
 
     KDL::ChainFkSolverPos_recursive pos_fk_solver(chain);
     KDL::ChainJntToJacSolver jac_solver(chain);
@@ -47,6 +48,7 @@ void TaskFrameKDL::update(const base::samples::Joints &joint_state){
     pos_fk_solver.JntToCart(joint_positions, pose_kdl);
     kdl_conversions::KDL2RigidBodyState(pose_kdl, pose);
     pose.sourceFrame = name;
+    pose.time = joint_state.time;
 
     //Compute Jacobian
     jac_solver.JntToJac(joint_positions, jacobian);
@@ -55,9 +57,10 @@ void TaskFrameKDL::update(const base::samples::Joints &joint_state){
     // This changes the reference point to the root frame
     jacobian.changeRefPoint(-pose_kdl.p);
 
+    updateRobotJacobian(robot_joint_names);
 }
 
-void TaskFrameKDL::update(const base::samples::RigidBodyState &new_pose){
+void TaskFrameKDL::updateSegment(const base::samples::RigidBodyState &new_pose){
 
     KDL::Frame new_pose_kdl;
     kdl_conversions::RigidBodyState2KDL(new_pose, new_pose_kdl);
@@ -72,6 +75,27 @@ void TaskFrameKDL::update(const base::samples::RigidBodyState &new_pose){
         }
         LOG_ERROR("Trying to update pose of segment %s, but this segment does not exist in cgain", new_pose.sourceFrame.c_str());
         throw std::invalid_argument("Invalid segment pose");
+    }
+}
+
+void TaskFrameKDL::updateRobotJacobian(const std::vector<std::string> &robot_joint_names){
+
+    // Fill in columns of task frame Jacobian into the correct place of the full robot Jacobian using the joint_index_map
+    full_robot_jacobian.resize(robot_joint_names.size());
+    full_robot_jacobian.data.setZero();
+
+    for(uint j = 0; j < joint_names.size(); j++)
+    {
+        const std::string& jt_name =  joint_names[j];
+        int idx = std::find(robot_joint_names.begin(), robot_joint_names.end(), jt_name) - robot_joint_names.begin();
+
+        if(idx >= (int)joint_names.size())
+        {
+            LOG_ERROR("Joint with id %s does not exist in robot joint names!", jt_name.c_str());
+            throw std::invalid_argument("Invalid joint name");
+        }
+
+        full_robot_jacobian.setColumn(idx, jacobian.getColumn(j));
     }
 }
 }

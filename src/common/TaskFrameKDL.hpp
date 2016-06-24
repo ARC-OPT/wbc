@@ -6,6 +6,12 @@
 #include <kdl/chain.hpp>
 #include <kdl/jntarray.hpp>
 
+namespace base{
+    namespace samples{
+        class Joints;
+    }
+}
+
 namespace wbc{
 
 /**
@@ -22,10 +28,10 @@ public:
 
     /** Pose of the Task frame wrt the base of the robot */
     KDL::Frame pose_kdl;
-    /** Jacobian associated with task frame wrt to the base of the robot */
+    /** Jacobian relating the task frame to the base of the robot */
     KDL::Jacobian jacobian;
-    /** Joint names in the kinematic chain associated with the task frame */
-    std::vector<std::string> joint_names;
+    /** Jacobian of the complete robot. Columns not related to a joint in this kinematic chain will be zero*/
+    KDL::Jacobian full_robot_jacobian;
     /** Current joint positions in radians */
     KDL::JntArray joint_positions;
     /** Kinematic associated with the task frame and the base of the robot*/
@@ -34,15 +40,21 @@ public:
     /**
      * @brief Update the task frame with the current joint state. This will trigger computation of the Task Frame's pose and the Jacobian
      * @param joint_state Current joint state. Has to contain at least all joints within the kinematic chain associated with this task frame.
+     * @param robot_joint_names All joint names of the robot in correct order. This order will be used in the full robot Jacobian
      * Names will be mapped to correct indices internally
      */
-    virtual void update(const base::samples::Joints &joint_state);
+    void updateTaskFrame(const base::samples::Joints &joint_state, const std::vector<std::string> &robot_joint_names);
 
     /**
      * @brief Update the pose of a particular segment in the kinematic chain
      * @param segment_pose New segment pose. SourceFrame has to be the same as the segments name.
      */
-    virtual void update(const base::samples::RigidBodyState &new_pose);
+    void updateSegment(const base::samples::RigidBodyState &new_pose);
+
+    /**
+     * @brief Update the full robot jacobians with the entries in the task frame jacobians
+     */
+    void updateRobotJacobian(const std::vector<std::string> &robot_joint_names);
 };
 }
 

@@ -1,9 +1,6 @@
 #ifndef HIERARCHICAL_WDLS_SOLVER_HPP
 #define HIERARCHICAL_WDLS_SOLVER_HPP
 
-#include <vector>
-#include <stdexcept>
-#include <base/Eigen.hpp>
 #include "Solver.hpp"
 
 namespace wbc{

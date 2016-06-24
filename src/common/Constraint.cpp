@@ -22,7 +22,7 @@ void Constraint::setReference(const base::samples::RigidBodyState &ref){
     y_ref.segment(0,3) = ref.velocity;
     y_ref.segment(3,3) = ref.angular_velocity;
 
-    updateTime();
+    last_ref_input = base::Time::now();
 }
 
 void Constraint::setReference(const base::samples::Joints& ref){
@@ -56,11 +56,7 @@ void Constraint::setReference(const base::samples::Joints& ref){
         y_ref(i) = ref[idx].speed;
     }
 
-    updateTime();
-}
-
-void Constraint::updateTime(){
-    last_ref_input = base::Time::now();;
+    last_ref_input = base::Time::now();
 }
 
 void Constraint::validate()

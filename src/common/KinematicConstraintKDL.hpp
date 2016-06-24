@@ -1,5 +1,5 @@
-#ifndef EXTENDED_CONSTRAINT_HPP
-#define EXTENDED_CONSTRAINT_HPP
+#ifndef KINEMATIC_CONSTRAINT_KDL_HPP
+#define KINEMATIC_CONSTRAINT_KDL_HPP
 
 #include "Constraint.hpp"
 
@@ -8,12 +8,12 @@
 
 namespace wbc{
 
-class ExtendedConstraint : public Constraint{
+class KinematicConstraintKDL : public Constraint{
 public:
 
-    ExtendedConstraint(const ConstraintConfig& _config,
+    KinematicConstraintKDL(const ConstraintConfig& _config,
                        const uint n_robot_joints) :
-        Constraint(_config, n_robot_joints)
+        Constraint(_config)
     {
         uint no_vars;
         if(_config.type == jnt)
@@ -25,7 +25,7 @@ public:
         A.setZero();
     }
 
-    ~ExtendedConstraint(){
+    ~KinematicConstraintKDL(){
     }
 
     void init(uint no_vars){

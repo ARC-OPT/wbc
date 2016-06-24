@@ -18,7 +18,7 @@ public:
 
     Constraint(){
     }
-    Constraint(const ConstraintConfig& _config, const uint n_robot_joints)
+    Constraint(const ConstraintConfig& _config)
     {
 
         config = _config;
@@ -98,11 +98,9 @@ public:
 
     void setReference(const base::samples::RigidBodyState &ref);
     void setReference(const base::samples::Joints& ref);
-    void updateTime();
     void validate();
     void reset();
 };
-typedef std::vector<Constraint> ConstraintsPerPrio;
 
 }
 #endif
