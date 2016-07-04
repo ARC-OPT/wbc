@@ -15,10 +15,18 @@ RobotModel::~RobotModel(){
 
 bool RobotModel::addTaskFrame(const std::string &tf_name){
     if(!hasTaskFrame(tf_name)){
-        if(!addTaskFrameInternal(tf_name))
+
+        TaskFrame* tf = createTaskFrame(tf_name);
+        if(!tf)
             return false;
 
-        TaskFrame* tf = getTaskFrame(tf_name);
+        task_frames.push_back(tf);
+
+        LOG_INFO("Sucessfully added task frame %s", tf_name.c_str());
+        LOG_INFO("TF Vector now contains:");
+        for(size_t i = 0; i < task_frames.size(); i++)
+            LOG_INFO("%s", task_frames[i]->name.c_str());
+        LOG_INFO("\n");
 
         // Add all joint names of the task frame to the joint names vector
         for(size_t i = 0; i < tf->joint_names.size(); i++){

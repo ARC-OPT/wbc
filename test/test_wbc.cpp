@@ -5,6 +5,8 @@
 #include "../src/solvers/HierarchicalLeastSquaresSolver.hpp"
 #include "../src/robot_models/KinematicRobotModelKDL.hpp"
 #include "../src/common/OptProblem.hpp"
+#include "../src/robot_models/RobotModelConfig.hpp"
+#include "../src/common/TaskFrame.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -77,53 +79,70 @@ BOOST_AUTO_TEST_CASE(hierarchical_solver)
 
     cout<<"\n............................."<<endl;
 }
-/*
+
+/**
+ * Test Kinematic KDL model
+ */
 BOOST_AUTO_TEST_CASE(kinematic_model){
 
-    KDL::Tree robot_tree;
-    BOOST_CHECK(kdl_parser::treeFromFile("/home/dfki.uni-bremen.de/dmronga/rock/bundles/kuka_lbr/data/urdf/kuka_lbr.urdf", robot_tree) == true);
+    KinematicRobotModelKDL model;
+    std::string camera_frame = "kuka_lbr_top_left_camera";
 
-    KDL::Tree obj_tree;
-    BOOST_CHECK(kdl_parser::treeFromFile("/home/dfki.uni-bremen.de/dmronga/rock_aila/bundles/iss_demo/data/urdf/iss_drawer.urdf", obj_tree) == true);
+    std::string robot_urdf_path  = std::getenv("AUTOPROJ_CURRENT_ROOT") + std::string("/control/wbc/test/kuka_lbr.urdf");
+    RobotModelConfig robot_model(robot_urdf_path);
 
-    KinematicModel model;
-    BOOST_CHECK(model.addTree(robot_tree, base::samples::RigidBodyState()) == true);
-    BOOST_CHECK(model.addTree(obj_tree, base::samples::RigidBodyState(), "kuka_lbr_top_right_camera") == true);
+    std::string object_urdf_path = std::getenv("AUTOPROJ_CURRENT_ROOT") + std::string("/control/wbc/test/object.urdf");
+    base::samples::RigidBodyState initial_pose;
+    initial_pose.setTransform(Eigen::Affine3d::Identity());
+    RobotModelConfig object_model(object_urdf_path, camera_frame, initial_pose);
 
-    BOOST_CHECK(model.addTaskFrame("iss_drawer_base") == true);
-    const TaskFrame &tf = model.getTaskFrame("iss_drawer_base");
+    std::cout<<"Loading robot model ..."<<std::endl<<std::endl;
+    BOOST_CHECK(model.loadModel(robot_model) == true);
+    std::cout<<"Attaching object model to " << camera_frame <<"..."<<std::endl<<std::endl;
+    BOOST_CHECK(model.loadModel(object_model) == true);
+    BOOST_CHECK(model.hasTaskFrame("object") == false);
+    BOOST_CHECK(model.addTaskFrame("object") == true);
+
+    TaskFrame *tf = model.getTaskFrame("object");
 
     base::samples::Joints joint_state;
-    joint_state.resize(tf.joint_names.size());
-    joint_state.names = tf.joint_names;
-    for(uint i = 0; i < tf.joint_names.size(); i++)
+    joint_state.resize(tf->joint_names.size());
+    joint_state.names = tf->joint_names;
+    for(uint i = 0; i < tf->joint_names.size(); i++)
         joint_state[i].position = 0;
-    model.updateJoints(joint_state);
+    model.update(joint_state);
 
-    std::cout<<"Initial Object Pose: "<<std::endl;
-    std::cout<<tf.pose.p<<std::endl;
-    double qx,qy,qz,qw;
-    tf.pose.M.GetQuaternion(qx,qy,qz,qw);
-    std::cout<<"qx: "<<qx<<" qy: "<<qy<<" qz: "<<qz<<" qw: "<<qw<<std::endl;
+    std::cout<<"Object Pose in robot base frame: "<<std::endl;
+    std::cout<<"Position: "<<std::endl;
+    std::cout<<tf->pose.position<<std::endl;
+    std::cout<<"Orientation(qx,qy,qz,qw): "<<std::endl;
+    std::cout<<tf->pose.orientation.x()<<""<<tf->pose.orientation.y()<<" "<<tf->pose.orientation.z()<<" "<<tf->pose.orientation.w()<<std::endl<<std::endl;
 
-    std::cout<<"Initial Jacobian: "<<std::endl;
-    std::cout<<tf.jacobian.data<<std::endl;
+    base::samples::RigidBodyState old_pose = tf->pose;
 
     base::samples::RigidBodyState segment_pose;
+    segment_pose.sourceFrame = "object";
     segment_pose.position.setZero();
     segment_pose.position(2) = 0.5;
     segment_pose.orientation.setIdentity();
-    model.updateLink(segment_pose);
-    joint_state.elements.pop_back();
-    joint_state.names.pop_back();
-    model.updateJoints(joint_state);
+    std::vector<base::samples::RigidBodyState> poses;
+    poses.push_back(segment_pose);
 
-    std::cout<<"Modified Object Pose: "<<std::endl;
-    std::cout<<tf.pose.p<<std::endl;
-    tf.pose.M.GetQuaternion(qx,qy,qz,qw);
-    std::cout<<"qx: "<<qx<<" qy: "<<qy<<" qz: "<<qz<<" qw: "<<qw<<std::endl;
+    std::cout<<"Moving object (in camera coordinates) by:"<<std::endl;
+    std::cout<<segment_pose.position <<std::endl<<std::endl;
 
-    std::cout<<"Modified Jacobian: "<<std::endl;
-    std::cout<<tf.jacobian.data<<std::endl;
+    model.update(joint_state, poses);
+
+    std::cout<<"New Object Pose in robot base: "<<std::endl;
+    std::cout<<"Position: "<<std::endl;
+    std::cout<<tf->pose.position<<std::endl;
+    std::cout<<"Orientation(qx,qy,qz,qw): "<<std::endl;
+    std::cout<<tf->pose.orientation.x()<<" "<<tf->pose.orientation.y()<<" "<<tf->pose.orientation.z()<<" "<<tf->pose.orientation.w()<<std::endl<<std::endl;
+
+    std::cout<<"Distance initial pose --> new pose is: "<<std::endl;
+    std::cout<<(tf->pose.position - old_pose.position).norm()<<std::endl;
+
+    BOOST_CHECK( (segment_pose.position.norm() - (tf->pose.position - old_pose.position).norm()) < 1e-9 );
+
 }
-*/
+

@@ -31,10 +31,8 @@ public:
     virtual ~RobotModel();
 
     /**
-     * @brief Load a model and add it to the overall robot model, e.g. another robot or an object attached to the robot
-     * @param model_file Filename of the model
-     * @param initial_pose Initial position and orientation of the model with respect to the hook frame
-     * @param hook_name Frame to which the model shall be attached
+     * @brief Load a model and add it to the overall robot model, e.g. another robot or an object attached to the robot.
+     * @param RobotModelConfig Config of the robot model
      */
     virtual bool loadModel(const RobotModelConfig& config) = 0;
 
@@ -42,14 +40,8 @@ public:
      * @brief Update all task frames with a new joint state.
      * @param joint_state The joint_state vector
      */
-    virtual void update(const base::samples::Joints& joint_state) = 0;
-
-    /**
-     * @brief Update the pose of a link (segment) in the model. This feature can be used e.g. if there are multiple robots (to update the relative
-     *        pose between them) or if there is an object in the scene (e.g. to update its pose wrt to the camera frame)
-     * @param new_pose The new link pose. The SourceFrame has to be the same as the segments name that is to be updated.
-     */
-    virtual void update(const base::samples::RigidBodyState &new_pose) = 0;
+    virtual void update(const base::samples::Joints& joint_state,
+                        const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>()) = 0;
 
     /**
      * @brief Add a task frame to the model (see TaskFrame.hpp for details about task frames)
@@ -90,11 +82,11 @@ public:
 
 protected:
     /**
-     * @brief Add a task frame to the model (see TaskFrame.hpp for details about task frames)
+     * @brief Create a task frame that is specific for the implemented model type
      * @param tf_name Name of the task frame. Has to be a valid frame of the model
-     * @return True in case of success, false otherwise (e.g. if the task frame already exists)
+     * @return Pointer to the task frame, or 0 in case of failure
      */
-    virtual bool addTaskFrameInternal(const std::string& tf_name) = 0;
+    virtual TaskFrame* createTaskFrame(const std::string &tf_name) = 0;
 };
 }
 

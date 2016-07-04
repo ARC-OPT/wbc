@@ -18,6 +18,7 @@ TaskFrameKDL::TaskFrameKDL(const KDL::Chain& _chain, const std::string &_name) :
     jacobian = KDL::Jacobian(chain.getNrOfJoints());
     jacobian.data.setZero();
     joint_positions.resize(chain.getNrOfJoints());
+    joint_positions.data.setConstant(base::NaN<double>());
 
     for(uint i = 0; i < chain.getNrOfSegments(); i++){
         KDL::Joint joint = chain.getSegment(i).getJoint();
@@ -26,10 +27,7 @@ TaskFrameKDL::TaskFrameKDL(const KDL::Chain& _chain, const std::string &_name) :
     }
 }
 
-void TaskFrameKDL::updateTaskFrame(const base::samples::Joints &joint_state, const std::vector<std::string> &robot_joint_names){
-
-    KDL::ChainFkSolverPos_recursive pos_fk_solver(chain);
-    KDL::ChainJntToJacSolver jac_solver(chain);
+void TaskFrameKDL::updateJoints(const base::samples::Joints &joint_state){
 
     //Update joint variables
     for(uint i = 0; i < joint_names.size(); i++){
@@ -43,21 +41,7 @@ void TaskFrameKDL::updateTaskFrame(const base::samples::Joints &joint_state, con
         }
         joint_positions(i) = joint_state[idx].position;
     }
-
-    //Compute FK
-    pos_fk_solver.JntToCart(joint_positions, pose_kdl);
-    kdl_conversions::KDL2RigidBodyState(pose_kdl, pose);
-    pose.sourceFrame = name;
-    pose.time = joint_state.time;
-
-    //Compute Jacobian
-    jac_solver.JntToJac(joint_positions, jacobian);
-
-    // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip.
-    // This changes the reference point to the root frame
-    jacobian.changeRefPoint(-pose_kdl.p);
-
-    updateRobotJacobian(robot_joint_names);
+    last_update = joint_state.time;
 }
 
 void TaskFrameKDL::updateSegment(const base::samples::RigidBodyState &new_pose){
@@ -71,14 +55,39 @@ void TaskFrameKDL::updateSegment(const base::samples::RigidBodyState &new_pose){
             chain.segments[i] = KDL::Segment(new_pose.sourceFrame,
                                              KDL::Joint(KDL::Joint::None),
                                              new_pose_kdl);
+            last_update = new_pose.time;
             return;
         }
-        LOG_ERROR("Trying to update pose of segment %s, but this segment does not exist in cgain", new_pose.sourceFrame.c_str());
-        throw std::invalid_argument("Invalid segment pose");
     }
+    LOG_ERROR("Trying to update pose of segment %s, but this segment does not exist in chain", new_pose.sourceFrame.c_str());
+    throw std::invalid_argument("Invalid segment pose");
 }
 
-void TaskFrameKDL::updateRobotJacobian(const std::vector<std::string> &robot_joint_names){
+void TaskFrameKDL::recomputeKinematics(const std::vector<std::string> &robot_joint_names){
+
+    KDL::ChainFkSolverPos_recursive pos_fk_solver(chain);
+    KDL::ChainJntToJacSolver jac_solver(chain);
+
+    // Each joint has to have a valid position
+    for(uint i = 0; i < joint_names.size(); i++){
+        if(base::isNaN(joint_positions(i))){
+            LOG_ERROR("TaskFrameKDL: Position of joint %s is NaN", joint_names[i].c_str());
+            throw std::runtime_error("Invalid joint position");
+        }
+    }
+
+    //Compute FK
+    pos_fk_solver.JntToCart(joint_positions, pose_kdl);
+    kdl_conversions::KDL2RigidBodyState(pose_kdl, pose);
+    pose.sourceFrame = name;
+    pose.time = last_update;
+
+    //Compute Jacobian
+    jac_solver.JntToJac(joint_positions, jacobian);
+
+    // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip.
+    // This changes the reference point to the root frame
+    jacobian.changeRefPoint(-pose_kdl.p);
 
     // Fill in columns of task frame Jacobian into the correct place of the full robot Jacobian using the joint_index_map
     full_robot_jacobian.resize(robot_joint_names.size());
@@ -98,4 +107,5 @@ void TaskFrameKDL::updateRobotJacobian(const std::vector<std::string> &robot_joi
         full_robot_jacobian.setColumn(idx, jacobian.getColumn(j));
     }
 }
+
 }

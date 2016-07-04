@@ -36,14 +36,15 @@ public:
     KDL::JntArray joint_positions;
     /** Kinematic associated with the task frame and the base of the robot*/
     KDL::Chain chain;
+    /** Last time sensor a joint state or pose information was updated*/
+    base::Time last_update;
 
     /**
-     * @brief Update the task frame with the current joint state. This will trigger computation of the Task Frame's pose and the Jacobian
+     * @brief Update the task frame with the current joint state.
      * @param joint_state Current joint state. Has to contain at least all joints within the kinematic chain associated with this task frame.
-     * @param robot_joint_names All joint names of the robot in correct order. This order will be used in the full robot Jacobian
-     * Names will be mapped to correct indices internally
+     *                    Names will be mapped to correct indices internally
      */
-    void updateTaskFrame(const base::samples::Joints &joint_state, const std::vector<std::string> &robot_joint_names);
+    void updateJoints(const base::samples::Joints &joint_state);
 
     /**
      * @brief Update the pose of a particular segment in the kinematic chain
@@ -52,9 +53,11 @@ public:
     void updateSegment(const base::samples::RigidBodyState &new_pose);
 
     /**
-     * @brief Update the full robot jacobians with the entries in the task frame jacobians
+     * @brief Recompute the kinematics information of the task frame. updateJoints has to be called at least once before this is called.
+     * @param robot_joint_names The joint name vector of the complete robot
      */
-    void updateRobotJacobian(const std::vector<std::string> &robot_joint_names);
+    void recomputeKinematics(const std::vector<std::string> &robot_joint_names);
+
 };
 }
 

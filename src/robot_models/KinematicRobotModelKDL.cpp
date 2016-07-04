@@ -53,45 +53,44 @@ bool KinematicRobotModelKDL::loadModel(const RobotModelConfig& config){
         }
     }
 
-    LOG_DEBUG("Successfully added tree with root '%s' to hook '%s'", tree.getRootSegment()->second.segment.getName().c_str(), config.hook.c_str());
+    LOG_INFO("Successfully added tree with root '%s' to hook '%s'", tree.getRootSegment()->second.segment.getName().c_str(), config.hook.c_str());
 
     return true;
 }
 
 
-void KinematicRobotModelKDL::update(const base::samples::Joints &joint_state){
-    for(size_t i = 0; i < task_frames.size(); i++)
-        ((TaskFrameKDL*)task_frames[i])->updateTaskFrame(joint_state, joint_names);
-}
+void KinematicRobotModelKDL::update(const base::samples::Joints &joint_state, const std::vector<base::samples::RigidBodyState>& poses){
+    for(size_t i = 0; i < task_frames.size(); i++){
 
-void KinematicRobotModelKDL::update(const base::samples::RigidBodyState &new_pose){
-    for(size_t i = 0; i < task_frames.size(); i++)
-        ((TaskFrameKDL*)task_frames[i])->updateSegment(new_pose);
+        TaskFrameKDL* tf = (TaskFrameKDL*)task_frames[i];
+
+        tf->updateJoints(joint_state);
+
+        for(size_t j = 0; j < poses.size(); j++)
+            tf->updateSegment(poses[j]);
+
+        tf->recomputeKinematics(joint_names);
+    }
 }
 
 bool KinematicRobotModelKDL::hasFrame(const std::string &name){
     return full_tree.getSegments().find(name) != full_tree.getSegments().end();
 }
 
-bool KinematicRobotModelKDL::addTaskFrameInternal(const std::string &tf_name){
+TaskFrame* KinematicRobotModelKDL::createTaskFrame(const std::string &tf_name){
 
     KDL::Chain chain;
     if(!full_tree.getChain(base_frame, tf_name, chain))
     {
         LOG_ERROR("Could not extract kinematic chain between %s and %s from tree", base_frame.c_str(), tf_name.c_str());
-        return false;
+        return 0;
     }
 
     TaskFrameKDL* tf = new TaskFrameKDL(chain, tf_name);
     tf->pose.targetFrame = base_frame;
+    tf->pose.sourceFrame = tf_name;
 
-    LOG_DEBUG("Sucessfully added task frame %s", tf_name.c_str());
-    LOG_DEBUG("TF Vector now contains:");
-    for(size_t i = 0; i < task_frames.size(); i++)
-        LOG_DEBUG("%s", task_frames[i].name.c_str());
-    LOG_DEBUG("\n");
-
-    return true;
+    return tf;
 }
 
 }
