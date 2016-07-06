@@ -10,5 +10,6 @@
   <depend package="base/cmake" />
   <depend package="control/kdl_parser" />
   <depend package="control/kdl_conversions" />
+  <depend package="control/ctrl_lib" />
   <depend package="eigen3" />
 </package>

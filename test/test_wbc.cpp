@@ -88,10 +88,10 @@ BOOST_AUTO_TEST_CASE(kinematic_model){
     KinematicRobotModelKDL model;
     std::string camera_frame = "kuka_lbr_top_left_camera";
 
-    std::string robot_urdf_path  = std::getenv("AUTOPROJ_CURRENT_ROOT") + std::string("/control/wbc/test/kuka_lbr.urdf");
+    std::string robot_urdf_path  = "../../data/kuka_lbr.urdf";
     RobotModelConfig robot_model(robot_urdf_path);
 
-    std::string object_urdf_path = std::getenv("AUTOPROJ_CURRENT_ROOT") + std::string("/control/wbc/test/object.urdf");
+    std::string object_urdf_path = "../../data/object.urdf";
     base::samples::RigidBodyState initial_pose;
     initial_pose.setTransform(Eigen::Affine3d::Identity());
     RobotModelConfig object_model(object_urdf_path, camera_frame, initial_pose);

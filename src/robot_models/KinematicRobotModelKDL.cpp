@@ -4,6 +4,7 @@
 #include <kdl_conversions/KDLConversions.hpp>
 #include <kdl_parser/kdl_parser.hpp>
 #include "RobotModelConfig.hpp"
+#include <fstream>
 
 namespace wbc{
 
@@ -14,8 +15,15 @@ KinematicRobotModelKDL::KinematicRobotModelKDL(const std::string& _base_frame) :
 
 bool KinematicRobotModelKDL::loadModel(const RobotModelConfig& config){
 
+    std::ifstream file_stream(config.file.c_str());
+    if(!file_stream.is_open()){
+        LOG_ERROR("Unable to open file %s. Maybe the file does not exist?", config.file.c_str());
+        return false;
+    }
+    std::string urdf_string((std::istreambuf_iterator<char>(file_stream)), std::istreambuf_iterator<char>());
+
     KDL::Tree tree;
-    if(!kdl_parser::treeFromFile(config.file, tree)){
+    if(!kdl_parser::treeFromString(urdf_string, tree)){
         LOG_ERROR("Unable to load KDL tree from file %s", config.file.c_str());
         return false;
     }
