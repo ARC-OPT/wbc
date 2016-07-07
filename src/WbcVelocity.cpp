@@ -89,7 +89,7 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     return true;
 }
 
-void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, std::vector<OptProblem*> &opt_problem)
+void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, OptProblem &opt_problem)
 {
     if(!configured)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
@@ -107,7 +107,7 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, st
     for(uint prio = 0; prio < constraints.size(); prio++)
     {
         uint n_vars_prio = getConstraintVariablesPerPrio()[prio]; //Number of constraint variables on the whole priority
-        ((WeightedLSSimple*)opt_problem[prio])->resize(n_vars_prio, joint_index_map.size());
+        ((HierarchicalWeightedLS& )opt_problem).priorities[prio].resize(n_vars_prio, joint_index_map.size());
 
         //Walk through all tasks of current priority
         uint row_index = 0;
@@ -219,9 +219,9 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, st
             }
 
             // Insert constraints into equation system of current priority at the correct position
-            ((WeightedLSSimple*)opt_problem[prio])->W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->constraint_timed_out);
-            ((WeightedLSSimple*)opt_problem[prio])->A.block(row_index, 0, n_vars, joint_index_map.size()) = constraint->A;
-            ((WeightedLSSimple*)opt_problem[prio])->y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
+            ((HierarchicalWeightedLS& )opt_problem).priorities[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->constraint_timed_out);
+            ((HierarchicalWeightedLS& )opt_problem).priorities[prio].A.block(row_index, 0, n_vars, joint_index_map.size()) = constraint->A;
+            ((HierarchicalWeightedLS& )opt_problem).priorities[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
 
             row_index += n_vars;
         }

@@ -36,7 +36,7 @@ public:
      * @param task_frames A map of task
      * @param equations
      */
-    virtual void setupOptProblem(const std::vector<TaskFrame*> &task_frames, std::vector<OptProblem*> &opt_problem) = 0;
+    virtual void setupOptProblem(const std::vector<TaskFrame*> &task_frames, OptProblem &opt_problem) = 0;
 
     /**
      * @brief Return a Particular constraint

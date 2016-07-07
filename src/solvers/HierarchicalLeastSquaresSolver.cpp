@@ -68,14 +68,14 @@ bool HierarchicalLeastSquaresSolver::configure(const std::vector<int>& n_constra
     return true;
 }
 
-void HierarchicalLeastSquaresSolver::solve(const std::vector<OptProblem*> &opt_problem, Eigen::VectorXd &solver_output){
+void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, Eigen::VectorXd &solver_output){
 
     if(!configured)
         throw std::runtime_error("HierarchicalLeastSquaresSolver has to be configured before calling solve()!");
 
     // Check valid input
-    if(opt_problem.size() != priorities.size()){
-        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), opt_problem.size());
+    if(((HierarchicalWeightedLS& )opt_problem).priorities.size() != priorities.size()){
+        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), ((HierarchicalWeightedLS& )opt_problem).size());
         throw std::invalid_argument("Invalid solver input");
     }
 
@@ -89,27 +89,27 @@ void HierarchicalLeastSquaresSolver::solve(const std::vector<OptProblem*> &opt_p
 
     for(uint prio = 0; prio < priorities.size(); prio++){
 
-        WeightedLSSimple* opt_problem_prio = (WeightedLSSimple*)opt_problem[prio];
+        const WeightedLS& opt_problem_prio = ((HierarchicalWeightedLS& )opt_problem).priorities[prio];
 
-        if(opt_problem_prio->A.rows()     != priorities[prio].n_constraint_variables ||
-           opt_problem_prio->A.cols()     != no_of_joints ||
-           opt_problem_prio->y_ref.size() != priorities[prio].n_constraint_variables){
+        if(opt_problem_prio.A.rows()     != priorities[prio].n_constraint_variables ||
+           opt_problem_prio.A.cols()     != no_of_joints ||
+           opt_problem_prio.y_ref.size() != priorities[prio].n_constraint_variables){
             LOG_ERROR("Expected input size on priority level %i: A: %i x %i, b: %i x 1, actual input: A: %i x %i, b: %i x 1",
-                      prio, priorities[prio].n_constraint_variables, no_of_joints, priorities[prio].n_constraint_variables, opt_problem_prio->A.rows(), opt_problem_prio->A.cols(), opt_problem_prio->y_ref.size());
+                      prio, priorities[prio].n_constraint_variables, no_of_joints, priorities[prio].n_constraint_variables, opt_problem_prio.A.rows(), opt_problem_prio.A.cols(), opt_problem_prio.y_ref.size());
             throw std::invalid_argument("Invalid size of input variables");
         }
 
         // Set weights for this prioritiy
-        setConstraintWeights(opt_problem_prio->W, prio);
+        setConstraintWeights(opt_problem_prio.W, prio);
 
         priorities[prio].y_comp.setZero();
 
         // Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
-        priorities[prio].y_comp = opt_problem_prio->y_ref - opt_problem_prio->A*solver_output;
+        priorities[prio].y_comp = opt_problem_prio.y_ref - opt_problem_prio.A*solver_output;
 
         // projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         // For the first priority P == Identity
-        priorities[prio].A_proj = opt_problem_prio->A * proj_mat;
+        priorities[prio].A_proj = opt_problem_prio.A * proj_mat;
 
         // Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         // Since the weight matrices are diagonal, there is no need for full matrix multiplication

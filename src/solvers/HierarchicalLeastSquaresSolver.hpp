@@ -77,7 +77,7 @@ public:
      * @param linear_eqn_pp A Linear equation system, sorted by priority
      * @param x solution
      */
-    virtual void solve(const std::vector<OptProblem*> &opt_problem, Eigen::VectorXd &solver_output);
+    virtual void solve(const OptProblem &opt_problem, Eigen::VectorXd &solver_output);
 
     /**
      * @brief setJointWeights Sets the joint weight vector for the given priority

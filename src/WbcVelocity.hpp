@@ -36,7 +36,7 @@ public:
      * @param equations
      */
     virtual void setupOptProblem(const std::vector<TaskFrame*> &task_frames,
-                                 std::vector<OptProblem*> &opt_problem);
+                                 OptProblem &opt_problem);
 
     void evaluateConstraints(const base::VectorXd& solver_output,
                              const base::VectorXd& robot_vel);
