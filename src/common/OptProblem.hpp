@@ -8,8 +8,6 @@ namespace wbc{
 
 class OptProblem{
 public:
-    virtual size_t size() = 0;
-    virtual void resize(uint size) = 0;
 };
 
 class WeightedLS{
@@ -29,13 +27,6 @@ public:
 class HierarchicalWeightedLS : public OptProblem{
 public:
     std::vector<WeightedLS> priorities;
-
-    virtual size_t size(){
-        return priorities.size();
-    }
-    virtual void resize(uint size){
-        priorities.resize(size);
-    }
 };
 
 }

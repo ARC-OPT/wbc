@@ -73,9 +73,11 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, Eigen:
     if(!configured)
         throw std::runtime_error("HierarchicalLeastSquaresSolver has to be configured before calling solve()!");
 
+    HierarchicalWeightedLS& opt_problem_ls = (HierarchicalWeightedLS& )opt_problem;
+
     // Check valid input
-    if(((HierarchicalWeightedLS& )opt_problem).priorities.size() != priorities.size()){
-        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), ((HierarchicalWeightedLS& )opt_problem).size());
+    if(opt_problem_ls.priorities.size() != priorities.size()){
+        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), opt_problem_ls.priorities.size());
         throw std::invalid_argument("Invalid solver input");
     }
 

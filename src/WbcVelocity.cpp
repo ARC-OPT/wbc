@@ -94,8 +94,10 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
     if(!configured)
         throw std::runtime_error("WbcVelocity::update: Configure has not been called yet");
 
-    if(opt_problem.size() != constraints.size())
-        opt_problem.resize(constraints.size());
+    HierarchicalWeightedLS& opt_problem_ls = (HierarchicalWeightedLS& )opt_problem;
+
+    if(opt_problem_ls.priorities.size() != constraints.size())
+        opt_problem_ls.priorities.resize(constraints.size());
 
     // Walk through all priorities and update optimzation problem. The outcome will be
     //    A - Vector of constraint matrices. One matrix for each priority
@@ -107,7 +109,7 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
     for(uint prio = 0; prio < constraints.size(); prio++)
     {
         uint n_vars_prio = getConstraintVariablesPerPrio()[prio]; //Number of constraint variables on the whole priority
-        ((HierarchicalWeightedLS& )opt_problem).priorities[prio].resize(n_vars_prio, joint_index_map.size());
+        opt_problem_ls.priorities[prio].resize(n_vars_prio, joint_index_map.size());
 
         //Walk through all tasks of current priority
         uint row_index = 0;
@@ -219,9 +221,9 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
             }
 
             // Insert constraints into equation system of current priority at the correct position
-            ((HierarchicalWeightedLS& )opt_problem).priorities[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->constraint_timed_out);
-            ((HierarchicalWeightedLS& )opt_problem).priorities[prio].A.block(row_index, 0, n_vars, joint_index_map.size()) = constraint->A;
-            ((HierarchicalWeightedLS& )opt_problem).priorities[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
+            opt_problem_ls.priorities[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->constraint_timed_out);
+            opt_problem_ls.priorities[prio].A.block(row_index, 0, n_vars, joint_index_map.size()) = constraint->A;
+            opt_problem_ls.priorities[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
 
             row_index += n_vars;
         }
