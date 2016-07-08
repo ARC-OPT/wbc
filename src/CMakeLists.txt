@@ -3,7 +3,7 @@ rock_library(wbc
             WbcVelocity.cpp
             solvers/Solver.hpp
             solvers/HierarchicalLeastSquaresSolver.cpp
-            common/ConstraintConfig.hpp
+            common/ConstraintConfig.cpp
             common/Constraint.cpp
             common/KinematicConstraintKDL.hpp
             common/TaskFrame.hpp

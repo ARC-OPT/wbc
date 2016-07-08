@@ -26,7 +26,7 @@ public:
 
 class HierarchicalWeightedLS : public OptProblem{
 public:
-    std::vector<WeightedLS> priorities;
+    std::vector<WeightedLS> prios;
 };
 
 }

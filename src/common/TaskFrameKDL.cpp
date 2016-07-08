@@ -27,9 +27,12 @@ TaskFrameKDL::TaskFrameKDL(const KDL::Chain& _chain, const std::string &_name) :
     }
 }
 
-void TaskFrameKDL::updateJoints(const base::samples::Joints &joint_state){
+void TaskFrameKDL::update(const base::samples::Joints &joint_state,
+                          const std::vector<base::samples::RigidBodyState>& poses,
+                          const std::vector<std::string> &robot_joint_names){
 
-    //Update joint variables
+    //// Update joint positions
+    ///
     for(uint i = 0; i < joint_names.size(); i++){
         size_t idx;
         try{
@@ -39,44 +42,44 @@ void TaskFrameKDL::updateJoints(const base::samples::Joints &joint_state){
             LOG_ERROR("Kin. Chain has joint %s, but this joint is not in joint state vector", joint_names[i].c_str());
             throw e;
         }
-        joint_positions(i) = joint_state[idx].position;
-    }
-    last_update = joint_state.time;
-}
-
-void TaskFrameKDL::updateSegment(const base::samples::RigidBodyState &new_pose){
-
-    KDL::Frame new_pose_kdl;
-    kdl_conversions::RigidBodyState2KDL(new_pose, new_pose_kdl);
-
-    for(uint i = 0; i < chain.getNrOfSegments(); i++)
-    {
-        if(chain.segments[i].getName().compare(new_pose.sourceFrame) == 0){
-            chain.segments[i] = KDL::Segment(new_pose.sourceFrame,
-                                             KDL::Joint(KDL::Joint::None),
-                                             new_pose_kdl);
-            last_update = new_pose.time;
-            return;
-        }
-    }
-    LOG_ERROR("Trying to update pose of segment %s, but this segment does not exist in chain", new_pose.sourceFrame.c_str());
-    throw std::invalid_argument("Invalid segment pose");
-}
-
-void TaskFrameKDL::recomputeKinematics(const std::vector<std::string> &robot_joint_names){
-
-    KDL::ChainFkSolverPos_recursive pos_fk_solver(chain);
-    KDL::ChainJntToJacSolver jac_solver(chain);
-
-    // Each joint has to have a valid position
-    for(uint i = 0; i < joint_names.size(); i++){
-        if(base::isNaN(joint_positions(i))){
+        if(!joint_state[idx].hasPosition()){
             LOG_ERROR("TaskFrameKDL: Position of joint %s is NaN", joint_names[i].c_str());
             throw std::runtime_error("Invalid joint position");
         }
+        joint_positions(i) = joint_state[idx].position;
     }
 
-    //Compute FK
+    base::Time last_update = joint_state.time;
+
+    //// Update segments
+    ///
+    KDL::Frame new_pose_kdl;
+    for(size_t i = 0; i < poses.size(); i++){
+
+        kdl_conversions::RigidBodyState2KDL(poses[i], new_pose_kdl);
+        bool has_segment = false;
+
+        for(uint j = 0; j < chain.getNrOfSegments(); j++){
+
+            if(chain.segments[j].getName().compare(poses[i].sourceFrame) == 0){
+                chain.segments[j] = KDL::Segment(poses[i].sourceFrame,
+                                                 KDL::Joint(KDL::Joint::None),
+                                                 new_pose_kdl);
+                last_update = poses[i].time;
+                has_segment = true;
+            }
+        }
+        if(!has_segment){
+            LOG_ERROR("Trying to update pose of segment %s, but this segment does not exist in chain", poses[i].sourceFrame.c_str());
+            throw std::invalid_argument("Invalid segment pose");
+        }
+    }
+
+    //// Recompute Kinematics
+    ///
+    KDL::ChainFkSolverPos_recursive pos_fk_solver(chain);
+    KDL::ChainJntToJacSolver jac_solver(chain);
+
     pos_fk_solver.JntToCart(joint_positions, pose_kdl);
     kdl_conversions::KDL2RigidBodyState(pose_kdl, pose);
     pose.sourceFrame = name;
@@ -107,5 +110,4 @@ void TaskFrameKDL::recomputeKinematics(const std::vector<std::string> &robot_joi
         full_robot_jacobian.setColumn(idx, jacobian.getColumn(j));
     }
 }
-
 }

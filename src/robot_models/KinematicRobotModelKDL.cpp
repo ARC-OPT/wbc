@@ -37,6 +37,10 @@ bool KinematicRobotModelKDL::loadModel(const RobotModelConfig& config){
     }
     else{
         if(!hasFrame(config.hook)){
+            if(config.hook.empty()){
+                LOG_ERROR("Empty hook member of RobotModelConfig. Is this intended?");
+                return false;
+            }
             LOG_ERROR("Trying to hook a new tree to frame %s, but this frame does not exist", config.hook.c_str());
             return false;
         }
@@ -67,17 +71,45 @@ bool KinematicRobotModelKDL::loadModel(const RobotModelConfig& config){
 }
 
 
-void KinematicRobotModelKDL::update(const base::samples::Joints &joint_state, const std::vector<base::samples::RigidBodyState>& poses){
-    for(size_t i = 0; i < task_frames.size(); i++){
+void KinematicRobotModelKDL::update(const base::samples::Joints &joint_state,
+                                    const std::vector<base::samples::RigidBodyState>& poses){
 
-        TaskFrameKDL* tf = (TaskFrameKDL*)task_frames[i];
+    current_joint_state = joint_state;
 
-        tf->updateJoints(joint_state);
+    for(size_t i = 0; i < task_frames.size(); i++)
+        ((TaskFrameKDL*)task_frames[i])->update(joint_state, poses, joint_names);
+}
 
-        for(size_t j = 0; j < poses.size(); j++)
-            tf->updateSegment(poses[j]);
+void KinematicRobotModelKDL::getState(const std::string& tf_one_name,
+                                      const std::string& tf_two_name,
+                                      base::samples::RigidBodyState& state){
 
-        tf->recomputeKinematics(joint_names);
+    TaskFrameKDL* tf_one = (TaskFrameKDL*)getTaskFrame(tf_one_name);
+    TaskFrameKDL* tf_two = (TaskFrameKDL*)getTaskFrame(tf_two_name);
+
+    state.sourceFrame = tf_two_name;
+    state.targetFrame = tf_one_name;
+    state.time = tf_one->pose.time > tf_two->pose.time ? tf_one->pose.time : tf_two->pose.time; // Use the latest time of the two task frames
+    state.setTransform(tf_one->pose.getTransform().inverse() * tf_two->pose.getTransform());    // Pose of tf two in tf one coordinates
+}
+
+void KinematicRobotModelKDL::getState(const std::vector<std::string> &joint_names,
+                                      base::samples::Joints& state){
+
+    state.resize(joint_names.size());
+    state.names = joint_names;
+
+    for(uint i = 0; i < joint_names.size(); i++){
+        uint idx;
+        try{
+           idx = current_joint_state.mapNameToIndex(joint_names[i]);
+        }
+        catch(std::exception e){
+            LOG_ERROR("Requesting state of joint %s but this joint is not in joint state vector of robot model",
+                      joint_names[i].c_str());
+            throw std::invalid_argument("Invalid joint name");
+        }
+        state[i] = current_joint_state[idx];
     }
 }
 

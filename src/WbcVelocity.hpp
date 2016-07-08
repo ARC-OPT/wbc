@@ -38,6 +38,22 @@ public:
     virtual void setupOptProblem(const std::vector<TaskFrame*> &task_frames,
                                  OptProblem &opt_problem);
 
+    /**
+     * @brief updateConstraint Update a joint space constraint.
+     * @param name Name of the constraint
+     * @param reference Reference input.
+     */
+    virtual void setReference(const std::string &name,
+                              const base::commands::Joints& reference);
+
+    /**
+     * @brief updateConstraint Update a Cartesian space constraint
+     * @param name Name of the constraint
+     * @param reference Reference input.
+     */
+    virtual void setReference(const std::string &name,
+                              const base::samples::RigidBodyState& reference);
+
     void evaluateConstraints(const base::VectorXd& solver_output,
                              const base::VectorXd& robot_vel);
 

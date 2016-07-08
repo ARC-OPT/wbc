@@ -15,7 +15,7 @@ using namespace wbc;
  * Test hierarchical solver with random input data
  */
 
-BOOST_AUTO_TEST_CASE(hierarchical_solver)
+BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
 {
     srand (time(NULL));
 
@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(hierarchical_solver)
         prio_0.y_ref.data()[i] = (rand()%1000)/1000.0;
     prio_0.W.setConstant(1);
 
-    input.priorities.push_back(prio_0);
+    input.prios.push_back(prio_0);
 
     cout<<"\n----------------------- Testing Hierarchical Solver ----------------------"<<endl<<endl;
     cout<<"Number of priorities: "<<ny_per_prio.size()<<endl;
@@ -83,7 +83,7 @@ BOOST_AUTO_TEST_CASE(hierarchical_solver)
 /**
  * Test Kinematic KDL model
  */
-BOOST_AUTO_TEST_CASE(kinematic_model){
+BOOST_AUTO_TEST_CASE(kinematic_model_kdl){
 
     KinematicRobotModelKDL model;
     std::string camera_frame = "kuka_lbr_top_left_camera";
@@ -168,16 +168,6 @@ BOOST_AUTO_TEST_CASE(wbc_velocity){
     cart_constraint.weights    = vector<double>(6,1);
     wbc_config.push_back(cart_constraint);
 
-    // Constraint for Joint Position Control
-    ConstraintConfig jnt_constraint;
-    jnt_constraint.name       = "jnt_pos_ctrl";
-    jnt_constraint.type       = jnt;
-    jnt_constraint.priority   = 1; // lower prio than cart constraint
-    jnt_constraint.activation = 1;
-    jnt_constraint.weights    = vector<double>(1,1);
-    jnt_constraint.joint_names.push_back("kuka_lbr_l_joint_3");
-    wbc_config.push_back(jnt_constraint);
-
     ///// Configure robot model
     ///
 
@@ -214,9 +204,11 @@ BOOST_AUTO_TEST_CASE(wbc_velocity){
     }
 
     BOOST_NOEXCEPT(robot_model.update(cur_joint_pos));
-    TaskFrame* tf = robot_model.getTaskFrame("kuka_lbr_l_tcp");
+    TaskFrame* tf = robot_model.getTaskFrame(cart_constraint.tip);
     BOOST_CHECK(tf);
-    base::VectorXd target_pos = tf->pose.position;
+    base::samples::RigidBodyState target_pose, cur_pose;
+    target_pose.position = tf->pose.position;
+    target_pose.orientation.setIdentity();
 
     for(int i = 0; i < 7; i++)
         cur_joint_pos[i].position = 0.1;
@@ -224,32 +216,36 @@ BOOST_AUTO_TEST_CASE(wbc_velocity){
     base::VectorXd solver_output(7);
     BOOST_NOEXCEPT(robot_model.update(cur_joint_pos));
 
-    Constraint* constraint = wbc.getConstraint("cart_pos_ctrl");
-    BOOST_CHECK(constraint);
-    constraint->weights.segment(3,3).setZero();
+    base::VectorXd weights(6);
+    weights.setOnes();
+    weights.segment(3,3).setZero(); // Set orientation task weights to zero
+    BOOST_NOEXCEPT(wbc.setConstraintWeights(cart_constraint.name, weights));
 
     HierarchicalWeightedLS opt_problem;
     double cycle_time = 0.1;
-
     bool reached = false;
     while(!reached){
 
         robot_model.update(cur_joint_pos);
+        robot_model.getState(cart_constraint.ref_frame, cart_constraint.tip, cur_pose);
 
-        cout<<"Target Pos: "; for(int i = 0; i < 3; i++) cout << target_pos(i)        << " "; cout << endl;
-        cout<<"Cur Pos: "   ; for(int i = 0; i < 3; i++) cout << tf->pose.position(i) << " "; cout << endl << endl;
+        printf("Target Pos: %.4f %.4f %.4f\n", target_pose.position(0), target_pose.position(1), target_pose.position(2));
+        printf("   Cur Pos: %.4f %.4f %.4f\n\n", cur_pose.position(0), cur_pose.position(1), cur_pose.position(2));
 
-        constraint->y_ref.segment(0,3) = target_pos - tf->pose.position;
+        base::samples::RigidBodyState ref;
+        ref.velocity = target_pose.position - cur_pose.position;
+        ref.angular_velocity.setZero();
 
+        BOOST_NOEXCEPT(wbc.setReference(cart_constraint.name, ref));
         BOOST_NOEXCEPT(wbc.setupOptProblem(robot_model.getTaskFrames(), opt_problem));
         BOOST_NOEXCEPT(solver.solve(opt_problem, (Eigen::VectorXd& )solver_output));
 
         for(int i = 0; i < 7; i++)
             cur_joint_pos[i].position += solver_output(i) * cycle_time;
 
-        sleep(cycle_time);
+        usleep(1000*1000*0.3);
 
-        reached = (target_pos - tf->pose.position).norm() < 1e-3;
+        reached = (wbc.getConstraint(cart_constraint.name)->y_ref.norm() < 1e-3);
     }
 }
 

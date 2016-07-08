@@ -36,28 +36,17 @@ public:
     KDL::JntArray joint_positions;
     /** Kinematic associated with the task frame and the base of the robot*/
     KDL::Chain chain;
-    /** Last time sensor a joint state or pose information was updated*/
-    base::Time last_update;
 
     /**
      * @brief Update the task frame with the current joint state.
      * @param joint_state Current joint state. Has to contain at least all joints within the kinematic chain associated with this task frame.
      *                    Names will be mapped to correct indices internally
+     * @param poses Vector of Poses to update one of the segments in the kinematic chain. Source Frame has to be equal to the segments name
+     * @param robot_joint_names Vector with all robot joint names in correct order
      */
-    void updateJoints(const base::samples::Joints &joint_state);
-
-    /**
-     * @brief Update the pose of a particular segment in the kinematic chain
-     * @param segment_pose New segment pose. SourceFrame has to be the same as the segments name.
-     */
-    void updateSegment(const base::samples::RigidBodyState &new_pose);
-
-    /**
-     * @brief Recompute the kinematics information of the task frame. updateJoints has to be called at least once before this is called.
-     * @param robot_joint_names The joint name vector of the complete robot
-     */
-    void recomputeKinematics(const std::vector<std::string> &robot_joint_names);
-
+    void update(const base::samples::Joints &joint_state,
+                const std::vector<base::samples::RigidBodyState>& poses,
+                const std::vector<std::string> &robot_joint_names);
 };
 }
 

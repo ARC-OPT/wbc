@@ -43,6 +43,25 @@ public:
     virtual void update(const base::samples::Joints& joint_state,
                         const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>()) = 0;
 
+
+    /**
+     * @brief getState Return the relative state of two task frames that are defined by source and target frame of the input
+     * @param tf_one_name Name of the first task frame
+     * @param tf_two_name Name of the second task frame
+     * @param state Relative pose (twist and acceleration). E.g. the computed pose will be the second task frame wrt to the first task frame
+     */
+    virtual void getState(const std::string& tf_one_name,
+                          const std::string& tf_two_name,
+                          base::samples::RigidBodyState& state) = 0;
+
+    /**
+     * @brief getState Return the state of the joints given by joint names
+     * @param joint_names Joint names to evaluated
+     * @param state Position, (velocity and acceleration) of the given joints
+     */
+    virtual void getState(const std::vector<std::string> &joint_names,
+                          base::samples::Joints& state) = 0;
+
     /**
      * @brief Add a task frame to the model (see TaskFrame.hpp for details about task frames)
      * @param tf_name Name of the task frame. Has to be a valid frame of the model

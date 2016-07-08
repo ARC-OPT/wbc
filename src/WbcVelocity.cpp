@@ -3,6 +3,7 @@
 #include <base/logging.h>
 #include "common/TaskFrameKDL.hpp"
 #include "common/OptProblem.hpp"
+#include <kdl_conversions/KDLConversions.hpp>
 
 using namespace std;
 
@@ -40,30 +41,16 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     for(uint i = 0; i < joint_names.size(); i++)
         joint_index_map[joint_names[i]] = i;
 
-    // Create Constraints and sort them by priority
-    int max_prio = 0;
-    for(uint i = 0; i < config.size(); i++)
-    {
-        if(config[i].priority < 0)
-        {
-            LOG_ERROR("Constraint Priorities must be >= 0. Constraint priority of constraint '%s'' is %i", config[i].name.c_str(), config[i].priority);
-            return false;
-        }
-        if(config[i].priority > max_prio)
-            max_prio = config[i].priority;
-    }
-    constraints.resize(max_prio + 1);
-    for(uint i = 0; i < config.size(); i++)
-        constraints[config[i].priority].push_back(new KinematicConstraintKDL(config[i], joint_names.size()));
+    std::vector< std::vector<ConstraintConfig> > sorted_config;
+    sortConfigByPriority(config, sorted_config);
 
-    // Erase empty priorities
-    for(uint prio = 0; prio < constraints.size(); prio++)
-    {
-        if(constraints[prio].empty())
-        {
-            constraints.erase(constraints.begin() + prio, constraints.begin() + prio + 1);
-            prio--;
-        }
+    constraints.resize(sorted_config.size());
+    for(size_t i = 0; i < sorted_config.size(); i++){
+
+        constraints[i].resize(sorted_config[i].size());
+
+        for(size_t j = 0; j < sorted_config[i].size(); j++)
+            constraints[i][j] = new KinematicConstraintKDL(sorted_config[i][j], joint_names.size());
     }
 
     LOG_DEBUG("WBC Configuration: \n")
@@ -96,8 +83,8 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
 
     HierarchicalWeightedLS& opt_problem_ls = (HierarchicalWeightedLS& )opt_problem;
 
-    if(opt_problem_ls.priorities.size() != constraints.size())
-        opt_problem_ls.priorities.resize(constraints.size());
+    if(opt_problem_ls.prios.size() != constraints.size())
+        opt_problem_ls.prios.resize(constraints.size());
 
     // Walk through all priorities and update optimzation problem. The outcome will be
     //    A - Vector of constraint matrices. One matrix for each priority
@@ -109,7 +96,7 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
     for(uint prio = 0; prio < constraints.size(); prio++)
     {
         uint n_vars_prio = getConstraintVariablesPerPrio()[prio]; //Number of constraint variables on the whole priority
-        opt_problem_ls.priorities[prio].resize(n_vars_prio, joint_index_map.size());
+        opt_problem_ls.prios[prio].resize(n_vars_prio, joint_index_map.size());
 
         //Walk through all tasks of current priority
         uint row_index = 0;
@@ -120,7 +107,7 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
 
             //Check task timeout
             if(constraint->config.timeout > 0){
-                double diff = (base::Time::now() - constraint->last_ref_input).toSeconds();
+                double diff = (base::Time::now() - constraint->time).toSeconds();
 
                 if(diff > constraint->config.timeout)
                     constraint->constraint_timed_out = 1;
@@ -221,13 +208,72 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
             }
 
             // Insert constraints into equation system of current priority at the correct position
-            opt_problem_ls.priorities[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->constraint_timed_out);
-            opt_problem_ls.priorities[prio].A.block(row_index, 0, n_vars, joint_index_map.size()) = constraint->A;
-            opt_problem_ls.priorities[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
+            opt_problem_ls.prios[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->constraint_timed_out);
+            opt_problem_ls.prios[prio].A.block(row_index, 0, n_vars, joint_index_map.size()) = constraint->A;
+            opt_problem_ls.prios[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
 
             row_index += n_vars;
         }
     }
+}
+
+void WbcVelocity::setReference(const std::string &name,
+                               const base::commands::Joints& reference){
+
+    Constraint* constraint = getConstraint(name);
+
+    if(constraint->config.type != jnt){
+        LOG_ERROR("Reference input of constraint %s is in joint space but constraint is Cartesian", constraint->config.name.c_str());
+        throw std::invalid_argument("Invalid reference input");
+    }
+    if(reference.size() != constraint->no_variables){
+        LOG_ERROR("Size for joint reference of constraint %s should be %i but is %i",
+                  name.c_str(), constraint->no_variables, reference.size());
+        throw std::invalid_argument("Invalid reference input");
+    }
+
+    constraint->time = reference.time; // This value will also be used for checking the constraint timeout!
+
+    for(uint i = 0; i < constraint->config.joint_names.size(); i++){
+        uint idx;
+        try{
+            idx = reference.mapNameToIndex(constraint->config.joint_names[i]);
+        }
+        catch(std::exception e){
+            LOG_ERROR("Constraint with name %s expects joint %s, but this joint is not in reference vector!",
+                      name.c_str(), constraint->config.joint_names[i].c_str());
+            throw std::invalid_argument("Invalid reference input");
+        }
+
+        if(!reference[idx].hasSpeed()){
+            LOG_ERROR("Reference input for joint %s of constraint %s has no speed value",
+                      constraint->config.joint_names[i].c_str(), name.c_str());
+            throw std::invalid_argument("Invalid reference input");
+        }
+
+        constraint->y_ref(i) = reference[idx].speed;
+    }
+}
+
+void WbcVelocity::setReference(const std::string &name,
+                               const base::samples::RigidBodyState& reference){
+
+    Constraint* constraint = getConstraint(name);
+
+    if(constraint->config.type != cart){
+        LOG_ERROR("Reference input of constraint %s is Cartesian but constraint is in joint space", name.c_str());
+        throw std::invalid_argument("Invalid reference input");
+    }
+    if(!reference.hasValidVelocity() ||
+       !reference.hasValidAngularVelocity()){
+        LOG_ERROR("Reference input of constraint %s has invalid velocity and/or angular velocity", name.c_str());
+        throw std::invalid_argument("Invalid reference input");
+    }
+
+    constraint->time = reference.time;
+
+    constraint->y_ref.segment(0,3) = reference.velocity;
+    constraint->y_ref.segment(3,3) = reference.angular_velocity;
 }
 
 void WbcVelocity::evaluateConstraints(const base::VectorXd& solver_output,

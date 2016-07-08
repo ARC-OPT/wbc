@@ -2,6 +2,8 @@
 #define WBC_HPP
 
 #include "common/ConstraintConfig.hpp"
+#include <base/samples/RigidBodyState.hpp>
+#include <base/commands/Joints.hpp>
 
 namespace wbc{
 
@@ -32,11 +34,41 @@ public:
                            const std::vector<std::string> &joint_names) = 0;
 
     /**
-     * @brief setupEquationSystem Given all required task frames, this will setup the equation system for the constraint solver
+     * @brief Given all required task frames, this will setup the equation system for the constraint solver
      * @param task_frames A map of task
      * @param equations
      */
     virtual void setupOptProblem(const std::vector<TaskFrame*> &task_frames, OptProblem &opt_problem) = 0;
+
+    /**
+     * @brief Update a joint space constraint.
+     * @param name Name of the constraint
+     * @param reference Reference input.
+     */
+    virtual void setReference(const std::string &name,
+                              const base::commands::Joints& reference) = 0;
+
+    /**
+     * @brief Update a Cartesian space constraint
+     * @param name Name of the constraint
+     * @param reference Reference input.
+     */
+    virtual void setReference(const std::string &name,
+                              const base::samples::RigidBodyState& reference) = 0;
+
+    /**
+     * @brief Update the weights of a particular constraint
+     * @param weights Weight Vector. Size has to be same as number of constraint variables. Values have to be >= 0
+     */
+    void setConstraintWeights(const std::string &name,
+                              const base::VectorXd& weights);
+
+    /**
+     * @brief Update the activation of a particular constraint
+     * @param activation Activation value. Has to be >= 0 and <= 1
+     */
+    void setConstraintActivation(const std::string &name,
+                                    const double activation);
 
     /**
      * @brief Return a Particular constraint
@@ -68,6 +100,13 @@ public:
      * @brief getNumberOfPriorities Returns number of priority levels
      */
     size_t getNumberOfPriorities(){return constraints.size();}
+
+    /**
+     * @brief sortConfigByPriority
+     * @param config
+     * @param sorted_config
+     */
+    static void sortConfigByPriority(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config);
 };
 }
 

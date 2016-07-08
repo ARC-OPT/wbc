@@ -76,8 +76,8 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, Eigen:
     HierarchicalWeightedLS& opt_problem_ls = (HierarchicalWeightedLS& )opt_problem;
 
     // Check valid input
-    if(opt_problem_ls.priorities.size() != priorities.size()){
-        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), opt_problem_ls.priorities.size());
+    if(opt_problem_ls.prios.size() != priorities.size()){
+        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), opt_problem_ls.prios.size());
         throw std::invalid_argument("Invalid solver input");
     }
 
@@ -91,7 +91,7 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, Eigen:
 
     for(uint prio = 0; prio < priorities.size(); prio++){
 
-        const WeightedLS& opt_problem_prio = ((HierarchicalWeightedLS& )opt_problem).priorities[prio];
+        const WeightedLS& opt_problem_prio = ((HierarchicalWeightedLS& )opt_problem).prios[prio];
 
         if(opt_problem_prio.A.rows()     != priorities[prio].n_constraint_variables ||
            opt_problem_prio.A.cols()     != no_of_joints ||
