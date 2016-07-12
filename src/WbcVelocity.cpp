@@ -36,6 +36,16 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     // Erase constraints, jacobians and joint indices
     clear();
 
+    // Check if constraint names are unique
+    std::map<std::string, int> constraint_name_map;
+    for(size_t i = 0; i < config.size(); i++){
+        if(constraint_name_map.count(config[i].name) > 0){
+            LOG_ERROR("Constraint with name %s exists more than once in wbc config", config[i].name.c_str());
+            return false;
+        }
+        constraint_name_map[config[i].name] = i;
+    }
+
     // Create joint index map. This defines the order of the joints in the task Jacobians computed here. Note
     // that the order of joints in the task frames can be different.
     for(uint i = 0; i < joint_names.size(); i++)
