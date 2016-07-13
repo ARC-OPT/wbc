@@ -36,6 +36,15 @@ bool WbcVelocity::configure(const std::vector<ConstraintConfig> &config,
     // Erase constraints, jacobians and joint indices
     clear();
 
+    if(config.empty()){
+        LOG_ERROR("Constraint Configuration is empty!");
+        return false;
+    }
+    if(joint_names.empty()){
+        LOG_ERROR("Joint name vector is empty");
+        return false;
+    }
+
     // Check if constraint names are unique
     std::map<std::string, int> constraint_name_map;
     for(size_t i = 0; i < config.size(); i++){
