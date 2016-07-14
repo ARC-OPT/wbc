@@ -13,21 +13,19 @@ KinematicRobotModelKDL::KinematicRobotModelKDL(){
 }
 
 
-bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& _robot_model_config,
-                                       const std::vector<std::string>& _task_frame_ids,
+bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& robot_model_config,
+                                       const std::vector<std::string>& task_frame_ids,
                                        const std::string &_base_frame){
 
     clear();
-
-    robot_model_config = _robot_model_config;
 
     for(size_t i = 0; i < robot_model_config.size(); i++){
         if(!loadURDFModel(robot_model_config[i]))
             return false;
     }
 
-    for(size_t i = 0; i < _task_frame_ids.size(); i++)
-        if(!addTaskFrame(_task_frame_ids[i]))
+    for(size_t i = 0; i < task_frame_ids.size(); i++)
+        if(!addTaskFrame(task_frame_ids[i]))
             return false;
 
     base_frame = _base_frame;
@@ -95,7 +93,6 @@ bool KinematicRobotModelKDL::hasFrame(const std::string &name){
 }
 
 void KinematicRobotModelKDL::clear(){
-    robot_model_config.clear();
     current_joint_state.clear();
     joint_index_map.clear();
     joint_names.clear();
