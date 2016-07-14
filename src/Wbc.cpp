@@ -1,6 +1,7 @@
 #include "Wbc.hpp"
 #include "common/Constraint.hpp"
 #include "common/TaskFrame.hpp"
+#include <map>
 
 namespace wbc{
 
@@ -56,6 +57,16 @@ Constraint* Wbc::getConstraint(const std::string& name){
     }
     LOG_ERROR("No such constraint: %s", name.c_str());
     throw std::invalid_argument("Invalid constraint name");
+}
+
+bool Wbc::hasConstraint(const std::string &name){
+    for(size_t i = 0; i < constraints.size(); i++){
+        for(size_t j = 0; j < constraints[i].size(); j++){
+            if(constraints[i][j]->config.name == name)
+                return true;
+        }
+    }
+    return false;
 }
 
 std::vector<int> Wbc::getConstraintVariablesPerPrio(){
@@ -120,6 +131,26 @@ void Wbc::sortConfigByPriority(const std::vector<ConstraintConfig>& config, std:
             i--;
         }
     }
+}
+
+bool Wbc::isValid(const std::vector<ConstraintConfig> &config){
+
+    // Check if constraint names are unique
+    std::map<std::string, int> constraint_name_map;
+    for(size_t i = 0; i < config.size(); i++){
+        if(constraint_name_map.count(config[i].name) > 0){
+            LOG_ERROR("Constraint with name %s exists more than once in wbc config", config[i].name.c_str());
+            return false;
+        }
+        constraint_name_map[config[i].name] = i;
+    }
+
+    for(size_t i = 0; i < config.size(); i++){
+        if(!config[i].isValid())
+            return false;
+    }
+
+    return true;
 }
 
 }

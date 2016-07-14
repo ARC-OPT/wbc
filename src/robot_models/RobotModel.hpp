@@ -3,6 +3,7 @@
 
 #include <vector>
 #include <string>
+#include "RobotModelConfig.hpp"
 
 namespace base{
     namespace samples{
@@ -14,7 +15,6 @@ namespace base{
 namespace wbc{
 
 class TaskFrame;
-class RobotModelConfig;
 
 /**
  * @brief Interface for all robot models. Contains all task frames.
@@ -27,14 +27,18 @@ protected:
     std::vector<std::string> joint_names;
 
 public:
-    RobotModel(const std::string& _base_frame = "");
+    RobotModel();
     virtual ~RobotModel();
 
     /**
-     * @brief Load a model and add it to the overall robot model, e.g. another robot or an object attached to the robot.
-     * @param RobotModelConfig Config of the robot model
+     * @brief configure Configure the robot model.
+     * @param robot_model_config Vector of models that will be added to the overall model.
+     * @param task_frame_ids IDs of all task frames that are required for the task
+     * @return true in case of success, fals otherwise
      */
-    virtual bool loadModel(const RobotModelConfig& config) = 0;
+    virtual bool configure(const std::vector<RobotModelConfig>& _robot_model_config,
+                           const std::vector<std::string>& _task_frame_ids,
+                           const std::string &_base_frame) = 0;
 
     /**
      * @brief Update all task frames with a new joint state.
@@ -42,7 +46,6 @@ public:
      */
     virtual void update(const base::samples::Joints& joint_state,
                         const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>()) = 0;
-
 
     /**
      * @brief getState Return the relative state of two task frames that are defined by source and target frame of the input
@@ -63,23 +66,6 @@ public:
                           base::samples::Joints& state) = 0;
 
     /**
-     * @brief Add a task frame to the model (see TaskFrame.hpp for details about task frames)
-     * @param tf_name Name of the task frame. Has to be a valid frame of the model
-     * @return True in case of success, false otherwise (e.g. if the task frame already exists)
-     */
-    bool addTaskFrame(const std::string& tf_name );
-
-    /**
-     * @brief Add multiple Task Frames
-     */
-    bool addTaskFrames(const std::vector<std::string> &tf_names);
-
-    /**
-     * @brief Remove the task frame with the given name. Will do nothing if the task frame does not exist
-     */
-    void removeTaskFrame(const std::string &tf_name);
-
-    /**
      * @brief Return a task frame with the given name. Will throw in case the task frame id does not exist
      */
     TaskFrame* getTaskFrame(const std::string& name);
@@ -98,14 +84,6 @@ public:
      * @brief getJointNames Return all joint names relevant for the configured task frames
      */
     std::vector<std::string> getJointNames(){return joint_names;}
-
-protected:
-    /**
-     * @brief Create a task frame that is specific for the implemented model type
-     * @param tf_name Name of the task frame. Has to be a valid frame of the model
-     * @return Pointer to the task frame, or 0 in case of failure
-     */
-    virtual TaskFrame* createTaskFrame(const std::string &tf_name) = 0;
 };
 }
 

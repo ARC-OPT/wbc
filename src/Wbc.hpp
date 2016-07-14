@@ -71,9 +71,14 @@ public:
                                     const double activation);
 
     /**
-     * @brief Return a Particular constraint
+     * @brief Return a Particular constraint. Throw if the constraint does not exist
      */
     Constraint* getConstraint(const std::string& name);
+
+    /**
+     * @brief hasConstraint True in case the given constraint exists
+     */
+    bool hasConstraint(const std::string& name);
 
     /**
      * @brief Return all constraints as vector
@@ -102,11 +107,16 @@ public:
     size_t getNumberOfPriorities(){return constraints.size();}
 
     /**
-     * @brief sortConfigByPriority
-     * @param config
-     * @param sorted_config
+     * @brief sortConfigByPriority Sort WBC config by the priorities of the constraints
+     * @param config input config
+     * @param sorted_config output config
      */
     static void sortConfigByPriority(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config);
+
+    /**
+     * @brief isValid Check if the given WBC config is valid
+     */
+    static bool isValid(const std::vector<ConstraintConfig>& config);
 };
 }
 

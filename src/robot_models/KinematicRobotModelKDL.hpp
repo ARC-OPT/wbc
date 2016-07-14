@@ -23,22 +23,19 @@ protected:
     base::samples::Joints current_joint_state;
 
 public:
-    KinematicRobotModelKDL(const std::string& _base_frame = "");
+    KinematicRobotModelKDL();
     virtual ~KinematicRobotModelKDL(){}
 
     /**
-     * @brief Load a model and add it to the overall robot model, e.g. another robot or an object attached to the robot. Within this
-     *        implementation, the model will be represented as KDL tree.
-     * @param RobotModelConfig Config of the robot model.
-     *            - file: Has to be the full path of a URDF model file. Will be parsed into a KDL tree. If the overall tree
-     *                    is empty (i.e. if loadModel is called for the first time), the overall tree will be equal to the new
-     *                    tree afterwards. Otherwise the new tree will be attached to the overall tree.
-     *            - hook: The KDL segment name to which the new tree will be attached. Can be left empty if loadModel() is called
-     *                    for the first time
-     *            - initial_pose: Initial pose of the new KDL tree with respect to the given hook frame. Will be ignored if loadModel()
-     *                            is called for the first time
+     * @brief Load all robot models and add them to the overall KDL tree. Also, add all task frames.
+     * @param robot_model_config Config of the robot models. For each element in this vector loadURDFModel() will be called
+     * @param task_frame_ids IDs of all task frames that are required. For each element in this vector addTaskFrame will be called.
+     * @return True in case of success, false otherwise
      */
-    virtual bool loadModel(const RobotModelConfig& config);
+    virtual bool configure(const std::vector<RobotModelConfig>& robot_model_config,
+                           const std::vector<std::string>& task_frame_ids,
+                           const std::string &_base_frame);
+
 
     /**
      * @brief Update all task frames in the model with a new joint state and (optionally) new link states
@@ -78,11 +75,33 @@ public:
 protected:
     /**
      * @brief Add a task frame to the model (see TaskFrame.hpp for details about task frames)
-     * @param tf_name Name of the task frame. Has to be a valid frame of the model. This method will try to create a kinematic
+     * @param tf_name Name of the task frame. Has to be a valid frame of the KDL tree. This method will try to create a kinematic
      *                chain between the robot base frame and the task frame.
      * @return True in case of success, false otherwise (e.g. if the task frame already exists)
      */
-    virtual TaskFrame* createTaskFrame(const std::string &tf_name);
+    bool addTaskFrame(const std::string &tf_name);
+
+    /**
+     * @brief loadURDFModel Load a URDF model and add it to frame denoted by <hook>. If the KDL tree is empty, it will be replaced by the
+     *                      Tree parsed from this URDF model
+     * @param model Robot model config. Each config has the following members:
+     *
+     *            - file: Has to be the full path of a URDF model file. Will be parsed into a KDL tree. If the overall tree
+     *                    is empty (i.e. if loadModel is called for the first time), the overall tree will be equal to the new
+     *                    tree afterwards. Otherwise the new tree will be attached to the overall tree.
+     *            - hook: The KDL segment name to which the new tree will be attached. Can be left empty if loadModel() is called
+     *                    for the first time
+     *            - initial_pose: Initial pose of the new KDL tree with respect to the given hook frame. Will be ignored if loadModel()
+     *                            is called for the first time
+     *
+     * @return True in case of success, false otherwise (e.g. if the urdf model cannot be parsed)
+     */
+    bool loadURDFModel(const RobotModelConfig& model);
+
+    /**
+     * Cleanup, so that the robot model can be configured again
+     */
+    void clear();
 };
 
 }
