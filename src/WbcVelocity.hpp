@@ -2,7 +2,7 @@
 #define WBCVELOCITY_HPP
 
 #include "Wbc.hpp"
-#include "common/KinematicConstraintKDL.hpp"
+#include "KinematicConstraintKDL.hpp"
 #include <map>
 
 namespace wbc{

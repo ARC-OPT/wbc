@@ -2,7 +2,7 @@
 #include <base/Logging.hpp>
 #include <base/samples/RigidBodyState.hpp>
 #include <base/samples/Joints.hpp>
-#include "../common/TaskFrame.hpp"
+#include "TaskFrame.hpp"
 
 namespace wbc{
 

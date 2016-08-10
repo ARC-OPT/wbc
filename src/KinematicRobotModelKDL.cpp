@@ -1,5 +1,5 @@
 #include "KinematicRobotModelKDL.hpp"
-#include "../common/TaskFrameKDL.hpp"
+#include "TaskFrameKDL.hpp"
 #include <base/Logging.hpp>
 #include <kdl_conversions/KDLConversions.hpp>
 #include <kdl_parser/kdl_parser.hpp>

@@ -1,6 +1,6 @@
 #include "Wbc.hpp"
-#include "common/Constraint.hpp"
-#include "common/TaskFrame.hpp"
+#include "Constraint.hpp"
+#include "TaskFrame.hpp"
 #include <map>
 
 namespace wbc{

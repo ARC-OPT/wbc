@@ -1,7 +1,7 @@
 #ifndef WBC_HPP
 #define WBC_HPP
 
-#include "common/ConstraintConfig.hpp"
+#include "ConstraintConfig.hpp"
 #include <base/samples/RigidBodyState.hpp>
 #include <base/commands/Joints.hpp>
 
