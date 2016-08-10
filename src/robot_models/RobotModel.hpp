@@ -34,11 +34,13 @@ public:
      * @brief configure Configure the robot model.
      * @param robot_model_config Vector of models that will be added to the overall model.
      * @param task_frame_ids IDs of all task frames that are required for the task
+     * @param joint_names Optionally set the order of joint names within the model
      * @return true in case of success, fals otherwise
      */
     virtual bool configure(const std::vector<RobotModelConfig>& _robot_model_config,
                            const std::vector<std::string>& _task_frame_ids,
-                           const std::string &_base_frame) = 0;
+                           const std::string &_base_frame,
+                           const std::vector<std::string>& _joint_names) = 0;
 
     /**
      * @brief Update all task frames with a new joint state.

@@ -15,7 +15,8 @@ KinematicRobotModelKDL::KinematicRobotModelKDL(){
 
 bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& robot_model_config,
                                        const std::vector<std::string>& task_frame_ids,
-                                       const std::string &_base_frame){
+                                       const std::string &_base_frame,
+                                       const std::vector<std::string>& _joint_names){
 
     clear();
 
@@ -31,17 +32,21 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& robo
     base_frame = _base_frame;
 
     // Add all joint names of all task frames to the joint names vector
-    for(size_t i = 0; i < task_frames.size(); i++){
+    if(_joint_names.empty()){
+        for(size_t i = 0; i < task_frames.size(); i++){
 
-        TaskFrame* tf = task_frames[i];
+            TaskFrame* tf = task_frames[i];
 
-        for(size_t j = 0; j < tf->joint_names.size(); j++){
+            for(size_t j = 0; j < tf->joint_names.size(); j++){
 
-            // Only add joint name if it is not yet in joint name vector
-            if (std::find(joint_names.begin(), joint_names.end(), tf->joint_names[j]) == joint_names.end())
-                joint_names.push_back(tf->joint_names[j]);
+                // Only add joint name if it is not yet in joint name vector
+                if (std::find(joint_names.begin(), joint_names.end(), tf->joint_names[j]) == joint_names.end())
+                    joint_names.push_back(tf->joint_names[j]);
+            }
         }
     }
+    else
+        joint_names = _joint_names;
 
     return true;
 }

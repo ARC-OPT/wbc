@@ -27,14 +27,16 @@ public:
     virtual ~KinematicRobotModelKDL(){}
 
     /**
-     * @brief Load all robot models and add them to the overall KDL tree. Also, add all task frames.
-     * @param robot_model_config Config of the robot models. For each element in this vector loadURDFModel() will be called
-     * @param task_frame_ids IDs of all task frames that are required. For each element in this vector addTaskFrame will be called.
-     * @return True in case of success, false otherwise
+     * @brief configure Configure the robot model.
+     * @param robot_model_config Vector of models that will be added to the overall model.
+     * @param task_frame_ids IDs of all task frames that are required for the task
+     * @param joint_names Optionally set the order of joint names within the model
+     * @return true in case of success, fals otherwise
      */
     virtual bool configure(const std::vector<RobotModelConfig>& robot_model_config,
                            const std::vector<std::string>& task_frame_ids,
-                           const std::string &_base_frame);
+                           const std::string &_base_frame,
+                           const std::vector<std::string>& _joint_names);
 
 
     /**
