@@ -57,6 +57,7 @@ public:
 
     void reset();
 };
+typedef std::vector<Constraint> ConstraintsPerPrio;
 
 }
 #endif
