@@ -101,7 +101,7 @@ void TaskFrameKDL::update(const base::samples::Joints &joint_state,
         const std::string& jt_name =  joint_names[j];
         int idx = std::find(robot_joint_names.begin(), robot_joint_names.end(), jt_name) - robot_joint_names.begin();
 
-        if(idx >= (int)joint_names.size())
+        if(idx >= (int)robot_joint_names.size())
         {
             LOG_ERROR("Joint with id %s does not exist in robot joint names!", jt_name.c_str());
             throw std::invalid_argument("Invalid joint name");
