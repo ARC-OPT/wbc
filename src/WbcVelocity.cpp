@@ -1,7 +1,7 @@
 #include "WbcVelocity.hpp"
 #include "ExtendedConstraint.hpp"
 #include <kdl/utilities/svd_eigen_HH.hpp>
-#include <base/logging.h>
+#include <base-logging/Logging.hpp>
 
 using namespace std;
 

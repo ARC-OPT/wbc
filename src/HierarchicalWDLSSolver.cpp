@@ -1,9 +1,9 @@
 #include "HierarchicalWDLSSolver.hpp"
-#include <base/logging.h>
+#include <base-logging/Logging.hpp>
 #include <iostream>
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <kdl/utilities/svd_eigen_Macie.hpp>
-#include <base/time.h>
+#include <base/Time.hpp>
 
 using namespace std;
 

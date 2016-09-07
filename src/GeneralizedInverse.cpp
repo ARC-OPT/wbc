@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include <algorithm>
-#include <base/time.h>
+#include <base/Time.hpp>
 
 
 namespace wbc{
