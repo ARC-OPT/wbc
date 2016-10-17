@@ -1,6 +1,6 @@
 #include "WbcVelocity.hpp"
 #include <kdl/utilities/svd_eigen_HH.hpp>
-#include <base/logging.h>
+#include <base/Logging.hpp>
 #include "TaskFrameKDL.hpp"
 #include "OptProblem.hpp"
 #include <kdl_conversions/KDLConversions.hpp>

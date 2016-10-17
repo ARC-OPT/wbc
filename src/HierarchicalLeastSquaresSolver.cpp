@@ -1,5 +1,5 @@
 #include "HierarchicalLeastSquaresSolver.hpp"
-#include <base/logging.h>
+#include <base/Logging.hpp>
 #include <kdl/utilities/svd_eigen_HH.hpp>
 #include "OptProblem.hpp"
 #include <stdexcept>

@@ -3,10 +3,10 @@
 
 #include <base/Eigen.hpp>
 #include "ConstraintConfig.hpp"
-#include <base/time.h>
+#include <base/Time.hpp>
 #include <base/samples/RigidBodyState.hpp>
 #include <base/samples/Joints.hpp>
-#include <base/logging.h>
+#include <base/Logging.hpp>
 
 namespace wbc{
 
