@@ -57,7 +57,6 @@ void TaskFrameKDL::update(const base::samples::Joints &joint_state,
     for(size_t i = 0; i < poses.size(); i++){
 
         kdl_conversions::RigidBodyState2KDL(poses[i], new_pose_kdl);
-        bool has_segment = false;
 
         for(uint j = 0; j < chain.getNrOfSegments(); j++){
 
@@ -66,12 +65,7 @@ void TaskFrameKDL::update(const base::samples::Joints &joint_state,
                                                  KDL::Joint(KDL::Joint::None),
                                                  new_pose_kdl);
                 last_update = poses[i].time;
-                has_segment = true;
             }
-        }
-        if(!has_segment){
-            LOG_ERROR("Trying to update pose of segment %s, but this segment does not exist in chain", poses[i].sourceFrame.c_str());
-            throw std::invalid_argument("Invalid segment pose");
         }
     }
 
