@@ -2,6 +2,7 @@
 #define WBC_HPP
 
 #include "ConstraintConfig.hpp"
+#include "Constraint.hpp"
 #include <base/samples/RigidBodyState.hpp>
 #include <base/commands/Joints.hpp>
 
@@ -19,6 +20,7 @@ class TaskFrame;
 class Wbc{
 protected:
     std::vector< std::vector<Constraint*> > constraints;
+    std::vector< ConstraintsPerPrio > constraint_vector;
 
 public:
     Wbc();
@@ -83,7 +85,7 @@ public:
     /**
      * @brief Return all constraints as vector
      */
-    std::vector< std::vector<Constraint*> > getConstraints(){return constraints;}
+    std::vector< ConstraintsPerPrio > getConstraints();
 
     /**
      * @brief Returns the number of constraint variables per priority

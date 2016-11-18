@@ -59,6 +59,16 @@ Constraint* Wbc::getConstraint(const std::string& name){
     throw std::invalid_argument("Invalid constraint name");
 }
 
+std::vector<ConstraintsPerPrio> Wbc::getConstraints(){
+    constraint_vector.resize(constraints.size());
+    for(size_t i = 0; i < constraints.size(); i++){
+        constraint_vector[i].resize(constraints[i].size());
+        for(size_t j = 0; j < constraints[i].size(); j++)
+            constraint_vector[i][j] = *constraints[i][j];
+    }
+    return constraint_vector;
+}
+
 bool Wbc::hasConstraint(const std::string &name){
     for(size_t i = 0; i < constraints.size(); i++){
         for(size_t j = 0; j < constraints[i].size(); j++){
