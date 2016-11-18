@@ -190,19 +190,19 @@ void WbcVelocity::setupOptProblem(const std::vector<TaskFrame*> &task_frames, Op
                     constraint->weights_root(i) = fabs(tmp_twist(i)); //Take absolute value of weight, since weights must be positive
             }
             else{
-                for(uint i = 0; i < constraint->config.joint_names.size(); i++){
+                for(uint k = 0; k < constraint->config.joint_names.size(); k++){
 
                     //Joint space constraints: constraint matrix has only ones and Zeros
                     //IMPORTANT: The joint order in the constraints might be different than in wbc.
                     //Thus, for joint space constraints, the joint indices have to be mapped correctly.
-                    const std::string &joint_name = constraint->config.joint_names[i];
+                    const std::string &joint_name = constraint->config.joint_names[k];
                     if(joint_index_map.count(joint_name) == 0)
                     {
                         LOG_ERROR("Constraint %s contains joint %s, but this joint has not been configured in joint names", constraint->config.name.c_str(), joint_name.c_str());
                         throw std::invalid_argument("Invalid Constraint config");
                     }
                     uint idx = joint_index_map[joint_name];
-                    constraint->A(i,idx) = 1.0;
+                    constraint->A(k,idx) = 1.0;
                     constraint->y_ref_root = constraint->y_ref; // In joint space, y_ref is of yourse equal to y_ref_root
                 }
             }
@@ -299,5 +299,4 @@ void WbcVelocity::evaluateConstraints(const base::VectorXd& solver_output,
         }
     }
 }
-
 }
