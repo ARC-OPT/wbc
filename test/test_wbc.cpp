@@ -2,11 +2,11 @@
 #include <boost/test/unit_test.hpp>
 #include <kdl_parser/kdl_parser.hpp>
 #include "../src/WbcVelocity.hpp"
-#include "../src/solvers/HierarchicalLeastSquaresSolver.hpp"
-#include "../src/robot_models/KinematicRobotModelKDL.hpp"
-#include "../src/common/OptProblem.hpp"
-#include "../src/robot_models/RobotModelConfig.hpp"
-#include "../src/common/TaskFrame.hpp"
+#include "../src/HierarchicalLeastSquaresSolver.hpp"
+#include "../src/KinematicRobotModelKDL.hpp"
+#include "../src/OptProblem.hpp"
+#include "../src/RobotModelConfig.hpp"
+#include "../src/TaskFrame.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -80,71 +80,6 @@ BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
     cout<<"\n............................."<<endl;
 }
 
-/**
- * Test Kinematic KDL model
- */
-BOOST_AUTO_TEST_CASE(kinematic_model_kdl){
-
-    KinematicRobotModelKDL model;
-    std::string camera_frame = "kuka_lbr_top_left_camera";
-
-    std::string robot_urdf_path  = "../../data/kuka_lbr.urdf";
-    RobotModelConfig robot_model(robot_urdf_path);
-
-    std::string object_urdf_path = "../../data/object.urdf";
-    base::samples::RigidBodyState initial_pose;
-    initial_pose.setTransform(Eigen::Affine3d::Identity());
-    RobotModelConfig object_model(object_urdf_path, camera_frame, initial_pose);
-
-    std::cout<<"Loading robot model ..."<<std::endl<<std::endl;
-    BOOST_CHECK(model.loadModel(robot_model) == true);
-    std::cout<<"Attaching object model to " << camera_frame <<"..."<<std::endl<<std::endl;
-    BOOST_CHECK(model.loadModel(object_model) == true);
-    BOOST_CHECK(model.hasTaskFrame("object") == false);
-    BOOST_CHECK(model.addTaskFrame("object") == true);
-
-    TaskFrame *tf = model.getTaskFrame("object");
-
-    base::samples::Joints joint_state;
-    joint_state.resize(tf->joint_names.size());
-    joint_state.names = tf->joint_names;
-    for(uint i = 0; i < tf->joint_names.size(); i++)
-        joint_state[i].position = 0;
-    model.update(joint_state);
-
-    std::cout<<"Object Pose in robot base frame: "<<std::endl;
-    std::cout<<"Position: "<<std::endl;
-    std::cout<<tf->pose.position<<std::endl;
-    std::cout<<"Orientation(qx,qy,qz,qw): "<<std::endl;
-    std::cout<<tf->pose.orientation.x()<<""<<tf->pose.orientation.y()<<" "<<tf->pose.orientation.z()<<" "<<tf->pose.orientation.w()<<std::endl<<std::endl;
-
-    base::samples::RigidBodyState old_pose = tf->pose;
-
-    base::samples::RigidBodyState segment_pose;
-    segment_pose.sourceFrame = "object";
-    segment_pose.position.setZero();
-    segment_pose.position(2) = 0.5;
-    segment_pose.orientation.setIdentity();
-    std::vector<base::samples::RigidBodyState> poses;
-    poses.push_back(segment_pose);
-
-    std::cout<<"Moving object (in camera coordinates) by:"<<std::endl;
-    std::cout<<segment_pose.position <<std::endl<<std::endl;
-
-    model.update(joint_state, poses);
-
-    std::cout<<"New Object Pose in robot base: "<<std::endl;
-    std::cout<<"Position: "<<std::endl;
-    std::cout<<tf->pose.position<<std::endl;
-    std::cout<<"Orientation(qx,qy,qz,qw): "<<std::endl;
-    std::cout<<tf->pose.orientation.x()<<" "<<tf->pose.orientation.y()<<" "<<tf->pose.orientation.z()<<" "<<tf->pose.orientation.w()<<std::endl<<std::endl;
-
-    std::cout<<"Distance initial pose --> new pose is: "<<std::endl;
-    std::cout<<(tf->pose.position - old_pose.position).norm()<<std::endl;
-
-    BOOST_CHECK( (segment_pose.position.norm() - (tf->pose.position - old_pose.position).norm()) < 1e-9 );
-}
-
 BOOST_AUTO_TEST_CASE(wbc_velocity){
 
     WbcVelocity wbc;
@@ -172,8 +107,14 @@ BOOST_AUTO_TEST_CASE(wbc_velocity){
     ///
 
     RobotModelConfig robot_model_cfg("../../data/kuka_lbr.urdf");
-    BOOST_CHECK(robot_model.loadModel(robot_model_cfg) == true);
-    BOOST_CHECK(robot_model.addTaskFrames(wbc.getTaskFrameIDs(wbc_config)) == true);
+    std::vector<RobotModelConfig> models;
+    models.push_back(robot_model_cfg);
+
+    std::vector<std::string> task_frames;
+    task_frames.push_back("kuka_lbr_center");
+    task_frames.push_back("kuka_lbr_top_left_camera");
+
+    BOOST_CHECK(robot_model.configure(models, wbc.getTaskFrameIDs(wbc_config), "kuka_lbr_base", std::vector<std::string>()) == true);
 
     cout<<"Configured robot model ..."<<endl;
 
