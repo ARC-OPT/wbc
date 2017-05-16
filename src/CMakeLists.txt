@@ -6,6 +6,6 @@ file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src
     "*.hpp"
 )
 rock_library(wbc
-    SOURCES ${SOURCES}
+    SOURCES ${SOURCES} ${HEADERS}
     HEADERS ${HEADERS}
     DEPS_PKGCONFIG orocos-kdl base-lib kdl_conversions kdl_parser)

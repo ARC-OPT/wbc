@@ -2,6 +2,7 @@
 #include "Constraint.hpp"
 #include "TaskFrame.hpp"
 #include <map>
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 

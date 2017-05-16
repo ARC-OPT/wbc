@@ -93,17 +93,6 @@ public:
     std::vector<int> getConstraintVariablesPerPrio();
 
     /**
-     * @brief getTaskFrameIDs Given the WBC config, this methods returns all required task frames
-     */
-    std::vector<std::string> getTaskFrameIDs(const std::vector<ConstraintConfig> &config);
-
-    /**
-     * @brief getTaskFrameByName Helper Method that returns the task frame with the given name from the task frame vector.
-     *                           Will throw if the task frame does not exists.
-     */
-    TaskFrame* getTaskFrameByName(const std::vector<TaskFrame*> task_frames, const std::string& tf_name);
-
-    /**
      * @brief getNumberOfPriorities Returns number of priority levels
      */
     size_t getNumberOfPriorities(){return constraints.size();}

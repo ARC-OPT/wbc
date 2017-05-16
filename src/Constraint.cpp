@@ -2,6 +2,8 @@
 #define CONSTRAINT_CPP
 
 #include "Constraint.hpp"
+#include <base-logging/Logging.hpp>
+#include <base/Float.hpp>
 
 namespace wbc{
 
