@@ -90,36 +90,6 @@ std::vector<int> Wbc::getConstraintVariablesPerPrio(){
     return nc_pp;
 }
 
-std::vector<std::string> Wbc::getTaskFrameIDs(const std::vector<ConstraintConfig>& wbc_config){
-
-    std::vector<std::string> ids;
-    for(size_t i = 0; i < wbc_config.size(); i++)
-    {
-        if(wbc_config[i].type == cart)
-        {
-            if (std::find(ids.begin(), ids.end(), wbc_config[i].root) == ids.end())
-                ids.push_back(wbc_config[i].root);
-
-            if (std::find(ids.begin(), ids.end(), wbc_config[i].tip) == ids.end())
-                ids.push_back(wbc_config[i].tip);
-
-            if (std::find(ids.begin(), ids.end(), wbc_config[i].ref_frame) == ids.end())
-                ids.push_back(wbc_config[i].ref_frame);
-        }
-    }
-
-    return ids;
-}
-
-TaskFrame* Wbc::getTaskFrameByName(const std::vector<TaskFrame*> task_frames, const std::string& tf_name){
-    for(size_t i = 0; i < task_frames.size(); i++){
-        if(task_frames[i]->name == tf_name)
-            return task_frames[i];
-    }
-    LOG_ERROR("No such task frame in tf vector: %s", tf_name.c_str());
-    throw std::invalid_argument("Invalid tf name");
-}
-
 void Wbc::sortConfigByPriority(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config){
 
     // Get highest prio
@@ -142,26 +112,6 @@ void Wbc::sortConfigByPriority(const std::vector<ConstraintConfig>& config, std:
             i--;
         }
     }
-}
-
-bool Wbc::isValid(const std::vector<ConstraintConfig> &config){
-
-    // Check if constraint names are unique
-    std::map<std::string, int> constraint_name_map;
-    for(size_t i = 0; i < config.size(); i++){
-        if(constraint_name_map.count(config[i].name) > 0){
-            LOG_ERROR("Constraint with name %s exists more than once in wbc config", config[i].name.c_str());
-            return false;
-        }
-        constraint_name_map[config[i].name] = i;
-    }
-
-    for(size_t i = 0; i < config.size(); i++){
-        if(!config[i].isValid())
-            return false;
-    }
-
-    return true;
 }
 
 }

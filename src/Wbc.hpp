@@ -27,9 +27,10 @@ public:
     virtual ~Wbc();
 
     /**
-     * @brief Interface method for configuring WBC. This should prepare all required data containers given the constraint configuration and the order of the joints.
-     * @param config Constraint configuration for WBC. Can have arbitrary size > 0.
-     * @param joint_names This defines the order of joints within all matrices and vectors (Jacobians, weight matrices, etc.)
+     * @brief Interface method for configuring WBC. This should prepare all required data containers.
+     * @param config Constraint configuration for WBC. Size has to be > 0
+     * @param joint_names This defines the order of joints within all matrices and vectors (Jacobians, weight matrices, etc.). Has to contain all joints that
+     *                    are included in any of the configured constraints, that is the joint names in case of joint space constraints and
      * @return true in case of success, false in case of failure
      */
     virtual bool configure(const std::vector<ConstraintConfig> &config,
@@ -103,11 +104,6 @@ public:
      * @param sorted_config output config
      */
     static void sortConfigByPriority(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config);
-
-    /**
-     * @brief isValid Check if the given WBC config is valid
-     */
-    static bool isValid(const std::vector<ConstraintConfig>& config);
 };
 }
 

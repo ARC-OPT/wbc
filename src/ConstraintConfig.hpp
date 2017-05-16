@@ -23,6 +23,7 @@ enum constraint_type{jnt, cart};
  *          priority = 0
  *          root_frame = "Robot_base"
  *          tip_frame = "Gripper"
+ *          ref_frame = "Robot_base"
  *          activation = 0
  *
  *        - name = "joint_position_control"
@@ -55,7 +56,7 @@ public:
     std::vector<double> weights;
 
     /** Initial activation for this constraint. Has to be within 0 and 1. Can be used to enable(1)/disable(0) the whole constraint,
-     *  or to apply a smooth activation function. Default is zero.*/
+     *  or to apply a smooth activation function. Default is 0.*/
     double activation;
 
     /** Timeout of this constraint in seconds. Output for this constraint will be set to zero if, for more than this amount of time, no new reference is set.
