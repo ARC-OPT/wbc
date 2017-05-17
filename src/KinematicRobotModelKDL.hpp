@@ -1,109 +1,83 @@
 #ifndef KINEMATICROBOTMODELKDL_HPP
 #define KINEMATICROBOTMODELKDL_HPP
 
-#include <kdl/tree.hpp>
 #include "RobotModel.hpp"
+
+#include <kdl/tree.hpp>
+#include <kdl/jacobian.hpp>
 #include <base/samples/Joints.hpp>
+#include <base/samples/RigidBodyState.hpp>
 
 namespace wbc{
 
-class TaskFrameKDL;
+class KinematicChainKDL;
 
-/** The kinematic model describes the kinemetic relationships required for wbc. It is based on a single KDL Tree, although it is possible to add an arbitrary
- *  number of trees (e.g. for controlling multiple robots at the same time or to described robot-object relationships). Particularly, the kinematic contains
- *  the task frames (see TaskFrame.hpp for details), which are used to describe the control problem.
+/** This kinematic model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added
+ *  and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios.
  */
 class KinematicRobotModelKDL : public RobotModel{
 
     typedef std::map<std::string, int> JointIndexMap;
+    typedef std::map<std::string, KinematicChainKDL*> KinematicChainKDLMap;
 
 protected:
     KDL::Tree full_tree;
     JointIndexMap joint_index_map;
+    std::vector<std::string> joint_names;
     base::samples::Joints current_joint_state;
+    std::vector<base::samples::RigidBodyState> current_poses;
+    KinematicChainKDLMap kdl_chain_map;
+    KDL::Jacobian robot_jacobian;
+    base::Time last_update;
+
+    void createJointIndexMap(const std::vector<std::string> &joint_names);
+    void createChain(const std::string &root_frame, const std::string &tip_frame);
+    void clear();
+    std::vector<std::string> jointNamesFromTree(KDL::Tree tree);
 
 public:
-    KinematicRobotModelKDL();
-    virtual ~KinematicRobotModelKDL(){}
-
-    /**
-     * @brief configure Configure the robot model.
-     * @param robot_model_config Vector of models that will be added to the overall model.
-     * @param task_frame_ids IDs of all task frames that are required for the task
-     * @param joint_names Optionally set the order of joint names within the model
-     * @return true in case of success, fals otherwise
+    /** The joint_names parameter defines the order of joints within the model, e.g. the column order in the Jacobians. If left empty, the
+     *  joint order will be the same as in the overall KDL::Tree, which is alphabetical.
      */
-    virtual bool configure(const std::vector<RobotModelConfig>& robot_model_config,
-                           const std::vector<std::string>& task_frame_ids,
-                           const std::string &_base_frame,
-                           const std::vector<std::string>& _joint_names);
+    KinematicRobotModelKDL(const std::vector<std::string> &joint_names = std::vector<std::string>());
+    virtual ~KinematicRobotModelKDL();
 
+    /** Add a KDL Tree to the model. If the model is empty, the overall KDL::Tree will be replaced by the given tree. If there
+     *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
+     *  of the trees can be updated online by calling update() with poses parameter appropriately set. This will also create the
+     *  joint index map*/
+    void addTree(const KDL::Tree& tree, const std::string& _hook = "", const KDL::Frame &pose = KDL::Frame::Identity());
 
     /**
-     * @brief Update all task frames in the model with a new joint state and (optionally) new link states
-     * @param joint_state The joint_state vector. Has to contain all joint names that are relevant to any task frame,
-     *                    that means all joints that are contained in a kinematic chain between the robot base frame and
-     *                    one of the task frames
-     * @param poses The new link poses. The SourceFrame has to be the same as the segment name that is to be updated. Can be left empty,
-     *              if no segmented are to be updated
+     * Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
+     * when requesting rigid body states, Jacobians or joint states. Note that
+     *
+     * @param joint_state The joint_state vector. Has to contain all robot joints.
+     * @param poses Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model.
      */
     virtual void update(const base::samples::Joints& joint_state,
                         const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>());
 
+    /** Returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates!*/
+    virtual void rigidBodyState(const std::string &root_frame,
+                                const std::string &tip_frame,
+                                base::samples::RigidBodyState& rigid_body_state);
 
-    /**
-     * @brief getState Return the relative state of two task frames that are defined by source and target frame of the input
-     * @param tf_one_name Name of the first task frame
-     * @param tf_two_name Name of the second task frame
-     * @param state Relative pose (twist and acceleration). E.g. the computed pose will be the second task frame wrt to the first task frame
-     */
-    virtual void getState(const std::string& tf_one_name,
-                          const std::string& tf_two_name,
-                          base::samples::RigidBodyState& state);
+    /** Returns the current status of the given joint names */
+    virtual void jointState(const std::vector<std::string> &joint_names,
+                            base::samples::Joints& joint_state);
 
-    /**
-     * @brief getState Return the state of the joints given by joint names
-     * @param joint_names Joint names to evaluated
-     * @param state Position, (velocity and acceleration) of the given joints
-     */
-    virtual void getState(const std::vector<std::string> &joint_names,
-                          base::samples::Joints& state);
+    /** Returns the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
+        the root frame with the rotation point at the tip frame*/
+    virtual void jacobian(const std::string &root_frame,
+                          const std::string &tip_frame,
+                          base::MatrixXd& jacobian);
 
-    /**
-     * @brief Check if a frame is available in the model
-     */
+    /** Check if a frame is available in the model*/
     bool hasFrame(const std::string &name);
 
 protected:
-    /**
-     * @brief Add a task frame to the model (see TaskFrame.hpp for details about task frames)
-     * @param tf_name Name of the task frame. Has to be a valid frame of the KDL tree. This method will try to create a kinematic
-     *                chain between the robot base frame and the task frame.
-     * @return True in case of success, false otherwise (e.g. if the task frame already exists)
-     */
-    bool addTaskFrame(const std::string &tf_name);
 
-    /**
-     * @brief loadURDFModel Load a URDF model and add it to frame denoted by <hook>. If the KDL tree is empty, it will be replaced by the
-     *                      Tree parsed from this URDF model
-     * @param model Robot model config. Each config has the following members:
-     *
-     *            - file: Has to be the full path of a URDF model file. Will be parsed into a KDL tree. If the overall tree
-     *                    is empty (i.e. if loadModel is called for the first time), the overall tree will be equal to the new
-     *                    tree afterwards. Otherwise the new tree will be attached to the overall tree.
-     *            - hook: The KDL segment name to which the new tree will be attached. Can be left empty if loadModel() is called
-     *                    for the first time
-     *            - initial_pose: Initial pose of the new KDL tree with respect to the given hook frame. Will be ignored if loadModel()
-     *                            is called for the first time
-     *
-     * @return True in case of success, false otherwise (e.g. if the urdf model cannot be parsed)
-     */
-    bool loadURDFModel(const RobotModelConfig& model);
-
-    /**
-     * Cleanup, so that the robot model can be configured again
-     */
-    void clear();
 };
 
 }

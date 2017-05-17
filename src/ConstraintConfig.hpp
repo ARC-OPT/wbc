@@ -111,6 +111,13 @@ public:
             if(weights[i] < 0)
                 throw std::invalid_argument("Constraint " + name + ": Constraint weights must be >= 0, but weight " + std::to_string(i) + " is " + std::to_string(weights[i]));
     }
+
+    uint noOfConstraintVariables() const{
+        if(type == cart)
+            return 6;
+        else
+            return joint_names.size();
+    }
 };
 
 }

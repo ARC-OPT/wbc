@@ -6,6 +6,9 @@
 #include <base/Time.hpp>
 #include <base/Float.hpp>
 
+namespace base{namespace commands{class Joints;}}
+namespace base{namespace samples{class RigidBodyState;}}
+
 namespace wbc{
 
 /**
@@ -16,18 +19,9 @@ public:
 
     Constraint(){}
     Constraint(const ConstraintConfig& _config) :
-        config(_config){
-        _config.validate();
+        config(_config),
+        no_variables(_config.noOfConstraintVariables()){
 
-        if(config.type == jnt)
-            no_variables = _config.joint_names.size();
-        else
-            no_variables = 6;
-
-        reset();
-    }
-
-    void reset(){
         y_ref.resize(no_variables);
         y_ref_root.resize(no_variables);
         weights.resize(no_variables);
@@ -35,17 +29,54 @@ public:
         y_solution.resize(no_variables);
         y.resize(no_variables);
 
-        y_ref_root.setConstant(base::NaN<double>());
-        y_ref.setZero();
+        _config.validate();
+
+        reset();
+    }
+    virtual ~Constraint(){}
+
+    void reset(){
+        y_ref_root.setConstant(no_variables, base::NaN<double>());
+        y_ref.setZero(no_variables);
         activation = config.activation;
         for(uint i = 0; i < no_variables; i++){
             weights(i) = config.weights[i];
             weights_root(i) = config.weights[i];
         }
-
         //Set timeout to true in the beginning. Like this, Constraints have to get a
         //reference value first to be activated, independent of the activation value
         constraint_timed_out = 1;
+    }
+
+    /** Update the Cartesian reference input for this constraint. If the Constraint is a joint space
+     *  constraint, you should throw an exception*/
+    virtual void setReference(const base::samples::RigidBodyState& ref){}
+
+    /** Update the joint reference input for this constraint. If the Constraint is a Cartesian
+     *  constraint, you should throw an exception*/
+    virtual void setReference(const base::commands::Joints& ref){}
+
+    /** Set constraint weights. Size of weight vector has to be same as number of constraint variables and all weights have to be >= 0 */
+    void setWeights(const base::VectorXd& weights){
+        if(no_variables != weights.size())
+            throw std::invalid_argument("Constraint " + config.name + ": Size of weight vector should be "
+                                        + std::to_string(no_variables) + " but is " + std::to_string(weights.size()));
+
+        for(uint i = 0; i < weights.size(); i++)
+            if(weights(i) < 0)
+                 throw std::invalid_argument("Constraint " + config.name + ": Weights have to be >= 0, but weight "
+                                             + std::to_string(i) + " is " + std::to_string(weights(i)));
+
+        this->weights = weights;
+    }
+
+    /** Set constraint activation. Value has to be between 0 and 1. Can be used to activate(1)/deactivate(0) the constraint.*/
+    void setActivation(const double activation){
+
+        if(activation < 0 || activation > 1)
+            throw std::invalid_argument("Constraint " + config.name + ": Activation has to be between 0 and 1 but is "
+                                        + std::to_string(activation));
+        this->activation = activation;
     }
 
     /** Last time an update happened on this constraint*/
