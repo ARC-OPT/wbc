@@ -32,7 +32,6 @@ protected:
 
     void createJointIndexMap(const std::vector<std::string> &joint_names);
     void createChain(const std::string &root_frame, const std::string &tip_frame);
-    void clear();
     std::vector<std::string> jointNamesFromTree(KDL::Tree tree);
 
 public:
@@ -75,9 +74,6 @@ public:
 
     /** Check if a frame is available in the model*/
     bool hasFrame(const std::string &name);
-
-protected:
-
 };
 
 }

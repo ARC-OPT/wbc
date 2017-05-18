@@ -10,16 +10,6 @@ KinematicRobotModelKDL::KinematicRobotModelKDL(const std::vector<std::string> &j
 }
 
 KinematicRobotModelKDL::~KinematicRobotModelKDL(){
-    clear();
-}
-
-void KinematicRobotModelKDL::createJointIndexMap(const std::vector<std::string> &joint_names){
-    for(size_t i = 0; i < joint_names.size(); i++)
-        joint_index_map[joint_names[i]] = i;
-    robot_jacobian.resize(joint_names.size());
-}
-
-void KinematicRobotModelKDL::clear(){
     current_joint_state.clear();
     current_poses.clear();
     joint_index_map.clear();
@@ -29,6 +19,12 @@ void KinematicRobotModelKDL::clear(){
     for(it = kdl_chain_map.begin(); it != kdl_chain_map.end(); it++)
         delete it->second;
     kdl_chain_map.clear();
+}
+
+void KinematicRobotModelKDL::createJointIndexMap(const std::vector<std::string> &joint_names){
+    for(size_t i = 0; i < joint_names.size(); i++)
+        joint_index_map[joint_names[i]] = i;
+    robot_jacobian.resize(joint_names.size());
 }
 
 void KinematicRobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
