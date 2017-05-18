@@ -7,13 +7,13 @@
 namespace wbc{
 
 class RobotModel;
-class Solver;
+class OptProblem;
 
 class WbcScene{
 protected:
     std::vector< std::vector<Constraint*> > constraints;
     std::vector< ConstraintsPerPrio > constraint_vector;
-    bool configured;
+    RobotModel* model;
 
     /** Create a constraint and add it to the WBC scene*/
     virtual Constraint* createConstraint(const ConstraintConfig &config) = 0;
@@ -22,14 +22,14 @@ protected:
     void clearConstraints();
 
 public:
-    WbcScene();
+    WbcScene(){}
     virtual ~WbcScene(){}
 
     /** Configure the WBC scene. Create constraints and sort them by priority*/
     void configure(const std::vector<ConstraintConfig> &config);
 
     /** Update the wbc scene and return the current solver output*/
-    virtual base::VectorXd &update(RobotModel* model, Solver* solver) = 0;
+    virtual void setupOptProblem(RobotModel* model, OptProblem& opt_problem) = 0;
 
     /** Return a Particular constraint. Throw if the constraint does not exist */
     Constraint* getConstraint(const std::string& name);
@@ -41,10 +41,10 @@ public:
     std::vector< ConstraintsPerPrio > getConstraints();
 
     /** Returns the number of constraint variables per priority */
-    std::vector<int> getConstraintVariablesPerPrio();
+    static std::vector<int> getConstraintVariablesPerPrio(const std::vector<ConstraintConfig> &config);
 
     /** Sort constraint config by the priorities of the constraints */
-    void sortConstraintConfig(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config);
+    static void sortConstraintConfig(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config);
 };
 
 } // namespace wbc

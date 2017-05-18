@@ -2,10 +2,6 @@
 
 namespace wbc{
 
-WbcScene::WbcScene() :
-    configured(false){
-}
-
 void WbcScene::clearConstraints(){
 
     for(uint i = 0; i < constraints.size(); i++ ){
@@ -14,7 +10,6 @@ void WbcScene::clearConstraints(){
         constraints[i].clear();
     }
     constraints.clear();
-    configured = false;
 }
 
 void WbcScene::configure(const std::vector<ConstraintConfig> &config){
@@ -34,7 +29,6 @@ void WbcScene::configure(const std::vector<ConstraintConfig> &config){
         for(size_t j = 0; j < sorted_config[i].size(); j++)
             constraints[i][j] = createConstraint(sorted_config[i][j]);
     }
-    configured = true;
 }
 
 Constraint* WbcScene::getConstraint(const std::string& name){
@@ -71,12 +65,16 @@ bool WbcScene::hasConstraint(const std::string &name){
     return false;
 }
 
-std::vector<int> WbcScene::getConstraintVariablesPerPrio(){
-    std::vector<int> nc_pp(constraints.size());
-    for(size_t i = 0; i < constraints.size(); i++){
+std::vector<int> WbcScene::getConstraintVariablesPerPrio(const std::vector<ConstraintConfig> &config){
+
+    std::vector< std::vector<ConstraintConfig> > sorted_config;
+    sortConstraintConfig(config, sorted_config);
+
+    std::vector<int> nc_pp(sorted_config.size());
+    for(size_t i = 0; i < sorted_config.size(); i++){
         nc_pp[i] = 0;
-        for(size_t j = 0; j < constraints[i].size(); j++)
-            nc_pp[i] += constraints[i][j]->no_variables;
+        for(size_t j = 0; j < sorted_config[i].size(); j++)
+            nc_pp[i] += sorted_config[i][j].noOfConstraintVariables();
     }
     return nc_pp;
 }
@@ -104,6 +102,5 @@ void WbcScene::sortConstraintConfig(const std::vector<ConstraintConfig>& config,
         }
     }
 }
-
 
 } // namespace wbc
