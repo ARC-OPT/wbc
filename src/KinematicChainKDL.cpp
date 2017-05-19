@@ -17,9 +17,14 @@ KinematicChainKDL::KinematicChainKDL(KDL::Chain chain) :
     }
 }
 
+KinematicChainKDL::~KinematicChainKDL(){
+
+}
+
 void KinematicChainKDL::update(const base::samples::Joints &joint_state, const std::vector<base::samples::RigidBodyState> &poses){
 
     //// update Joints
+    last_update = joint_state.time;
     for(size_t i = 0; i < joint_names.size(); i++)
             try{
                 joint_positions(i) = joint_state.getElementByName(joint_names[i]).position;
@@ -36,6 +41,9 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state, const s
         for(uint j = 0; j < chain.getNrOfSegments(); j++)
             if(chain.segments[j].getName().compare(poses[i].sourceFrame) == 0)
                 chain.segments[j] = KDL::Segment(poses[i].sourceFrame, KDL::Joint(KDL::Joint::None), pose_kdl);
+
+        if(poses[i].time > last_update)
+            last_update = poses[i].time;
     }
 
     KDL::ChainFkSolverPos_recursive fk_solver(chain);
@@ -44,6 +52,9 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state, const s
     //// compute kinematics
     fk_solver.JntToCart(joint_positions, pose_kdl);
     kdl_conversions::KDL2RigidBodyState(pose_kdl, rigid_body_state);
+    rigid_body_state.time = last_update;
+    rigid_body_state.sourceFrame = chain.getSegment(chain.getNrOfSegments()-1).getName();
+    rigid_body_state.targetFrame = chain.getSegment(0).getName();
 
     jac_solver.JntToJac(joint_positions, jacobian);
 

@@ -4,7 +4,6 @@
 #include <kdl/chain.hpp>
 #include <kdl/jntarray.hpp>
 #include <kdl/jacobian.hpp>
-#include <base/Eigen.hpp>
 #include <base/samples/Joints.hpp>
 #include <base/samples/RigidBodyState.hpp>
 
@@ -25,6 +24,7 @@ public:
     void update(const base::samples::Joints& joint_state,
                 const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>());
 
+    base::Time last_update;
     KDL::Frame pose_kdl;
     base::samples::RigidBodyState rigid_body_state;
     KDL::Chain chain;

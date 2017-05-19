@@ -8,4 +8,4 @@ file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src
 rock_library(wbc
     SOURCES ${SOURCES} ${HEADERS}
     HEADERS ${HEADERS}
-    DEPS_PKGCONFIG orocos-kdl base-lib kdl_conversions kdl_parser)
+    DEPS_PKGCONFIG base-lib kdl_conversions)

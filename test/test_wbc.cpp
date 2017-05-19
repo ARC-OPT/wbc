@@ -1,20 +1,17 @@
 #include <kdl/frames_io.hpp>
 #include <boost/test/unit_test.hpp>
 #include <kdl_parser/kdl_parser.hpp>
-#include "../src/WbcVelocity.hpp"
+#include "../src/WbcVelocityScene.hpp"
 #include "../src/HierarchicalLeastSquaresSolver.hpp"
 #include "../src/KinematicRobotModelKDL.hpp"
 #include "../src/OptProblem.hpp"
 #include "../src/RobotModelConfig.hpp"
-#include "../src/TaskFrame.hpp"
+#include "../src/Jacobian.hpp"
 
 using namespace std;
 using namespace wbc;
 
-/**
- * Test hierarchical solver with random input data
- */
-
+/** Test Hierachical solver. Input random values, solve, back-multiply and check the results*/
 BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
 {
     srand (time(NULL));
@@ -29,8 +26,8 @@ BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
 
     BOOST_CHECK(solver.configure(ny_per_prio, NO_JOINTS) == true);
 
-    BOOST_NOEXCEPT(solver.setMaxSolverOutputNorm(NORM_MAX));
-    BOOST_NOEXCEPT(solver.setMinEigenvalue(MIN_EIGENVALUE));
+    solver.setMaxSolverOutputNorm(NORM_MAX);
+    solver.setMinEigenvalue(MIN_EIGENVALUE);
 
     HierarchicalWeightedLS input;
     WeightedLS prio_0;
@@ -56,13 +53,8 @@ BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
         cout<<endl;
     }
 
-    Eigen::VectorXd solver_output;
-    try{
-        solver.solve(input, solver_output);
-    }
-    catch(std::exception e){
-        BOOST_ERROR("Solver.solve threw an exception");
-    }
+    base::VectorXd solver_output;
+    solver.solve(input, solver_output);
 
     cout<<"---------------------- Solver Output ------------------------"<<endl;
     cout<<"q_dot = "<<endl;
@@ -80,113 +72,154 @@ BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
     cout<<"\n............................."<<endl;
 }
 
-BOOST_AUTO_TEST_CASE(wbc_velocity){
+BOOST_AUTO_TEST_CASE(robot_model_kdl){
 
-    WbcVelocity wbc;
-    KinematicRobotModelKDL robot_model;
-    HierarchicalLeastSquaresSolver solver;
+    KDL::Tree robot_tree, object_tree;
+    BOOST_CHECK(kdl_parser::treeFromFile("../../test/data/kuka_lbr.urdf", robot_tree) == true);
+    BOOST_CHECK(kdl_parser::treeFromFile("../../test/data/object.urdf", object_tree) == true);
+    std::vector<std::string> joint_names = KinematicRobotModelKDL::jointNamesFromTree(robot_tree);
 
-    ///// Create WBC config
-    ///
+    base::samples::RigidBodyState object_pose;
+    object_pose.position = base::Vector3d(0,0,2);
+    object_pose.orientation.setIdentity();
 
-    std::vector<ConstraintConfig> wbc_config;
+    // Create robot model
+    KinematicRobotModelKDL* robot_model = new KinematicRobotModelKDL(joint_names, "kuka_lbr_base");
+    robot_model->addTree(robot_tree);
+    robot_model->addTree(object_tree, "kuka_lbr_top_left_camera", object_pose);
 
-    // Constraint for Cartesian Position Control
-    ConstraintConfig cart_constraint;
-    cart_constraint.name       = "cart_pos_ctrl";
-    cart_constraint.type       = cart;
-    cart_constraint.priority   = 0; // highest
-    cart_constraint.root       = "kuka_lbr_base";
-    cart_constraint.tip        = "kuka_lbr_l_tcp";
-    cart_constraint.ref_frame  = "kuka_lbr_base";
-    cart_constraint.activation = 1;
-    cart_constraint.weights    = vector<double>(6,1);
-    wbc_config.push_back(cart_constraint);
+    base::samples::Joints joint_state;
+    joint_state.resize(joint_names.size());
+    joint_state.names = joint_names;
+    joint_state.time = base::Time::now();
+    for(base::JointState& j : joint_state.elements)
+        j.position = 0;
 
-    ///// Configure robot model
-    ///
+    robot_model->update(joint_state);
 
-    RobotModelConfig robot_model_cfg("../../data/kuka_lbr.urdf");
-    std::vector<RobotModelConfig> models;
-    models.push_back(robot_model_cfg);
+    base::samples::RigidBodyState rbs;
+    rbs = robot_model->rigidBodyState("kuka_lbr_base", "object");
 
-    std::vector<std::string> task_frames;
-    task_frames.push_back("kuka_lbr_center");
-    task_frames.push_back("kuka_lbr_top_left_camera");
+    cout<<"\n----------------------- Testing Robot Model ----------------------"<<endl<<endl;
 
-    BOOST_CHECK(robot_model.configure(models, wbc.getTaskFrameIDs(wbc_config), "kuka_lbr_base", std::vector<std::string>()) == true);
+    cout<<"Object pose in base Frame: "<<endl;
+    cout<<"x: "<<rbs.position(0)<<" y: "<<rbs.position(1)<<" z: "<<rbs.position(2)<<endl;
+    cout<<"qx: "<<rbs.orientation.x()<<" qy: "<<rbs.orientation.y()<<" qz: "<<rbs.orientation.z()<<" qz: "<<rbs.orientation.w()<<endl<<endl;
 
-    cout<<"Configured robot model ..."<<endl;
+    rbs = robot_model->rigidBodyState("kuka_lbr_top_left_camera", "object");
 
-    ///// Configure WBC
-    ///
-
-    BOOST_CHECK(wbc.configure(wbc_config, robot_model.getJointNames()) == true);
-
-    cout<<"Configured wbc..."<<endl;
-
-    ///// Configure Solver
-    ///
-
-    BOOST_CHECK(solver.configure(wbc.getConstraintVariablesPerPrio(), robot_model.getJointNames().size()) == true);
-
-    cout<<"Configured solver..."<<endl;
-
-    ///// Run Control loop
-    ///
-
-    base::samples::Joints cur_joint_pos;
-    cur_joint_pos.resize(7);
-    for(int i = 0; i < 7; i++){
-        cur_joint_pos[i].position = 1.5;
-        stringstream ss;
-        ss << i+1;
-        cur_joint_pos.names[i] = "kuka_lbr_l_joint_" + ss.str();
-    }
-
-    BOOST_NOEXCEPT(robot_model.update(cur_joint_pos));
-    TaskFrame* tf = robot_model.getTaskFrame(cart_constraint.tip);
-    BOOST_CHECK(tf);
-    base::samples::RigidBodyState target_pose, cur_pose;
-    target_pose.position = tf->pose.position;
-    target_pose.orientation.setIdentity();
-
-    for(int i = 0; i < 7; i++)
-        cur_joint_pos[i].position = 0.1;
-
-    base::VectorXd solver_output(7);
-    BOOST_NOEXCEPT(robot_model.update(cur_joint_pos));
-
-    base::VectorXd weights(6);
-    weights.setOnes();
-    weights.segment(3,3).setZero(); // Set orientation task weights to zero
-    BOOST_NOEXCEPT(wbc.setConstraintWeights(cart_constraint.name, weights));
-
-    HierarchicalWeightedLS opt_problem;
-    double cycle_time = 0.1;
-    bool reached = false;
-    while(!reached){
-
-        robot_model.update(cur_joint_pos);
-        robot_model.getState(cart_constraint.ref_frame, cart_constraint.tip, cur_pose);
-
-        printf("Target Pos: %.4f %.4f %.4f\n", target_pose.position(0), target_pose.position(1), target_pose.position(2));
-        printf("   Cur Pos: %.4f %.4f %.4f\n\n", cur_pose.position(0), cur_pose.position(1), cur_pose.position(2));
-
-        base::samples::RigidBodyState ref;
-        ref.velocity = target_pose.position - cur_pose.position;
-        ref.angular_velocity.setZero();
-
-        BOOST_NOEXCEPT(wbc.setReference(cart_constraint.name, ref));
-        BOOST_NOEXCEPT(wbc.setupOptProblem(robot_model.getTaskFrames(), opt_problem));
-        BOOST_NOEXCEPT(solver.solve(opt_problem, (Eigen::VectorXd& )solver_output));
-
-        for(int i = 0; i < 7; i++)
-            cur_joint_pos[i].position += solver_output(i) * cycle_time;
-
-        usleep(1000*1000*0.3);
-
-        reached = (wbc.getConstraint(cart_constraint.name)->y_ref.norm() < 1e-3);
-    }
+    cout<<"Object pose in camera Frame: "<<endl;
+    cout<<"x: "<<rbs.position(0)<<" y: "<<rbs.position(1)<<" z: "<<rbs.position(2)<<endl;
+    cout<<"qx: "<<rbs.orientation.x()<<" qy: "<<rbs.orientation.y()<<" qz: "<<rbs.orientation.z()<<" qz: "<<rbs.orientation.w()<<endl;
 }
+
+//BOOST_AUTO_TEST_CASE(wbc_velocity){
+
+//    WbcVelocity wbc;
+//    KinematicRobotModelKDL robot_model;
+//    HierarchicalLeastSquaresSolver solver;
+
+//    ///// Create WBC config
+//    ///
+
+//    std::vector<ConstraintConfig> wbc_config;
+
+//    // Constraint for Cartesian Position Control
+//    ConstraintConfig cart_constraint;
+//    cart_constraint.name       = "cart_pos_ctrl";
+//    cart_constraint.type       = cart;
+//    cart_constraint.priority   = 0; // highest
+//    cart_constraint.root       = "kuka_lbr_base";
+//    cart_constraint.tip        = "kuka_lbr_l_tcp";
+//    cart_constraint.ref_frame  = "kuka_lbr_base";
+//    cart_constraint.activation = 1;
+//    cart_constraint.weights    = vector<double>(6,1);
+//    wbc_config.push_back(cart_constraint);
+
+//    ///// Configure robot model
+//    ///
+
+//    RobotModelConfig robot_model_cfg("../../data/kuka_lbr.urdf");
+//    std::vector<RobotModelConfig> models;
+//    models.push_back(robot_model_cfg);
+
+//    std::vector<std::string> task_frames;
+//    task_frames.push_back("kuka_lbr_center");
+//    task_frames.push_back("kuka_lbr_top_left_camera");
+
+//    BOOST_CHECK(robot_model.configure(models, wbc.getTaskFrameIDs(wbc_config), "kuka_lbr_base", std::vector<std::string>()) == true);
+
+//    cout<<"Configured robot model ..."<<endl;
+
+//    ///// Configure WBC
+//    ///
+
+//    BOOST_CHECK(wbc.configure(wbc_config, robot_model.getJointNames()) == true);
+
+//    cout<<"Configured wbc..."<<endl;
+
+//    ///// Configure Solver
+//    ///
+
+//    BOOST_CHECK(solver.configure(wbc.getConstraintVariablesPerPrio(), robot_model.getJointNames().size()) == true);
+
+//    cout<<"Configured solver..."<<endl;
+
+//    ///// Run Control loop
+//    ///
+
+//    base::samples::Joints cur_joint_pos;
+//    cur_joint_pos.resize(7);
+//    for(int i = 0; i < 7; i++){
+//        cur_joint_pos[i].position = 1.5;
+//        stringstream ss;
+//        ss << i+1;
+//        cur_joint_pos.names[i] = "kuka_lbr_l_joint_" + ss.str();
+//    }
+
+//    BOOST_NOEXCEPT(robot_model.update(cur_joint_pos));
+//    TaskFrame* tf = robot_model.getTaskFrame(cart_constraint.tip);
+//    BOOST_CHECK(tf);
+//    base::samples::RigidBodyState target_pose, cur_pose;
+//    target_pose.position = tf->pose.position;
+//    target_pose.orientation.setIdentity();
+
+//    for(int i = 0; i < 7; i++)
+//        cur_joint_pos[i].position = 0.1;
+
+//    base::VectorXd solver_output(7);
+//    BOOST_NOEXCEPT(robot_model.update(cur_joint_pos));
+
+//    base::VectorXd weights(6);
+//    weights.setOnes();
+//    weights.segment(3,3).setZero(); // Set orientation task weights to zero
+//    BOOST_NOEXCEPT(wbc.setConstraintWeights(cart_constraint.name, weights));
+
+//    HierarchicalWeightedLS opt_problem;
+//    double cycle_time = 0.1;
+//    bool reached = false;
+//    while(!reached){
+
+//        robot_model.update(cur_joint_pos);
+//        robot_model.getState(cart_constraint.ref_frame, cart_constraint.tip, cur_pose);
+
+//        printf("Target Pos: %.4f %.4f %.4f\n", target_pose.position(0), target_pose.position(1), target_pose.position(2));
+//        printf("   Cur Pos: %.4f %.4f %.4f\n\n", cur_pose.position(0), cur_pose.position(1), cur_pose.position(2));
+
+//        base::samples::RigidBodyState ref;
+//        ref.velocity = target_pose.position - cur_pose.position;
+//        ref.angular_velocity.setZero();
+
+//        BOOST_NOEXCEPT(wbc.setReference(cart_constraint.name, ref));
+//        BOOST_NOEXCEPT(wbc.setupOptProblem(robot_model.getTaskFrames(), opt_problem));
+//        BOOST_NOEXCEPT(solver.solve(opt_problem, (Eigen::VectorXd& )solver_output));
+
+//        for(int i = 0; i < 7; i++)
+//            cur_joint_pos[i].position += solver_output(i) * cycle_time;
+
+//        usleep(1000*1000*0.3);
+
+//        reached = (wbc.getConstraint(cart_constraint.name)->y_ref.norm() < 1e-3);
+//    }
+//}
 

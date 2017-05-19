@@ -1,8 +1,8 @@
 #include "HierarchicalLeastSquaresSolver.hpp"
-#include <base/Logging.hpp>
-#include <kdl/utilities/svd_eigen_HH.hpp>
+#include <base-logging/Logging.hpp>
 #include "OptProblem.hpp"
 #include <stdexcept>
+#include "SVD.hpp"
 
 using namespace std;
 
@@ -68,7 +68,7 @@ bool HierarchicalLeastSquaresSolver::configure(const std::vector<int>& n_constra
     return true;
 }
 
-void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, Eigen::VectorXd &solver_output){
+void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, base::VectorXd &solver_output){
 
     if(!configured)
         throw std::runtime_error("HierarchicalLeastSquaresSolver has to be configured before calling solve()!");
@@ -122,7 +122,7 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, Eigen:
         for(uint i = 0; i < no_of_joints; i++)
             priorities[prio].A_proj_w.col(i) = priorities[prio].joint_weight_mat(i,i) * priorities[prio].A_proj_w.col(i);
 
-        KDL::svd_eigen_HH(priorities[prio].A_proj_w, priorities[prio].U, s_vals, sing_vect_r, tmp);
+        svd_eigen_decomposition(priorities[prio].A_proj_w, priorities[prio].U, s_vals, sing_vect_r, tmp);
 
         // Compute damping factor based on
         // A.A. Maciejewski, C.A. Klein, “Numerical Filtering for the Operation of
@@ -186,7 +186,7 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, Eigen:
     ///////////////
 }
 
-void HierarchicalLeastSquaresSolver::setJointWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalLeastSquaresSolver::setJointWeights(const base::VectorXd& weights, const uint prio){
     if(prio < 0 ||prio >= priorities.size()){
         LOG_ERROR("Cannot set joint weights on priority %i. Number of priority levels is %i", prio, priorities.size());
         throw std::invalid_argument("Invalid Priority");
@@ -209,7 +209,7 @@ void HierarchicalLeastSquaresSolver::setJointWeights(const Eigen::VectorXd& weig
     }
 }
 
-void HierarchicalLeastSquaresSolver::setConstraintWeights(const Eigen::VectorXd& weights, const uint prio){
+void HierarchicalLeastSquaresSolver::setConstraintWeights(const base::VectorXd& weights, const uint prio){
     if(prio < 0 ||prio >= priorities.size()){
         LOG_ERROR("Cannot set constraint weights on priority %i. Number of priority levels is %i", prio, priorities.size());
         throw std::invalid_argument("Invalid Priority");
@@ -243,7 +243,7 @@ void HierarchicalLeastSquaresSolver::setMaxSolverOutputNorm(double norm_max){
     max_solver_output_norm = norm_max;
 }
 
-void HierarchicalLeastSquaresSolver::setMaxSolverOutput(const Eigen::VectorXd& max_solver_output){
+void HierarchicalLeastSquaresSolver::setMaxSolverOutput(const base::VectorXd& max_solver_output){
     if(max_solver_output.size() > 0 && max_solver_output.size() != no_of_joints)
         throw std::invalid_argument("Size of max solver output vector has to be same as number of joints");
     for(uint i = 0; i < max_solver_output.size(); i++){
@@ -252,7 +252,7 @@ void HierarchicalLeastSquaresSolver::setMaxSolverOutput(const Eigen::VectorXd& m
     }
     this->max_solver_output = max_solver_output;
 }
-void HierarchicalLeastSquaresSolver::applySaturation(Eigen::VectorXd& solver_output){
+void HierarchicalLeastSquaresSolver::applySaturation(base::VectorXd& solver_output){
     //Apply saturation. Scale all values according to the maximum output
     double scale = 1;
     for(uint i = 0; i < solver_output.size(); i++)

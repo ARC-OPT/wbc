@@ -27,7 +27,7 @@ public:
      * @param linear_eqn_pp
      * @param solver_output
      */
-    virtual void solve(const OptProblem &opt_problem, Eigen::VectorXd &solver_output) = 0;
+    virtual void solve(const OptProblem &opt_problem, base::VectorXd &solver_output) = 0;
 };
 }
 

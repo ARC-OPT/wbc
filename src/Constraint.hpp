@@ -6,9 +6,6 @@
 #include <base/Time.hpp>
 #include <base/Float.hpp>
 
-namespace base{namespace commands{class Joints;}}
-namespace base{namespace samples{class RigidBodyState;}}
-
 namespace wbc{
 
 /**
@@ -17,67 +14,25 @@ namespace wbc{
 class Constraint{
 public:
 
-    Constraint(){}
-    Constraint(const ConstraintConfig& _config) :
-        config(_config),
-        no_variables(_config.noOfConstraintVariables()){
+    Constraint();
 
-        y_ref.resize(no_variables);
-        y_ref_root.resize(no_variables);
-        weights.resize(no_variables);
-        weights_root.resize(no_variables);
-        y_solution.resize(no_variables);
-        y.resize(no_variables);
+    /** Resize all members accordingly*/
+    Constraint(const ConstraintConfig& _config, uint n_robot_joints);
+    ~Constraint();
 
-        _config.validate();
+    void reset();
 
-        reset();
-    }
-    virtual ~Constraint(){}
-
-    void reset(){
-        y_ref_root.setConstant(no_variables, base::NaN<double>());
-        y_ref.setZero(no_variables);
-        activation = config.activation;
-        for(uint i = 0; i < no_variables; i++){
-            weights(i) = config.weights[i];
-            weights_root(i) = config.weights[i];
-        }
-        //Set timeout to true in the beginning. Like this, Constraints have to get a
-        //reference value first to be activated, independent of the activation value
-        constraint_timed_out = 1;
-    }
-
-    /** Update the Cartesian reference input for this constraint. If the Constraint is a joint space
-     *  constraint, you should throw an exception*/
-    virtual void setReference(const base::samples::RigidBodyState& ref){}
-
-    /** Update the joint reference input for this constraint. If the Constraint is a Cartesian
-     *  constraint, you should throw an exception*/
-    virtual void setReference(const base::commands::Joints& ref){}
+    /** Check if the constraint is in timeout and set the timeout flag accordingly. A constraint is in timeout if
+     *    - No reference value has been set yet (call of setReference())
+     *    - A timeout value is configured (config.timeout > 0) and no reference value arrived during the timeout period
+     */
+    void checkTimeout();
 
     /** Set constraint weights. Size of weight vector has to be same as number of constraint variables and all weights have to be >= 0 */
-    void setWeights(const base::VectorXd& weights){
-        if(no_variables != weights.size())
-            throw std::invalid_argument("Constraint " + config.name + ": Size of weight vector should be "
-                                        + std::to_string(no_variables) + " but is " + std::to_string(weights.size()));
-
-        for(uint i = 0; i < weights.size(); i++)
-            if(weights(i) < 0)
-                 throw std::invalid_argument("Constraint " + config.name + ": Weights have to be >= 0, but weight "
-                                             + std::to_string(i) + " is " + std::to_string(weights(i)));
-
-        this->weights = weights;
-    }
+    void setWeights(const base::VectorXd& weights);
 
     /** Set constraint activation. Value has to be between 0 and 1. Can be used to activate(1)/deactivate(0) the constraint.*/
-    void setActivation(const double activation){
-
-        if(activation < 0 || activation > 1)
-            throw std::invalid_argument("Constraint " + config.name + ": Activation has to be between 0 and 1 but is "
-                                        + std::to_string(activation));
-        this->activation = activation;
-    }
+    void setActivation(const double activation);
 
     /** Last time an update happened on this constraint*/
     base::Time time;
@@ -102,7 +57,7 @@ public:
 
     /** Can be 0 or 1. Will be multiplied with the constraint weights. If no new reference values arrives for more than
      *  config.timeout time, this value will be set to zero*/
-    int constraint_timed_out;
+    int timeout;
 
     /** Number of constraint variables */
     uint no_variables;
@@ -114,6 +69,9 @@ public:
     /** Actual constraint as executed on the robot. For Cartesian constraints, this will be back transformed to
      *  Cartesian space and defined in root coordinates*/
     base::VectorXd y;
+
+    /** Constraint matrix */
+    base::MatrixXd A;
 };
 typedef std::vector<Constraint> ConstraintsPerPrio;
 
