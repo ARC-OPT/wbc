@@ -1,8 +1,11 @@
 # WBC Documentation
 
 WBC (Whole Body Control) is an approach for specifying and controlling complex robotic tasks based on *constraints*. 
-It was originally developed by Luis Sentis ([http://ai.stanford.edu/~lsentis/](http://ai.stanford.edu/~lsentis/)
-in the context of humanoid robotics. However, it is not limited to humanoid robot control, but can be 
-used for any robotic control task, like dual arm grasping, multi-legged walking or mobile manipulation. 
+The term was coined by Luis Sentis in his phd thesis 
+([Synthesis and Control of Whole-Body Behaviors in Humanoid Systems](http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.73.8747&rep=rep1&type=pdf)). 
+However, it is not limited to humanoid robot control, but can be 
+used for arbitrary robot control tasks like dual arm grasping, force-position control, mobile manipulation. 
+
+
 
 # [Code API](http://buildsrv01/apis/dfki-control/wbc/)
