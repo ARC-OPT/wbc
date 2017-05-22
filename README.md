@@ -6,7 +6,7 @@ The term was coined by Luis Sentis in his phd thesis
 However, it is not limited to humanoid robot control, but can be 
 used for arbitrary robot control tasks like dual arm grasping, force-position control, mobile manipulation. 
 
-![](./doc/images/wbc_prinpiple.jpg "Visual representaion of two Action models (ActionA, ActionC) and a Activity (ActionB)")
+![](https://git.hb.dfki.de/dfki-control/wbc/tree/rh5_revision/doc/images/wbc_principle.jpg)
 
 
 # [Code API](http://buildsrv01/apis/dfki-control/wbc/)
