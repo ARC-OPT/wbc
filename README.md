@@ -1,1 +1,1 @@
-# [Code API](http://buildsrv01/apis/dfki-control/wbc/))
+# [Code API](http://buildsrv01/apis/dfki-control/wbc/)
