@@ -15,5 +15,5 @@ pages:
     paths:
     - public
   only:
-  - master
+  - rh5_revision
 
