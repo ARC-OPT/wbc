@@ -1,4 +1,5 @@
 #include "ConstraintConfig.hpp"
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 
@@ -9,35 +10,46 @@ ConstraintConfig::ConstraintConfig() :
 }
 
 void ConstraintConfig::validate() const{
-    if(name.empty())
-        throw std::invalid_argument("ConstraintConfig: Constraint name must not be empty!");
-    if(activation < 0 || activation > 1)
-        throw std::invalid_argument("Constraint " + name + ": Activation must between 0 and 1, but is " + std::to_string(activation));
-    if(priority < 0)
-        throw std::invalid_argument("Constraint " + name + ": Priority must >= 0, but is " + std::to_string(priority));
+    if(name.empty()){
+        LOG_ERROR("ConstraintConfig: Constraint name must not be empty!");
+        throw std::invalid_argument("Invalid constraint config");}
+    if(activation < 0 || activation > 1){
+        LOG_ERROR("Constraint %s: Activation has to be between 0 and 1 but is ", name.c_str(), activation);
+        throw std::invalid_argument("Invalid constraint config");}
+    if(priority < 0){
+        LOG_ERROR("Constraint %s: Priority has to be >= 0, but is %i", name.c_str(), priority);
+        throw std::invalid_argument("Invalid constraint config");}
     if(type == cart){
-        if(root.empty())
-            throw std::invalid_argument("Constraint " + name + ": Root frame is empty");
-        if(tip.empty())
-            throw std::invalid_argument("Constraint " + name + ": Tip frame is empty");
-        if(ref_frame.empty())
-            throw std::invalid_argument("Constraint " + name + ": Ref frame is empty");
-        if(weights.size() != 6)
-            throw std::invalid_argument("Constraint " + name + ": Size of weight vector should be 6, but is " + std::to_string(weights.size()));
+        if(root.empty()){
+            LOG_ERROR("Constraint %s: Root frame is empty", name.c_str());
+            throw std::invalid_argument("Invalid constraint config");}
+        if(tip.empty()){
+            LOG_ERROR("Constraint %s: Tip frame is empty", name.c_str());
+            throw std::invalid_argument("Invalid constraint config");}
+        if(ref_frame.empty()){
+            LOG_ERROR("Constraint %s: Ref frame is empty", name.c_str());
+            throw std::invalid_argument("Invalid constraint config");}
+        if(weights.size() != 6){
+            LOG_ERROR("Constraint %s: Size of weight vector should be 6, but is %i", name.c_str(), weights.size());
+            throw std::invalid_argument("Invalid constraint config");}
     }
     else if(type == jnt){
-        if(weights.size() != joint_names.size())
-            throw std::invalid_argument("Constraint " + name + ": Size of weight vector should be " + std::to_string(joint_names.size()) + ", but is " + std::to_string(weights.size()));
+        if(weights.size() != joint_names.size()){
+            LOG_ERROR("Constraint %s: Size of weight vector should be %i, but is %i", name.c_str(), joint_names.size(), weights.size());
+            throw std::invalid_argument("Invalid constraint config");}
         for(size_t i = 0; i < joint_names.size(); i++)
-            if(joint_names[i].empty())
-                throw std::invalid_argument("Constraint " + name + ": Name of joint " + std::to_string(i) + " is empty!");
+            if(joint_names[i].empty()){
+                LOG_ERROR("Constraint %s: Name of joint %i is empty", name.c_str(), i);
+                throw std::invalid_argument("Invalid constraint config");}
     }
-    else
-        throw std::invalid_argument("Constraint " + name + ": Invalid constraint type: " + std::to_string(type));
+    else{
+        LOG_ERROR("Constraint %s: Invalid constraint type. Allowed types are 'jnt' and 'cart'", name.c_str());
+        throw std::invalid_argument("Invalid constraint config");}
 
     for(size_t i = 0; i < weights.size(); i++)
-        if(weights[i] < 0)
-            throw std::invalid_argument("Constraint " + name + ": Constraint weights must be >= 0, but weight " + std::to_string(i) + " is " + std::to_string(weights[i]));
+        if(weights[i] < 0){
+            LOG_ERROR("Constraint %s: Constraint weights must be >= 0, but weight %i is %f", name.c_str(), i, weights[i]);
+            throw std::invalid_argument("Invalid constraint config");}
 }
 
 uint ConstraintConfig::noOfConstraintVariables() const{

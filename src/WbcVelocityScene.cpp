@@ -4,6 +4,7 @@
 #include "JointVelocityConstraint.hpp"
 #include "CartesianVelocityConstraint.hpp"
 #include "SVD.hpp"
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 
@@ -13,14 +14,16 @@ Constraint* WbcVelocityScene::createConstraint(const ConstraintConfig &config){
         return new CartesianVelocityConstraint(config, robot_model->noOfJoints());
     else if(config.type == jnt)
         return new JointVelocityConstraint(config, robot_model->noOfJoints());
-    else
-        throw std::invalid_argument("Constraint with name " + config.name + " has an invalid constraint type: " + std::to_string(config.type));
+    else{
+        LOG_ERROR("Constraint with name %s has an invalid constraint type: %i", config.name.c_str(), config.type);
+        throw std::invalid_argument("Invalid constraint config");
+    }
 }
 
 void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
     opt_problem.prios.resize(constraints.size());
-    base::samples::RigidBodyState ref_frame, tip_in_root;
+    base::samples::RigidBodyState ref_frame, tip_in_root, root_in_base;
 
     // Create equation system
     //    Walk through all priorities and update the optimization problem. The outcome will be
@@ -46,9 +49,10 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
                 // Create constraint jacobian
                 tip_in_root = robot_model->rigidBodyState(constraint->config.root, constraint->config.tip);
+                root_in_base = robot_model->rigidBodyState(robot_model->baseFrame(), constraint->config.root);
                 constraint->jacobian.setIdentity();
                 constraint->jacobian.changeRefPoint(-tip_in_root.position);
-                constraint->jacobian.changeRefFrame(tip_in_root.getTransform());
+                constraint->jacobian.changeRefFrame(root_in_base.getTransform());
 
                 //Invert constraint Jacobian
                 svd_eigen_decomposition(constraint->jacobian, constraint->Uf, constraint->Sf, constraint->Vf, constraint->tmp);
@@ -62,7 +66,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
                 // A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root:
                 constraint->A = constraint->H.block(0, 0, n_vars, 6) * robot_model->jacobian(robot_model->baseFrame(), constraint->config.tip) -
-                        constraint->H.block(0, 0, n_vars, 6) * robot_model->jacobian(robot_model->baseFrame(), constraint->config.root);
+                                constraint->H.block(0, 0, n_vars, 6) * robot_model->jacobian(robot_model->baseFrame(), constraint->config.root);
 
                 // Convert input twist from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
                 // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
@@ -113,7 +117,6 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
         } // constraints on prio
     } // priorities
-
 
     // Solve equation system
     solver->solve(opt_problem, solver_output);

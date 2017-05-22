@@ -72,6 +72,13 @@ public:
     virtual void solve(const OptProblem &opt_problem, base::VectorXd &solver_output);
 
     /**
+     * @brief setJointWeights Sets the joint weight vector for all priorities
+     * @param weights Has to have same size as number of joints. Values have to be >= 0! A values of 0 means that the joint does not
+     *                contribute to the solution at all.
+     */
+    void setJointWeights(const base::VectorXd& weights);
+
+    /**
      * @brief setJointWeights Sets the joint weight vector for the given priority
      * @param weights Has to have same size as number of joints. Values have to be >= 0! A values of 0 means that the joint does not
      *                contribute to the solution at all.

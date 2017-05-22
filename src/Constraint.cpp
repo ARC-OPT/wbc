@@ -1,4 +1,5 @@
 #include "Constraint.hpp"
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 
@@ -48,23 +49,25 @@ void Constraint::checkTimeout(){
 }
 
 void Constraint::setWeights(const base::VectorXd& weights){
-    if(no_variables != weights.size())
-        throw std::invalid_argument("Constraint " + config.name + ": Size of weight vector should be "
-                                    + std::to_string(no_variables) + " but is " + std::to_string(weights.size()));
+    if(no_variables != weights.size()){
+        LOG_ERROR("Constraint %s: Size of weight vector should be %i but is %i", config.name.c_str(), no_variables, weights.size())
+        throw std::invalid_argument("Invalid constraint weights");
+    }
 
     for(uint i = 0; i < weights.size(); i++)
-        if(weights(i) < 0)
-            throw std::invalid_argument("Constraint " + config.name + ": Weights have to be >= 0, but weight "
-                                        + std::to_string(i) + " is " + std::to_string(weights(i)));
+        if(weights(i) < 0){
+            LOG_ERROR("Constraint %s: Weight values should be > 0, but weight %i is %f", config.name.c_str(), i, weights(i));
+            throw std::invalid_argument("Invalid constraint weights");
+        }
 
     this->weights = weights;
 }
 
 void Constraint::setActivation(const double activation){
-
-    if(activation < 0 || activation > 1)
-        throw std::invalid_argument("Constraint " + config.name + ": Activation has to be between 0 and 1 but is "
-                                    + std::to_string(activation));
+    if(activation < 0 || activation > 1){
+        LOG_ERROR("Constraint %s: Activation has to be between 0 and 1 but is ", config.name.c_str(), activation);
+        throw std::invalid_argument("Invalid constraint activation");
+    }
     this->activation = activation;
 }
 

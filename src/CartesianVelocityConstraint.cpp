@@ -1,13 +1,14 @@
 #include "CartesianVelocityConstraint.hpp"
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 
 CartesianVelocityConstraint::CartesianVelocityConstraint(ConstraintConfig config, uint n_robot_joints)
-    : Constraint(config, n_robot_joints){
+    : CartesianConstraint(config, n_robot_joints){
 
     uint n_vars = config.noOfConstraintVariables();
 
-    jacobian.setZero(6,n_robot_joints);
+    jacobian.setZero(6,n_vars);
     H.setZero(n_vars,6);
     Uf.resize(6, n_vars);
     Uf.setIdentity();
@@ -20,8 +21,10 @@ CartesianVelocityConstraint::CartesianVelocityConstraint(ConstraintConfig config
 void CartesianVelocityConstraint::setReference(const base::samples::RigidBodyState& ref){
 
     if(!ref.hasValidVelocity() ||
-       !ref.hasValidAngularVelocity())
-        throw std::invalid_argument("Constraint " + config.name + " has invalid velocity and/or angular velocity");
+       !ref.hasValidAngularVelocity()){
+        LOG_ERROR("Constraint %s has invalid velocity and/or angular velocity", config.name.c_str())
+        throw std::invalid_argument("Invalid constraint reference value");
+    }
 
     this->time = ref.time;
     this->y_ref.segment(0,3) = ref.velocity;

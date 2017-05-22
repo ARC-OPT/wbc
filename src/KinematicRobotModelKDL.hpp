@@ -7,6 +7,7 @@
 #include <kdl/jacobian.hpp>
 #include <base/samples/Joints.hpp>
 #include <base/samples/RigidBodyState.hpp>
+#include "Jacobian.hpp"
 
 namespace wbc{
 
@@ -18,13 +19,14 @@ class KinematicChainKDL;
 class KinematicRobotModelKDL : public RobotModel{
 
     typedef std::map<std::string, KinematicChainKDL*> KinematicChainKDLMap;
+    typedef std::map<std::string, Jacobian> JacobianMap;
 
 protected:
     KDL::Tree full_tree;
     base::samples::Joints current_joint_state;
     std::vector<base::samples::RigidBodyState> current_poses;
     KinematicChainKDLMap kdl_chain_map;
-    base::MatrixXd robot_jacobian;
+    JacobianMap jac_map;
     base::samples::Joints joint_state;
 
     void createChain(const std::string &root_frame, const std::string &tip_frame);
@@ -40,7 +42,7 @@ public:
      *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
      *  of the trees can be updated online by calling update() with poses parameter appropriately set. This will also create the
      *  joint index map*/
-    void addTree(const KDL::Tree& tree, const std::string& hook = "", const base::samples::RigidBodyState &pose = base::samples::RigidBodyState());
+    bool addTree(const KDL::Tree& tree, const std::string& hook = "", const base::samples::RigidBodyState &pose = base::samples::RigidBodyState());
 
     /**
      * Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
@@ -60,7 +62,7 @@ public:
 
     /** Returns the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
         the root frame with the rotation point at the tip frame*/
-    virtual const base::MatrixXd& jacobian(const std::string &root_frame, const std::string &tip_frame);
+    virtual const base::MatrixXd &jacobian(const std::string &root_frame, const std::string &tip_frame);
 
     /** Check if a frame is available in the model*/
     bool hasFrame(const std::string &name);

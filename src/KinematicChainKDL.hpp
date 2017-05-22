@@ -17,7 +17,7 @@ namespace wbc{
 
 class KinematicChainKDL{
 public:
-    KinematicChainKDL(KDL::Chain chain);
+    KinematicChainKDL(const KDL::Chain &chain, const std::string& root_frame, const std::string& tip_frame);
     ~KinematicChainKDL();
 
     /** Update joints and links of the kinematic chain*/

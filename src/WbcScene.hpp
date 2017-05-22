@@ -32,7 +32,7 @@ public:
     virtual ~WbcScene(){}
 
     /** Configure the WBC scene. Create constraints and sort them by priority*/
-    void configure(const std::vector<ConstraintConfig> &config);
+    bool configure(const std::vector<ConstraintConfig> &config);
 
     /** Update the wbc scene with the (updated) robot model and return the current solver output*/
     virtual void solve(base::commands::Joints& ctrl_output) = 0;

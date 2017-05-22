@@ -1,4 +1,5 @@
 #include "WbcScene.hpp"
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 
@@ -12,12 +13,14 @@ void WbcScene::clearConstraints(){
     constraints.clear();
 }
 
-void WbcScene::configure(const std::vector<ConstraintConfig> &config){
+bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
 
     clearConstraints();
 
-    if(config.empty())
-        throw std::invalid_argument("WbcScene: Constraint configuration is empty");
+    if(config.empty()){
+        LOG_ERROR("Constraint configuration is empty");
+        return false;
+    }
 
     std::vector< std::vector<ConstraintConfig> > sorted_config;
     sortConstraintConfig(config, sorted_config);
@@ -32,6 +35,8 @@ void WbcScene::configure(const std::vector<ConstraintConfig> &config){
             constraints[i][j] = createConstraint(sorted_config[i][j]);
     }
     n_constraint_variables_per_prio = getNConstraintVariablesPerPrio(config);
+
+    return true;
 }
 
 Constraint* WbcScene::getConstraint(const std::string& name){
@@ -97,7 +102,7 @@ std::vector<int> WbcScene::getNConstraintVariablesPerPrio(const std::vector<Cons
     std::vector< std::vector<ConstraintConfig> > sorted_config;
     sortConstraintConfig(config, sorted_config);
 
-   std::vector<int> nn_pp(sorted_config.size());
+    std::vector<int> nn_pp(sorted_config.size());
     for(size_t i = 0; i < sorted_config.size(); i++){
         nn_pp[i] = 0;
         for(size_t j = 0; j < sorted_config[i].size(); j++)

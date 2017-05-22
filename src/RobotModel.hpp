@@ -44,7 +44,7 @@ public:
 
     /** Returns the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
         the root frame with the rotation point at the tip frame*/
-    virtual const base::MatrixXd& jacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
+    virtual const base::MatrixXd &jacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
 
     /** Return the overall number of joints in the robot model*/
     uint noOfJoints(){return joint_names.size();}

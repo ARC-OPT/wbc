@@ -26,7 +26,7 @@ void Jacobian::changeRefFrame(const base::Affine3d& a){
         vel = col(i).segment(0,3);
         rot = col(i).segment(3,3);
         col(i).segment(3,3) = a.rotation() * rot;
-        col(i).segment(0,3) = a.rotation() * vel + a.translation() * col(i).segment(3,3);
+        col(i).segment(0,3) = a.rotation() * vel + a.translation().cross(rot);
     }
 }
 

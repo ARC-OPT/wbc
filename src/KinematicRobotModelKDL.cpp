@@ -1,12 +1,12 @@
 #include "KinematicRobotModelKDL.hpp"
 #include "KinematicChainKDL.hpp"
 #include <kdl_conversions/KDLConversions.hpp>
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 
 KinematicRobotModelKDL::KinematicRobotModelKDL(const std::vector<std::string> &joint_names, const std::string& base_frame)
-    : RobotModel(joint_names, base_frame),
-      robot_jacobian(base::MatrixXd(6,joint_names.size())){
+    : RobotModel(joint_names, base_frame){
 }
 
 KinematicRobotModelKDL::~KinematicRobotModelKDL(){
@@ -22,32 +22,43 @@ KinematicRobotModelKDL::~KinematicRobotModelKDL(){
 
 void KinematicRobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
     KDL::Chain chain;
-    if(!full_tree.getChain(root_frame, tip_frame, chain))
-        throw std::invalid_argument("KinematicRobotModelKDL: Unable to extract chain from " + root_frame + " to " + tip_frame + " from KDL Tree");
+    if(!full_tree.getChain(root_frame, tip_frame, chain)){
+        LOG_ERROR("Unable to extract kinematics chain from %s to %s from KDL tree", root_frame.c_str(), tip_frame.c_str());
+        throw std::invalid_argument("Invalid robot model config");
+    }
 
-    KinematicChainKDL* kin_chain = new KinematicChainKDL(chain);
+    KinematicChainKDL* kin_chain = new KinematicChainKDL(chain, root_frame, tip_frame);
     kin_chain->update(current_joint_state, current_poses);
     kdl_chain_map[root_frame + "_" + tip_frame] = kin_chain;
+
+    jac_map[root_frame + "_" + tip_frame] = Jacobian(kin_chain->joint_names.size());
 }
 
-void KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& hook, const base::samples::RigidBodyState &pose){
+bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& hook, const base::samples::RigidBodyState &pose){
 
     if(full_tree.getNrOfSegments() == 0)
         full_tree = tree;
     else{
-        if(hook.empty())
-            throw std::invalid_argument("KinematicRobotModelKDL::addTree: Unexpected empty hook name. To which segment do you want to attach the tree?");
-        if(!hasFrame(hook))
-            throw std::invalid_argument("KinematicRobotModelKDL::addTree: Hook name is " + hook + ", but this segment does not exist in tree");
+        if(hook.empty()){
+            LOG_ERROR("Unexpected empty hook name. To which segment do you want to attach the tree?");
+            return false;
+        }
+        if(!hasFrame(hook)){
+            LOG_ERROR("Hook name is %s, but this segment does not exist in tree", hook.c_str());
+            return false;
+        }
 
         std::string root = tree.getRootSegment()->first;
         KDL::Frame pose_kdl;
         kdl_conversions::RigidBodyState2KDL(pose, pose_kdl);
         if(!full_tree.addSegment(KDL::Segment(root, KDL::Joint(KDL::Joint::None), pose_kdl), hook))
-            throw std::invalid_argument("Unable to attach segment " + root + " to existing tree segment " + hook);
-        if(!full_tree.addTree(tree, root))
-            throw std::invalid_argument("Unable to attach tree with root segment " + root);
+            throw std::invalid_argument("Unable to attach segment " + root + " to existing tree segment " + hook.c_str());
+        if(!full_tree.addTree(tree, root)){
+            LOG_ERROR("Unable to attach tree with root segment %s", root.c_str());
+            return false;
+        }
     }
+    return true;
 }
 
 void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
@@ -68,16 +79,20 @@ const base::samples::RigidBodyState &KinematicRobotModelKDL::rigidBodyState(cons
         createChain(root_frame, tip_frame);
 
     KinematicChainKDL* kdl_chain = kdl_chain_map[root_frame + "_" + tip_frame];
-    if(kdl_chain->last_update.isNull())
-        throw std::runtime_error("KinematicRobotModelKDL: You have to call update() at least once before requesting kinematic information!");
+    if(kdl_chain->last_update.isNull()){
+        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
+        throw std::runtime_error("Invalid call to rigidBodyState()");
+    }
 
     return kdl_chain->rigid_body_state;
 }
 
 const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vector<std::string> &joint_names){
 
-    if(current_joint_state.time.isNull())
-        throw std::runtime_error("KinematicRobotModelKDL: You have to call update() at least once before requesting kinematic information!");
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
+        throw std::runtime_error("Invalid call to jointState()");
+    }
 
     joint_state.resize(joint_names.size());
     joint_state.names = joint_names;
@@ -88,8 +103,8 @@ const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vecto
             joint_state[i] = current_joint_state.getElementByName(joint_names[i]);
         }
         catch(std::exception e){
-            throw std::invalid_argument("KinematicRobotModelKDL: Requested state of joint "
-                                        + joint_names[i] + " but this joint does not exist in robot model");
+            LOG_ERROR("KinematicRobotModelKDL: Requested state of joint %s but this joint does not exist in robot model", joint_names[i].c_str());
+            throw std::invalid_argument("Invalid call to jointState()");
         }
     }
     return joint_state;
@@ -102,15 +117,17 @@ const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_f
         createChain(root_frame, tip_frame);
 
     KinematicChainKDL* kdl_chain = kdl_chain_map[root_frame + "_" + tip_frame];
-    if(kdl_chain->last_update.isNull())
-        throw std::runtime_error("KinematicRobotModelKDL: You have to call update() at least once before requesting kinematic information!");
+    if(kdl_chain->last_update.isNull()){
+        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
+        throw std::runtime_error("Invalid call to jacobian()");
+    }
 
-    robot_jacobian.setZero(6,noOfJoints());
+    jac_map[root_frame + "_" + tip_frame].setZero(6,noOfJoints());
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        robot_jacobian.col(idx) = kdl_chain->jacobian.data.col(j);
+        jac_map[root_frame + "_" + tip_frame].col(idx) = kdl_chain->jacobian.data.col(j);
     }
-    return robot_jacobian;
+    return jac_map[root_frame + "_" + tip_frame];
 }
 
 bool KinematicRobotModelKDL::hasFrame(const std::string &name){

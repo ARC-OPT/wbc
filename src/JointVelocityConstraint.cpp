@@ -1,17 +1,23 @@
 #include "JointVelocityConstraint.hpp"
+#include <base-logging/Logging.hpp>
 
 namespace wbc{
 
 JointVelocityConstraint::JointVelocityConstraint(ConstraintConfig config, uint n_robot_joints)
-    : Constraint(config, n_robot_joints){
+    : JointConstraint(config, n_robot_joints){
+
+}
+
+JointVelocityConstraint::~JointVelocityConstraint(){
 
 }
 
 void JointVelocityConstraint::setReference(const base::commands::Joints& ref){
 
-    if(ref.size() != config.noOfConstraintVariables())
-        throw std::invalid_argument("Constraint " + config.name + ": Size of reference input is "
-                                    + std::to_string(ref.size()) + " but should be " + std::to_string(no_variables));
+    if(ref.size() != config.noOfConstraintVariables()){
+        LOG_ERROR("Constraint %s: Size of reference input is %i, but should be %i", config.name.c_str(), ref.size(), no_variables);
+        throw std::invalid_argument("Invalid constraint reference input");
+    }
 
     // This value will also be used for checking the constraint timeout!
     this->time = ref.time;
@@ -22,13 +28,14 @@ void JointVelocityConstraint::setReference(const base::commands::Joints& ref){
             idx = ref.mapNameToIndex(config.joint_names[i]);
         }
         catch(std::exception e){
-            throw std::invalid_argument("Constraint " + config.name + " expects joint "
-                                        + config.joint_names[i] + " but this joint is not in reference vector");
+            LOG_ERROR("Constraint %s expects joint %s  but this joint is not in reference vector", config.name.c_str(), config.joint_names[i]);
+            throw std::invalid_argument("Invalid constraint reference input");
         }
 
-        if(!ref[idx].hasSpeed())
-            throw std::invalid_argument("Constraint " + config.name + ": Reference input for joint " +
-                                        config.joint_names[i] + " has no speed value");
+        if(!ref[idx].hasSpeed()){
+            LOG_ERROR("Constraint %s: Reference input for joint for joint %s has no valid speed value", config.name.c_str(), config.joint_names[i]);
+            throw std::invalid_argument("Invalid constraint reference input");
+        }
 
         this->y_ref(i) = ref[idx].speed;
     }

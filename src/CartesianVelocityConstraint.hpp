@@ -1,19 +1,19 @@
 #ifndef CARTESIANVELOCITYCONSTRAINT_HPP
 #define CARTESIANVELOCITYCONSTRAINT_HPP
 
-#include "Constraint.hpp"
+#include "CartesianConstraint.hpp"
 #include "Jacobian.hpp"
 #include <base/samples/RigidBodyState.hpp>
 
 namespace wbc{
 
-class CartesianVelocityConstraint : public Constraint{
+class CartesianVelocityConstraint : public CartesianConstraint{
 public:
     CartesianVelocityConstraint(ConstraintConfig config, uint n_robot_joints);
 
     /** Update the Cartesian reference input for this constraint. If the Constraint is a joint space
      *  constraint, you should throw an exception*/
-    void setReference(const base::samples::RigidBodyState& ref);
+    virtual void setReference(const base::samples::RigidBodyState& ref);
 
     //Helper variables required for svd
     Jacobian jacobian;

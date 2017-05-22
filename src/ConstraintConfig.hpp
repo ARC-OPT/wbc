@@ -81,7 +81,7 @@ public:
     void validate() const;
 
     /** Return the number of constraint variables for this config depending on the constraint type*/
-    uint noOfConstraintVariables() const;
+    unsigned int noOfConstraintVariables() const;
 };
 
 }

@@ -1,8 +1,8 @@
 #include "HierarchicalLeastSquaresSolver.hpp"
-#include <base-logging/Logging.hpp>
 #include "OptProblem.hpp"
 #include <stdexcept>
 #include "SVD.hpp"
+#include <base-logging/Logging.hpp>
 
 using namespace std;
 
@@ -20,51 +20,40 @@ bool HierarchicalLeastSquaresSolver::configure(const std::vector<int>& n_constra
     priorities.clear();
 
     if(n_joints == 0){
-        LOG_ERROR("No of joint variables must be > 0");
-        return false;
+        LOG_ERROR("Number of joint must be >0!");
+        throw std::invalid_argument("Invalid Solver config");
     }
 
     if(n_constraint_per_prio.size() == 0){
         LOG_ERROR("No of priority levels (size of n_constraint_per_prio) has to be > 0");
-        return false;
+        throw std::invalid_argument("Invalid Solver config");
     }
 
     for(uint i = 0; i < n_constraint_per_prio.size(); i++){
         if(n_constraint_per_prio[i] == 0){
             LOG_ERROR("No of constraint variables on each priority level must be > 0");
-            return false;
+            throw std::invalid_argument("Invalid Solver config");
         }
     }
 
-    for(uint prio = 0; prio < n_constraint_per_prio.size(); prio++){
+    for(uint prio = 0; prio < n_constraint_per_prio.size(); prio++)
         priorities.push_back(PriorityData(n_constraint_per_prio[prio], n_joints));
-    }
 
     no_of_joints = n_joints;
     proj_mat.resize(no_of_joints, no_of_joints);
     proj_mat.setIdentity();
-    s_vals.resize(no_of_joints);
-    s_vals.setZero();
+    s_vals.setZero(no_of_joints);
     sing_vect_r.resize(no_of_joints, no_of_joints);
     sing_vect_r.setIdentity();
-    s_vals_inv.resize( no_of_joints, no_of_joints);
-    s_vals_inv.setZero();
-    damped_s_vals_inv.resize( no_of_joints, no_of_joints);
-    damped_s_vals_inv.setZero();
-    Wq_V.resize(no_of_joints, no_of_joints);
-    Wq_V.setZero();
-    Wq_V_s_vals_inv.resize(no_of_joints, no_of_joints);
-    Wq_V_s_vals_inv.setZero();
-    Wq_V_damped_s_vals_inv.resize(no_of_joints, no_of_joints);
-    Wq_V_damped_s_vals_inv.setZero();
-
-    configured = true;
-
-    tmp.resize(no_of_joints);
-    tmp.setZero();
-
+    s_vals_inv.setZero(no_of_joints, no_of_joints);
+    damped_s_vals_inv.setZero(no_of_joints, no_of_joints);
+    Wq_V.setZero(no_of_joints, no_of_joints);
+    Wq_V_s_vals_inv.setZero(no_of_joints, no_of_joints);
+    Wq_V_damped_s_vals_inv.setZero(no_of_joints, no_of_joints);
+    tmp.setZero(no_of_joints);
     max_solver_output.setConstant(no_of_joints, std::numeric_limits<double>::infinity());
 
+    configured = true;
     return true;
 }
 
@@ -81,8 +70,7 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, base::
         throw std::invalid_argument("Invalid solver input");
     }
 
-    solver_output.resize(no_of_joints);
-    solver_output.setZero();
+    solver_output.setZero(no_of_joints);
 
     // Init projection matrix as identity, so that the highest priority can look for a solution in whole configuration space
     proj_mat.setIdentity();
@@ -186,6 +174,11 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, base::
     ///////////////
 }
 
+void HierarchicalLeastSquaresSolver::setJointWeights(const base::VectorXd& weights){
+    for(size_t i = 0; i < priorities.size(); i++)
+        setJointWeights(weights, i);
+}
+
 void HierarchicalLeastSquaresSolver::setJointWeights(const base::VectorXd& weights, const uint prio){
     if(prio < 0 ||prio >= priorities.size()){
         LOG_ERROR("Cannot set joint weights on priority %i. Number of priority levels is %i", prio, priorities.size());
@@ -198,7 +191,7 @@ void HierarchicalLeastSquaresSolver::setJointWeights(const base::VectorXd& weigh
             if(weights(i) >= 0)
                 priorities[prio].joint_weight_mat(i,i) = sqrt(weights(i));
             else{
-                LOG_ERROR("Entries of joint weight vector have to >= 0, but element %i is %f", i, weights(i));
+                LOG_ERROR("Entries of joint weight vector have to be >= 0, but element %i is %f", i, weights(i));
                 throw std::invalid_argument("Invalid Joint weight vector");
             }
         }
