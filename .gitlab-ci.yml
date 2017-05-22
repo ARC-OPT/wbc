@@ -1,0 +1,19 @@
+# This file is a template, and might need editing before it works on your project.
+# Full project: https://gitlab.com/pages/doxygen
+image: alpine
+
+pages:
+  environment: api
+  before_script:
+  - apk add --no-cache doxygen
+  script:
+  - doxygen Doxyfile
+  - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  - mv doc_html/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  artifacts:
+    paths:
+    - public
+  only:
+  - master
+
