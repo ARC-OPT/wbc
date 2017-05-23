@@ -76,7 +76,7 @@ public:
      * @param weights Has to have same size as number of joints. Values have to be >= 0! A values of 0 means that the joint does not
      *                contribute to the solution at all.
      */
-    void setJointWeights(const base::VectorXd& weights);
+    virtual void setJointWeights(const base::VectorXd& weights);
 
     /**
      * @brief setJointWeights Sets the joint weight vector for the given priority

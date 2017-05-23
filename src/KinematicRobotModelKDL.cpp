@@ -2,11 +2,12 @@
 #include "KinematicChainKDL.hpp"
 #include <kdl_conversions/KDLConversions.hpp>
 #include <base-logging/Logging.hpp>
+#include <kdl_parser/kdl_parser.hpp>
+#include "RobotModelConfig.hpp"
 
 namespace wbc{
 
-KinematicRobotModelKDL::KinematicRobotModelKDL(const std::vector<std::string> &joint_names, const std::string& base_frame)
-    : RobotModel(joint_names, base_frame){
+KinematicRobotModelKDL::KinematicRobotModelKDL(){
 }
 
 KinematicRobotModelKDL::~KinematicRobotModelKDL(){
@@ -18,6 +19,35 @@ KinematicRobotModelKDL::~KinematicRobotModelKDL(){
     for(it = kdl_chain_map.begin(); it != kdl_chain_map.end(); it++)
         delete it->second;
     kdl_chain_map.clear();
+}
+
+bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config,
+                                       const std::vector<std::string> &joint_names,
+                                       const std::string &base_frame){
+
+    for(size_t i = 0; i < model_config.size(); i++){
+
+        KDL::Tree tree;
+        if(!kdl_parser::treeFromFile(model_config[i].file, tree)){
+            LOG_ERROR("Unable to parse urdf model from file %s", model_config[i].file.c_str());
+            return false;
+        }
+
+        if(!addTree(tree, model_config[i].hook, model_config[i].initial_pose))
+            return false;
+    }
+
+    // If no joint names are given, take them from KDL Tree
+    this->joint_names = joint_names;
+    if(this->joint_names.empty())
+        this->joint_names = jointNamesFromTree(full_tree);
+
+    // If no base frame is given, take it from KDL tree
+    this->base_frame = base_frame;
+    if(this->base_frame.empty())
+        full_tree.getRootSegment()->second.segment.getName();
+
+    return true;
 }
 
 void KinematicRobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
@@ -134,7 +164,7 @@ bool KinematicRobotModelKDL::hasFrame(const std::string &name){
     return full_tree.getSegments().count(name) > 0;
 }
 
-std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::Tree &tree){
+std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::Tree &tree) const{
 
     std::vector<std::string> joint_names;
     for (auto& kv : tree.getSegments()) {

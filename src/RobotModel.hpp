@@ -14,6 +14,8 @@ namespace base{
 
 namespace wbc{
 
+class RobotModelConfig;
+
 /** Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC*/
 class RobotModel{
 
@@ -22,11 +24,21 @@ protected:
     std::string base_frame;
 
 public:
-    RobotModel(const std::vector<std::string> &joint_names, const std::string &base_frame) :
-        joint_names(joint_names),
-        base_frame(base_frame){}
+    RobotModel(){}
 
     virtual ~RobotModel(){}
+
+    /**
+     * @brief Load and configure the robot model
+     * @param model_config The models configuration(s). These include the path to the robot model file(s), the relative poses and hooks
+     *                     to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
+     * @param joint_names Order of joint names within the model.
+     * @param base_frame Base frame of the model.
+     * @return True in case of success, else false
+     */
+    virtual bool configure(const std::vector<RobotModelConfig>& model_config,
+                           const std::vector<std::string> &joint_names = std::vector<std::string>(),
+                           const std::string &base_frame = "") = 0;
 
     /**
      * @brief Update the robot model

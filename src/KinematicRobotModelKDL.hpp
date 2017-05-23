@@ -11,6 +11,7 @@
 
 namespace wbc{
 
+class RobotModelConfig;
 class KinematicChainKDL;
 
 /** This kinematic model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added
@@ -29,20 +30,42 @@ protected:
     JacobianMap jac_map;
     base::samples::Joints joint_state;
 
+    /**
+     * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree
+     * @param root_frame Root frame of the chain
+     * @param tip_frame Tip frame of the chain
+     */
     void createChain(const std::string &root_frame, const std::string &tip_frame);
 
-public:
-    /** The joint_names parameter defines the order of joints within the model, e.g. the column order in the Jacobians. If left empty, the
-     *  joint order will be the same as in the overall KDL::Tree, which is alphabetical.
-     */
-    KinematicRobotModelKDL(const std::vector<std::string> &joint_names, const std::string& base_frame);
-    virtual ~KinematicRobotModelKDL();
 
     /** Add a KDL Tree to the model. If the model is empty, the overall KDL::Tree will be replaced by the given tree. If there
      *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
      *  of the trees can be updated online by calling update() with poses parameter appropriately set. This will also create the
      *  joint index map*/
     bool addTree(const KDL::Tree& tree, const std::string& hook = "", const base::samples::RigidBodyState &pose = base::samples::RigidBodyState());
+
+public:
+    /** The joint_names parameter defines the order of joints within the model, e.g. the column order in the Jacobians. If left empty, the
+     *  joint order will be the same as in the overall KDL::Tree, which is alphabetical.
+     */
+    KinematicRobotModelKDL();
+    virtual ~KinematicRobotModelKDL();
+
+
+    /**
+     * @brief Load and configure the robot model. In this implementation, each model part is a URDF file that will be parsed into a KDL tree.
+     *  If the overall model is empty, the overall KDL::Tree will be replaced by the given tree. If there
+     *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
+     *  of the trees can be updated online by calling update() with poses parameter appropriately set.
+     * @param model_config The models configuration(s). These include the path to the URDF model file(s), the relative poses and hooks
+     *                     to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
+     * @param joint_names Order of joint names within the model. If left empty, the order will be the same as in the KDL tree (alphabetical)
+     * @param base_frame Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model.
+     * @return True in case of success, else false
+     */
+    virtual bool configure(const std::vector<RobotModelConfig>& model_config,
+                           const std::vector<std::string> &joint_names = std::vector<std::string>(),
+                           const std::string &base_frame = "");
 
     /**
      * Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
@@ -68,7 +91,7 @@ public:
     bool hasFrame(const std::string &name);
 
     /** Return all non-fixed joints from the given KDL tree*/
-    static std::vector<std::string> jointNamesFromTree(const KDL::Tree &tree);
+    std::vector<std::string> jointNamesFromTree(const KDL::Tree &tree) const;
 };
 
 }

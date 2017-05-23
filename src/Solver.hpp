@@ -28,6 +28,13 @@ public:
      * @param solver_output
      */
     virtual void solve(const OptProblem &opt_problem, base::VectorXd &solver_output) = 0;
+
+    /**
+     * @brief Sets the weight for each individual joint.
+     * @param weights Vector size has to be same as number of joints (see configure()). Weight values have to be >= 0.
+     * A zero weights means that the joint is not considered for the solution.
+     */
+    virtual void setJointWeights(const base::VectorXd& weights) = 0;
 };
 }
 
