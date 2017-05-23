@@ -14,8 +14,8 @@ JointVelocityConstraint::~JointVelocityConstraint(){
 
 void JointVelocityConstraint::setReference(const base::commands::Joints& ref){
 
-    if(ref.size() != config.noOfConstraintVariables()){
-        LOG_ERROR("Constraint %s: Size of reference input is %i, but should be %i", config.name.c_str(), ref.size(), no_variables);
+    if(ref.size() != config.nVariables()){
+        LOG_ERROR("Constraint %s: Size of reference input is %i, but should be %i", config.name.c_str(), ref.size(), config.nVariables());
         throw std::invalid_argument("Invalid constraint reference input");
     }
 

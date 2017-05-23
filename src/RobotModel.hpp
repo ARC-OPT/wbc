@@ -16,7 +16,9 @@ namespace wbc{
 
 class RobotModelConfig;
 
-/** Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC*/
+/**
+ * @brief Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC
+ */
 class RobotModel{
 
 protected:
@@ -25,7 +27,6 @@ protected:
 
 public:
     RobotModel(){}
-
     virtual ~RobotModel(){}
 
     /**

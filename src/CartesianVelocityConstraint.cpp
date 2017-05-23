@@ -1,12 +1,13 @@
 #include "CartesianVelocityConstraint.hpp"
 #include <base-logging/Logging.hpp>
+#include <base/samples/RigidBodyState.hpp>
 
 namespace wbc{
 
 CartesianVelocityConstraint::CartesianVelocityConstraint(ConstraintConfig config, uint n_robot_joints)
     : CartesianConstraint(config, n_robot_joints){
 
-    uint n_vars = config.noOfConstraintVariables();
+    uint n_vars = config.nVariables();
 
     jacobian.setZero(6,n_vars);
     H.setZero(n_vars,6);

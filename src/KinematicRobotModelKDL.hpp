@@ -14,7 +14,8 @@ namespace wbc{
 class RobotModelConfig;
 class KinematicChainKDL;
 
-/** This kinematic model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added
+/**
+ *  @brief This model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added
  *  and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios.
  */
 class KinematicRobotModelKDL : public RobotModel{
@@ -23,12 +24,12 @@ class KinematicRobotModelKDL : public RobotModel{
     typedef std::map<std::string, Jacobian> JacobianMap;
 
 protected:
-    KDL::Tree full_tree;
-    base::samples::Joints current_joint_state;
-    std::vector<base::samples::RigidBodyState> current_poses;
-    KinematicChainKDLMap kdl_chain_map;
-    JacobianMap jac_map;
-    base::samples::Joints joint_state;
+    KDL::Tree full_tree;                                       /** Overall kinematic tree*/
+    base::samples::Joints current_joint_state;                 /** Last joint state that was passed through the call of update()*/
+    std::vector<base::samples::RigidBodyState> current_poses;  /** Last poses that were passed through the call of update()*/
+    KinematicChainKDLMap kdl_chain_map;                        /** Map of KDL Chains. Entries are generated through calls of rigidBodyState() or jacobian()*/
+    JacobianMap jac_map;                                       /** Map of robot jacobians for all kinematic chains*/
+    base::samples::Joints joint_state;                         /** Helper variable*/
 
     /**
      * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree
@@ -45,20 +46,16 @@ protected:
     bool addTree(const KDL::Tree& tree, const std::string& hook = "", const base::samples::RigidBodyState &pose = base::samples::RigidBodyState());
 
 public:
-    /** The joint_names parameter defines the order of joints within the model, e.g. the column order in the Jacobians. If left empty, the
-     *  joint order will be the same as in the overall KDL::Tree, which is alphabetical.
-     */
     KinematicRobotModelKDL();
     virtual ~KinematicRobotModelKDL();
 
-
     /**
-     * @brief Load and configure the robot model. In this implementation, each model part is a URDF file that will be parsed into a KDL tree.
+     * @brief Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree.
      *  If the overall model is empty, the overall KDL::Tree will be replaced by the given tree. If there
-     *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
+     *  is already a KDL Tree, the new tree will be attached with the given pose to the 'hook' frame of the overall tree. The relative poses
      *  of the trees can be updated online by calling update() with poses parameter appropriately set.
      * @param model_config The models configuration(s). These include the path to the URDF model file(s), the relative poses and hooks
-     *                     to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
+     *  to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
      * @param joint_names Order of joint names within the model. If left empty, the order will be the same as in the KDL tree (alphabetical)
      * @param base_frame Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model.
      * @return True in case of success, else false
@@ -68,23 +65,34 @@ public:
                            const std::string &base_frame = "");
 
     /**
-     * Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
-     * when requesting rigid body states, Jacobians or joint states. Note that
-     *
+     * @brief Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
+     *  when requesting rigid body states, Jacobians or joint states. Note that
      * @param joint_state The joint_state vector. Has to contain all robot joints.
-     * @param poses Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model.
+     * @param poses Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model. The source frame
+     *  of the given rigid body state has to match the segment name in the KDL Tree that shall be updated
      */
     virtual void update(const base::samples::Joints& joint_state,
                         const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>());
 
-    /** Returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates!*/
+    /**
+     * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
+     *  This will create a kinematic chain between root and tip frame, if called for the first time with the given arguments.
+     * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
+     * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+     */
     virtual const base::samples::RigidBodyState &rigidBodyState(const std::string &root_frame, const std::string &tip_frame);
 
-    /** Returns the current status of the given joint names */
+    /**
+     * @brief Returns the current status of the given joint names
+     * @param joint_names Has to contain only valid joints from the robot model
+     */
     virtual const base::samples::Joints& jointState(const std::vector<std::string> &joint_names);
 
-    /** Returns the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
-        the root frame with the rotation point at the tip frame*/
+    /** @brief Returns the Jacobian for the kinematic chain between root and the tip frame. By convention reference frame & reference point
+      *  of the Jacobian will be the root frame.
+      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
+      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+      */
     virtual const base::MatrixXd &jacobian(const std::string &root_frame, const std::string &tip_frame);
 
     /** Check if a frame is available in the model*/

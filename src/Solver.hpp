@@ -8,6 +8,9 @@ namespace wbc{
 
 class OptProblem;
 
+/**
+ * @brief Base class for all solvers
+ */
 class Solver{
 public:
     Solver(){}
@@ -24,15 +27,14 @@ public:
 
     /**
      * @brief solve Solve the given Linear equation system. Throw in case of an error
-     * @param linear_eqn_pp
-     * @param solver_output
+     * @param opt_problem Input optimization problem. See OptProblem.hpp for more details. Input dimensions have to match the given configuration.
+     * @param solver_output Output of the solver. Size will be same as configured number of joints
      */
     virtual void solve(const OptProblem &opt_problem, base::VectorXd &solver_output) = 0;
 
     /**
      * @brief Sets the weight for each individual joint.
-     * @param weights Vector size has to be same as number of joints (see configure()). Weight values have to be >= 0.
-     * A zero weights means that the joint is not considered for the solution.
+     * @param weights Vector size has to be same as number of joints (see configure()). Weight values have to be >= 0. A zero weights means that the joint is not considered for the solution.
      */
     virtual void setJointWeights(const base::VectorXd& weights) = 0;
 };

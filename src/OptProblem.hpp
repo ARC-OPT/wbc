@@ -6,10 +6,16 @@
 
 namespace wbc{
 
+/**
+ * @brief Generic base class for optimization problems
+ */
 class OptProblem{
 public:
 };
 
+/**
+ * @brief Describes a Weighte least squares optimization problem
+ */
 class WeightedLS{
 public:
     base::MatrixXd A;     /** Constraint matrix */
@@ -24,6 +30,9 @@ public:
     }
 };
 
+/**
+ * @brief Describes a hierarchical weighted least squares optimization problem
+ */
 class HierarchicalWeightedLS : public OptProblem{
 public:
     std::vector<WeightedLS> prios;

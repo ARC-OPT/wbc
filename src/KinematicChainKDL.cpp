@@ -3,7 +3,6 @@
 #include <kdl/chainjnttojacdotsolver.hpp>
 #include <kdl_conversions/KDLConversions.hpp>
 #include <base-logging/Logging.hpp>
-#include <kdl/frames_io.hpp>
 
 namespace wbc{
 

@@ -10,6 +10,9 @@ namespace wbc{
 class RobotModel;
 class Solver;
 
+/**
+ * @brief Base class for all wbc scenes
+ */
 class WbcScene{
 protected:
     std::vector< std::vector<Constraint*> > constraints;
@@ -18,10 +21,14 @@ protected:
     RobotModel* robot_model;
     Solver* solver;
 
-    /** Create a constraint and add it to the WBC scene*/
+    /**
+     * brief Create a constraint and add it to the WBC scene
+     */
     virtual Constraint* createConstraint(const ConstraintConfig &config) = 0;
 
-    /** Delete all constraints and free memory*/
+    /**
+     * @brief Delete all constraints and free memory
+     */
     void clearConstraints();
 
 public:
@@ -31,25 +38,41 @@ public:
 
     virtual ~WbcScene(){}
 
-    /** Configure the WBC scene. Create constraints and sort them by priority*/
+    /**
+     * @brief Configure the WBC scene. Create constraints and sort them by priority
+     * @param Constraint configuration. Size has to be > 0. All constraints have to be valid. See ConstraintConfig.hpp for more details.
+     */
     bool configure(const std::vector<ConstraintConfig> &config);
 
-    /** Update the wbc scene with the (updated) robot model and return the current solver output*/
+    /**
+     * @brief Update the wbc scene with the (updated) robot model and return the current solver output
+     * @param ctrl_output Control solution that fulfill the given constraints as good as possible
+     */
     virtual void solve(base::commands::Joints& ctrl_output) = 0;
 
-    /** Return a Particular constraint. Throw if the constraint does not exist */
+    /**
+     * @brief Return a Particular constraint. Throw if the constraint does not exist
+     */
     Constraint* getConstraint(const std::string& name);
 
-    /** True in case the given constraint exists */
+    /**
+     * @brief True in case the given constraint exists
+     */
     bool hasConstraint(const std::string& name);
 
-    /** Returns all constraints as vector */
+    /**
+     * @brief Returns all constraints as vector
+     */
     std::vector< ConstraintsPerPrio > getConstraints();
 
-    /** Sort constraint config by the priorities of the constraints */
+    /**
+     * @brief Sort constraint config by the priorities of the constraints
+     */
     static void sortConstraintConfig(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config);
 
-    /** Return number of constraints per priority, given the constraint config*/
+    /**
+     * @brief Return number of constraints per priority, given the constraint config
+     */
     static std::vector<int> getNConstraintVariablesPerPrio(const std::vector<ConstraintConfig> &config);
 };
 

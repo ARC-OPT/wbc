@@ -5,6 +5,9 @@
 
 namespace wbc{
 
+/**
+ * @brief Robot Model configuration class
+ */
 class RobotModelConfig{
 public:
     RobotModelConfig(){

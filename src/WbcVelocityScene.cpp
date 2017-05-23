@@ -41,7 +41,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
             constraints[prio][i]->checkTimeout();
             int type = constraints[prio][i]->config.type;
-            uint n_vars = constraints[prio][i]->config.noOfConstraintVariables();
+            uint n_vars = constraints[prio][i]->config.nVariables();
 
             if(type == cart){
 
@@ -95,8 +95,10 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
                     constraint->weights_root = constraint->weights; // Same of the weights
                 }
             }
-            else
-                throw std::invalid_argument("Invalid constraint type: " + std::to_string(type));
+            else{
+                LOG_ERROR("Constraint %s: Invalid type: %i", constraints[prio][i]->config.name.c_str(), type);
+                throw std::invalid_argument("Invalid constraint configuration");
+            }
 
             Constraint* constraint = constraints[prio][i];
 

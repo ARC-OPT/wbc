@@ -52,7 +52,7 @@ void ConstraintConfig::validate() const{
             throw std::invalid_argument("Invalid constraint config");}
 }
 
-uint ConstraintConfig::noOfConstraintVariables() const{
+unsigned int ConstraintConfig::nVariables() const{
     if(type == cart)
         return 6;
     else

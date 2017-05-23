@@ -8,7 +8,7 @@
 namespace wbc{
 
 /**
- * Two type of constraints are possible:
+ * Constraint Type. Two types of constraints are possible:
  *  - Cartesian constraints: The motion between two coordinate frames (root, tip) will be constrained. This can be used for operational space control, e.g.
  *                           Cartesian force/position control, obstacle avoidance, ...
  *  - Joint constraints: The motion for the given joints will be constrained. This can be used for joint space
@@ -17,7 +17,7 @@ namespace wbc{
 enum constraint_type{jnt, cart};
 
 /**
- * @brief Defines a constraint in the whole body control problem. Valid Configuration are e.g.
+ * @brief Defines a constraint in the whole body control problem. Valid Configurations are e.g.
  *        - constraint_type = cart
  *          name = "cartesian_position_contol"
  *          priority = 0
@@ -44,10 +44,11 @@ public:
     /** Constraint type, can be one of 'jnt' (joint space) or 'cart' (Cartesian) */
     constraint_type type;
 
-    /** Priority of this constraint. Must be >= 0! 0 ^= highest priority. */
+    /** Priority of this constraint. Must be >= 0! 0 corresponds to the highest priority. */
     int priority;
 
-    /** Initial weights for this constraint. Entries have to be >= 0. Can be used to balance contributions of the constraint variables.
+    /** Initial weights for this constraint. Size has to be same as number of constraint variables. Entries have to be >= 0.
+     *  Can be used to balance contributions of the constraint variables.
      *  A value of 0 means that the reference of the corresponding constraint variable will be ignored while computing the solution.
      *  Vector Size has to be same as number of constraint variables. e.g. number of joint names in case of joint space constraint,
         and 6 in case of a Cartesian Constraint */
@@ -81,7 +82,7 @@ public:
     void validate() const;
 
     /** Return the number of constraint variables for this config depending on the constraint type*/
-    unsigned int noOfConstraintVariables() const;
+    unsigned int nVariables() const;
 };
 
 }

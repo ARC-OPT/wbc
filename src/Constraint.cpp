@@ -1,5 +1,6 @@
 #include "Constraint.hpp"
 #include <base-logging/Logging.hpp>
+#include <base/Float.hpp>
 
 namespace wbc{
 
@@ -8,8 +9,9 @@ Constraint::Constraint(){
 }
 
 Constraint::Constraint(const ConstraintConfig& _config, uint n_robot_joints) :
-    config(_config),
-    no_variables(_config.noOfConstraintVariables()){
+    config(_config){
+
+    unsigned int no_variables = config.nVariables();
 
     y_ref.resize(no_variables);
     y_ref_root.resize(no_variables);
@@ -29,6 +31,9 @@ Constraint::~Constraint(){
 }
 
 void Constraint::reset(){
+
+    unsigned int no_variables = config.nVariables();
+
     y_ref_root.setConstant(no_variables, base::NaN<double>());
     y_ref.setZero(no_variables);
     A.setZero();
@@ -49,8 +54,8 @@ void Constraint::checkTimeout(){
 }
 
 void Constraint::setWeights(const base::VectorXd& weights){
-    if(no_variables != weights.size()){
-        LOG_ERROR("Constraint %s: Size of weight vector should be %i but is %i", config.name.c_str(), no_variables, weights.size())
+    if(config.nVariables() != weights.size()){
+        LOG_ERROR("Constraint %s: Size of weight vector should be %i but is %i", config.name.c_str(), config.nVariables(), weights.size())
         throw std::invalid_argument("Invalid constraint weights");
     }
 

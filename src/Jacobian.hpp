@@ -5,6 +5,9 @@
 
 namespace wbc{
 
+/**
+ * @brief Helper class to represent a Jacobian.
+ */
 class Jacobian : public base::MatrixXd{
 public:
     Jacobian();

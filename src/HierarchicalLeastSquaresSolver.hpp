@@ -8,7 +8,7 @@ namespace wbc{
 class OptProblem;
 
 /**
- * @brief Implementation of a hierarchical weighted damped least squares solver. This solver compute the solution for several hierarchially organized
+ * @brief Implementation of a hierarchical weighted damped least squares solver. This solver computes the solution for several hierarchially organized
  *        equation systems using nullspace projections. That is, the eqn system with the highest priority will be solved fully if n_rows <= n_cols
  *        the eqn system of the next priority will be solved as good as possible and so on. The solver may also include weights in solution (column) and input (row) space.
  */

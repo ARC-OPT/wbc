@@ -3,16 +3,20 @@
 
 #include "CartesianConstraint.hpp"
 #include "Jacobian.hpp"
-#include <base/samples/RigidBodyState.hpp>
 
 namespace wbc{
 
+/**
+ * @brief Implementation of a Cartesian velocity constraint.
+ */
 class CartesianVelocityConstraint : public CartesianConstraint{
 public:
     CartesianVelocityConstraint(ConstraintConfig config, uint n_robot_joints);
 
-    /** Update the Cartesian reference input for this constraint. If the Constraint is a joint space
-     *  constraint, you should throw an exception*/
+    /**
+     * @brief Update the Cartesian reference input for this constraint.
+     * @param ref Reference input for this constraint. Only the velocity part is relevant (Must have a valid velocity and angular_velocity!)
+     */
     virtual void setReference(const base::samples::RigidBodyState& ref);
 
     //Helper variables required for svd

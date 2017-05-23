@@ -106,7 +106,7 @@ std::vector<int> WbcScene::getNConstraintVariablesPerPrio(const std::vector<Cons
     for(size_t i = 0; i < sorted_config.size(); i++){
         nn_pp[i] = 0;
         for(size_t j = 0; j < sorted_config[i].size(); j++)
-            nn_pp[i] += sorted_config[i][j].noOfConstraintVariables();
+            nn_pp[i] += sorted_config[i][j].nVariables();
     }
     return nn_pp;
 }

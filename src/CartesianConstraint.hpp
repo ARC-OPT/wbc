@@ -2,17 +2,22 @@
 #define CARTESIANCONSTRAINT_HPP
 
 #include "Constraint.hpp"
-#include <base/samples/RigidBodyState.hpp>
+
+namespace base{ namespace samples{class RigidBodyState;}}
 
 namespace wbc {
 
+/**
+ * @brief Abstract interface for a constraint in Cartesian space
+ */
 class CartesianConstraint : public Constraint{
 public:
     CartesianConstraint(const ConstraintConfig& _config, uint n_robot_joints);
     virtual ~CartesianConstraint();
 
-    /** Update the Cartesian reference input for this constraint. If the Constraint is a joint space
-     *  constraint, you should throw an exception*/
+    /**
+     * @brief Update the Cartesian reference input for this constraint.
+     */
     virtual void setReference(const base::samples::RigidBodyState& ref) = 0;
 };
 
