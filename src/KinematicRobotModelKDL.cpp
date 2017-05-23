@@ -167,8 +167,10 @@ bool KinematicRobotModelKDL::hasFrame(const std::string &name){
 std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::Tree &tree) const{
 
     std::vector<std::string> joint_names;
-    for (auto& kv : tree.getSegments()) {
-        KDL::Joint joint = kv.second.segment.getJoint();
+    KDL::SegmentMap::const_iterator it;
+    const KDL::SegmentMap& segments = tree.getSegments();
+    for(it = segments.begin(); it!= segments.end(); it++) {
+        KDL::Joint joint = it->second.segment.getJoint();
         if(joint.getType() != KDL::Joint::None)
             joint_names.push_back(joint.getName());
     }
