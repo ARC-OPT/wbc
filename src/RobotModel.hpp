@@ -4,13 +4,8 @@
 #include <vector>
 #include <base/Eigen.hpp>
 #include <map>
-
-namespace base{
-    namespace samples{
-        class Joints;
-        class RigidBodyState;
-    }
-}
+#include <base/samples/RigidBodyState.hpp>
+#include <base/samples/Joints.hpp>
 
 namespace wbc{
 
@@ -26,8 +21,8 @@ protected:
     std::string base_frame;
 
 public:
-    RobotModel(){}
-    virtual ~RobotModel(){}
+    RobotModel();
+    virtual ~RobotModel();
 
     /**
      * @brief Load and configure the robot model
@@ -66,15 +61,10 @@ public:
     const std::vector<std::string>& jointNames(){return joint_names;}
 
     /** Get index of joint name*/
-    uint jointIndex(const std::string &joint_name){
-        uint idx = std::find(joint_names.begin(), joint_names.end(), joint_name) - joint_names.begin();
-        if(idx >= joint_names.size())
-            throw std::invalid_argument("Index of joint  " + joint_name + " was requested but this joint is not in robot model");
-        return idx;
-    }
+    uint jointIndex(const std::string &joint_name);
 
     /** Get the base frame of the robot*/
-    const std::string& baseFrame(){return base_frame;}
+    const std::string& baseFrame();
 
 };
 }
