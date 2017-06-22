@@ -45,7 +45,7 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
     // If no base frame is given, take it from KDL tree
     this->base_frame = base_frame;
     if(this->base_frame.empty())
-        full_tree.getRootSegment()->second.segment.getName();
+        this->base_frame = full_tree.getRootSegment()->second.segment.getName();
 
     return true;
 }
