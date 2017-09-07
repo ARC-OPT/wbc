@@ -10,4 +10,5 @@
   <depend package="base/cmake" />
   <depend package="control/kdl_conversions" />
   <depend package="eigen3" />
+  <depend package="control/kdl_parser" />
 </package>
