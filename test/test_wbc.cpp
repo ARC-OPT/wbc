@@ -1,5 +1,4 @@
 #include <boost/test/unit_test.hpp>
-#include <kdl_parser/kdl_parser.hpp>
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl_conversions/KDLConversions.hpp>
@@ -10,7 +9,7 @@
 #include "../src/CartesianVelocityConstraint.hpp"
 #include "../src/Jacobian.hpp"
 #include "../src/tools.hpp"
-#include <kdl/frames_io.hpp>
+#include "../src/RobotModelConfig.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -148,17 +147,17 @@ BOOST_AUTO_TEST_CASE(robot_model_kdl){
 
     cout<<"Testing Model Creation .."<<endl<<endl;
 
-    KDL::Tree robot_tree, object_tree;
-    BOOST_CHECK(kdl_parser::treeFromFile("../../test/data/kuka_lbr.urdf", robot_tree) == true);
-    BOOST_CHECK(kdl_parser::treeFromFile("../../test/data/object.urdf", object_tree) == true);
-
     base::samples::RigidBodyState object_pose;
     object_pose.position = base::Vector3d(0,0,2);
     object_pose.orientation.setIdentity();
 
-    KinematicRobotModelKDL* robot_model = new KinematicRobotModelKDL(joint_names, "kuka_lbr_base");
-    BOOST_CHECK_EQUAL(robot_model->addTree(robot_tree), true);
-    BOOST_CHECK_EQUAL(robot_model->addTree(object_tree, "kuka_lbr_top_left_camera", object_pose), true);
+    KinematicRobotModelKDL* robot_model = new KinematicRobotModelKDL();
+    std::vector<RobotModelConfig> config(2);
+    config[0].file = "../../test/data/kuka_lbr.urdf";
+    config[1].file = "../../test/data/object.urdf";
+    config[1].hook = "kuka_lbr_top_left_camera";
+    config[1].initial_pose = object_pose;
+    BOOST_CHECK_EQUAL(robot_model->configure(config, joint_names, "kuka_lbr_base"), true);
 
     base::samples::Joints joint_state;
     joint_state.resize(joint_names.size());
@@ -178,7 +177,7 @@ BOOST_AUTO_TEST_CASE(robot_model_kdl){
         joint_positions(i) = joint_state[i].position;
 
     KDL::Chain chain;
-    BOOST_CHECK(robot_tree.getChain("kuka_lbr_base", "kuka_lbr_l_tcp", chain) == true);
+    BOOST_CHECK(robot_model->getTree().getChain("kuka_lbr_base", "kuka_lbr_l_tcp", chain) == true);
     KDL::ChainFkSolverPos_recursive fk_solver(chain);
 
     KDL::Frame pose_kdl;
@@ -253,10 +252,10 @@ BOOST_AUTO_TEST_CASE(wbc_velocity_scene){
     wbc_config.push_back(cart_constraint);
 
     // Configure Robot model
-    KinematicRobotModelKDL* robot_model = new KinematicRobotModelKDL(joint_names, "kuka_lbr_base");
-    KDL::Tree robot_tree;
-    BOOST_CHECK(kdl_parser::treeFromFile("../../test/data/kuka_lbr.urdf", robot_tree) == true);
-    BOOST_CHECK_EQUAL(robot_model->addTree(robot_tree), true);
+    KinematicRobotModelKDL* robot_model = new KinematicRobotModelKDL();
+    std::vector<RobotModelConfig> config(1);
+    config[0].file = "../../test/data/kuka_lbr.urdf";
+    BOOST_CHECK_EQUAL(robot_model->configure(config, joint_names, "kuka_lbr_base"), true);
 
     // Configure Solver
     HierarchicalLeastSquaresSolver* solver = new HierarchicalLeastSquaresSolver();
@@ -289,7 +288,6 @@ BOOST_AUTO_TEST_CASE(wbc_velocity_scene){
         // Update robot model
         BOOST_CHECK_NO_THROW(robot_model->update(joint_state));
 
-        /Actual/ Set reference
         act = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
         base::Vector6d diff;
         pose_diff(act, target, 1, diff);

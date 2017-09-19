@@ -100,6 +100,8 @@ public:
 
     /** Return all non-fixed joints from the given KDL tree*/
     std::vector<std::string> jointNamesFromTree(const KDL::Tree &tree) const;
+
+    KDL::Tree getTree(){return full_tree;}
 };
 
 }
