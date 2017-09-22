@@ -12,6 +12,7 @@ class Jacobian : public base::MatrixXd{
 public:
     Jacobian();
     Jacobian(uint n_robot_joints);
+    ~Jacobian();
     void changeRefPoint(const base::Vector3d& v);
     void changeRefFrame(const base::Affine3d& a);
 

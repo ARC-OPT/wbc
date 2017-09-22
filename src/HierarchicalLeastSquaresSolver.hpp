@@ -54,7 +54,7 @@ public:
     };
 
     HierarchicalLeastSquaresSolver();
-    ~HierarchicalLeastSquaresSolver(){}
+    virtual ~HierarchicalLeastSquaresSolver();
 
     /**
      * @brief configure Resizes member variables

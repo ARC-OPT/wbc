@@ -45,6 +45,9 @@ protected:
      *  joint index map*/
     bool addTree(const KDL::Tree& tree, const std::string& hook = "", const base::samples::RigidBodyState &pose = base::samples::RigidBodyState());
 
+    /** Free storage and clear data structures*/
+    void clear();
+
 public:
     KinematicRobotModelKDL();
     virtual ~KinematicRobotModelKDL();

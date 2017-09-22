@@ -37,6 +37,7 @@ class ConstraintConfig{
 
 public:
     ConstraintConfig();
+    ~ConstraintConfig();
 
     /** Unique identifier of the constraint. Must not be empty*/
     std::string name;

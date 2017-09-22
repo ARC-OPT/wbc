@@ -4,27 +4,31 @@
 #include "ConstraintConfig.hpp"
 #include "Constraint.hpp"
 #include <base/commands/Joints.hpp>
+#include <memory>
 
 namespace wbc{
 
 class RobotModel;
 class Solver;
 
+typedef std::shared_ptr<Constraint> ConstraintPtr;
+typedef std::shared_ptr<RobotModel> RobotModelPtr;
+typedef std::shared_ptr<Solver> SolverPtr;
+
 /**
  * @brief Base class for all wbc scenes
  */
 class WbcScene{
 protected:
-    std::vector< std::vector<Constraint*> > constraints;
-    std::vector< ConstraintsPerPrio > constraint_vector;
+    RobotModelPtr robot_model;
+    SolverPtr solver;
+    std::vector< std::vector<ConstraintPtr> > constraints;
     std::vector<int> n_constraint_variables_per_prio;
-    RobotModel* robot_model;
-    Solver* solver;
 
     /**
      * brief Create a constraint and add it to the WBC scene
      */
-    virtual Constraint* createConstraint(const ConstraintConfig &config) = 0;
+    virtual ConstraintPtr createConstraint(const ConstraintConfig &config) = 0;
 
     /**
      * @brief Delete all constraints and free memory
@@ -32,11 +36,12 @@ protected:
     void clearConstraints();
 
 public:
-    WbcScene(RobotModel* robot_model, Solver* solver) :
+    WbcScene(RobotModelPtr robot_model, SolverPtr solver) :
         robot_model(robot_model),
         solver(solver){}
 
-    virtual ~WbcScene(){}
+    virtual ~WbcScene(){
+    }
 
     /**
      * @brief Configure the WBC scene. Create constraints and sort them by priority
@@ -53,7 +58,7 @@ public:
     /**
      * @brief Return a Particular constraint. Throw if the constraint does not exist
      */
-    Constraint* getConstraint(const std::string& name);
+    ConstraintPtr getConstraint(const std::string& name);
 
     /**
      * @brief True in case the given constraint exists
@@ -63,7 +68,7 @@ public:
     /**
      * @brief Returns all constraints as vector
      */
-    std::vector< ConstraintsPerPrio > getConstraints();
+    void getConstraints(std::vector<ConstraintsPerPrio>& constr_vect);
 
     /**
      * @brief Sort constraint config by the priorities of the constraints

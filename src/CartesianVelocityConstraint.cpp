@@ -19,6 +19,9 @@ CartesianVelocityConstraint::CartesianVelocityConstraint(ConstraintConfig config
     tmp.setZero(6);
 }
 
+CartesianVelocityConstraint::~CartesianVelocityConstraint(){
+}
+
 void CartesianVelocityConstraint::setReference(const base::samples::RigidBodyState& ref){
 
     if(!ref.hasValidVelocity() ||

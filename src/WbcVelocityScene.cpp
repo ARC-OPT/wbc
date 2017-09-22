@@ -1,19 +1,17 @@
 #include "WbcVelocityScene.hpp"
 #include "RobotModel.hpp"
 #include "Solver.hpp"
-#include "JointVelocityConstraint.hpp"
-#include "CartesianVelocityConstraint.hpp"
 #include "SVD.hpp"
 #include <base-logging/Logging.hpp>
 
 namespace wbc{
 
-Constraint* WbcVelocityScene::createConstraint(const ConstraintConfig &config){
+ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config){
 
     if(config.type == cart)
-        return new CartesianVelocityConstraint(config, robot_model->noOfJoints());
+        return std::make_shared<CartesianVelocityConstraint>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
-        return new JointVelocityConstraint(config, robot_model->noOfJoints());
+        return std::make_shared<JointVelocityConstraint>(config, robot_model->noOfJoints());
     else{
         LOG_ERROR("Constraint with name %s has an invalid constraint type: %i", config.name.c_str(), config.type);
         throw std::invalid_argument("Invalid constraint config");
@@ -45,7 +43,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
             if(type == cart){
 
-                CartesianVelocityConstraint* constraint = (CartesianVelocityConstraint*)constraints[prio][i];
+                CartesianVelocityConstraintPtr constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
 
                 // Create constraint jacobian
                 tip_in_root = robot_model->rigidBodyState(constraint->config.root, constraint->config.tip);
@@ -83,7 +81,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
             }
             else if(type == jnt){
 
-                JointVelocityConstraint* constraint = (JointVelocityConstraint*)constraints[prio][i];
+                JointVelocityConstraintPtr constraint = std::static_pointer_cast<JointVelocityConstraint>(constraints[prio][i]);
 
                 // Joint space constraints: constraint matrix has only ones and Zeros. The joint order in the constraints might be different than in the robot model.
                 // Thus, for joint space constraints, the joint indices have to be mapped correctly.
@@ -100,7 +98,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
                 throw std::invalid_argument("Invalid constraint configuration");
             }
 
-            Constraint* constraint = constraints[prio][i];
+            ConstraintPtr constraint = constraints[prio][i];
 
             // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
             // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
@@ -136,7 +134,7 @@ void WbcVelocityScene::evaluateConstraints(const base::VectorXd& solver_output, 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
 
-            Constraint* constraint = constraints[prio][i];
+            ConstraintPtr constraint = constraints[prio][i];
             constraint->y_solution = constraint->A * solver_output;
             constraint->y = constraint->A * robot_vel;
         }

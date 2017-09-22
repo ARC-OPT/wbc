@@ -15,6 +15,9 @@ HierarchicalLeastSquaresSolver::HierarchicalLeastSquaresSolver() :
     max_solver_output_norm(10){
 }
 
+HierarchicalLeastSquaresSolver::~HierarchicalLeastSquaresSolver(){
+}
+
 bool HierarchicalLeastSquaresSolver::configure(const std::vector<int>& n_constraint_per_prio, const unsigned int n_joints){
 
     priorities.clear();

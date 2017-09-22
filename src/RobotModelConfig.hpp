@@ -20,6 +20,8 @@ public:
         hook(_hook),
         initial_pose(_initial_pose){
     }
+    ~RobotModelConfig(){
+    }
 
     std::string file;                            /** Path to robot model file*/
     std::string hook;                            /** Frame to which this robot model is attached in the overall model*/

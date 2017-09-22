@@ -12,6 +12,7 @@ namespace wbc{
 class CartesianVelocityConstraint : public CartesianConstraint{
 public:
     CartesianVelocityConstraint(ConstraintConfig config, uint n_robot_joints);
+    virtual ~CartesianVelocityConstraint();
 
     /**
      * @brief Update the Cartesian reference input for this constraint.

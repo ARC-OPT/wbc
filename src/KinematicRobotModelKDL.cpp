@@ -11,6 +11,10 @@ KinematicRobotModelKDL::KinematicRobotModelKDL(){
 }
 
 KinematicRobotModelKDL::~KinematicRobotModelKDL(){
+   clear();
+}
+
+void KinematicRobotModelKDL::clear(){
     current_joint_state.clear();
     current_poses.clear();
     full_tree = KDL::Tree();
@@ -24,6 +28,8 @@ KinematicRobotModelKDL::~KinematicRobotModelKDL(){
 bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config,
                                        const std::vector<std::string> &joint_names,
                                        const std::string &base_frame){
+
+    clear();
 
     for(size_t i = 0; i < model_config.size(); i++){
 

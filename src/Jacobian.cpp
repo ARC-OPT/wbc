@@ -10,6 +10,9 @@ Jacobian::Jacobian(uint n_robot_joints){
     resize(6,n_robot_joints);
 }
 
+Jacobian::~Jacobian(){
+}
+
 void Jacobian::changeRefPoint(const base::Vector3d& v){
     base::Vector3d rot,vel; // helper variables
     for(int i = 0; i < cols(); i++){

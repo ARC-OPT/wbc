@@ -7,7 +7,7 @@ void WbcScene::clearConstraints(){
 
     for(uint i = 0; i < constraints.size(); i++ ){
         for(uint j = 0; j < constraints[i].size(); j++)
-            delete constraints[i][j];
+            constraints[i][j].reset();
         constraints[i].clear();
     }
     constraints.clear();
@@ -39,7 +39,7 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
     return true;
 }
 
-Constraint* WbcScene::getConstraint(const std::string& name){
+ConstraintPtr WbcScene::getConstraint(const std::string& name){
 
     for(size_t i = 0; i < constraints.size(); i++){
         for(size_t j = 0; j < constraints[i].size(); j++){
@@ -50,17 +50,15 @@ Constraint* WbcScene::getConstraint(const std::string& name){
     throw std::invalid_argument("Invalid constraint name: " + name);
 }
 
-std::vector<ConstraintsPerPrio> WbcScene::getConstraints(){
+void WbcScene::getConstraints(std::vector<ConstraintsPerPrio>& constr_vect){
 
-    constraint_vector.resize(constraints.size());
+    constr_vect.resize(constraints.size());
 
     for(size_t i = 0; i < constraints.size(); i++){
-
-        constraint_vector[i].resize(constraints[i].size());
+        constr_vect[i].resize(constraints[i].size());
         for(size_t j = 0; j < constraints[i].size(); j++)
-            constraint_vector[i][j] = *constraints[i][j];
+            constr_vect[i][j] = *constraints[i][j];
     }
-    return constraint_vector;
 }
 
 bool WbcScene::hasConstraint(const std::string &name){

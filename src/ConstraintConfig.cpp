@@ -9,6 +9,9 @@ ConstraintConfig::ConstraintConfig() :
 
 }
 
+ConstraintConfig::~ConstraintConfig(){
+}
+
 void ConstraintConfig::validate() const{
     if(name.empty()){
         LOG_ERROR("ConstraintConfig: Constraint name must not be empty!");

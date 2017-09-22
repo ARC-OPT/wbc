@@ -4,8 +4,13 @@
 #include "WbcScene.hpp"
 #include "OptProblem.hpp"
 #include <base/samples/RigidBodyState.hpp>
+#include "JointVelocityConstraint.hpp"
+#include "CartesianVelocityConstraint.hpp"
 
 namespace wbc{
+
+typedef std::shared_ptr<CartesianVelocityConstraint> CartesianVelocityConstraintPtr;
+typedef std::shared_ptr<JointVelocityConstraint> JointVelocityConstraintPtr;
 
 class WbcVelocityScene : public WbcScene{
 protected:
@@ -15,12 +20,13 @@ protected:
     /**
      * @brief Create a constraint and add it to the WBC scene
      */
-    virtual Constraint* createConstraint(const ConstraintConfig &config);
+    virtual ConstraintPtr createConstraint(const ConstraintConfig &config);
 
 public:
-    WbcVelocityScene(RobotModel* robot_model, Solver* solver) :
+    WbcVelocityScene(RobotModelPtr robot_model, SolverPtr solver) :
         WbcScene(robot_model, solver){}
-    virtual ~WbcVelocityScene(){}
+    virtual ~WbcVelocityScene(){
+    }
 
     /**
      * @brief Update the wbc scene with the (updated) robot model and return the current solver output
