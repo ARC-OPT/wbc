@@ -29,7 +29,7 @@ protected:
     std::vector<base::samples::RigidBodyState> current_poses;  /** Last poses that were passed through the call of update()*/
     KinematicChainKDLMap kdl_chain_map;                        /** Map of KDL Chains. Entries are generated through calls of rigidBodyState() or jacobian()*/
     JacobianMap jac_map;                                       /** Map of robot jacobians for all kinematic chains*/
-    base::samples::Joints joint_state;                         /** Helper variable*/
+    base::samples::Joints joint_state_out;                     /** Helper variable*/
 
     /**
      * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree

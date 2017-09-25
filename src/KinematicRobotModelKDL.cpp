@@ -130,20 +130,20 @@ const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vecto
         throw std::runtime_error("Invalid call to jointState()");
     }
 
-    joint_state.resize(joint_names.size());
-    joint_state.names = joint_names;
-    joint_state.time = current_joint_state.time;
+    joint_state_out.resize(joint_names.size());
+    joint_state_out.names = joint_names;
+    joint_state_out.time = current_joint_state.time;
 
     for(uint i = 0; i < joint_names.size(); i++){
         try{
-            joint_state[i] = current_joint_state.getElementByName(joint_names[i]);
+            joint_state_out[i] = current_joint_state.getElementByName(joint_names[i]);
         }
         catch(std::exception e){
             LOG_ERROR("KinematicRobotModelKDL: Requested state of joint %s but this joint does not exist in robot model", joint_names[i].c_str());
             throw std::invalid_argument("Invalid call to jointState()");
         }
     }
-    return joint_state;
+    return joint_state_out;
 }
 
 const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
