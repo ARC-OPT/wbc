@@ -110,16 +110,16 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
 
 const base::samples::RigidBodyState &KinematicRobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
 
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
+        throw std::runtime_error("Invalid call to rigidBodyState()");
+    }
+
     // Create chain if it does not exist
     if(kdl_chain_map.count(root_frame + "_" + tip_frame) == 0)
         createChain(root_frame, tip_frame);
 
     KinematicChainKDL* kdl_chain = kdl_chain_map[root_frame + "_" + tip_frame];
-    if(kdl_chain->last_update.isNull()){
-        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
-        throw std::runtime_error("Invalid call to rigidBodyState()");
-    }
-
     return kdl_chain->rigid_body_state;
 }
 
@@ -148,15 +148,16 @@ const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vecto
 
 const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
 
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
+        throw std::runtime_error("Invalid call to rigidBodyState()");
+    }
+
     // Create chain if it does not exist
     if(kdl_chain_map.count(root_frame + "_" + tip_frame) == 0)
         createChain(root_frame, tip_frame);
 
     KinematicChainKDL* kdl_chain = kdl_chain_map[root_frame + "_" + tip_frame];
-    if(kdl_chain->last_update.isNull()){
-        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
-        throw std::runtime_error("Invalid call to jacobian()");
-    }
 
     jac_map[root_frame + "_" + tip_frame].setZero(6,noOfJoints());
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
