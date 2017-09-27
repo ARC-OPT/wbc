@@ -252,13 +252,13 @@ BOOST_AUTO_TEST_CASE(wbc_velocity_scene){
     wbc_config.push_back(cart_constraint);
 
     // Configure Robot model
-    KinematicRobotModelKDL* robot_model = new KinematicRobotModelKDL();
+    std::shared_ptr<KinematicRobotModelKDL> robot_model = std::make_shared<KinematicRobotModelKDL>();
     std::vector<RobotModelConfig> config(1);
     config[0].file = "../../test/data/kuka_lbr.urdf";
     BOOST_CHECK_EQUAL(robot_model->configure(config, joint_names, "kuka_lbr_base"), true);
 
     // Configure Solver
-    HierarchicalLeastSquaresSolver* solver = new HierarchicalLeastSquaresSolver();
+    std::shared_ptr<HierarchicalLeastSquaresSolver> solver = std::make_shared<HierarchicalLeastSquaresSolver>();
     BOOST_CHECK_EQUAL(solver->configure(WbcScene::getNConstraintVariablesPerPrio(wbc_config), robot_model->noOfJoints()), true);
 
     // Configure WBC Scene
@@ -294,7 +294,8 @@ BOOST_AUTO_TEST_CASE(wbc_velocity_scene){
         ref.velocity = diff.segment(0,3);
         ref.angular_velocity = diff.segment(3,3);
         ref.time = base::Time::now();
-        ((CartesianVelocityConstraint*)wbc_scene.getConstraint("cart_pos_ctrl_left"))->setReference(ref);
+        std::shared_ptr<CartesianVelocityConstraint> constraint = std::static_pointer_cast<CartesianVelocityConstraint>(wbc_scene.getConstraint("cart_pos_ctrl_left"));
+        constraint->setReference(ref);
 
         // Compute ctrl solution
         wbc_scene.solve(ctrl_output);
