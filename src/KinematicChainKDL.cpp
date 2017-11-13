@@ -42,10 +42,13 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state, const s
     //// update links
     for(size_t i = 0; i < poses.size(); i++){
         kdl_conversions::RigidBodyState2KDL(poses[i], pose_kdl);
-
-        for(uint j = 0; j < chain.getNrOfSegments(); j++)
+        for(uint j = 0; j < chain.getNrOfSegments(); j++){
             if(chain.segments[j].getName().compare(poses[i].sourceFrame) == 0)
                 chain.segments[j] = KDL::Segment(poses[i].sourceFrame, KDL::Joint(KDL::Joint::None), pose_kdl);
+
+            if(chain.segments[j].getName().compare(poses[i].targetFrame) == 0)
+                chain.segments[j] = KDL::Segment(poses[i].targetFrame, KDL::Joint(KDL::Joint::None), pose_kdl.Inverse());
+        }
 
         if(poses[i].time > last_update)
             last_update = poses[i].time;
