@@ -57,6 +57,7 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state, const s
                 chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl);
             if(segment_names[j-1] == tip_frame && segment_names[j] == root_frame)
                 chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl.Inverse());
+        }
 
         if(poses[i].time > last_update)
             last_update = poses[i].time;
