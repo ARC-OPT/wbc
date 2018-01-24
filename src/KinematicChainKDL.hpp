@@ -40,6 +40,7 @@ public:
     KDL::JntArray joint_positions;                   /** Vector of positions of all included joints*/
     KDL::Jacobian jacobian;                          /** Jacobian of the Chain. Reference frame & reference point is the root frame*/
     std::vector<std::string> joint_names;            /** Names of the joint included in the kinematic chain*/
+    std::vector<std::string> segment_names;          /** Names of all segments including root segment*/
 };
 
 } // namespace wbc

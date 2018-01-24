@@ -19,6 +19,10 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string&
 
     rigid_body_state.targetFrame = root_frame;
     rigid_body_state.sourceFrame = tip_frame;
+
+    segment_names.push_back(root_frame);
+    for(auto s : chain.segments)
+        segment_names.push_back(s.getName());
 }
 
 KinematicChainKDL::~KinematicChainKDL(){
@@ -42,13 +46,17 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state, const s
     //// update links
     for(size_t i = 0; i < poses.size(); i++){
         kdl_conversions::RigidBodyState2KDL(poses[i], pose_kdl);
-        for(uint j = 0; j < chain.getNrOfSegments(); j++){
-            if(chain.segments[j].getName().compare(poses[i].sourceFrame) == 0)
-                chain.segments[j] = KDL::Segment(poses[i].sourceFrame, KDL::Joint(KDL::Joint::None), pose_kdl);
 
-            if(chain.segments[j].getName().compare(poses[i].targetFrame) == 0)
-                chain.segments[j] = KDL::Segment(poses[i].targetFrame, KDL::Joint(KDL::Joint::None), pose_kdl.Inverse());
-        }
+        const std::string& root_frame = poses[i].targetFrame;
+        const std::string& tip_frame = poses[i].sourceFrame;
+
+        for(size_t j = 1; j < segment_names.size(); j++){
+
+            //Chains can be selected in both directions, so check root and tip segment
+            if(segment_names[j-1] == root_frame && segment_names[j] == tip_frame)
+                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl);
+            if(segment_names[j-1] == tip_frame && segment_names[j] == root_frame)
+                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl.Inverse());
 
         if(poses[i].time > last_update)
             last_update = poses[i].time;
