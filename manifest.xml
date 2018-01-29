@@ -7,6 +7,13 @@
   <url>http://</url>
   <logo>http://</logo>
   <tags>stable</tags>
+  <keywords>
+     <keyword>Control</keyword>
+     <keyword>Whole-Body Control</keyword>
+     <keyword>Optimizationl</keyword>
+     <keyword>Redundancy Resolution</keyword>
+   </keywords>
+
   <depend package="base/cmake" />
   <depend package="control/kdl_conversions" />
   <depend package="eigen3" />
