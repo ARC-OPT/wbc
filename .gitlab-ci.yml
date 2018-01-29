@@ -17,3 +17,14 @@ pages:
   only:
   - rh5_revision
 
+software_catalogue_entry:
+  image: d-reg.hb.dfki.de:5000/ubuntu:overview_generator
+  stage: deploy
+  script:
+  - apt update
+  - apt install -y wget
+  - wget http://bob.dfki.uni-bremen.de/software_overview/generate.sh
+  - sh generate.sh $CI_PROJECT_NAMESPACE $CI_PROJECT_NAME $CI_PROJECT_URL
+  only:
+  - master
+
