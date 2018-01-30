@@ -14,6 +14,16 @@
      <keyword>Redundancy Resolution</keyword>
    </keywords>
 
+  <stage>1</stage>
+  <use>single project</use>
+  <activity>active</activity>
+
+  <classifiers>
+    <classifier>c++</classifier>
+    <classifier>rock</classifier>
+    <classifier>ubuntu</classifier>
+  </classifiers>
+
   <depend package="base/cmake" />
   <depend package="control/kdl_conversions" />
   <depend package="eigen3" />
