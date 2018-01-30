@@ -15,7 +15,7 @@ pages:
     paths:
     - public
   only:
-  - rh5_revision
+  - master
 
 software_catalogue_entry:
   image: d-reg.hb.dfki.de:5000/ubuntu:overview_generator
