@@ -3,9 +3,10 @@
   Implementations of algorithms for whole body robot control, including redundancy resolution based on hierarchical null space decomposition. Should cover velocity, acceleration and force based control.
   </description>
   <author>Dennis Mronga/dennis.mronga@dfki.de</author>
+  <maintainer>Dennis Mronga/dennis.mronga@dfki.de</maintainer>
   <license></license>
-  <url>http://</url>
-  <logo>http://</logo>
+  <url>https://git.hb.dfki.de/dfki-control/wbc</url>
+  <logo>https://git.hb.dfki.de/dfki-control/wbc/blob/master/doc/images/wbc_principle.png</logo>
   <tags>stable</tags>
   <keywords>
      <keyword>Control</keyword>
