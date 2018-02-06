@@ -3,7 +3,7 @@
 #include <kdl_conversions/KDLConversions.hpp>
 #include <base-logging/Logging.hpp>
 #include <kdl_parser/kdl_parser.hpp>
-#include "RobotModelConfig.hpp"
+#include "core/RobotModelConfig.hpp"
 
 namespace wbc{
 

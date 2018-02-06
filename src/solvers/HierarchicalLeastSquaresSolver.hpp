@@ -1,7 +1,7 @@
 #ifndef HIERARCHICAL_WDLS_SOLVER_HPP
 #define HIERARCHICAL_WDLS_SOLVER_HPP
 
-#include "Solver.hpp"
+#include "core/Solver.hpp"
 
 namespace wbc{
 

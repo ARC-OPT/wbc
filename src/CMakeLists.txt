@@ -1,11 +1,8 @@
-file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src
-    "*.cpp"
-)
+include_directories(.)
 
-file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src
-    "*.hpp"
-)
-rock_library(wbc
-    SOURCES ${SOURCES} ${HEADERS}
-    HEADERS ${HEADERS}
-    DEPS_PKGCONFIG base-lib kdl_conversions kdl_parser)
+add_subdirectory(core)
+add_subdirectory(robot_models)
+add_subdirectory(solvers)
+#add_subdirectory(tools)
+#add_subdirectory(wbc_scenes)
+

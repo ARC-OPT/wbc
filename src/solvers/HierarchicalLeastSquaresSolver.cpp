@@ -1,7 +1,7 @@
 #include "HierarchicalLeastSquaresSolver.hpp"
 #include "OptProblem.hpp"
 #include <stdexcept>
-#include "SVD.hpp"
+#include "tools/SVD.hpp"
 #include <base-logging/Logging.hpp>
 
 using namespace std;
