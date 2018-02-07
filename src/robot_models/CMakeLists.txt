@@ -4,7 +4,6 @@ file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models "*.hpp")
 pkg_search_module(kdl_parser REQUIRED kdl_parser)
 pkg_search_module(kdl_conversions REQUIRED kdl_conversions)
 
-
 include_directories(${kdl_parser_INCLUDE_DIRS} ${kdl_conversions_INCLUDE_DIRS})
 link_directories(${kdl_parser_LIBRARY_DIRS} ${kdl_conversions_LIBRARY_DIRS})
 

@@ -1,5 +1,5 @@
-#include "HierarchicalLeastSquaresSolver.hpp"
-#include "OptProblem.hpp"
+#include "HierarchicalLSSolver.hpp"
+#include "HierarchicalLSOptProblem.hpp"
 #include <stdexcept>
 #include "tools/SVD.hpp"
 #include <base-logging/Logging.hpp>
@@ -8,17 +8,17 @@ using namespace std;
 
 namespace wbc{
 
-HierarchicalLeastSquaresSolver::HierarchicalLeastSquaresSolver() :
+HierarchicalLSSolver::HierarchicalLSSolver() :
     no_of_joints(0),
     configured(false),
     min_eigenvalue(1e-9),
     max_solver_output_norm(10){
 }
 
-HierarchicalLeastSquaresSolver::~HierarchicalLeastSquaresSolver(){
+HierarchicalLSSolver::~HierarchicalLSSolver(){
 }
 
-bool HierarchicalLeastSquaresSolver::configure(const std::vector<int>& n_constraint_per_prio, const unsigned int n_joints){
+bool HierarchicalLSSolver::configure(const std::vector<int>& n_constraint_per_prio, const unsigned int n_joints){
 
     priorities.clear();
 
@@ -60,16 +60,16 @@ bool HierarchicalLeastSquaresSolver::configure(const std::vector<int>& n_constra
     return true;
 }
 
-void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, base::VectorXd &solver_output){
+void HierarchicalLSSolver::solve(const OptProblem &opt_problem, base::VectorXd &solver_output){
 
     if(!configured)
-        throw std::runtime_error("HierarchicalLeastSquaresSolver has to be configured before calling solve()!");
+        throw std::runtime_error("HierarchicalLSSolver has to be configured before calling solve()!");
 
-    HierarchicalWeightedLS& opt_problem_ls = (HierarchicalWeightedLS& )opt_problem;
+    HierarchicalLSOptProblem& opt_problem_ls = (HierarchicalLSOptProblem& )opt_problem;
 
     // Check valid input
-    if(opt_problem_ls.prios.size() != priorities.size()){
-        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), opt_problem_ls.prios.size());
+    if(opt_problem_ls.size() != priorities.size()){
+        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), opt_problem_ls.size());
         throw std::invalid_argument("Invalid solver input");
     }
 
@@ -82,27 +82,27 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, base::
 
     for(uint prio = 0; prio < priorities.size(); prio++){
 
-        const WeightedLS& opt_problem_prio = ((HierarchicalWeightedLS& )opt_problem).prios[prio];
+        const LinearEqualityConstraints& constraints = ((HierarchicalLSOptProblem& )opt_problem)[prio];
 
-        if(opt_problem_prio.A.rows()     != priorities[prio].n_constraint_variables ||
-           opt_problem_prio.A.cols()     != no_of_joints ||
-           opt_problem_prio.y_ref.size() != priorities[prio].n_constraint_variables){
+        if(constraints.A.rows()     != priorities[prio].n_constraint_variables ||
+           constraints.A.cols()     != no_of_joints ||
+           constraints.y_ref.size() != priorities[prio].n_constraint_variables){
             LOG_ERROR("Expected input size on priority level %i: A: %i x %i, b: %i x 1, actual input: A: %i x %i, b: %i x 1",
-                      prio, priorities[prio].n_constraint_variables, no_of_joints, priorities[prio].n_constraint_variables, opt_problem_prio.A.rows(), opt_problem_prio.A.cols(), opt_problem_prio.y_ref.size());
+                      prio, priorities[prio].n_constraint_variables, no_of_joints, priorities[prio].n_constraint_variables, constraints.A.rows(), constraints.A.cols(), constraints.y_ref.size());
             throw std::invalid_argument("Invalid size of input variables");
         }
 
         // Set weights for this prioritiy
-        setConstraintWeights(opt_problem_prio.W, prio);
+        setConstraintWeights(constraints.W, prio);
 
         priorities[prio].y_comp.setZero();
 
         // Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
-        priorities[prio].y_comp = opt_problem_prio.y_ref - opt_problem_prio.A*solver_output;
+        priorities[prio].y_comp = constraints.y_ref - constraints.A*solver_output;
 
         // projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         // For the first priority P == Identity
-        priorities[prio].A_proj = opt_problem_prio.A * proj_mat;
+        priorities[prio].A_proj = constraints.A * proj_mat;
 
         // Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         // Since the weight matrices are diagonal, there is no need for full matrix multiplication
@@ -177,12 +177,12 @@ void HierarchicalLeastSquaresSolver::solve(const OptProblem &opt_problem, base::
     ///////////////
 }
 
-void HierarchicalLeastSquaresSolver::setJointWeights(const base::VectorXd& weights){
+void HierarchicalLSSolver::setJointWeights(const base::VectorXd& weights){
     for(size_t i = 0; i < priorities.size(); i++)
         setJointWeights(weights, i);
 }
 
-void HierarchicalLeastSquaresSolver::setJointWeights(const base::VectorXd& weights, const uint prio){
+void HierarchicalLSSolver::setJointWeights(const base::VectorXd& weights, const uint prio){
     if(prio < 0 ||prio >= priorities.size()){
         LOG_ERROR("Cannot set joint weights on priority %i. Number of priority levels is %i", prio, priorities.size());
         throw std::invalid_argument("Invalid Priority");
@@ -205,7 +205,7 @@ void HierarchicalLeastSquaresSolver::setJointWeights(const base::VectorXd& weigh
     }
 }
 
-void HierarchicalLeastSquaresSolver::setConstraintWeights(const base::VectorXd& weights, const uint prio){
+void HierarchicalLSSolver::setConstraintWeights(const base::VectorXd& weights, const uint prio){
     if(prio < 0 ||prio >= priorities.size()){
         LOG_ERROR("Cannot set constraint weights on priority %i. Number of priority levels is %i", prio, priorities.size());
         throw std::invalid_argument("Invalid Priority");
@@ -225,21 +225,21 @@ void HierarchicalLeastSquaresSolver::setConstraintWeights(const base::VectorXd& 
     }
 }
 
-void HierarchicalLeastSquaresSolver::setMinEigenvalue(double _min_eigenvalue){
+void HierarchicalLSSolver::setMinEigenvalue(double _min_eigenvalue){
     if(_min_eigenvalue <= 0){
         throw std::invalid_argument("Min. Eigenvalue has to be > 0!");
     }
     min_eigenvalue = _min_eigenvalue;
 }
 
-void HierarchicalLeastSquaresSolver::setMaxSolverOutputNorm(double norm_max){
+void HierarchicalLSSolver::setMaxSolverOutputNorm(double norm_max){
     if(norm_max <= 0){
         throw std::invalid_argument("Norm Max has to be > 0!");
     }
     max_solver_output_norm = norm_max;
 }
 
-void HierarchicalLeastSquaresSolver::setMaxSolverOutput(const base::VectorXd& max_solver_output){
+void HierarchicalLSSolver::setMaxSolverOutput(const base::VectorXd& max_solver_output){
     if(max_solver_output.size() > 0 && max_solver_output.size() != no_of_joints)
         throw std::invalid_argument("Size of max solver output vector has to be same as number of joints");
     for(uint i = 0; i < max_solver_output.size(); i++){
@@ -248,7 +248,7 @@ void HierarchicalLeastSquaresSolver::setMaxSolverOutput(const base::VectorXd& ma
     }
     this->max_solver_output = max_solver_output;
 }
-void HierarchicalLeastSquaresSolver::applySaturation(base::VectorXd& solver_output){
+void HierarchicalLSSolver::applySaturation(base::VectorXd& solver_output){
     //Apply saturation. Scale all values according to the maximum output
     double scale = 1;
     for(uint i = 0; i < solver_output.size(); i++)

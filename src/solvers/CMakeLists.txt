@@ -7,7 +7,7 @@ include_directories(${base-types_INCLUDE_DIRS})
 link_directories(${base-types_LIBRARY_DIRS})
 
 add_library(wbc-solvers SHARED ${SOURCES} ${HEADERS})
-target_link_libraries(wbc-solvers wbc-core)
+target_link_libraries(wbc-solvers wbc-core wbc-tools)
 
 install(TARGETS wbc-solvers
         LIBRARY DESTINATION lib)

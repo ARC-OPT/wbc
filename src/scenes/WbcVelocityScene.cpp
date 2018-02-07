@@ -20,7 +20,7 @@ ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config)
 
 void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
-    opt_problem.prios.resize(constraints.size());
+    weighted_constraints_root_frame.resize(constraints.size());
     base::samples::RigidBodyState ref_frame, tip_in_root, root_in_base;
 
     // Create equation system
@@ -30,7 +30,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
     //    W - Vector of constraint weights. One vector for each priority
     for(uint prio = 0; prio < constraints.size(); prio++){
 
-        opt_problem.prios[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
+        weighted_constraints_root_frame[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
 
         // Walk through all tasks of current priority
         uint row_index = 0;
@@ -109,9 +109,9 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
             // Insert constraints into equation system of current priority at the correct position. Note: Weights will be zero if activations
             // for this constraint is zero or if the constraint is in timeout
-            opt_problem.prios[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
-            opt_problem.prios[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
-            opt_problem.prios[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
+            weighted_constraints_root_frame[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
+            weighted_constraints_root_frame[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
+            weighted_constraints_root_frame[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
 
             row_index += n_vars;
 
@@ -119,7 +119,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
     } // priorities
 
     // Solve equation system
-    solver->solve(opt_problem, solver_output);
+    //solver->solve(opt_problem, solver_output);
 
     // Convert solver output
     ctrl_output.resize(robot_model->noOfJoints());

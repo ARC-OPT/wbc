@@ -1,5 +1,5 @@
-#ifndef HIERARCHICAL_WDLS_SOLVER_HPP
-#define HIERARCHICAL_WDLS_SOLVER_HPP
+#ifndef HIERARCHICAL_LS_SOLVER_HPP
+#define HIERARCHICAL_LS_SOLVER_HPP
 
 #include "core/Solver.hpp"
 
@@ -12,7 +12,7 @@ class OptProblem;
  *        equation systems using nullspace projections. That is, the eqn system with the highest priority will be solved fully if n_rows <= n_cols
  *        the eqn system of the next priority will be solved as good as possible and so on. The solver may also include weights in solution (column) and input (row) space.
  */
-class HierarchicalLeastSquaresSolver : public Solver{
+class HierarchicalLSSolver : public Solver{
 public:
 
     /**
@@ -53,8 +53,8 @@ public:
         unsigned int n_constraint_variables;   /** Number of constraint variables of this priority*/
     };
 
-    HierarchicalLeastSquaresSolver();
-    virtual ~HierarchicalLeastSquaresSolver();
+    HierarchicalLSSolver();
+    virtual ~HierarchicalLSSolver();
 
     /**
      * @brief configure Resizes member variables

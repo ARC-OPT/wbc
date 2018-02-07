@@ -2,7 +2,7 @@
 #define WBCVELOCITYSCENE_HPP
 
 #include "core/WbcScene.hpp"
-#include "solvers/OptProblem.hpp"
+#include "core/LinearEqualityConstraints.hpp"
 #include <base/samples/RigidBodyState.hpp>
 #include "core/JointVelocityConstraint.hpp"
 #include "core/CartesianVelocityConstraint.hpp"
@@ -15,7 +15,7 @@ typedef std::shared_ptr<JointVelocityConstraint> JointVelocityConstraintPtr;
 class WbcVelocityScene : public WbcScene{
 protected:
     base::VectorXd solver_output;
-    HierarchicalWeightedLS opt_problem;
+    std::vector<LinearEqualityConstraints> weighted_constraints_root_frame;
 
     /**
      * @brief Create a constraint and add it to the WBC scene
