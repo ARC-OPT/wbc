@@ -1,7 +1,7 @@
 #include "WbcVelocityScene.hpp"
-#include "RobotModel.hpp"
-#include "Solver.hpp"
-#include "SVD.hpp"
+#include "core/RobotModel.hpp"
+#include "core/Solver.hpp"
+#include "tools/SVD.hpp"
 #include <base-logging/Logging.hpp>
 
 namespace wbc{

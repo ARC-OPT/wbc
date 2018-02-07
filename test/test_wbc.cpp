@@ -3,16 +3,17 @@
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl_conversions/KDLConversions.hpp>
 #include <random>
-#include "../src/WbcVelocityScene.hpp"
-#include "../src/HierarchicalLeastSquaresSolver.hpp"
-#include "../src/KinematicRobotModelKDL.hpp"
-#include "../src/CartesianVelocityConstraint.hpp"
-#include "../src/Jacobian.hpp"
-#include "../src/tools.hpp"
-#include "../src/RobotModelConfig.hpp"
+#include "scenes/WbcVelocityScene.hpp"
+#include "solvers/HierarchicalLeastSquaresSolver.hpp"
+#include "robot_models/KinematicRobotModelKDL.hpp"
+#include "core/CartesianVelocityConstraint.hpp"
+#include "core/Jacobian.hpp"
+#include "tools/tools.hpp"
+#include "core/RobotModelConfig.hpp"
 
 using namespace std;
 using namespace wbc;
+
 
 BOOST_AUTO_TEST_CASE(test_tools)
 {
@@ -311,4 +312,3 @@ BOOST_AUTO_TEST_CASE(wbc_velocity_scene){
         cout<<"----------------------------------------------------------------------------------------------"<<endl<<endl;
     }
 }
-

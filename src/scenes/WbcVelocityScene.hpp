@@ -1,11 +1,11 @@
 #ifndef WBCVELOCITYSCENE_HPP
 #define WBCVELOCITYSCENE_HPP
 
-#include "WbcScene.hpp"
-#include "OptProblem.hpp"
+#include "core/WbcScene.hpp"
+#include "solvers/OptProblem.hpp"
 #include <base/samples/RigidBodyState.hpp>
-#include "JointVelocityConstraint.hpp"
-#include "CartesianVelocityConstraint.hpp"
+#include "core/JointVelocityConstraint.hpp"
+#include "core/CartesianVelocityConstraint.hpp"
 
 namespace wbc{
 
