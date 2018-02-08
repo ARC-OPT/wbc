@@ -1,18 +1,18 @@
 #ifndef HIERARCHICAL_LS_SOLVER_HPP
 #define HIERARCHICAL_LS_SOLVER_HPP
 
-#include "core/Solver.hpp"
+#include <base/Eigen.hpp>
 
 namespace wbc{
 
-class OptProblem;
+class LinearEqualityConstraints;
 
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. This solver computes the solution for several hierarchially organized
  *        equation systems using nullspace projections. That is, the eqn system with the highest priority will be solved fully if n_rows <= n_cols
  *        the eqn system of the next priority will be solved as good as possible and so on. The solver may also include weights in solution (column) and input (row) space.
  */
-class HierarchicalLSSolver : public Solver{
+class HierarchicalLSSolver{
 public:
 
     /**
@@ -54,7 +54,7 @@ public:
     };
 
     HierarchicalLSSolver();
-    virtual ~HierarchicalLSSolver();
+    ~HierarchicalLSSolver();
 
     /**
      * @brief configure Resizes member variables
@@ -62,21 +62,21 @@ public:
      * @param no_of_joints Number of robot joints
      * @return true in case of successful initialization, false otherwise
      */
-    bool configure(const std::vector<int>& n_constraint_per_prio, const unsigned int n_joints);
+    bool configure(const std::vector<int>& n_constraints_per_prio, const unsigned int n_joints);
 
     /**
      * @brief solve Compute optimal control solution
      * @param linear_eqn_pp A Linear equation system, sorted by priority
      * @param x solution
      */
-    virtual void solve(const OptProblem &opt_problem, base::VectorXd &solver_output);
+    void solve(const std::vector<LinearEqualityConstraints> &constraints, base::VectorXd &solver_output);
 
     /**
      * @brief setJointWeights Sets the joint weight vector for all priorities
      * @param weights Has to have same size as number of joints. Values have to be >= 0! A values of 0 means that the joint does not
      *                contribute to the solution at all.
      */
-    virtual void setJointWeights(const base::VectorXd& weights);
+    void setJointWeights(const base::VectorXd& weights);
 
     /**
      * @brief setJointWeights Sets the joint weight vector for the given priority
@@ -119,6 +119,11 @@ public:
      * @brief applySaturation Apply maximum solver output.
      */
     void applySaturation(base::VectorXd& solver_output);
+
+    /**
+     * @brief Has configure() been  called already?
+     */
+    bool isConfigured(){return configured;}
 
 protected:
     std::vector<PriorityData> priorities;     /** Contains priority specific matrices etc. */

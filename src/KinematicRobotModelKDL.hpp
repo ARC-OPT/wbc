@@ -1,13 +1,13 @@
 #ifndef KINEMATICROBOTMODELKDL_HPP
 #define KINEMATICROBOTMODELKDL_HPP
 
-#include "core/RobotModel.hpp"
+#include "RobotModel.hpp"
 
 #include <kdl/tree.hpp>
 #include <kdl/jacobian.hpp>
 #include <base/samples/Joints.hpp>
 #include <base/samples/RigidBodyState.hpp>
-#include "core/Jacobian.hpp"
+#include "Jacobian.hpp"
 
 namespace wbc{
 

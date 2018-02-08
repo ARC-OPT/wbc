@@ -9,11 +9,10 @@
 namespace wbc{
 
 class RobotModel;
-class Solver;
+class OptProblem;
 
 typedef std::shared_ptr<Constraint> ConstraintPtr;
 typedef std::shared_ptr<RobotModel> RobotModelPtr;
-typedef std::shared_ptr<Solver> SolverPtr;
 
 /**
  * @brief Base class for all wbc scenes
@@ -21,7 +20,6 @@ typedef std::shared_ptr<Solver> SolverPtr;
 class WbcScene{
 protected:
     RobotModelPtr robot_model;
-    SolverPtr solver;
     std::vector< std::vector<ConstraintPtr> > constraints;
     std::vector<int> n_constraint_variables_per_prio;
 
@@ -36,9 +34,8 @@ protected:
     void clearConstraints();
 
 public:
-    WbcScene(RobotModelPtr robot_model, SolverPtr solver) :
-        robot_model(robot_model),
-        solver(solver){}
+    WbcScene(RobotModelPtr robot_model) :
+        robot_model(robot_model){}
 
     virtual ~WbcScene(){
     }
@@ -50,10 +47,10 @@ public:
     bool configure(const std::vector<ConstraintConfig> &config);
 
     /**
-     * @brief Update the wbc scene with the (updated) robot model and return the current solver output
+     * @brief Update the wbc scene and return the (updated) optimization problem
      * @param ctrl_output Control solution that fulfill the given constraints as good as possible
      */
-    virtual void solve(base::commands::Joints& ctrl_output) = 0;
+    virtual void update() = 0;
 
     /**
      * @brief Return a Particular constraint. Throw if the constraint does not exist
@@ -79,6 +76,11 @@ public:
      * @brief Return number of constraints per priority, given the constraint config
      */
     static std::vector<int> getNConstraintVariablesPerPrio(const std::vector<ConstraintConfig> &config);
+
+    /**
+     * @brief evaluateConstraints Evaluate the fulfillment of the constraints given the current robot state and the solver output
+     */
+    virtual void evaluateConstraints(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state) = 0;
 };
 
 } // namespace wbc

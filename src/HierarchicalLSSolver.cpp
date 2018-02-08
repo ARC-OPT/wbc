@@ -1,8 +1,8 @@
 #include "HierarchicalLSSolver.hpp"
-#include "HierarchicalLSOptProblem.hpp"
 #include <stdexcept>
-#include "tools/SVD.hpp"
+#include "SVD.hpp"
 #include <base-logging/Logging.hpp>
+#include "LinearEqualityConstraints.hpp"
 
 using namespace std;
 
@@ -18,7 +18,7 @@ HierarchicalLSSolver::HierarchicalLSSolver() :
 HierarchicalLSSolver::~HierarchicalLSSolver(){
 }
 
-bool HierarchicalLSSolver::configure(const std::vector<int>& n_constraint_per_prio, const unsigned int n_joints){
+bool HierarchicalLSSolver::configure(const std::vector<int>& n_constraints_per_prio, const unsigned int n_joints){
 
     priorities.clear();
 
@@ -27,20 +27,20 @@ bool HierarchicalLSSolver::configure(const std::vector<int>& n_constraint_per_pr
         throw std::invalid_argument("Invalid Solver config");
     }
 
-    if(n_constraint_per_prio.size() == 0){
-        LOG_ERROR("No of priority levels (size of n_constraint_per_prio) has to be > 0");
+    if(n_constraints_per_prio.size() == 0){
+        LOG_ERROR("No of priority levels (size of n_constraints_per_prio) has to be > 0");
         throw std::invalid_argument("Invalid Solver config");
     }
 
-    for(uint i = 0; i < n_constraint_per_prio.size(); i++){
-        if(n_constraint_per_prio[i] == 0){
+    for(uint i = 0; i < n_constraints_per_prio.size(); i++){
+        if(n_constraints_per_prio[i] == 0){
             LOG_ERROR("No of constraint variables on each priority level must be > 0");
             throw std::invalid_argument("Invalid Solver config");
         }
     }
 
-    for(uint prio = 0; prio < n_constraint_per_prio.size(); prio++)
-        priorities.push_back(PriorityData(n_constraint_per_prio[prio], n_joints));
+    for(uint prio = 0; prio < n_constraints_per_prio.size(); prio++)
+        priorities.push_back(PriorityData(n_constraints_per_prio[prio], n_joints));
 
     no_of_joints = n_joints;
     proj_mat.resize(no_of_joints, no_of_joints);
@@ -60,16 +60,22 @@ bool HierarchicalLSSolver::configure(const std::vector<int>& n_constraint_per_pr
     return true;
 }
 
-void HierarchicalLSSolver::solve(const OptProblem &opt_problem, base::VectorXd &solver_output){
+void HierarchicalLSSolver::solve(const std::vector<LinearEqualityConstraints> &constraints, base::VectorXd &solver_output){
 
-    if(!configured)
-        throw std::runtime_error("HierarchicalLSSolver has to be configured before calling solve()!");
-
-    HierarchicalLSOptProblem& opt_problem_ls = (HierarchicalLSOptProblem& )opt_problem;
+    if(!configured){
+        std::vector<int> n_constraints_pp;
+        int n_joints;
+        for(auto c : constraints){
+            n_joints = c.A.cols();
+            n_constraints_pp.push_back(c.A.rows());
+        }
+        if(!configure(n_constraints_pp, n_joints))
+            throw std::runtime_error("HierarchicalLSSolver failed to configure!");
+    }
 
     // Check valid input
-    if(opt_problem_ls.size() != priorities.size()){
-        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), opt_problem_ls.size());
+    if(constraints.size() != priorities.size()){
+        LOG_ERROR("Number of priorities in solver: %i, Size of input vector: %i", priorities.size(), constraints.size());
         throw std::invalid_argument("Invalid solver input");
     }
 
@@ -82,27 +88,26 @@ void HierarchicalLSSolver::solve(const OptProblem &opt_problem, base::VectorXd &
 
     for(uint prio = 0; prio < priorities.size(); prio++){
 
-        const LinearEqualityConstraints& constraints = ((HierarchicalLSOptProblem& )opt_problem)[prio];
-
-        if(constraints.A.rows()     != priorities[prio].n_constraint_variables ||
-           constraints.A.cols()     != no_of_joints ||
-           constraints.y_ref.size() != priorities[prio].n_constraint_variables){
+        if(constraints[prio].A.rows()     != priorities[prio].n_constraint_variables ||
+           constraints[prio].A.cols()     != no_of_joints ||
+           constraints[prio].y_ref.size() != priorities[prio].n_constraint_variables){
             LOG_ERROR("Expected input size on priority level %i: A: %i x %i, b: %i x 1, actual input: A: %i x %i, b: %i x 1",
-                      prio, priorities[prio].n_constraint_variables, no_of_joints, priorities[prio].n_constraint_variables, constraints.A.rows(), constraints.A.cols(), constraints.y_ref.size());
+                      prio, priorities[prio].n_constraint_variables, no_of_joints, priorities[prio].n_constraint_variables, constraints[prio].A.rows(), constraints[prio].A.cols(), constraints[prio].y_ref.size());
             throw std::invalid_argument("Invalid size of input variables");
         }
 
         // Set weights for this prioritiy
-        setConstraintWeights(constraints.W, prio);
+        setConstraintWeights(constraints[prio].Wy, prio);
+        setJointWeights(constraints[prio].Wq, prio);
 
         priorities[prio].y_comp.setZero();
 
         // Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
-        priorities[prio].y_comp = constraints.y_ref - constraints.A*solver_output;
+        priorities[prio].y_comp = constraints[prio].y_ref - constraints[prio].A*solver_output;
 
         // projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         // For the first priority P == Identity
-        priorities[prio].A_proj = constraints.A * proj_mat;
+        priorities[prio].A_proj = constraints[prio].A * proj_mat;
 
         // Compute weighted, projected mat: A_proj_w = Wy * A_proj * Wq^-1
         // Since the weight matrices are diagonal, there is no need for full matrix multiplication

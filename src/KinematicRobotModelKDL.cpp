@@ -3,7 +3,7 @@
 #include <kdl_conversions/KDLConversions.hpp>
 #include <base-logging/Logging.hpp>
 #include <kdl_parser/kdl_parser.hpp>
-#include "core/RobotModelConfig.hpp"
+#include "RobotModelConfig.hpp"
 
 namespace wbc{
 
@@ -106,6 +106,12 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
     KinematicChainKDLMap::const_iterator it;
     for(it = kdl_chain_map.begin(); it != kdl_chain_map.end(); it++)
         it->second->update(joint_state, poses);
+
+    last_update = joint_state.time;
+    for(auto p : poses){
+        if(p.time > last_update)
+            last_update = p.time;
+    }
 }
 
 const base::samples::RigidBodyState &KinematicRobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
