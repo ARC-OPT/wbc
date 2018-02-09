@@ -41,9 +41,9 @@ public:
     virtual void evaluateConstraints(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state);
 
     /**
-     * @brief Return constraints for solver
+     * @brief Return constraints sorted by priority for the solver
      */
-    const std::vector<LinearEqualityConstraints> getHierarhicalLEConstraints(){return constraints_prio;}
+    const std::vector<LinearEqualityConstraints> getConstraintsByPrio(){return constraints_prio;}
 };
 
 } // namespace wbc
