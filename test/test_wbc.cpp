@@ -197,7 +197,6 @@ BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
         prio_0.A.data()[i] = (rand()%1000)/1000.0;
     for(uint i = 0; i < NO_CONSTRAINTS; i++ )
         prio_0.y_ref.data()[i] = (rand()%1000)/1000.0;
-    prio_0.Wq.setConstant(1);
 
     input.push_back(prio_0);
 
@@ -304,7 +303,7 @@ BOOST_AUTO_TEST_CASE(wbc_velocity_scene){
 
         // Compute ctrl solution
         wbc_scene.update();
-        solver->solve(wbc_scene.getHierarhicalLEConstraints(), solver_output);
+        solver->solve(wbc_scene.getConstraintsByPrio(), solver_output);
 
         for(size_t i = 0; i < joint_state.size(); i++)
             joint_state[i].position += solver_output(i) * loop_time;
