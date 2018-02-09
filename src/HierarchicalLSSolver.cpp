@@ -98,7 +98,6 @@ void HierarchicalLSSolver::solve(const std::vector<LinearEqualityConstraints> &c
 
         // Set weights for this prioritiy
         setConstraintWeights(constraints[prio].Wy, prio);
-        setJointWeights(constraints[prio].Wq, prio);
 
         priorities[prio].y_comp.setZero();
 
