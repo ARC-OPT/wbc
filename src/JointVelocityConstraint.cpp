@@ -28,12 +28,12 @@ void JointVelocityConstraint::setReference(const base::commands::Joints& ref){
             idx = ref.mapNameToIndex(config.joint_names[i]);
         }
         catch(std::exception e){
-            LOG_ERROR("Constraint %s expects joint %s  but this joint is not in reference vector", config.name.c_str(), config.joint_names[i]);
+            LOG_ERROR("Constraint %s expects joint %s  but this joint is not in reference vector", config.name.c_str(), config.joint_names[i].c_str());
             throw std::invalid_argument("Invalid constraint reference input");
         }
 
         if(!ref[idx].hasSpeed()){
-            LOG_ERROR("Constraint %s: Reference input for joint for joint %s has no valid speed value", config.name.c_str(), config.joint_names[i]);
+            LOG_ERROR("Constraint %s: Reference input for joint for joint %s has no valid speed value", config.name.c_str(), config.joint_names[i].c_str());
             throw std::invalid_argument("Invalid constraint reference input");
         }
 
