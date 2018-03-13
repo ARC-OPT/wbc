@@ -63,14 +63,8 @@ bool HierarchicalLSSolver::configure(const std::vector<int>& n_constraints_per_p
 void HierarchicalLSSolver::solve(const std::vector<LinearEqualityConstraints> &constraints, base::VectorXd &solver_output){
 
     if(!configured){
-        std::vector<int> n_constraints_pp;
-        int n_joints;
-        for(auto c : constraints){
-            n_joints = c.A.cols();
-            n_constraints_pp.push_back(c.A.rows());
-        }
-        if(!configure(n_constraints_pp, n_joints))
-            throw std::runtime_error("HierarchicalLSSolver failed to configure!");
+        LOG_ERROR("Solver has not been configured yet!");
+        throw std::runtime_error("Invalid call to solve()");
     }
 
     // Check valid input
@@ -182,11 +176,19 @@ void HierarchicalLSSolver::solve(const std::vector<LinearEqualityConstraints> &c
 }
 
 void HierarchicalLSSolver::setJointWeights(const base::VectorXd& weights){
+    if(!configured){
+        LOG_ERROR("Solver has not been configured yet!");
+        throw std::runtime_error("Invalid call to setJointWeights()");
+    }
     for(size_t i = 0; i < priorities.size(); i++)
         setJointWeights(weights, i);
 }
 
 void HierarchicalLSSolver::setJointWeights(const base::VectorXd& weights, const uint prio){
+    if(!configured){
+        LOG_ERROR("Solver has not been configured yet!");
+        throw std::runtime_error("Invalid call to setJointWeights()");
+    }
     if(prio < 0 ||prio >= priorities.size()){
         LOG_ERROR("Cannot set joint weights on priority %i. Number of priority levels is %i", prio, priorities.size());
         throw std::invalid_argument("Invalid Priority");
@@ -210,6 +212,10 @@ void HierarchicalLSSolver::setJointWeights(const base::VectorXd& weights, const 
 }
 
 void HierarchicalLSSolver::setConstraintWeights(const base::VectorXd& weights, const uint prio){
+    if(!configured){
+        LOG_ERROR("Solver has not been configured yet!");
+        throw std::runtime_error("Invalid call to setJointWeights()");
+    }
     if(prio < 0 ||prio >= priorities.size()){
         LOG_ERROR("Cannot set constraint weights on priority %i. Number of priority levels is %i", prio, priorities.size());
         throw std::invalid_argument("Invalid Priority");
@@ -244,6 +250,10 @@ void HierarchicalLSSolver::setMaxSolverOutputNorm(double norm_max){
 }
 
 void HierarchicalLSSolver::setMaxSolverOutput(const base::VectorXd& max_solver_output){
+    if(!configured){
+        LOG_ERROR("Solver has not been configured yet!");
+        throw std::runtime_error("Invalid call to setJointWeights()");
+    }
     if(max_solver_output.size() > 0 && max_solver_output.size() != no_of_joints)
         throw std::invalid_argument("Size of max solver output vector has to be same as number of joints");
     for(uint i = 0; i < max_solver_output.size(); i++){
