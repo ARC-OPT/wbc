@@ -1,6 +1,5 @@
 #include "WbcVelocityScene.hpp"
 #include "RobotModel.hpp"
-#include "Solver.hpp"
 #include "SVD.hpp"
 #include <base-logging/Logging.hpp>
 
@@ -18,9 +17,9 @@ ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config)
     }
 }
 
-void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
+void WbcVelocityScene::update(){
 
-    opt_problem.prios.resize(constraints.size());
+    constraints_prio.resize(constraints.size());
     base::samples::RigidBodyState ref_frame, tip_in_root, root_in_base;
 
     // Create equation system
@@ -30,7 +29,7 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
     //    W - Vector of constraint weights. One vector for each priority
     for(uint prio = 0; prio < constraints.size(); prio++){
 
-        opt_problem.prios[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
+        constraints_prio[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
 
         // Walk through all tasks of current priority
         uint row_index = 0;
@@ -109,34 +108,36 @@ void WbcVelocityScene::solve(base::commands::Joints& ctrl_output){
 
             // Insert constraints into equation system of current priority at the correct position. Note: Weights will be zero if activations
             // for this constraint is zero or if the constraint is in timeout
-            opt_problem.prios[prio].W.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
-            opt_problem.prios[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
-            opt_problem.prios[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
+            constraints_prio[prio].Wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
+            constraints_prio[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
+            constraints_prio[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
 
             row_index += n_vars;
 
         } // constraints on prio
     } // priorities
-
-    // Solve equation system
-    solver->solve(opt_problem, solver_output);
-
-    // Convert solver output
-    ctrl_output.resize(robot_model->noOfJoints());
-    ctrl_output.names = robot_model->jointNames();
-    for(size_t i = 0; i < ctrl_output.size(); i++)
-        ctrl_output[i].speed = solver_output(i);
-    ctrl_output.time = base::Time::now();
 }
 
-void WbcVelocityScene::evaluateConstraints(const base::VectorXd& solver_output, const base::VectorXd& robot_vel){
+void WbcVelocityScene::evaluateConstraints(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
+
+    assert(solver_output.size() == robot_model->noOfJoints());
+    assert(joint_state.size() == robot_model->noOfJoints());
+
+    solver_output_vel.resize(solver_output.size());
+    robot_vel.resize(joint_state.size());
+    for(size_t i = 0; i < robot_model->noOfJoints(); i++){
+        solver_output_vel(i) = solver_output[i].speed;
+        robot_vel(i) = joint_state[i].speed;
+    }
 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
 
             ConstraintPtr constraint = constraints[prio][i];
-            constraint->y_solution = constraint->A * solver_output;
+            constraint->y_solution = constraint->A * solver_output_vel;
             constraint->y = constraint->A * robot_vel;
+            constraint->y_error = constraint->y_ref_root - constraint->y_ref;
+            constraint->y_solution_error = constraint->y_ref_root - constraint->y_solution;
         }
     }
 }

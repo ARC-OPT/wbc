@@ -1,6 +1,10 @@
-# CMakeLists.txt has to be located in the project folder and cmake has to be
-# executed from 'project/build' with 'cmake ../'.
-cmake_minimum_required(VERSION 2.6)
-find_package(Rock)
-rock_init(wbc 0.1)
-rock_standard_layout()
+cmake_minimum_required (VERSION 2.8.11)
+project(wbc)
+
+set(PROJECT_VERSION 0.1)
+set(API_VERSION ${PROJECT_VERSION})
+
+include(FindPkgConfig)
+add_compile_options(-std=c++11)
+add_subdirectory(src)
+add_subdirectory(test)
