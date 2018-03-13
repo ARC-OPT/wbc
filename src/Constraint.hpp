@@ -82,6 +82,12 @@ public:
      *  Cartesian space and defined in root coordinates*/
     base::VectorXd y;
 
+    /** Difference between y_solution and y_ref_root*/
+    base::VectorXd y_solution_error;
+
+    /** Difference between y and y_ref_root*/
+    base::VectorXd y_error;
+
     /** Constraint matrix */
     base::MatrixXd A;
 };
