@@ -2,6 +2,7 @@
 #define HIERARCHICAL_LS_SOLVER_HPP
 
 #include <base/Eigen.hpp>
+#include <vector>
 
 namespace wbc{
 
