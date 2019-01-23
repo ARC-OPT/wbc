@@ -197,6 +197,8 @@ BOOST_AUTO_TEST_CASE(hierarchical_ls_solver)
         prio_0.A.data()[i] = (rand()%1000)/1000.0;
     for(uint i = 0; i < NO_CONSTRAINTS; i++ )
         prio_0.y_ref.data()[i] = (rand()%1000)/1000.0;
+    for(uint i = 0; i < NO_CONSTRAINTS; i++ )
+        prio_0.Wy.data()[i] = (rand()%1000)/1000.0;
 
     input.push_back(prio_0);
 
