@@ -2,6 +2,7 @@
 #define LINEAR_EQUALITY_CONSTRAINTS_HPP
 
 #include <base/Eigen.hpp>
+#include <base/Time.hpp>
 
 namespace wbc{
 
@@ -47,13 +48,34 @@ public:
         H.resize(nq, nq);
         H.setConstant(std::numeric_limits<double>::quiet_NaN());
 
-        Wy.resize(nc);
-        Wy.setConstant(std::numeric_limits<double>::quiet_NaN());
-
-        Wq.resize(nq);
-        Wq.setConstant(std::numeric_limits<double>::quiet_NaN());
+        Wy.setOnes(nc);
+        Wq.setOnes(nq);
     }
 };
+
+struct HierarchicalQP{
+    base::Time time;
+    std::vector<std::string> joint_names;
+    std::vector<QuadraticProgram> prios;
+
+    size_t size() const {
+        return prios.size();
+    }
+    size_t nJoints() const {
+        return joint_names.size();
+    }
+    QuadraticProgram& operator[](int i) {
+        return prios[i];
+    }
+    const QuadraticProgram& operator[](int i) const {
+        return prios[i];
+    }
+    void operator<<(QuadraticProgram& qp) {
+        prios.push_back(qp);
+    }
+    void resize(const size_t &n){prios.resize(n);}
+};
+
 }
 
 #endif // LINEAR_EQUALITY_CONSTRAINTS_HPP

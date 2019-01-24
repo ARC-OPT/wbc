@@ -2,7 +2,6 @@
 #define WBCVELOCITYSCENE_HPP
 
 #include "WbcScene.hpp"
-#include "LinearEqualityConstraints.hpp"
 #include "JointVelocityConstraint.hpp"
 #include "CartesianVelocityConstraint.hpp"
 #include <base/samples/RigidBodyState.hpp>
@@ -14,7 +13,6 @@ typedef std::shared_ptr<JointVelocityConstraint> JointVelocityConstraintPtr;
 
 class WbcVelocityScene : public WbcScene{
 protected:
-    std::vector<LinearEqualityConstraints> constraints_prio;
     base::VectorXd solver_output_vel, robot_vel;
 
     /**
@@ -39,11 +37,6 @@ public:
      *  Both values can be used to evaluate the performance of WBC
      */
     virtual void evaluateConstraints(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state);
-
-    /**
-     * @brief Return constraints sorted by priority for the solver
-     */
-    const std::vector<LinearEqualityConstraints> getConstraintsByPrio(){return constraints_prio;}
 };
 
 } // namespace wbc

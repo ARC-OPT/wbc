@@ -110,7 +110,8 @@ void WbcVelocityScene::update(){
             // for this constraint is zero or if the constraint is in timeout
             constraints_prio[prio].Wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
             constraints_prio[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
-            constraints_prio[prio].y_ref.segment(row_index, n_vars) = constraint->y_ref_root;
+            constraints_prio[prio].lower_y.segment(row_index, n_vars) = constraint->y_ref_root;
+            constraints_prio[prio].upper_y.segment(row_index, n_vars) = constraint->y_ref_root;
 
             row_index += n_vars;
 

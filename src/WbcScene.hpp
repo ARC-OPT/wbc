@@ -3,6 +3,7 @@
 
 #include "ConstraintConfig.hpp"
 #include "Constraint.hpp"
+#include "QuadraticProgram.hpp"
 #include <base/commands/Joints.hpp>
 #include <memory>
 
@@ -21,6 +22,7 @@ class WbcScene{
 protected:
     RobotModelPtr robot_model;
     std::vector< std::vector<ConstraintPtr> > constraints;
+    HierarchicalQP constraints_prio;
     std::vector<int> n_constraint_variables_per_prio;
 
     /**
@@ -81,6 +83,11 @@ public:
      * @brief evaluateConstraints Evaluate the fulfillment of the constraints given the current robot state and the solver output
      */
     virtual void evaluateConstraints(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state) = 0;
+
+    /**
+     * @brief Return constraints sorted by priority for the solver
+     */
+    void getHierarchicalQP(HierarchicalQP& hqp){hqp = constraints_prio;}
 };
 
 } // namespace wbc
