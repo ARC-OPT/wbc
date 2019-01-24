@@ -23,8 +23,8 @@ public:
     base::VectorXd lower_y; /** Lower bound of the constraint vector (nc x 1) */
     base::VectorXd upper_y; /** Upper bound of the constraint vector (nc x 1) */
     base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
-    base::VectorXd Wy;      /** Constraint weights (nc x 1) */
-    base::VectorXd Wq;      /** Joint weights (nq x 1) */
+    base::VectorXd Wy;      /** Constraint weights (nc x 1). Default entry is 1. */
+    base::VectorXd Wq;      /** Joint weights (nq x 1). Default entry is 1. */
 
     /** Initialize all variables with NaN */
     void resize(const uint nc, const uint nq)
