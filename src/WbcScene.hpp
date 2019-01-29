@@ -3,7 +3,7 @@
 
 #include "ConstraintConfig.hpp"
 #include "Constraint.hpp"
-#include "QuadraticProgram.hpp"
+#include <wbc_common/QuadraticProgram.hpp>
 #include <base/commands/Joints.hpp>
 #include <memory>
 
