@@ -4,7 +4,6 @@
 #include "WbcScene.hpp"
 #include "JointVelocityConstraint.hpp"
 #include "CartesianVelocityConstraint.hpp"
-#include <base/samples/RigidBodyState.hpp>
 
 namespace wbc{
 

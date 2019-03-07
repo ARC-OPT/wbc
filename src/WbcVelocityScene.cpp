@@ -20,7 +20,7 @@ ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config)
 void WbcVelocityScene::update(){
 
     constraints_prio.resize(constraints.size());
-    base::samples::RigidBodyState ref_frame, tip_in_root, root_in_base;
+    CartesianState ref_frame, tip_in_root, root_in_base;
 
     // Create equation system
     //    Walk through all priorities and update the optimization problem. The outcome will be
@@ -45,11 +45,11 @@ void WbcVelocityScene::update(){
                 CartesianVelocityConstraintPtr constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
 
                 // Create constraint jacobian
-                tip_in_root = robot_model->rigidBodyState(constraint->config.root, constraint->config.tip);
-                root_in_base = robot_model->rigidBodyState(robot_model->baseFrame(), constraint->config.root);
+                tip_in_root = robot_model->cartesianState(constraint->config.root, constraint->config.tip);
+                root_in_base = robot_model->cartesianState(robot_model->baseFrame(), constraint->config.root);
                 constraint->jacobian.setIdentity();
-                constraint->jacobian.changeRefPoint(-tip_in_root.position);
-                constraint->jacobian.changeRefFrame(root_in_base.getTransform());
+                constraint->jacobian.changeRefPoint(-tip_in_root.pose.position);
+                constraint->jacobian.changeRefFrame(root_in_base.pose.toTransform());
 
                 //Invert constraint Jacobian
                 svd_eigen_decomposition(constraint->jacobian, constraint->Uf, constraint->Sf, constraint->Vf, constraint->tmp);
@@ -68,14 +68,14 @@ void WbcVelocityScene::update(){
                 // Convert input twist from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
                 // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
                 // be the origin of ref frame, not the root frame. This is more intuitive when controlling the orientation of e.g. a robot' s end effector.
-                ref_frame = robot_model->rigidBodyState(constraint->config.root, constraint->config.ref_frame);
-                constraint->y_ref_root.segment(0,3) = ref_frame.orientation.toRotationMatrix() * constraint->y_ref.segment(0,3);
-                constraint->y_ref_root.segment(3,3) = ref_frame.orientation.toRotationMatrix() * constraint->y_ref.segment(3,3);
+                ref_frame = robot_model->cartesianState(constraint->config.root, constraint->config.ref_frame);
+                constraint->y_ref_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(0,3);
+                constraint->y_ref_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(3,3);
 
                 // Also convert the weight vector from ref frame to the root frame. Take the absolute values after rotation, since weights can only
                 // assume positive values
-                constraint->weights_root.segment(0,3) = ref_frame.orientation.toRotationMatrix() * constraint->weights.segment(0,3);
-                constraint->weights_root.segment(3,3) = ref_frame.orientation.toRotationMatrix() * constraint->weights.segment(3,3);
+                constraint->weights_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(0,3);
+                constraint->weights_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(3,3);
                 constraint->weights_root = constraint->weights_root.cwiseAbs();
             }
             else if(type == jnt){

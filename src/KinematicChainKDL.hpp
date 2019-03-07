@@ -28,12 +28,8 @@ public:
     KinematicChainKDL(const KDL::Chain &chain);
 
     /**
-     * @brief Update all joints and links of the kinematic chain
-     * @param joint_state Has to contain at least all joints that are included in the kinematic chain. Each entry has to have a valid position
-     * @param poses If not empty, the method will try to update the pose of all links that match the sourceFrame of the given rigidBodyState.
-     * Must have a valid position and orientation entry. All other entries will be ignored. The matching segment transform will be replaced by
-     * the given pose in the rigid body state. This can be used e.g. to update relativ positions between multiple KDL tree in the model (i.e. the
-     * kinematic chains can stretch over more than one tree like this
+     * @brief Update all joints of the kinematic chain
+     * @param joint_state Has to contain at least all joints that are included in the kinematic chain. Each entry has to have a valid position and velocity
      */
     void update(const base::samples::Joints& joint_state);
     /** Convert and return current Cartesian state*/

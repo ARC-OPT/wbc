@@ -18,6 +18,7 @@ void KinematicRobotModelKDL::clear(){
     kdl_chain_map.clear();
     jac_map.clear();
     jac_dot_map.clear();
+    robot_model_names.clear();
 }
 
 
@@ -84,16 +85,13 @@ bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& h
     if(full_tree.getNrOfSegments() == 0)
         full_tree = tree;
     else{
-        if(hook.empty()){
-            LOG_ERROR("Unexpected empty hook name. To which segment do you want to attach the tree?");
-            return false;
-        }
         if(!hasFrame(hook)){
             LOG_ERROR("Hook name is %s, but this segment does not exist in tree", hook.c_str());
             return false;
         }
 
         std::string root = tree.getRootSegment()->first;
+        robot_model_names.push_back(root);
         addVirtual6DoFJoint(hook, root, pose);
 
         if(!full_tree.addTree(tree, root)){
@@ -201,8 +199,8 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
 const CartesianState &KinematicRobotModelKDL::cartesianState(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
-        throw std::runtime_error("Invalid call to rigidBodyState()");
+        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to cartesianState()");
     }
 
     // Create chain if it does not exist
@@ -216,8 +214,8 @@ const CartesianState &KinematicRobotModelKDL::cartesianState(const std::string &
 const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vector<std::string> &joint_names){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
-        throw std::runtime_error("Invalid call to jointState()");
+        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to jointState()");
     }
 
     joint_state_out.resize(joint_names.size());
@@ -239,8 +237,8 @@ const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vecto
 const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
-        throw std::runtime_error("Invalid call to rigidBodyState()");
+        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to jacobian()");
     }
 
     // Create chain if it does not exist
@@ -262,8 +260,8 @@ const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_f
 const base::MatrixXd &KinematicRobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("You have to call update() with appropriate timestamps at least once before requesting kinematic information!");
-        throw std::runtime_error("Invalid call to rigidBodyState()");
+        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to jacobianDot()");
     }
 
     // Create chain if it does not exist

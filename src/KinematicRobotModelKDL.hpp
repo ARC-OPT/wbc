@@ -28,7 +28,7 @@ protected:
     KDL::Tree full_tree;                        /** Overall kinematic tree*/
     base::samples::Joints current_joint_state;  /** Last joint state that was passed through the call of update()*/
     base::samples::Joints virtual_joint_state;  /** Last virtual joint state */
-    KinematicChainKDLMap kdl_chain_map;         /** Map of KDL Chains. Entries are generated through calls of rigidBodyState() or jacobian()*/
+    KinematicChainKDLMap kdl_chain_map;         /** Map of KDL Chains*/
     JacobianMap jac_map;                        /** Map of robot jacobians for all kinematic chains*/
     JacobianMap jac_dot_map;                    /** Map of robot jacobian derivatives for all kinematic chains*/
     base::samples::Joints joint_state_out;      /** Helper variable*/
@@ -53,6 +53,9 @@ protected:
     const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
     bool addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose);
+
+    /** Update the position and orientation of a tree that is attached to the initial robot (see configure for details). */
+    void updateVirtual6DoFJoint(const CartesianState& state);
 
 public:
     KinematicRobotModelKDL();
@@ -83,11 +86,6 @@ public:
     virtual bool configure(const std::vector<RobotModelConfig>& model_config,
                            const std::vector<std::string> &joint_names = std::vector<std::string>(),
                            const std::string &base_frame = "");
-
-    /**
-     * @brief Update the position and orientation of a tree that is attached to the initial robot (see configure for details).
-     */
-    void updateVirtual6DoFJoint(const CartesianState& state);
 
     /**
      * @brief Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required

@@ -1,6 +1,6 @@
 #include "CartesianVelocityConstraint.hpp"
 #include <base-logging/Logging.hpp>
-#include <base/samples/RigidBodyState.hpp>
+#include <wbc_common/CartesianState.hpp>
 
 namespace wbc{
 
@@ -22,17 +22,16 @@ CartesianVelocityConstraint::CartesianVelocityConstraint(ConstraintConfig config
 CartesianVelocityConstraint::~CartesianVelocityConstraint(){
 }
 
-void CartesianVelocityConstraint::setReference(const base::samples::RigidBodyState& ref){
+void CartesianVelocityConstraint::setReference(const CartesianState& ref){
 
-    if(!ref.hasValidVelocity() ||
-       !ref.hasValidAngularVelocity()){
+    if(!ref.hasValidTwist()){
         LOG_ERROR("Constraint %s has invalid velocity and/or angular velocity", config.name.c_str())
         throw std::invalid_argument("Invalid constraint reference value");
     }
 
     this->time = ref.time;
-    this->y_ref.segment(0,3) = ref.velocity;
-    this->y_ref.segment(3,3) = ref.angular_velocity;
+    this->y_ref.segment(0,3) = ref.twist.linear;
+    this->y_ref.segment(3,3) = ref.twist.angular;
 }
 
 } // namespace wbc

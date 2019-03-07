@@ -18,6 +18,7 @@ class RobotModel{
 
 protected:
     std::vector<std::string> joint_names;
+    std::vector<std::string> robot_model_names;
     std::string base_frame;
     base::Time last_update;
 
@@ -84,6 +85,9 @@ public:
 
     /** Get time timestamp of the update */
     base::Time lastUpdate(){return last_update;}
+
+    /** Get the names of all robot models*/
+    const std::vector<std::string> robotModelNames(){return robot_model_names;}
 
 };
 }

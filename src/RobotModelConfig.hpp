@@ -1,7 +1,7 @@
 #ifndef ROBOTMODELCONFIG_HPP
 #define ROBOTMODELCONFIG_HPP
 
-#include <base/samples/RigidBodyState.hpp>
+#include <base/Pose.hpp>
 
 namespace wbc{
 
