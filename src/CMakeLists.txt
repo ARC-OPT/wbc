@@ -1,7 +1,16 @@
 include_directories(.)
 
-file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src "*.cpp")
-file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src "*.hpp")
+set(SOURCES ${PROJECT_SOURCE_DIR}/src/KinematicChainKDL.cpp
+            ${PROJECT_SOURCE_DIR}/src/KinematicRobotModelKDL.cpp
+            ${PROJECT_SOURCE_DIR}/src/RobotModel.cpp
+            ${PROJECT_SOURCE_DIR}/src/Jacobian.cpp)
+set(HEADERS ${PROJECT_SOURCE_DIR}/src/KinematicChainKDL.hpp
+            ${PROJECT_SOURCE_DIR}/src/KinematicRobotModelKDL.hpp
+            ${PROJECT_SOURCE_DIR}/src/RobotModel.hpp
+            ${PROJECT_SOURCE_DIR}/src/Jacobian.hpp)
+
+#file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src "*.cpp")
+#file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src "*.hpp")
 
 pkg_search_module(base-types REQUIRED base-types)
 pkg_search_module(base-logging REQUIRED base-logging)

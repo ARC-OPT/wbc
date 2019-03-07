@@ -1,15 +1,21 @@
 #include "KinematicChainKDL.hpp"
-#include <kdl/chainfksolverpos_recursive.hpp>
-#include <kdl/chainjnttojacdotsolver.hpp>
-#include <kdl_conversions/KDLConversions.hpp>
 #include <base-logging/Logging.hpp>
+#include <base/samples/Joints.hpp>
+#include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainfksolvervel_recursive.hpp>
+#include <kdl/chainjnttojacsolver.hpp>
+#include <kdl/chainjnttojacdotsolver.hpp>
+#include <kdl/frames_io.hpp>
 
 namespace wbc{
 
-KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string& root_frame, const std::string& tip_frame) :
+KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain) :
     chain(chain),
-    joint_positions(KDL::JntArray(chain.getNrOfJoints())),
-    jacobian(KDL::Jacobian(chain.getNrOfJoints())){
+    jacobian(KDL::Jacobian(chain.getNrOfJoints())),
+    jacobian_dot(KDL::Jacobian(chain.getNrOfJoints())){
+
+    joint_state_kdl.q    = KDL::JntArray(chain.getNrOfJoints());
+    joint_state_kdl.qdot = KDL::JntArray(chain.getNrOfJoints());
 
     for(size_t i = 0; i < chain.getNrOfSegments(); i++){
         KDL::Joint joint = chain.getSegment(i).getJoint();
@@ -17,63 +23,75 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string&
             joint_names.push_back(joint.getName());
     }
 
-    rigid_body_state.targetFrame = root_frame;
-    rigid_body_state.sourceFrame = tip_frame;
-
-    segment_names.push_back(root_frame);
-    for(auto s : chain.segments)
-        segment_names.push_back(s.getName());
+//    segment_names.push_back(root_frame);
+//    for(auto s : chain.segments)
+//        segment_names.push_back(s.getName());
 }
 
-KinematicChainKDL::~KinematicChainKDL(){
-
+const CartesianState &KinematicChainKDL::cartesianState(){
+    cartesian_state.pose.position << pose_kdl.p(0), pose_kdl.p(1), pose_kdl.p(2);
+    double x, y, z, w;
+    pose_kdl.M.GetQuaternion(x, y, z, w);
+    cartesian_state.pose.orientation = base::Quaterniond(w, x, y, z);
+    cartesian_state.twist.linear  << twist_kdl.vel(0), twist_kdl.vel(1), twist_kdl.vel(2);
+    cartesian_state.twist.angular << twist_kdl.rot(0), twist_kdl.rot(1), twist_kdl.rot(2);
+    return cartesian_state;
 }
 
-void KinematicChainKDL::update(const base::samples::Joints &joint_state, const std::vector<base::samples::RigidBodyState> &poses){
+void KinematicChainKDL::update(const base::samples::Joints &joint_state){
 
     //// update Joints
     last_update = joint_state.time;
     for(size_t i = 0; i < joint_names.size(); i++)
             try{
-                joint_positions(i) = joint_state.getElementByName(joint_names[i]).position;
+                joint_state_kdl.q(i)    = joint_state.getElementByName(joint_names[i]).position;
+                joint_state_kdl.qdot(i) = joint_state.getElementByName(joint_names[i]).speed;
             }
             catch(std::exception e){
                 LOG_ERROR("Kinematic Chain %s to %s contains joint %s, but this joint is not in joint state vector",
                           chain.getSegment(0).getName().c_str(), chain.getSegment(chain.getNrOfSegments()-1).getName().c_str(), joint_names[i].c_str());
                 throw std::invalid_argument("Invalid joint state");
             }
-
     //// update links
-    for(size_t i = 0; i < poses.size(); i++){
-        kdl_conversions::RigidBodyState2KDL(poses[i], pose_kdl);
+//    for(size_t i = 0; i < poses.size(); i++){
+//        kdl_conversions::RigidBodyState2KDL(poses[i], pose_kdl);
 
-        const std::string& root_frame = poses[i].targetFrame;
-        const std::string& tip_frame = poses[i].sourceFrame;
+//        const std::string& root_frame = poses[i].targetFrame;
+//        const std::string& tip_frame = poses[i].sourceFrame;
 
-        for(size_t j = 1; j < segment_names.size(); j++){
+//        for(size_t j = 1; j < segment_names.size(); j++){
 
-            //Chains can be selected in both directions, so check root and tip segment
-            if(segment_names[j-1] == root_frame && segment_names[j] == tip_frame)
-                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl);
-            if(segment_names[j-1] == tip_frame && segment_names[j] == root_frame)
-                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl.Inverse());
-        }
+//            //Chains can be selected in both directions, so check root and tip segment
+//            if(segment_names[j-1] == root_frame && segment_names[j] == tip_frame)
+//                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl);
+//            if(segment_names[j-1] == tip_frame && segment_names[j] == root_frame)
+//                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl.Inverse());
+//        }
 
-        if(poses[i].time > last_update)
-            last_update = poses[i].time;
-    }
-    KDL::ChainFkSolverPos_recursive fk_solver(chain);
+//        if(poses[i].time > last_update)
+//            last_update = poses[i].time;
+//    }
+
+
+    KDL::ChainFkSolverVel_recursive fk_solver_vel(chain);
     KDL::ChainJntToJacSolver jac_solver(chain);
+    KDL::ChainJntToJacDotSolver jac_dot_solver(chain);
 
-    //// compute kinematics
-    fk_solver.JntToCart(joint_positions, pose_kdl);
-    kdl_conversions::KDL2RigidBodyState(pose_kdl, rigid_body_state);
-    rigid_body_state.time = last_update;
+    //// compute forward kinematics
+    fk_solver_vel.JntToCart(joint_state_kdl, frame_vel);
+    twist_kdl = frame_vel.deriv();
+    pose_kdl = frame_vel.value();
 
-    jac_solver.JntToJac(joint_positions, jacobian);
+    //// Compute Jacobians
+    jac_solver.JntToJac(joint_state_kdl.q, jacobian);
 
     // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip, so change the reference point to the root frame
-    jacobian.changeRefPoint(-pose_kdl.p);
+    jacobian_ref_root = jacobian;
+    jacobian_ref_root.changeRefPoint(-pose_kdl.p);
+
+    jac_dot_solver.setRepresentation(0); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
+    jac_dot_solver.JntToJacDot(joint_state_kdl, jacobian_dot);
 }
+
 
 } // namespace wbc

@@ -1,26 +1,31 @@
 #ifndef KINMATICCHAINKDL_HPP
 #define KINMATICCHAINKDL_HPP
 
+#include <memory>
 #include <kdl/chain.hpp>
-#include <kdl/jntarray.hpp>
 #include <kdl/jacobian.hpp>
-#include <base/samples/Joints.hpp>
-#include <base/samples/RigidBodyState.hpp>
+#include <kdl/jntarray.hpp>
+#include <kdl/jntarrayvel.hpp>
+#include <base/Time.hpp>
+#include <wbc_common/CartesianState.hpp>
 
-namespace KDL {
-class ChainFkSolverPos_recursive;
-class ChainJntToJacSolver;
+namespace base{
+    namespace samples{
+        class Joints;
+    }
 }
+namespace wbc{
 
 /**
  * @brief Helper class for storing information of a KDL chain in the robot model
 */
-namespace wbc{
-
 class KinematicChainKDL{
+
+protected:
+    CartesianState cartesian_state;
+
 public:
-    KinematicChainKDL(const KDL::Chain &chain, const std::string& root_frame, const std::string& tip_frame);
-    ~KinematicChainKDL();
+    KinematicChainKDL(const KDL::Chain &chain);
 
     /**
      * @brief Update all joints and links of the kinematic chain
@@ -30,15 +35,19 @@ public:
      * the given pose in the rigid body state. This can be used e.g. to update relativ positions between multiple KDL tree in the model (i.e. the
      * kinematic chains can stretch over more than one tree like this
      */
-    void update(const base::samples::Joints& joint_state,
-                const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>());
+    void update(const base::samples::Joints& joint_state);
+
+    const CartesianState& cartesianState();
 
     base::Time last_update;                          /** Latest information change within this kinematic chain*/
     KDL::Frame pose_kdl;                             /** KDL Pose of the tip segment in root coordinate of the chain*/
-    base::samples::RigidBodyState rigid_body_state;  /** Rock Pose of the tip segment in root coordinate of the chain*/
+    KDL::FrameVel frame_vel;                         /** Helper for the velocity fk*/
+    KDL::Twist twist_kdl;                            /** KDL Pose of the tip segment in root coordinate of the chain*/
     KDL::Chain chain;                                /** The underlying KDL chain*/
-    KDL::JntArray joint_positions;                   /** Vector of positions of all included joints*/
-    KDL::Jacobian jacobian;                          /** Jacobian of the Chain. Reference frame & reference point is the root frame*/
+    KDL::JntArrayVel joint_state_kdl;                /** Vector of positions of all included joints*/
+    KDL::Jacobian jacobian;                          /** Jacobian of the Chain. Reference frame is root & reference point is tip*/
+    KDL::Jacobian jacobian_ref_root;                 /** Jacobian of the Chain. Reference frame & reference point is root*/
+    KDL::Jacobian jacobian_dot;                      /** Derivative of Jacobian of the Chain. Reference frame & reference point is the root frame*/
     std::vector<std::string> joint_names;            /** Names of the joint included in the kinematic chain*/
     std::vector<std::string> segment_names;          /** Names of all segments including root segment*/
 };

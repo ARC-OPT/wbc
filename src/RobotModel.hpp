@@ -4,8 +4,8 @@
 #include <vector>
 #include <base/Eigen.hpp>
 #include <map>
-#include <base/samples/RigidBodyState.hpp>
 #include <base/samples/Joints.hpp>
+#include <wbc_common/CartesianState.hpp>
 
 namespace wbc{
 
@@ -26,6 +26,17 @@ public:
     virtual ~RobotModel();
 
     /**
+     * @brief Load and configure the robot model with single model file
+     * @param model_file The models configuration file.
+     * @param joint_names Order of joint names within the model.
+     * @param base_frame Base frame of the model.
+     * @return True in case of success, else false
+     */
+    virtual bool configure(const std::string& model_filename,
+                           const std::vector<std::string> &joint_names = std::vector<std::string>(),
+                           const std::string &base_frame = "") = 0;
+
+    /**
      * @brief Load and configure the robot model
      * @param model_config The models configuration(s). These include the path to the robot model file(s), the relative poses and hooks
      *                     to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
@@ -43,10 +54,10 @@ public:
      * @param poses Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model.
      */
     virtual void update(const base::samples::Joints& joint_state,
-                        const std::vector<base::samples::RigidBodyState>& poses = std::vector<base::samples::RigidBodyState>()) = 0;
+                        const std::vector<CartesianState>& virtual_joint_states = std::vector<CartesianState>()) = 0;
 
     /** Returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates!*/
-    virtual const base::samples::RigidBodyState &rigidBodyState(const std::string &root_frame, const std::string &tip_frame) = 0;
+    virtual const CartesianState &cartesianState(const std::string &root_frame, const std::string &tip_frame) = 0;
 
     /** Returns the current status of the given joint names */
     virtual const base::samples::Joints& jointState(const std::vector<std::string> &joint_names) = 0;
@@ -54,6 +65,10 @@ public:
     /** Returns the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
         the root frame with the rotation point at the tip frame*/
     virtual const base::MatrixXd &jacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
+
+    /** Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
+        the root frame with the rotation point at the tip frame*/
+    virtual const base::MatrixXd &jacobianDot(const std::string &root_frame, const std::string &tip_frame) = 0;
 
     /** Return the overall number of joints in the robot model*/
     uint noOfJoints(){return joint_names.size();}
