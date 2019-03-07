@@ -41,37 +41,16 @@ const CartesianState &KinematicChainKDL::cartesianState(){
 void KinematicChainKDL::update(const base::samples::Joints &joint_state){
 
     //// update Joints
-    last_update = joint_state.time;
     for(size_t i = 0; i < joint_names.size(); i++)
-            try{
-                joint_state_kdl.q(i)    = joint_state.getElementByName(joint_names[i]).position;
-                joint_state_kdl.qdot(i) = joint_state.getElementByName(joint_names[i]).speed;
-            }
-            catch(std::exception e){
-                LOG_ERROR("Kinematic Chain %s to %s contains joint %s, but this joint is not in joint state vector",
-                          chain.getSegment(0).getName().c_str(), chain.getSegment(chain.getNrOfSegments()-1).getName().c_str(), joint_names[i].c_str());
-                throw std::invalid_argument("Invalid joint state");
-            }
-    //// update links
-//    for(size_t i = 0; i < poses.size(); i++){
-//        kdl_conversions::RigidBodyState2KDL(poses[i], pose_kdl);
-
-//        const std::string& root_frame = poses[i].targetFrame;
-//        const std::string& tip_frame = poses[i].sourceFrame;
-
-//        for(size_t j = 1; j < segment_names.size(); j++){
-
-//            //Chains can be selected in both directions, so check root and tip segment
-//            if(segment_names[j-1] == root_frame && segment_names[j] == tip_frame)
-//                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl);
-//            if(segment_names[j-1] == tip_frame && segment_names[j] == root_frame)
-//                chain.segments[j-1] = KDL::Segment(tip_frame, KDL::Joint(KDL::Joint::None), pose_kdl.Inverse());
-//        }
-
-//        if(poses[i].time > last_update)
-//            last_update = poses[i].time;
-//    }
-
+        try{
+            joint_state_kdl.q(i)    = joint_state.getElementByName(joint_names[i]).position;
+            joint_state_kdl.qdot(i) = joint_state.getElementByName(joint_names[i]).speed;
+        }
+        catch(std::exception e){
+            LOG_ERROR("Kinematic Chain %s to %s contains joint %s, but this joint is not in joint state vector",
+                      chain.getSegment(0).getName().c_str(), chain.getSegment(chain.getNrOfSegments()-1).getName().c_str(), joint_names[i].c_str());
+            throw std::invalid_argument("Invalid joint state");
+        }
 
     KDL::ChainFkSolverVel_recursive fk_solver_vel(chain);
     KDL::ChainJntToJacSolver jac_solver(chain);

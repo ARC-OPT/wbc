@@ -126,7 +126,7 @@ BOOST_AUTO_TEST_CASE(robot_model_kdl){
     fk_solver.JntToCart(joint_positions, pose_kdl);
 
     base::samples::RigidBodyState rbs;
-    BOOST_CHECK_NO_THROW(rbs = robot_model->rigidBodyState("kuka_lbr_base", "kuka_lbr_l_tcp"););
+    //BOOST_CHECK_NO_THROW(rbs = robot_model->rigidBodyState("kuka_lbr_base", "kuka_lbr_l_tcp"););
 
     base::samples::RigidBodyState rbs_converted;
     kdl_conversions::KDL2RigidBodyState(pose_kdl, rbs_converted);

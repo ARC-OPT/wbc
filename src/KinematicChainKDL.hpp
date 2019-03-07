@@ -36,10 +36,9 @@ public:
      * kinematic chains can stretch over more than one tree like this
      */
     void update(const base::samples::Joints& joint_state);
-
+    /** Convert and return current Cartesian state*/
     const CartesianState& cartesianState();
 
-    base::Time last_update;                          /** Latest information change within this kinematic chain*/
     KDL::Frame pose_kdl;                             /** KDL Pose of the tip segment in root coordinate of the chain*/
     KDL::FrameVel frame_vel;                         /** Helper for the velocity fk*/
     KDL::Twist twist_kdl;                            /** KDL Pose of the tip segment in root coordinate of the chain*/

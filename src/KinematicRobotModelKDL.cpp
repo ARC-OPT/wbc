@@ -1,6 +1,5 @@
 #include "KinematicRobotModelKDL.hpp"
 #include "KinematicChainKDL.hpp"
-#include <kdl_conversions/KDLConversions.hpp>
 #include <base-logging/Logging.hpp>
 #include <kdl_parser/kdl_parser.hpp>
 #include "RobotModelConfig.hpp"
@@ -80,59 +79,6 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
     return true;
 }
 
-void KinematicRobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
-    KDL::Chain chain;
-    if(!full_tree.getChain(root_frame, tip_frame, chain)){
-        LOG_ERROR("Unable to extract kinematics chain from %s to %s from KDL tree", root_frame.c_str(), tip_frame.c_str());
-        throw std::invalid_argument("Invalid robot model config");
-    }
-
-    const std::string chain_id = chainID(root_frame, tip_frame);
-
-    KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain);
-    kin_chain->update(current_joint_state);
-    kdl_chain_map[chain_id] = kin_chain;
-
-    jac_map[chain_id]     = Jacobian(kin_chain->joint_names.size());
-    jac_dot_map[chain_id] = Jacobian(kin_chain->joint_names.size());
-}
-
-bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose){
-
-    KDL::Chain chain;
-    base::Vector3d euler = base::getEuler(initial_pose.orientation);
-    const KDL::Joint::JointType joint_types[6] = {KDL::Joint::TransX, KDL::Joint::TransY, KDL::Joint::TransZ,
-                                                  KDL::Joint::RotZ, KDL::Joint::RotY, KDL::Joint::RotX};
-
-    for(int i = 0; i < 3; i++){
-        KDL::Vector pos = KDL::Vector::Zero();
-        pos(i) = initial_pose.position(i);
-        std::string joint_name = tip + virtual_joint_names[i];
-        chain.addSegment(KDL::Segment(joint_name, KDL::Joint(joint_name, joint_types[i]), KDL::Frame(pos)));
-        virtual_joint_state.names.push_back(joint_name);
-
-        KDL::Vector ori = KDL::Vector::Zero();
-        ori(i) = euler(i);
-        joint_name = tip + virtual_joint_names[i+3];
-        chain.addSegment(KDL::Segment(joint_name, KDL::Joint(joint_name, joint_types[i+3]), KDL::Frame(ori)));
-        virtual_joint_state.names.push_back(joint_name);
-    }
-    virtual_joint_state.elements.resize(virtual_joint_state.names.size());
-    CartesianState cs;
-    cs.pose = initial_pose;
-    cs.time = base::Time::now();
-    updateVirtual6DoFJoint(cs);
-
-    chain.addSegment(KDL::Segment(tip, KDL::Joint(KDL::Joint::None))); // Don't forget to add the actual tip segment to the chain
-
-    if(!full_tree.addChain(chain, hook)){
-        LOG_ERROR("Unable to attach chain to tree segment %s", hook.c_str());
-        return false;
-    }
-    return true;
-}
-
-
 bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& hook, const base::Pose &pose){
 
     if(full_tree.getNrOfSegments() == 0)
@@ -159,18 +105,66 @@ bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& h
     return true;
 }
 
+void KinematicRobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
+    KDL::Chain chain;
+    if(!full_tree.getChain(root_frame, tip_frame, chain)){
+        LOG_ERROR("Unable to extract kinematics chain from %s to %s from KDL tree", root_frame.c_str(), tip_frame.c_str());
+        throw std::invalid_argument("Invalid robot model config");
+    }
+
+    const std::string chain_id = chainID(root_frame, tip_frame);
+
+    KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain);
+    kin_chain->update(current_joint_state);
+    kdl_chain_map[chain_id] = kin_chain;
+
+    jac_map[chain_id]     = Jacobian(kin_chain->joint_names.size());
+    jac_dot_map[chain_id] = Jacobian(kin_chain->joint_names.size());
+}
+
+bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose){
+
+
+    const KDL::Joint::JointType virtual_joint_types[6] = {KDL::Joint::TransX, KDL::Joint::TransY, KDL::Joint::TransZ,
+                                                          KDL::Joint::RotZ, KDL::Joint::RotY, KDL::Joint::RotX};
+
+    KDL::Chain chain;
+    for(int i = 0; i < 6; i++){
+        std::string joint_name = tip + virtual_joint_names[i];
+        chain.addSegment(KDL::Segment(joint_name, KDL::Joint(joint_name, virtual_joint_types[i]), KDL::Frame::Identity()));
+        virtual_joint_state.names.push_back(joint_name);
+    }
+    virtual_joint_state.elements.resize(virtual_joint_state.names.size());
+    chain.addSegment(KDL::Segment(tip, KDL::Joint(KDL::Joint::None))); // Don't forget to add the actual tip segment to the chain
+
+    CartesianState cs;
+    cs.pose = initial_pose;
+    cs.twist.setZero();
+    cs.time = base::Time::now();
+    updateVirtual6DoFJoint(cs);
+
+    if(!full_tree.addChain(chain, hook)){
+        LOG_ERROR("Unable to attach chain to tree segment %s", hook.c_str());
+        return false;
+    }
+    return true;
+}
+
 void KinematicRobotModelKDL::updateVirtual6DoFJoint(const CartesianState& state){
 
     base::JointState js;
+    base::Vector3d euler = base::getEuler(state.pose.orientation);
     for(int i = 0; i < 3; i++){
-        const std::string& name = state.source_frame + virtual_joint_names[i];
+        std::string name = state.source_frame + virtual_joint_names[i];
         js.position = state.pose.position(i);
         js.speed = state.twist.linear(i);
-        size_t idx = virtual_joint_state.mapNameToIndex(name);
-        virtual_joint_state[idx] = js;
+        virtual_joint_state[virtual_joint_state.mapNameToIndex(name)] = js;
+
+        name = state.source_frame + virtual_joint_names[i+3];
+        js.position = euler(i);
+        js.speed = state.twist.angular(i);
+        virtual_joint_state[virtual_joint_state.mapNameToIndex(name)] = js;
     }
-    if(state.time > virtual_joint_state.time)
-        virtual_joint_state.time = state.time;
 }
 
 void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
@@ -178,17 +172,20 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
 
     current_joint_state = joint_state;
 
-    // Update virtual jints
-    for(const auto &v : virtual_joint_states)
+    // Update virtual joints
+    for(const auto &v : virtual_joint_states){
         updateVirtual6DoFJoint(v);
+        if(v.time > current_joint_state.time)
+            current_joint_state.time = v.time;
+    }
 
-    // Push current virtual joint state into
+    // Push current virtual joint state into overall joint states
     for(const auto& n : virtual_joint_state.names)
         current_joint_state.names.push_back(n);
     for(const auto& e : virtual_joint_state.elements)
         current_joint_state.elements.push_back(e);
 
-    // update all kinematics chains
+    // update all kinematic chains
     for(const auto& it : kdl_chain_map)
         it.second->update(current_joint_state);
 }
