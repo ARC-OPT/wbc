@@ -62,7 +62,7 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
             return false;
         }
 
-        if(!addTree(tree, cfg.hook, cfg.initial_pose.getPose()))
+        if(!addTree(tree, cfg.hook, cfg.initial_pose))
             return false;
     }
 
@@ -138,6 +138,8 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     chain.addSegment(KDL::Segment(tip, KDL::Joint(KDL::Joint::None))); // Don't forget to add the actual tip segment to the chain
 
     CartesianState cs;
+    cs.source_frame = tip;
+    cs.target_frame = hook;
     cs.pose = initial_pose;
     cs.twist.setZero();
     cs.time = base::Time::now();
@@ -174,6 +176,12 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
 
     // Update virtual joints
     for(const auto &v : virtual_joint_states){
+
+        if(!hasFrame(v.source_frame)){
+            LOG_ERROR("Trying to update virtual tree element '%s', which is not part of the robot model", v.source_frame.c_str());
+            throw std::runtime_error("Invalid Cartesian state");
+        }
+
         updateVirtual6DoFJoint(v);
         if(v.time > current_joint_state.time)
             current_joint_state.time = v.time;

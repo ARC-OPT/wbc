@@ -209,7 +209,7 @@ BOOST_AUTO_TEST_CASE(multi_robot){
 
     cout<<"Testing Model Creation .."<<endl<<endl;
 
-    base::samples::RigidBodyState object_pose;
+    base::Pose object_pose;
     object_pose.position = base::Vector3d(0,0,2);
     object_pose.orientation.setIdentity();
 
@@ -285,8 +285,38 @@ BOOST_AUTO_TEST_CASE(multi_robot){
         for(int j = 0; j < jac.cols(); j++)
             BOOST_CHECK_EQUAL(jac(i,j), jac_kdl.data(i,j));
 
-    cout<<"Object pose is "<<endl;
-    robot_model->cartesianState("kuka_lbr_top_left_camera", "object");
+    cout<<"Object pose in camera coordinates: "<<endl;
+    CartesianState st = robot_model->cartesianState("kuka_lbr_top_left_camera", "object");
+    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
+    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
+
+    cout<<"Object pose in base coordinates: "<<endl;
+    st = robot_model->cartesianState("kuka_lbr_base", "object");
+    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
+    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
+
+    cout<<"Updating object pose by ...."<<endl<<endl;
+    st.pose.position = base::Vector3d(0,1,0);
+    st.pose.orientation.setIdentity();
+    st.pose.orientation = Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::Unit(2));
+    st.source_frame = "object";
+    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
+    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
+
+    vector<CartesianState> poses;
+    poses.push_back(st);
+
+    BOOST_CHECK_NO_THROW(robot_model->update(joint_state, poses));
+
+    cout<<"Object pose in camera coordinates: "<<endl;
+    st = robot_model->cartesianState("kuka_lbr_top_left_camera", "object");
+    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
+    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
+
+    cout<<"Object pose in base coordinates: "<<endl;
+    st = robot_model->cartesianState("kuka_lbr_base", "object");
+    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
+    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
 
     delete robot_model;
 }

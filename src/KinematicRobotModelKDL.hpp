@@ -22,7 +22,6 @@ class KinematicRobotModelKDL : public RobotModel{
     typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
     typedef std::map<std::string, Jacobian> JacobianMap;
-    typedef std::map<std::string, CartesianState> TreeStateMap;
     const std::string virtual_joint_names[6] = {"_x", "_y", "_z", "_rot_x", "_rot_y", "_rot_z"};
 
 protected:
