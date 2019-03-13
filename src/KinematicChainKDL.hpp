@@ -41,10 +41,8 @@ public:
     KDL::Chain chain;                                /** The underlying KDL chain*/
     KDL::JntArrayVel joint_state_kdl;                /** Vector of positions of all included joints*/
     KDL::Jacobian jacobian;                          /** Jacobian of the Chain. Reference frame is root & reference point is tip*/
-    KDL::Jacobian jacobian_ref_root;                 /** Jacobian of the Chain. Reference frame & reference point is root*/
     KDL::Jacobian jacobian_dot;                      /** Derivative of Jacobian of the Chain. Reference frame & reference point is the root frame*/
     std::vector<std::string> joint_names;            /** Names of the joint included in the kinematic chain*/
-    std::vector<std::string> segment_names;          /** Names of all segments including root segment*/
 };
 
 } // namespace wbc

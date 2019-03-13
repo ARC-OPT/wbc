@@ -6,17 +6,6 @@ namespace wbc{
 
 CartesianVelocityConstraint::CartesianVelocityConstraint(ConstraintConfig config, uint n_robot_joints)
     : CartesianConstraint(config, n_robot_joints){
-
-    uint n_vars = config.nVariables();
-
-    jacobian.setZero(6,n_vars);
-    H.setZero(n_vars,6);
-    Uf.resize(6, n_vars);
-    Uf.setIdentity();
-    Vf.resize(n_vars, n_vars);
-    Vf.setIdentity();
-    Sf.setZero(n_vars);
-    tmp.setZero(6);
 }
 
 CartesianVelocityConstraint::~CartesianVelocityConstraint(){

@@ -116,7 +116,7 @@ public:
       * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
       * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
       */
-    virtual const base::MatrixXd &jacobian(const std::string &root_frame, const std::string &tip_frame);
+    virtual const Jacobian &jacobian(const std::string &root_frame, const std::string &tip_frame);
 
     /** @brief Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
       *        the root frame with the rotation point at the tip frame
@@ -124,7 +124,7 @@ public:
       * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
       * @return A 6xN Jacobian derivative matrix, where N is the number of robot joints
       */
-    virtual const base::MatrixXd &jacobianDot(const std::string &root_frame, const std::string &tip_frame);
+    virtual const Jacobian &jacobianDot(const std::string &root_frame, const std::string &tip_frame);
 
     /** Check if a frame is available in the model*/
     bool hasFrame(const std::string &name);

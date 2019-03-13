@@ -234,7 +234,7 @@ const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vecto
     return joint_state_out;
 }
 
-const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
+const Jacobian& KinematicRobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
         LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
@@ -257,7 +257,7 @@ const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_f
 }
 
 
-const base::MatrixXd &KinematicRobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
+const Jacobian &KinematicRobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
         LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");

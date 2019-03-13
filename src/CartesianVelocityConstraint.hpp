@@ -2,7 +2,6 @@
 #define CARTESIANVELOCITYCONSTRAINT_HPP
 
 #include "CartesianConstraint.hpp"
-#include "Jacobian.hpp"
 
 namespace wbc{
 
@@ -18,16 +17,9 @@ public:
 
     /**
      * @brief Update the Cartesian reference input for this constraint.
-     * @param ref Reference input for this constraint. Only the velocity part is relevant (Must have a valid velocity and angular_velocity!)
+     * @param ref Reference input for this constraint. Only the velocity part is relevant (Must have a valid linear and angular velocity!)
      */
     virtual void setReference(const CartesianState& ref);
-
-    //Helper variables required for svd
-    Jacobian jacobian;
-    base::MatrixXd Uf, Vf;
-    base::VectorXd Sf;
-    base::MatrixXd H;
-    base::VectorXd tmp;
 };
 
 } // namespace wbc

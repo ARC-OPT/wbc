@@ -20,7 +20,7 @@ ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config)
 void WbcVelocityScene::update(){
 
     constraints_prio.resize(constraints.size());
-    CartesianState ref_frame, tip_in_root, root_in_base;
+    CartesianState ref_frame;
 
     // Create equation system
     //    Walk through all priorities and update the optimization problem. The outcome will be
@@ -44,27 +44,10 @@ void WbcVelocityScene::update(){
 
                 CartesianVelocityConstraintPtr constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
 
-                // Create constraint jacobian
-                tip_in_root = robot_model->cartesianState(constraint->config.root, constraint->config.tip);
-                root_in_base = robot_model->cartesianState(robot_model->baseFrame(), constraint->config.root);
-                constraint->jacobian.setIdentity();
-                constraint->jacobian.changeRefPoint(-tip_in_root.pose.position);
-                constraint->jacobian.changeRefFrame(root_in_base.pose.toTransform());
+                // Constraint Jacobian
+                constraint->A = robot_model->jacobian(constraint->config.root, constraint->config.tip);
 
-                //Invert constraint Jacobian
-                svd_eigen_decomposition(constraint->jacobian, constraint->Uf, constraint->Sf, constraint->Vf, constraint->tmp);
-                for (unsigned int j = 0; j < constraint->Sf.size(); j++){
-                    if (constraint->Sf(j) > 0)
-                        constraint->Uf.col(j) *= 1 / constraint->Sf(j);
-                    else
-                        constraint->Uf.col(j).setZero();
-                }
-                constraint->H = (constraint->Vf * constraint->Uf.transpose());
-
-                // A = J^(-1) *J_tf_tip - J^(-1) * J_tf_root:
-                constraint->A = constraint->H.block(0, 0, n_vars, 6) * robot_model->jacobian(robot_model->baseFrame(), constraint->config.tip) -
-                                constraint->H.block(0, 0, n_vars, 6) * robot_model->jacobian(robot_model->baseFrame(), constraint->config.root);
-
+                // Constraint reference
                 // Convert input twist from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
                 // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
                 // be the origin of ref frame, not the root frame. This is more intuitive when controlling the orientation of e.g. a robot' s end effector.

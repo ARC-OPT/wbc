@@ -22,10 +22,6 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain) :
         if(joint.getType() != KDL::Joint::None)
             joint_names.push_back(joint.getName());
     }
-
-//    segment_names.push_back(root_frame);
-//    for(auto s : chain.segments)
-//        segment_names.push_back(s.getName());
 }
 
 const CartesianState &KinematicChainKDL::cartesianState(){
@@ -63,10 +59,6 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
 
     //// Compute Jacobians
     jac_solver.JntToJac(joint_state_kdl.q, jacobian);
-
-    // JntToJac computes Jacobian wrt root frame of the chain but with its reference point at the tip, so change the reference point to the root frame
-    jacobian_ref_root = jacobian;
-    jacobian_ref_root.changeRefPoint(-pose_kdl.p);
 
     jac_dot_solver.setRepresentation(0); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
     jac_dot_solver.JntToJacDot(joint_state_kdl, jacobian_dot);
