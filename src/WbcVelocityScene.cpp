@@ -141,7 +141,7 @@ void WbcVelocityScene::evaluateConstraints(const base::commands::Joints& solver_
             ConstraintPtr constraint = constraints[prio][i];
             constraint->y_solution = constraint->A * solver_output_vel;
             constraint->y = constraint->A * robot_vel;
-            constraint->y_error = constraint->y_ref_root - constraint->y_ref;
+            constraint->y_error = constraint->y_ref_root - constraint->y;
             constraint->y_solution_error = constraint->y_ref_root - constraint->y_solution;
         }
     }
