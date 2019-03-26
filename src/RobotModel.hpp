@@ -6,6 +6,7 @@
 #include <map>
 #include <base/samples/RigidBodyState.hpp>
 #include <base/samples/Joints.hpp>
+#include <memory>
 
 namespace wbc{
 
@@ -69,8 +70,10 @@ public:
 
     /** Get time timestamp of the update */
     base::Time lastUpdate(){return last_update;}
-
 };
+
+typedef std::shared_ptr<RobotModel> RobotModelPtr;
+
 }
 
 #endif // ROBOTMODEL_HPP

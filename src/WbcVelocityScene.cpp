@@ -123,10 +123,14 @@ void WbcVelocityScene::update(){
     } // priorities
 }
 
-void WbcVelocityScene::evaluateConstraints(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
+const ConstraintsStatus& WbcVelocityScene::updateConstraintsStatus(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
 
-    assert(solver_output.size() == robot_model->noOfJoints());
-    assert(joint_state.size() == robot_model->noOfJoints());
+    if(solver_output.size() != robot_model->noOfJoints())
+        throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())
+                                 + " but number of robot joints is " + std::to_string(robot_model->noOfJoints()));
+    if(joint_state.size() != robot_model->noOfJoints())
+        throw std::runtime_error("Size of joint state is " + std::to_string(joint_state.size())
+                                 + " but number of robot joints is " + std::to_string(robot_model->noOfJoints()));
 
     solver_output_vel.resize(solver_output.size());
     robot_vel.resize(joint_state.size());
@@ -137,14 +141,21 @@ void WbcVelocityScene::evaluateConstraints(const base::commands::Joints& solver_
 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
-
             ConstraintPtr constraint = constraints[prio][i];
-            constraint->y_solution = constraint->A * solver_output_vel;
-            constraint->y = constraint->A * robot_vel;
-            constraint->y_error = constraint->y_ref_root - constraint->y;
-            constraint->y_solution_error = constraint->y_ref_root - constraint->y_solution;
+            const std::string &name = constraint->config.name;
+
+            constraints_status[name].time       = constraint->time;
+            constraints_status[name].config     = constraint->config;
+            constraints_status[name].activation = constraint->activation;
+            constraints_status[name].timeout    = constraint->timeout;
+            constraints_status[name].weights    = constraint->weights;
+            constraints_status[name].y_ref      = constraint->y_ref;
+            constraints_status[name].y_solution = constraint->A * solver_output_vel;
+            constraints_status[name].y          = constraint->A * robot_vel;
         }
     }
+
+    return constraints_status;
 }
 
 
