@@ -128,16 +128,14 @@ const ConstraintsStatus& WbcVelocityScene::updateConstraintsStatus(const base::c
     if(solver_output.size() != robot_model->noOfJoints())
         throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())
                                  + " but number of robot joints is " + std::to_string(robot_model->noOfJoints()));
-    if(joint_state.size() != robot_model->noOfJoints())
-        throw std::runtime_error("Size of joint state is " + std::to_string(joint_state.size())
-                                 + " but number of robot joints is " + std::to_string(robot_model->noOfJoints()));
 
     solver_output_vel.resize(solver_output.size());
     robot_vel.resize(joint_state.size());
-    for(size_t i = 0; i < robot_model->noOfJoints(); i++){
+    for(size_t i = 0; i < robot_model->noOfJoints(); i++)
         solver_output_vel(i) = solver_output[i].speed;
-        robot_vel(i) = joint_state[i].speed;
-    }
+    const std::vector<std::string> joint_names = robot_model->jointNames();
+    for(size_t i = 0; i < joint_names.size(); i++)
+        robot_vel(i) = joint_state[joint_names[i]].speed;
 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
