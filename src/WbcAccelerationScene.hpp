@@ -35,7 +35,7 @@ public:
     /**
      * @brief evaluateConstraints Evaluate the fulfillment of the constraints given the current robot state and the solver output
      */
-    virtual void evaluateConstraints(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state);
+    virtual const ConstraintsStatus &updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state);
 };
 
 } // namespace wbc

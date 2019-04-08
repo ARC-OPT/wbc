@@ -109,7 +109,7 @@ void WbcAccelerationScene::update(){
     }
 }
 
-void WbcAccelerationScene::evaluateConstraints(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
+const ConstraintsStatus &WbcAccelerationScene::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
 
 }
 

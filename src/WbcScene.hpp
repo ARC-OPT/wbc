@@ -1,19 +1,14 @@
 #ifndef WBCSCENE_HPP
 #define WBCSCENE_HPP
 
-#include "ConstraintConfig.hpp"
-#include "Constraint.hpp"
+#include "ConstraintStatus.hpp"
 #include <wbc_common/QuadraticProgram.hpp>
 #include <base/commands/Joints.hpp>
-#include <memory>
+#include "RobotModel.hpp"
 
 namespace wbc{
 
-class RobotModel;
 class OptProblem;
-
-typedef std::shared_ptr<Constraint> ConstraintPtr;
-typedef std::shared_ptr<RobotModel> RobotModelPtr;
 
 /**
  * @brief Base class for all wbc scenes
@@ -22,6 +17,7 @@ class WbcScene{
 protected:
     RobotModelPtr robot_model;
     std::vector< std::vector<ConstraintPtr> > constraints;
+    ConstraintsStatus constraints_status;
     HierarchicalQP constraints_prio;
     std::vector<int> n_constraint_variables_per_prio;
 
@@ -67,7 +63,7 @@ public:
     /**
      * @brief Returns all constraints as vector
      */
-    void getConstraints(std::vector<ConstraintsPerPrio>& constr_vect);
+    const ConstraintsStatus& getConstraintsStatus(){return constraints_status;}
 
     /**
      * @brief Sort constraint config by the priorities of the constraints
@@ -80,9 +76,9 @@ public:
     static std::vector<int> getNConstraintVariablesPerPrio(const std::vector<ConstraintConfig> &config);
 
     /**
-     * @brief evaluateConstraints Evaluate the fulfillment of the constraints given the current robot state and the solver output
+     * @brief updateConstraintsStatus Evaluate the fulfillment of the constraints given the current robot state and the solver output
      */
-    virtual void evaluateConstraints(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state) = 0;
+    virtual const ConstraintsStatus &updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state) = 0;
 
     /**
      * @brief Return constraints sorted by priority for the solver

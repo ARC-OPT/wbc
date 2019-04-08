@@ -6,7 +6,7 @@
 #include <map>
 #include <base/samples/Joints.hpp>
 #include <wbc_common/CartesianState.hpp>
-#include "Jacobian.hpp"
+#include <memory>
 
 namespace wbc{
 
@@ -66,11 +66,11 @@ public:
 
     /** Returns the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
         the root frame with the rotation point at the tip frame*/
-    virtual const Jacobian &jacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
+    virtual const base::MatrixXd &jacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
 
     /** Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame. By convention the Jacobian is computed with respect to
         the root frame with the rotation point at the tip frame*/
-    virtual const Jacobian &jacobianDot(const std::string &root_frame, const std::string &tip_frame) = 0;
+    virtual const base::MatrixXd &jacobianDot(const std::string &root_frame, const std::string &tip_frame) = 0;
 
     /** Return the overall number of joints in the robot model*/
     uint noOfJoints(){return joint_names.size();}
@@ -91,6 +91,9 @@ public:
     const std::vector<std::string> robotModelNames(){return robot_model_names;}
 
 };
+
+typedef std::shared_ptr<RobotModel> RobotModelPtr;
+
 }
 
 #endif // ROBOTMODEL_HPP

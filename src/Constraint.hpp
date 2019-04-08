@@ -4,6 +4,8 @@
 #include "ConstraintConfig.hpp"
 #include <base/Eigen.hpp>
 #include <base/Time.hpp>
+#include <base/NamedVector.hpp>
+#include <memory>
 
 namespace wbc{
 
@@ -74,24 +76,10 @@ public:
      *  config.timeout time, this value will be set to zero*/
     int timeout;
 
-    /** Solution as computed by the solver for this constraint. For Cartesian constraints, this will be back transformed to
-     *  Cartesian space and defined in root coordinates*/
-    base::VectorXd y_solution;
-
-    /** Actual constraint as executed on the robot. For Cartesian constraints, this will be back transformed to
-     *  Cartesian space and defined in root coordinates*/
-    base::VectorXd y;
-
-    /** Difference between y_solution and y_ref_root*/
-    base::VectorXd y_solution_error;
-
-    /** Difference between y and y_ref_root*/
-    base::VectorXd y_error;
-
     /** Constraint matrix */
     base::MatrixXd A;
 };
-typedef std::vector<Constraint> ConstraintsPerPrio;
+typedef std::shared_ptr<Constraint> ConstraintPtr;
 
 } // namespace wbc
 #endif
