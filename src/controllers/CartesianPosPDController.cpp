@@ -1,5 +1,5 @@
 #include "CartesianPosPDController.hpp"
-#include <wbc/types/CartesianState.hpp>
+#include "../types/CartesianState.hpp"
 
 using namespace wbc;
 

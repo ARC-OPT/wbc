@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
-#include "KinematicRobotModelKDL.hpp"
-#include "RobotModelConfig.hpp"
-#include "WbcVelocityScene.hpp"
+#include "robot_models/KinematicRobotModelKDL.hpp"
+#include "core/RobotModelConfig.hpp"
+#include "scenes/WbcVelocityScene.hpp"
 
 using namespace std;
 using namespace wbc;

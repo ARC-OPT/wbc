@@ -2,7 +2,7 @@
 #define CTRL_LIB_CART_POS_PD_CONTROLLER_HPP
 
 #include "PosPDController.hpp"
-#include <wbc/types/CartesianState.hpp>
+#include "../types/CartesianState.hpp"
 
 namespace ctrl_lib {
 

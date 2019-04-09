@@ -2,7 +2,7 @@
 #define CARTESIAN_POTENTIAL_FIELDS_CONTROLLER_HPP
 
 #include "PotentialFieldsController.hpp"
-#include <wbc/types/CartesianState.hpp>
+#include "../types/CartesianState.hpp"
 
 namespace ctrl_lib{
 
