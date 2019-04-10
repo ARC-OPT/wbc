@@ -24,7 +24,9 @@ public:
     virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);
 
     /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
-    void setNoWSR(const uint& n){n_wsr = n;}
+    void setMaxNoWSR(const uint& n){n_wsr = n;}
+    /** Get the maximum number of working set recalculations to be performed during the initial homotopy*/
+    uint getMaxNoWSR(){return n_wsr;}
     /** Retrieve the return value from the last QP calculation*/
     qpOASES::returnValue getReturnValue();
     /** Get number of working set recalculations actually performed*/

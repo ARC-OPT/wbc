@@ -3,6 +3,7 @@
 #include "robot_models/KinematicChainKDL.hpp"
 #include "core/RobotModelConfig.hpp"
 #include <kdl/chainfksolverpos_recursive.hpp>
+#include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 
 using namespace std;
@@ -21,21 +22,36 @@ BOOST_AUTO_TEST_CASE(cartesian_state){
     for(base::JointState& j : joint_state.elements)
         j.position = j.speed = 0;
 
-    string urdf_model_file = string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_lbr.urdf";
+    string urdf_model_file = "../../../test/data/kuka_lbr.urdf";
 
     KinematicRobotModelKDL robot_model;
-    robot_model.configure(urdf_model_file);
+    BOOST_CHECK(robot_model.configure(urdf_model_file) == true);
+
+    KDL::Chain chain;
+    BOOST_CHECK_NO_THROW(robot_model.getTree().getChain("kuka_lbr_center", "kuka_lbr_l_tcp", chain));
+
+    KDL::ChainFkSolverVel_recursive vel_solver(chain);
+    KDL::JntArrayVel q_and_q_dot(joint_names.size());
 
     double t = 0;
-    while(true){
+    while(t < 10){
         joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_1")].position     = M_PI/2;
         joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].position     = sin(t);
         joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].speed        = cos(t);
         joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].acceleration = -sin(t);
         joint_state.time = base::Time::now();
-        robot_model.update(joint_state);
+        BOOST_CHECK_NO_THROW(robot_model.update(joint_state));
 
-        CartesianState cstate = robot_model.cartesianState("kuka_lbr_center", "kuka_lbr_l_tcp");
+        for(size_t i = 0; i < joint_state.size(); i++){
+            q_and_q_dot.q(i)    = joint_state[i].position;
+            q_and_q_dot.qdot(i) = joint_state[i].speed;
+        }
+
+        KDL::FrameVel frame_vel;
+        vel_solver.JntToCart(q_and_q_dot, frame_vel);
+
+        CartesianState cstate;
+        BOOST_CHECK_NO_THROW( cstate = robot_model.cartesianState("kuka_lbr_center", "kuka_lbr_l_tcp"));
         base::Vector3d euler = base::getEuler(cstate.pose.orientation);
         printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
         printf("Orientation: %.4f %.4f %.4f\n",   euler(0),                euler(1),                euler(2));
@@ -43,6 +59,19 @@ BOOST_AUTO_TEST_CASE(cartesian_state){
         printf("Angular Vel: %.4f %.4f %.4f\n",   cstate.twist.angular(0), cstate.twist.angular(1), cstate.twist.angular(2));
         printf("Linear Acc:  %.4f %.4f %.4f\n",   cstate.acceleration.linear(0),  cstate.acceleration.linear(1),  cstate.acceleration.linear(2));
         printf("Angular Acc: %.4f %.4f %.4f\n\n", cstate.acceleration.angular(0), cstate.acceleration.angular(1), cstate.acceleration.angular(2));
+
+        for(int i = 0; i < 3; i++){
+            BOOST_CHECK(cstate.pose.position(i) == frame_vel.GetFrame().p(i));
+            BOOST_CHECK(cstate.twist.linear(i) == frame_vel.deriv().vel(i));
+            BOOST_CHECK(cstate.twist.angular(i) == frame_vel.deriv().rot(i));
+        }
+        double qx, qy, qz, qw;
+        frame_vel.GetFrame().M.GetQuaternion(qx, qy, qz, qw);
+
+        BOOST_CHECK(cstate.pose.orientation.x() == qx);
+        BOOST_CHECK(cstate.pose.orientation.y() == qy);
+        BOOST_CHECK(cstate.pose.orientation.z() == qz);
+        BOOST_CHECK(cstate.pose.orientation.w() == qw);
 
         usleep(0.01*1000*1000);
         t+=0.01;
@@ -69,7 +98,7 @@ BOOST_AUTO_TEST_CASE(jacobian_and_cartesian_state){
     double t = 0;
     base::VectorXd joint_vel(joint_state.size());
     base::VectorXd joint_acc(joint_state.size());
-    while(true){
+    while(t < 10){
         joint_state[joint_state.mapNameToIndex("base_to_rot")].position     = sin(t);
         joint_state[joint_state.mapNameToIndex("base_to_rot")].speed        = cos(t);
         joint_state[joint_state.mapNameToIndex("base_to_rot")].acceleration = -sin(t);

@@ -28,7 +28,7 @@ void runPotentialFieldController(std::string filename,
     wbc::CartesianState feedback = start_pos, control_output;
     std::vector<PotentialFieldPtr> fields = ctrl->getFields();
 
-    for(uint i = 0; i < 10000; i++)
+    for(uint i = 0; i < 100000; i++)
     {
         control_output = ctrl->update(feedback);
 
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(radial_field)
     const double propGain = 10;
     const double influence_distance = 10;
 
-    PotentialFieldPtr field = std::make_shared<RadialPotentialField>(dim);
+    PotentialFieldPtr field = std::make_shared<RadialPotentialField>(dim, "radial_field");
     field->influence_distance = influence_distance;
     field->pot_field_center << 0,0,0;
 
@@ -77,9 +77,19 @@ BOOST_AUTO_TEST_CASE(radial_field)
     controller.setFields(fields);
     controller.setPGain(p_gain);
 
+    BOOST_CHECK(controller.getPGain() == p_gain);
+    BOOST_CHECK(controller.getMaxControlOutput() == base::Vector3d::Constant(std::numeric_limits<double>::max()));
+    BOOST_CHECK(controller.getDimension() == 3);
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d::Zero());
+    BOOST_CHECK(controller.getFields()[0]->influence_distance == influence_distance);
+    BOOST_CHECK(controller.getFields()[0]->dimension == 3);
+    BOOST_CHECK(controller.getFields()[0]->name == "radial_field");
+
     wbc::CartesianState start_pos;
     start_pos.pose.position << 1,0,0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
+
+    BOOST_CHECK(controller.getFields()[0]->distance.norm() >= influence_distance);
 
     // Install gnuplot and uncomment to plot right away
     std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current position (x)', "
@@ -96,25 +106,35 @@ BOOST_AUTO_TEST_CASE(constrained_radial_field)
     const double influence_distance = 10;
     const double max_control_output = 0.2;
 
-    PotentialFieldPtr field = std::make_shared<RadialPotentialField>(dim);
+    PotentialFieldPtr field = std::make_shared<RadialPotentialField>(dim, "constrained_radial_field");
     field->influence_distance = influence_distance;
     field->pot_field_center<< 0,0,0;
 
     std::vector<PotentialFieldPtr> fields;
     fields.push_back(field);
 
-    base::VectorXd prop_gain, max_ctrl_out;
-    prop_gain.setConstant(dim, propGain);
+    base::VectorXd p_gain, max_ctrl_out;
+    p_gain.setConstant(dim, propGain);
     max_ctrl_out.setConstant(dim, max_control_output);
 
     CartesianPotentialFieldsController controller;
     controller.setFields(fields);
-    controller.setPGain(prop_gain);
+    controller.setPGain(p_gain);
     controller.setMaxControlOutput(max_ctrl_out);
+
+    BOOST_CHECK(controller.getPGain() == p_gain);
+    BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
+    BOOST_CHECK(controller.getDimension() == 3);
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d::Zero());
+    BOOST_CHECK(controller.getFields()[0]->influence_distance == influence_distance);
+    BOOST_CHECK(controller.getFields()[0]->dimension == 3);
+    BOOST_CHECK(controller.getFields()[0]->name == "constrained_radial_field");
 
     wbc::CartesianState start_pos;
     start_pos.pose.position << 1,0,0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
+
+    BOOST_CHECK(controller.getFields()[0]->distance.norm() >= influence_distance);
 
     // Install gnuplot and uncomment to plot right away
     std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current position (x)',"
@@ -131,7 +151,7 @@ BOOST_AUTO_TEST_CASE(planar_field){
     const double propGain = 0.1;
     const double max_control_output = 0.5;
 
-    PlanarPotentialFieldPtr field = std::make_shared<PlanarPotentialField>();
+    PlanarPotentialFieldPtr field = std::make_shared<PlanarPotentialField>("planar_field");
     field->influence_distance = influence_distance;
     field->n.resize(3);
     field->pot_field_center << 0,0,0;
@@ -140,20 +160,29 @@ BOOST_AUTO_TEST_CASE(planar_field){
     std::vector<PotentialFieldPtr> fields;
     fields.push_back(field);
 
-    base::VectorXd prop_gain, max_ctrl_out;
-    prop_gain.setConstant(dim, propGain);
+    base::VectorXd p_gain, max_ctrl_out;
+    p_gain.setConstant(dim, propGain);
     max_ctrl_out.setConstant(dim, max_control_output);
-
 
     CartesianPotentialFieldsController controller;
     controller.setFields(fields);
-    controller.setPGain(prop_gain);
+    controller.setPGain(p_gain);
     controller.setMaxControlOutput(max_ctrl_out);
+
+    BOOST_CHECK(controller.getPGain() == p_gain);
+    BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
+    BOOST_CHECK(controller.getDimension() == 3);
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d::Zero());
+    BOOST_CHECK(controller.getFields()[0]->influence_distance == influence_distance);
+    BOOST_CHECK(controller.getFields()[0]->dimension == 3);
+    BOOST_CHECK(controller.getFields()[0]->name == "planar_field");
 
     wbc::CartesianState start_pos;
     start_pos.pose.position << 0,0.2,0;
 
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
+
+    BOOST_CHECK(controller.getFields()[0]->distance.norm() >= influence_distance);
 
     // Install gnuplot and uncomment to plot right away
     std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current x-position',"
@@ -168,10 +197,10 @@ BOOST_AUTO_TEST_CASE(multi_radial_field)
     const double propGain = 0.1;
     const double maxCtrlOut = 0.1;
 
-    PotentialFieldPtr field1 = std::make_shared<RadialPotentialField>(dim);
+    PotentialFieldPtr field1 = std::make_shared<RadialPotentialField>(dim, "radial_field_1");
     field1->influence_distance = 0.3;
     field1->pot_field_center << 0, 0, 0;
-    PotentialFieldPtr field2 = std::make_shared<RadialPotentialField>(dim);
+    PotentialFieldPtr field2 = std::make_shared<RadialPotentialField>(dim, "radial_field_2");
     field2->influence_distance = 3;
     field2->pot_field_center << 2, 0.2, 0;
 
@@ -179,18 +208,33 @@ BOOST_AUTO_TEST_CASE(multi_radial_field)
     fields.push_back(field1);
     fields.push_back(field2);
 
-    base::VectorXd prop_gain, max_ctrl_out;
-    prop_gain.setConstant(dim, propGain);
+    base::VectorXd p_gain, max_ctrl_out;
+    p_gain.setConstant(dim, propGain);
     max_ctrl_out.setConstant(dim, maxCtrlOut);
 
     CartesianPotentialFieldsController controller;
     controller.setFields(fields);
-    controller.setPGain(prop_gain);
+    controller.setPGain(p_gain);
     controller.setMaxControlOutput(max_ctrl_out);
+
+    BOOST_CHECK(controller.getPGain() == p_gain);
+    BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
+    BOOST_CHECK(controller.getDimension() == 3);
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d(0, 0, 0));
+    BOOST_CHECK(controller.getFields()[0]->influence_distance == field1->influence_distance);
+    BOOST_CHECK(controller.getFields()[0]->dimension == 3);
+    BOOST_CHECK(controller.getFields()[0]->name == "radial_field_1");
+    BOOST_CHECK(controller.getFields()[1]->pot_field_center == base::Vector3d(2, 0.2, 0));
+    BOOST_CHECK(controller.getFields()[1]->influence_distance == field2->influence_distance);
+    BOOST_CHECK(controller.getFields()[1]->dimension == 3);
+    BOOST_CHECK(controller.getFields()[1]->name == "radial_field_2");
 
     wbc::CartesianState start_pos;
     start_pos.pose.position << 0.0, 0.1, 0.0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
+
+    BOOST_CHECK(controller.getFields()[0]->distance.norm() >= field1->influence_distance);
+    BOOST_CHECK(controller.getFields()[1]->distance.norm() >= field2->influence_distance);
 
     std::string cmd = "plot 'tmp.txt' using 1:2 with lines title 'Current position',"
                       "'tmp.txt' using 4:5 title 'Pot. Field 1 center', "

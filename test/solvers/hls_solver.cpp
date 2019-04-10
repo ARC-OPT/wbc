@@ -19,22 +19,20 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     HierarchicalLSSolver solver;
     vector<int> ny_per_prio(1,NO_CONSTRAINTS);
 
-    //BOOST_CHECK_EQUAL(solver.configure(ny_per_prio, NO_JOINTS), true);
+    BOOST_CHECK_EQUAL(solver.configure(ny_per_prio, NO_JOINTS), true);
 
     solver.setMaxSolverOutputNorm(NORM_MAX);
     solver.setMinEigenvalue(MIN_EIGENVALUE);
 
-    wbc::HierarchicalQP hqp;
+    BOOST_CHECK(solver.getMinEigenvalue() == MIN_EIGENVALUE);
+    BOOST_CHECK(solver.getMaxSolverOutputNorm() == NORM_MAX);
+
     wbc::QuadraticProgram prio_0;
     prio_0.resize(NO_CONSTRAINTS, NO_JOINTS);
+    prio_0.A << 0.026, 0.203, 0.451, 0.915, 0.161, 0.151;
+    prio_0.lower_y << 0.49, 0.787;
 
-    for(uint i = 0; i < NO_CONSTRAINTS*NO_JOINTS; i++ )
-        prio_0.A.data()[i] = (rand()%1000)/1000.0;
-    for(uint i = 0; i < NO_CONSTRAINTS; i++ )
-        prio_0.lower_y.data()[i] = (rand()%1000)/1000.0;
-    for(uint i = 0; i < NO_CONSTRAINTS; i++ )
-        prio_0.Wy.data()[i] = (rand()%1000)/1000.0;
-
+    wbc::HierarchicalQP hqp;
     hqp << prio_0;
 
     base::VectorXd solver_output;

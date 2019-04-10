@@ -112,12 +112,18 @@ public:
      */
     void setMinEigenvalue(double min_eigenvalue);
 
+    /** Return the min eigenvalue term.*/
+    double getMinEigenvalue(){return min_eigenvalue;}
+
     /**
      * @brief setMaxSolverOutputNorm Sets the maximum norm term. The solution of the solver will have a norm that is below this value.
      *        This value will be used to compute a suitable damping factor for matrix inversion.
      * @param norm_max Maximum output norm. Has to be > 0!
      */
     void setMaxSolverOutputNorm(double norm_max);
+
+    /** Return the maximum norm term.*/
+    double getMaxSolverOutputNorm(){return max_solver_output_norm;}
 
     /**
      * @brief Has configure() been  called already?
