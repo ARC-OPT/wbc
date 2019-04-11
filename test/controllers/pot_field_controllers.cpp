@@ -5,6 +5,7 @@
 #include "controllers/CartesianPotentialFieldsController.hpp"
 #include "controllers/RadialPotentialField.hpp"
 #include "controllers/PlanarPotentialField.hpp"
+#include "controllers/JointLimitAvoidanceController.hpp"
 
 using namespace std;
 using namespace ctrl_lib;
@@ -242,5 +243,67 @@ BOOST_AUTO_TEST_CASE(multi_radial_field)
 
     // Install gnuplot and uncomment to plot right away
     plot(cmd);
+}
+
+
+BOOST_AUTO_TEST_CASE(joint_limit_avoidance)
+{
+    const uint dim = 2;
+    const double cycleTime = 0.01;
+    const double propGain = 0.1;
+    const double maxCtrlOut = 0.1;
+    const double influence_dist = 0.1;
+
+    base::VectorXd p_gain, max_ctrl_out;
+    p_gain.setConstant(dim, propGain);
+    max_ctrl_out.setConstant(dim, maxCtrlOut);
+
+    base::JointLimits limits;
+    base::JointLimitRange range_1;
+    range_1.max.position = 1.0;
+    range_1.min.position = -1.0;
+    base::JointLimitRange range_2;
+    range_2.max.position = 0.5;
+    range_2.min.position = -0.5;
+    limits.elements.push_back(range_1);
+    limits.elements.push_back(range_2);
+    limits.names.push_back("joint_1");
+    limits.names.push_back("joint_2");
+
+    base::VectorXd influence_distance(limits.size());
+    influence_distance.setConstant(influence_dist);
+
+    JointLimitAvoidanceController controller(limits, influence_distance);
+    controller.setPGain(p_gain);
+    controller.setMaxControlOutput(max_ctrl_out);
+
+    BOOST_CHECK(controller.getPGain() == p_gain);
+    BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
+    BOOST_CHECK(controller.getDimension() == dim);
+
+    base::samples::Joints feedback;
+    feedback.names.push_back("joint_1");
+    feedback.names.push_back("joint_2");
+    base::JointState pos_1;
+    pos_1.position = 0.95;
+    base::JointState pos_2;
+    pos_2.position = -0.45;
+    feedback.elements.push_back(pos_1);
+    feedback.elements.push_back(pos_2);
+
+    double dt = 0.01;
+    base::commands::Joints control_out;
+    while(true){
+        BOOST_CHECK_NO_THROW(control_out = controller.update(feedback));
+
+        feedback[0].position += control_out[0].speed * dt;
+        feedback[1].position += control_out[1].speed * dt;
+
+        printf("Current position:  %.4f %.4f\n", feedback[0].position, feedback[1].position);
+        printf("Control output:    %.4f %.4f\n", control_out[0].speed, control_out[1].speed);
+        printf("Pot. field center: %4f %.4f\n", controller.getFields()[0]->pot_field_center(0), controller.getFields()[1]->pot_field_center(0));
+        printf(".........................................\n");
+        usleep(dt*1000*1000);
+    }
 }
 
