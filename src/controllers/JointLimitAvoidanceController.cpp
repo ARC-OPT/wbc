@@ -46,7 +46,7 @@ const base::commands::Joints& JointLimitAvoidanceController::update(const base::
             pos = min  + epsilon;
 
         // Set potential field center position depending on which is closer: upper or lower limit
-        double c_pos = max ? fabs(max - pos)  < fabs(pos - min) : min;
+        double c_pos = fabs(max - pos)  < fabs(pos - min) ? max : min;
         fields[i]->pot_field_center.setConstant(1, c_pos);
 
         // Compute Control output
