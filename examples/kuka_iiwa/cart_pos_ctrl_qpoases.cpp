@@ -1,7 +1,7 @@
 #include <robot_models/KinematicRobotModelKDL.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/WbcVelocityScene.hpp>
-#include <solvers/hls/HierarchicalLSSolver.hpp>
+#include <solvers/qpoases/QPOasesSolver.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -40,8 +40,11 @@ int main(int argc, char** argv){
         return -1;
 
     // Create solver
-    wbc_solvers::HierarchicalLSSolver solver;
-    solver.setMaxSolverOutputNorm(10);
+    wbc_solvers::QPOASESSolver solver;
+    qpOASES::Options options;
+    options.setToDefault();
+    options.printLevel = qpOASES::PL_NONE;
+    solver.setMaxNoWSR(100);
 
     // Set reference
     CartesianState target, ref, act;
@@ -56,7 +59,7 @@ int main(int argc, char** argv){
     joint_state.resize(7);
     joint_state.names = robot_model->jointNames();
     for(int i = 0; i < 7; i++)
-        joint_state[i].position = 0.1;
+        joint_state[i].position = 0.01;
     joint_state.time = base::Time::now();
 
     base::VectorXd solver_output;
@@ -90,7 +93,6 @@ int main(int argc, char** argv){
 
         cout<<"Actual x: "<<act.pose.position(0)<<" y: "<<act.pose.position(1)<<" z: "<<act.pose.position(2)<<endl;
         cout<<"Actual qx: "<<act.pose.orientation.x()<<" qy: "<<act.pose.orientation.y()<<" qz: "<<act.pose.orientation.z()<<" qw: "<<act.pose.orientation.w()<<endl<<endl;
-
 
         cout<<"Solver output: "; for(int i = 0; i < 7; i++) cout<<solver_output(i)<<" "; cout<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;

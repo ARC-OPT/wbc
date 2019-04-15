@@ -8,3 +8,10 @@ target_link_libraries(cart_pos_ctrl_hls
                       wbc-solvers-hls
                       wbc-scenes
                       wbc-robot_models)
+
+add_executable(cart_pos_ctrl_qpoases cart_pos_ctrl_qpoases.cpp)
+target_link_libraries(cart_pos_ctrl_qpoases
+                      wbc-solvers-qpoases
+                      wbc-scenes
+                      wbc-robot_models)
+
