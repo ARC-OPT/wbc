@@ -10,6 +10,7 @@ namespace wbc_solvers{
 QPOASESSolver::QPOASESSolver(){
     configured = false;
     n_wsr = 10;
+    options.setToDefault();
 }
 
 QPOASESSolver::~QPOASESSolver(){
@@ -25,6 +26,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
 
     if(!configured){
         sq_problem = SQProblem(qp.A.cols(), qp.A.rows());
+        sq_problem.setOptions(options);
         no_of_joints = qp.A.cols();
         configured = true;
     }
@@ -66,6 +68,11 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
 
 returnValue QPOASESSolver::getReturnValue(){
     return ret_val;
+}
+
+void QPOASESSolver::setOptions(qpOASES::Options& opt){
+    options = opt;
+    sq_problem.setOptions(opt);
 }
 
 }

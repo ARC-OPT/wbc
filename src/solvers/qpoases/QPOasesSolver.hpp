@@ -31,8 +31,13 @@ public:
     qpOASES::returnValue getReturnValue();
     /** Get number of working set recalculations actually performed*/
     int getNoWSR(){return actual_n_wsr;}
+    /** Return current solver options*/
+    qpOASES::Options getOptions(){return options;}
+    /** Set new solver options*/
+    void setOptions(qpOASES::Options& opt);
 
 protected:
+    qpOASES::Options options;
     qpOASES::SQProblem sq_problem;
     bool configured;
     int n_wsr, actual_n_wsr;
