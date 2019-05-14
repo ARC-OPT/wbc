@@ -25,9 +25,7 @@
     <classifier>ubuntu</classifier>
   </classifiers>
 
-  <depend package="base/cmake" />
-  <depend package="control/kdl_conversions" />
-  <depend package="eigen3" />
+  <depend package="base/types" />
   <depend package="control/kdl_parser" />
-  <depend package="control/wbc_common" />
+  <depend package="control/qpOASES" />
 </package>
