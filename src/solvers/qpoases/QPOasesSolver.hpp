@@ -34,7 +34,7 @@ public:
     /** Return current solver options*/
     qpOASES::Options getOptions(){return options;}
     /** Set new solver options*/
-    void setOptions(qpOASES::Options& opt);
+    void setOptions(const qpOASES::Options& opt);
 
 protected:
     qpOASES::Options options;

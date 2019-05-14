@@ -70,7 +70,7 @@ returnValue QPOASESSolver::getReturnValue(){
     return ret_val;
 }
 
-void QPOASESSolver::setOptions(qpOASES::Options& opt){
+void QPOASESSolver::setOptions(const qpOASES::Options& opt){
     options = opt;
     sq_problem.setOptions(opt);
 }
