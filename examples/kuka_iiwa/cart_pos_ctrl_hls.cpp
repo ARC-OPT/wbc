@@ -2,6 +2,7 @@
 #include <core/RobotModelConfig.hpp>
 #include <scenes/WbcVelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
+#include <unistd.h>
 
 using namespace std;
 using namespace wbc;
