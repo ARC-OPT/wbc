@@ -94,10 +94,6 @@ void WbcVelocityScene::update(){
             constraints_prio[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
             constraints_prio[prio].lower_y.segment(row_index, n_vars) = constraint->y_ref_root;
             constraints_prio[prio].upper_y.segment(row_index, n_vars) = constraint->y_ref_root;
-            constraints_prio[prio].lower_x.resize(0);
-            constraints_prio[prio].upper_x.resize(0);
-            constraints_prio[prio].H.setIdentity(robot_model->noOfJoints(), robot_model->noOfJoints());
-            constraints_prio[prio].g.setZero();
 
             row_index += n_vars;
 

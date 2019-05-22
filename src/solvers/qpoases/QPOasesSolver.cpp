@@ -2,6 +2,7 @@
 #include "../../types/QuadraticProgram.hpp"
 #include <base/Eigen.hpp>
 #include <Eigen/Core>
+#include <iostream>
 
 using namespace qpOASES;
 
@@ -45,7 +46,9 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
         ub_ptr = (real_t*)qp.upper_x.data();
     real_t *A_ptr = (real_t*)A.data();
     real_t *H_ptr = (real_t*)H.data();
-    real_t *g_ptr = (real_t*)qp.g.data();
+    real_t *g_ptr = 0;
+    if(qp.g.size() > 0)
+        g_ptr = (real_t*)qp.g.data();
     real_t* lbA_ptr = (real_t*)qp.lower_y.data();
     real_t* ubA_ptr = (real_t*)qp.upper_y.data();
 

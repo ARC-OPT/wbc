@@ -92,7 +92,7 @@ void HierarchicalLSSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, bas
 
         // Set weights for this prioritiy
         setConstraintWeights(hierarchical_qp[prio].Wy, prio);
-        setJointWeights(hierarchical_qp[prio].Wq, prio);
+        setJointWeights(hierarchical_qp.Wq, prio);
 
         priorities[prio].y_comp.setZero();
 

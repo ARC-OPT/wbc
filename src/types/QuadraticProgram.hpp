@@ -24,7 +24,6 @@ public:
     base::VectorXd upper_y; /** Upper bound of the constraint vector (nc x 1) */
     base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
     base::VectorXd Wy;      /** Constraint weights (nc x 1). Default entry is 1. */
-    base::VectorXd Wq;      /** Joint weights (nq x 1). Default entry is 1. */
 
     /** Initialize all variables with NaN */
     void resize(const uint nc, const uint nq);
@@ -33,8 +32,9 @@ public:
 
 struct HierarchicalQP{
     base::Time time;
-    std::vector<std::string> joint_names;
-    std::vector<QuadraticProgram> prios;
+    std::vector<std::string> joint_names; /** Vector of joint names (nq x 1)*/
+    std::vector<QuadraticProgram> prios;  /** hierarchical organized QPs*/
+    base::VectorXd Wq;                    /** Joint weights (nq x 1) */
 
     size_t size() const {
         return prios.size();

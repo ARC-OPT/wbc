@@ -23,7 +23,6 @@ void QuadraticProgram::resize(const uint nc, const uint nq){
     H.setConstant(std::numeric_limits<double>::quiet_NaN());
 
     Wy.setOnes(nc);
-    Wq.setOnes(nq);
 }
 
 }
