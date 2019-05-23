@@ -35,6 +35,8 @@ public:
     qpOASES::Options getOptions(){return options;}
     /** Set new solver options*/
     void setOptions(const qpOASES::Options& opt);
+    /** Get Quadratic program*/
+    const qpOASES::SQProblem& getSQProblem(){return sq_problem;}
 
 protected:
     qpOASES::Options options;
