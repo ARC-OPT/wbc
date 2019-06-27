@@ -21,7 +21,7 @@ An advantage of this approach is that complex tasks can be composed from low-dim
 easier to specify and control than the complete task are once. Also, the redundancy of the robot is exploited automatically utilizing 
 all the dof of the system (whole body). 
 
-See also [here](https://git.hb.dfki.de/wbc/documentation/wikis/home) for a more extensive documentation WBC usage under Rock.
+Check out the [documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home) for more info. 
 
 
 
