@@ -8,7 +8,6 @@ The term was coined by Luis Sentis in his phd thesis
 However, it is not limited to humanoid robot control, but can be 
 used for arbitrary robot control tasks like dual arm grasping, force-position control, mobile manipulation. 
 
-![](https://git.hb.dfki.de/wbc/documentation/uploads/5ffd58b131f3c86bada75a7cf7354b62/wbc_principle.jpg)
 
 
 The fundamental idea is to break down the overall control problem into multiple, simultaneously running subtasks. Each subtask is described as a *constraint* to an optimization problem.
