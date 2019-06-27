@@ -1,6 +1,6 @@
 # WBC Documentation
 
-### [Code API](http://buildsrv01/apis/dfki-control/wbc/)
+### [Code API](http://buildsrv01/apis/dfki-control/wbc/) | [Documentation](http://buildsrv01/apis/dfki-control/wbc/)
 
 WBC (Whole Body Control) is an approach for specifying and controlling complex robotic tasks based on *constraints*. 
 The term was coined by Luis Sentis in his phd thesis 
@@ -20,8 +20,6 @@ Now, in each control cycle ...
 An advantage of this approach is that complex tasks can be composed from low-dimensional descriptors (aka constraints), which are typically 
 easier to specify and control than the complete task are once. Also, the redundancy of the robot is exploited automatically utilizing 
 all the dof of the system (whole body). 
-
-Check out the [documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home) for more info. 
 
 
 
