@@ -135,7 +135,7 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     virtual_joint_state.elements.resize(virtual_joint_state.names.size());
     chain.addSegment(KDL::Segment(tip, KDL::Joint(KDL::Joint::None))); // Don't forget to add the actual tip segment to the chain
 
-    CartesianState cs;
+    base::samples::CartesianState cs;
     cs.source_frame = tip;
     cs.target_frame = hook;
     cs.pose = initial_pose;
@@ -150,7 +150,7 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     return true;
 }
 
-void KinematicRobotModelKDL::updateVirtual6DoFJoint(const CartesianState& state){
+void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::samples::CartesianState& state){
 
     base::JointState js;
     base::Vector3d euler = base::getEuler(state.pose.orientation);
@@ -168,7 +168,7 @@ void KinematicRobotModelKDL::updateVirtual6DoFJoint(const CartesianState& state)
 }
 
 void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
-                                    const std::vector<CartesianState>& virtual_joint_states){
+                                    const std::vector<base::samples::CartesianState>& virtual_joint_states){
 
     current_joint_state = joint_state;
 
@@ -196,7 +196,7 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
         it.second->update(current_joint_state);
 }
 
-const CartesianState &KinematicRobotModelKDL::cartesianState(const std::string &root_frame, const std::string &tip_frame){
+const base::samples::CartesianState &KinematicRobotModelKDL::cartesianState(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
         LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");

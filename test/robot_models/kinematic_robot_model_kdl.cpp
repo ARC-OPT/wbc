@@ -50,7 +50,7 @@ BOOST_AUTO_TEST_CASE(cartesian_state){
         KDL::FrameVel frame_vel;
         vel_solver.JntToCart(q_and_q_dot, frame_vel);
 
-        CartesianState cstate;
+        base::samples::CartesianState cstate;
         BOOST_CHECK_NO_THROW( cstate = robot_model.cartesianState("kuka_lbr_center", "kuka_lbr_l_tcp"));
         base::Vector3d euler = base::getEuler(cstate.pose.orientation);
         printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
@@ -110,7 +110,7 @@ BOOST_AUTO_TEST_CASE(jacobian_and_cartesian_state){
         robot_model.update(joint_state);
         cout<<"Robot model update took "<<(base::Time::now() - joint_state.time).toSeconds()*1000<<" ms"<<endl<<endl;
 
-        CartesianState cstate = robot_model.cartesianState("base", "ee");
+        base::samples::CartesianState cstate = robot_model.cartesianState("base", "ee");
         base::Vector3d euler = base::getEuler(cstate.pose.orientation);
 
         double zero = 0.0;
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(multi_robot){
     KDL::Frame pose_kdl;
     fk_solver.JntToCart(joint_positions, pose_kdl);
 
-    CartesianState state;
+    base::samples::CartesianState state;
     BOOST_CHECK_NO_THROW(state = robot_model->cartesianState("kuka_lbr_base", "kuka_lbr_l_tcp"););
 
     for(int i = 0; i < 3; i++)
@@ -263,7 +263,7 @@ BOOST_AUTO_TEST_CASE(multi_robot){
             BOOST_CHECK_EQUAL(jac(i,j), jac_kdl.data(i,j));
 
     cout<<"Object pose in camera coordinates: "<<endl;
-    CartesianState st = robot_model->cartesianState("kuka_lbr_top_left_camera", "object");
+    base::samples::CartesianState st = robot_model->cartesianState("kuka_lbr_top_left_camera", "object");
     cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
     cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
 
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE(multi_robot){
     cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
     cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
 
-    vector<CartesianState> poses;
+    vector<base::samples::CartesianState> poses;
     poses.push_back(st);
 
     BOOST_CHECK_NO_THROW(robot_model->update(joint_state, poses));

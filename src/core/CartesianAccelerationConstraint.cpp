@@ -1,6 +1,6 @@
 #include "CartesianAccelerationConstraint.hpp"
 #include <base-logging/Logging.hpp>
-#include "../types/CartesianState.hpp"
+#include <ctrl_types/CartesianState.hpp>
 
 namespace wbc{
 
@@ -11,7 +11,7 @@ CartesianAccelerationConstraint::CartesianAccelerationConstraint(ConstraintConfi
 CartesianAccelerationConstraint::~CartesianAccelerationConstraint(){
 }
 
-void CartesianAccelerationConstraint::setReference(const CartesianState& ref){
+void CartesianAccelerationConstraint::setReference(const base::samples::CartesianState& ref){
 
     if(!ref.hasValidAcceleration()){
         LOG_ERROR("Constraint %s has invalid linear and/or angular acceleration", config.name.c_str())

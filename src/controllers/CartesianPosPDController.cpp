@@ -1,7 +1,5 @@
 #include "CartesianPosPDController.hpp"
-#include "../types/CartesianState.hpp"
-
-using namespace wbc;
+#include <ctrl_types/CartesianState.hpp>
 
 namespace ctrl_lib{
 
@@ -11,13 +9,13 @@ CartesianPosPDController::CartesianPosPDController() :
     control_output.setNaN();
 }
 
-void CartesianPosPDController::extractFeedback(const wbc::CartesianState& feedback){
+void CartesianPosPDController::extractFeedback(const base::samples::CartesianState& feedback){
     pos.setZero();
     vel.segment(0,3) = feedback.twist.linear;
     vel.segment(3,3) = feedback.twist.angular;
 }
 
-void CartesianPosPDController::extractSetpoint(const wbc::CartesianState& setpoint, const wbc::CartesianState& feedback){
+void CartesianPosPDController::extractSetpoint(const base::samples::CartesianState& setpoint, const base::samples::CartesianState& feedback){
     pose_diff = setpoint.pose - feedback.pose;
     ref_pos.segment(0,3) = pose_diff.linear;
     ref_pos.segment(3,3) = pose_diff.angular;
@@ -27,7 +25,7 @@ void CartesianPosPDController::extractSetpoint(const wbc::CartesianState& setpoi
     ref_acc.segment(3,3) = setpoint.acceleration.angular;
 }
 
-const wbc::CartesianState& CartesianPosPDController::update(const wbc::CartesianState &setpoint, const wbc::CartesianState &feedback){
+const base::samples::CartesianState& CartesianPosPDController::update(const base::samples::CartesianState &setpoint, const base::samples::CartesianState &feedback){
 
     extractFeedback(feedback);
     extractSetpoint(setpoint, feedback);

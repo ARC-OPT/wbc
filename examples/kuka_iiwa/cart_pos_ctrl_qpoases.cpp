@@ -48,7 +48,7 @@ int main(int argc, char** argv){
     solver.setMaxNoWSR(100);
 
     // Set reference
-    CartesianState target, ref, act;
+    base::samples::CartesianState target, ref, act;
     target.time = base::Time::now();
     target.pose.position = base::Vector3d(0.0, 0.0, 0.8);
     target.pose.orientation.setIdentity();
@@ -72,7 +72,7 @@ int main(int argc, char** argv){
         robot_model->update(joint_state);
 
         act = robot_model->cartesianState(cart_constraint.root, cart_constraint.tip);
-        Twist diff;
+        base::Twist diff;
         diff = target.pose - act.pose;
         ref.twist.linear = diff.linear;
         ref.twist.angular = diff.angular;

@@ -54,7 +54,7 @@ protected:
     bool addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose);
 
     /** Update the position and orientation of a tree that is attached to the initial robot (see configure for details). */
-    void updateVirtual6DoFJoint(const CartesianState& state);
+    void updateVirtual6DoFJoint(const base::samples::CartesianState& state);
 
 public:
     KinematicRobotModelKDL();
@@ -94,7 +94,7 @@ public:
      *  of the given rigid body state has to match the segment name in the KDL Tree that shall be updated
      */
     virtual void update(const base::samples::Joints& joint_state,
-                        const std::vector<CartesianState>& virtual_joint_states = std::vector<CartesianState>());
+                        const std::vector<base::samples::CartesianState>& virtual_joint_states = std::vector<base::samples::CartesianState>());
 
     /**
      * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
@@ -102,7 +102,7 @@ public:
      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
      */
-    virtual const CartesianState &cartesianState(const std::string &root_frame, const std::string &tip_frame);
+    virtual const base::samples::CartesianState &cartesianState(const std::string &root_frame, const std::string &tip_frame);
 
     /**
      * @brief Returns the current status of the given joint names

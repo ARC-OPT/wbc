@@ -3,9 +3,9 @@
 
 #include "Constraint.hpp"
 
-namespace wbc {
+namespace base{ namespace samples { class CartesianState; } }
 
-class CartesianState;
+namespace wbc {
 
 /**
  * @brief Abstract interface for a constraint in Cartesian space
@@ -18,7 +18,7 @@ public:
     /**
      * @brief Update the Cartesian reference input for this constraint.
      */
-    virtual void setReference(const CartesianState& ref) = 0;
+    virtual void setReference(const base::samples::CartesianState& ref) = 0;
 };
 
 } //namespace wbc

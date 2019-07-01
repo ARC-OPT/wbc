@@ -12,7 +12,7 @@ using namespace ctrl_lib;
 
 void runPotentialFieldController(std::string filename,
                                  CartesianPotentialFieldsController* ctrl,
-                                 wbc::CartesianState start_pos,
+                                 base::samples::CartesianState start_pos,
                                  double cycleTime){
 
     FILE* fp = fopen(filename.c_str(), "w");
@@ -26,7 +26,7 @@ void runPotentialFieldController(std::string filename,
     cout << "Prop. Gain is " << ctrl->getPGain().transpose() << endl;
     sleep(1);
 
-    wbc::CartesianState feedback = start_pos, control_output;
+    base::samples::CartesianState feedback = start_pos, control_output;
     std::vector<PotentialFieldPtr> fields = ctrl->getFields();
 
     for(uint i = 0; i < 100000; i++)
@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(radial_field)
     BOOST_CHECK(controller.getFields()[0]->dimension == 3);
     BOOST_CHECK(controller.getFields()[0]->name == "radial_field");
 
-    wbc::CartesianState start_pos;
+    base::samples::CartesianState start_pos;
     start_pos.pose.position << 1,0,0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
 
@@ -131,7 +131,7 @@ BOOST_AUTO_TEST_CASE(constrained_radial_field)
     BOOST_CHECK(controller.getFields()[0]->dimension == 3);
     BOOST_CHECK(controller.getFields()[0]->name == "constrained_radial_field");
 
-    wbc::CartesianState start_pos;
+    base::samples::CartesianState start_pos;
     start_pos.pose.position << 1,0,0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
 
@@ -178,7 +178,7 @@ BOOST_AUTO_TEST_CASE(planar_field){
     BOOST_CHECK(controller.getFields()[0]->dimension == 3);
     BOOST_CHECK(controller.getFields()[0]->name == "planar_field");
 
-    wbc::CartesianState start_pos;
+    base::samples::CartesianState start_pos;
     start_pos.pose.position << 0,0.2,0;
 
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
@@ -230,7 +230,7 @@ BOOST_AUTO_TEST_CASE(multi_radial_field)
     BOOST_CHECK(controller.getFields()[1]->dimension == 3);
     BOOST_CHECK(controller.getFields()[1]->name == "radial_field_2");
 
-    wbc::CartesianState start_pos;
+    base::samples::CartesianState start_pos;
     start_pos.pose.position << 0.0, 0.1, 0.0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
 

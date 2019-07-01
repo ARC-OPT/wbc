@@ -2,7 +2,7 @@
 #define CTRL_LIB_CART_POS_PD_CONTROLLER_HPP
 
 #include "PosPDController.hpp"
-#include "../types/CartesianState.hpp"
+#include <ctrl_types/CartesianState.hpp>
 
 namespace ctrl_lib {
 
@@ -22,19 +22,19 @@ namespace ctrl_lib {
  */
 class CartesianPosPDController : public PosPDController{
 protected:
-    wbc::CartesianState control_output;
+    base::samples::CartesianState control_output;
     base::Vector6d control_error;
-    wbc::Twist pose_diff;
-    wbc::Acceleration vel_diff;
+    base::Twist pose_diff;
+    base::Acceleration vel_diff;
 
-    void extractFeedback(const wbc::CartesianState& feedback);
-    void extractSetpoint(const wbc::CartesianState& setpoint, const wbc::CartesianState& feedback);
+    void extractFeedback(const base::samples::CartesianState& feedback);
+    void extractSetpoint(const base::samples::CartesianState& setpoint, const base::samples::CartesianState& feedback);
 
 public:
     /** Initializes members*/
     CartesianPosPDController();
     /** Convert typed to raw input data and call PosPDController::update()*/
-    const wbc::CartesianState& update(const wbc::CartesianState& setpoint, const wbc::CartesianState& feedback);
+    const base::samples::CartesianState& update(const base::samples::CartesianState& setpoint, const base::samples::CartesianState& feedback);
 };
 
 }

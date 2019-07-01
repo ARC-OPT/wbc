@@ -24,7 +24,7 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain) :
     }
 }
 
-const CartesianState &KinematicChainKDL::cartesianState(){
+const base::samples::CartesianState &KinematicChainKDL::cartesianState(){
     cartesian_state.pose.position << pose_kdl.p(0), pose_kdl.p(1), pose_kdl.p(2);
     double x, y, z, w;
     pose_kdl.M.GetQuaternion(x, y, z, w);

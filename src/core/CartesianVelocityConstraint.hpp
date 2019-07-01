@@ -5,8 +5,6 @@
 
 namespace wbc{
 
-class CartesianState;
-
 /**
  * @brief Implementation of a Cartesian velocity constraint.
  */
@@ -19,7 +17,7 @@ public:
      * @brief Update the Cartesian reference input for this constraint.
      * @param ref Reference input for this constraint. Only the velocity part is relevant (Must have a valid linear and angular velocity!)
      */
-    virtual void setReference(const CartesianState& ref);
+    virtual void setReference(const base::samples::CartesianState& ref);
 };
 
 } // namespace wbc

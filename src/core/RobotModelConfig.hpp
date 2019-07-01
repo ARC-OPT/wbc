@@ -3,7 +3,7 @@
 
 #include <base/Pose.hpp>
 #include <base/NamedVector.hpp>
-#include "../types/CartesianState.hpp"
+#include <ctrl_types/CartesianState.hpp>
 
 namespace wbc{
 
@@ -30,7 +30,7 @@ public:
     base::Pose initial_pose;  /** Initial pose of this model relative to the hook frame*/
 };
 
-class RobotModelsState : public base::NamedVector<wbc::CartesianState>{
+class RobotModelsState : public base::NamedVector<base::samples::CartesianState>{
 };
 
 }

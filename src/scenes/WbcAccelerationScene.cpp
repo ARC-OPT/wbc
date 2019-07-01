@@ -19,7 +19,7 @@ ConstraintPtr WbcAccelerationScene::createConstraint(const ConstraintConfig &con
 void WbcAccelerationScene::update(){
 
     constraints_prio.resize(constraints.size());
-    CartesianState ref_frame;
+    base::samples::CartesianState ref_frame;
 
     // Create equation system
     //    Walk through all priorities and update the optimization problem. The outcome will be

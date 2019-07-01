@@ -7,7 +7,7 @@ CartesianPotentialFieldsController::CartesianPotentialFieldsController() :
     PotentialFieldsController(3){
 }
 
-const wbc::CartesianState& CartesianPotentialFieldsController::update(const wbc::CartesianState& feedback){
+const base::samples::CartesianState& CartesianPotentialFieldsController::update(const base::samples::CartesianState& feedback){
 
     if(!base::isnotnan(feedback.pose.position))
         throw std::runtime_error("CartesianPotentialFieldsController::update: Feedback does not have a valid position entry");
@@ -27,6 +27,7 @@ const wbc::CartesianState& CartesianPotentialFieldsController::update(const wbc:
 
     cartesian_control_output.time = base::Time::now();
     cartesian_control_output.twist.linear = control_output;
+    cartesian_control_output.twist.angular.setZero();
 
     return cartesian_control_output;
 }

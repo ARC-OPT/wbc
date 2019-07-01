@@ -5,7 +5,7 @@
 #include <base/Eigen.hpp>
 #include <map>
 #include <base/samples/Joints.hpp>
-#include "../types/CartesianState.hpp"
+#include <ctrl_types/CartesianState.hpp>
 #include <memory>
 
 namespace wbc{
@@ -56,10 +56,10 @@ public:
      * @param poses Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model.
      */
     virtual void update(const base::samples::Joints& joint_state,
-                        const std::vector<CartesianState>& virtual_joint_states = std::vector<CartesianState>()) = 0;
+                        const std::vector<base::samples::CartesianState>& virtual_joint_states = std::vector<base::samples::CartesianState>()) = 0;
 
     /** Returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates!*/
-    virtual const CartesianState &cartesianState(const std::string &root_frame, const std::string &tip_frame) = 0;
+    virtual const base::samples::CartesianState &cartesianState(const std::string &root_frame, const std::string &tip_frame) = 0;
 
     /** Returns the current status of the given joint names */
     virtual const base::samples::Joints& jointState(const std::vector<std::string> &joint_names) = 0;
