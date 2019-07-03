@@ -37,6 +37,7 @@ const base::samples::CartesianState &KinematicChainKDL::cartesianState(){
 void KinematicChainKDL::update(const base::samples::Joints &joint_state){
 
     //// update Joints
+    cartesian_state.time = joint_state.time;
     for(size_t i = 0; i < joint_names.size(); i++)
         try{
             joint_state_kdl.q(i)    = joint_state.getElementByName(joint_names[i]).position;
