@@ -14,3 +14,9 @@ add_executable(pos_pd_controllers pos_pd_controllers.cpp ../suite.cpp)
 target_link_libraries(pos_pd_controllers
                       wbc-controllers
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+
+add_executable(pid_controllers pid_controllers.cpp ../suite.cpp)
+target_link_libraries(pid_controllers
+                      wbc-controllers
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
