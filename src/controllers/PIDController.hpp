@@ -30,13 +30,15 @@ protected:
     base::VectorXd integral;
     base::VectorXd derivative;
     base::VectorXd control_output;
+    base::VectorXd setpoint;
+    base::VectorXd feedback;
 
 public:
     PIDController(uint dimension);
     virtual ~PIDController(){}
 
     /** Compute control output*/
-    base::VectorXd update(const base::VectorXd &setpoint, const base::VectorXd& feedback, const double delta_t);
+    void update(const double delta_t);
 
     void setPID(const PIDCtrlParams &params);
     const PIDCtrlParams &getPID(){return pid_params;}

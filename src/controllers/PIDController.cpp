@@ -11,9 +11,12 @@ PIDController::PIDController(uint dimension) :
     control_error.setConstant(dimension, 0);
     integral.setConstant(dimension, 0);
     derivative.setConstant(dimension, 0);
+    setpoint.resize(dimension, std::numeric_limits<double>::quiet_NaN());
+    feedback.resize(dimension, std::numeric_limits<double>::quiet_NaN());
+    control_output.resize(dimension, std::numeric_limits<double>::quiet_NaN());
 }
 
-base::VectorXd PIDController::update(const base::VectorXd &setpoint, const base::VectorXd& feedback, const double delta_t){
+void PIDController::update(const double delta_t){
 
     // Compute control error
     control_error = setpoint - feedback;
@@ -31,8 +34,6 @@ base::VectorXd PIDController::update(const base::VectorXd &setpoint, const base:
                      pid_params.d_gain.cwiseProduct(derivative);
 
     applySaturation(control_output, max_ctrl_output, control_output);
-
-    return control_output;
 }
 
 void PIDController::applySaturation(const base::VectorXd& in, const base::VectorXd& max, base::VectorXd &out){
