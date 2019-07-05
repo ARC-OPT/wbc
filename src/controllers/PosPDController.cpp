@@ -5,32 +5,19 @@ namespace ctrl_lib {
 PosPDController::PosPDController(size_t dim_controller) :
     dim_controller(dim_controller){
 
-    ref_pos.resize(dim_controller);
-    ref_pos.setConstant(std::numeric_limits<double>::quiet_NaN());
-    ref_vel.resize(dim_controller);
-    ref_vel.setConstant(std::numeric_limits<double>::quiet_NaN());
-    ref_acc.resize(dim_controller);
-    ref_acc.setConstant(std::numeric_limits<double>::quiet_NaN());
-    pos.resize(dim_controller);
-    pos.setConstant(std::numeric_limits<double>::quiet_NaN());
-    vel.resize(dim_controller);
-    vel.setConstant(std::numeric_limits<double>::quiet_NaN());
-    p_gain.resize(dim_controller);
-    p_gain.setZero();
-    d_gain.resize(dim_controller);
-    d_gain.setZero();
-    max_control_output.resize(dim_controller);
-    max_control_output.setConstant(std::numeric_limits<double>::max());
-    dead_zone.resize(dim_controller);
-    dead_zone.setZero();
-    pos_diff.resize(dim_controller);
-    pos_diff.setZero();
-    vel_diff.resize(dim_controller);
-    vel_diff.setZero();
-    control_out_vel.resize(dim_controller);
-    control_out_vel.setConstant(std::numeric_limits<double>::quiet_NaN());
-    control_out_acc.resize(dim_controller);
-    control_out_acc.setConstant(std::numeric_limits<double>::quiet_NaN());
+    ref_pos.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
+    ref_vel.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
+    ref_acc.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
+    pos.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
+    vel.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
+    p_gain.setConstant(dim_controller, 0);
+    d_gain.setConstant(dim_controller, 0);
+    max_control_output.setConstant(dim_controller, std::numeric_limits<double>::max());
+    dead_zone.setConstant(dim_controller, 0);
+    pos_diff.setConstant(dim_controller, 0);
+    vel_diff.setConstant(dim_controller, 0);
+    control_out_vel.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
+    control_out_acc.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
 }
 
 void PosPDController::update(){
