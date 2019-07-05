@@ -43,9 +43,9 @@ public:
     void setPID(const PIDCtrlParams &params);
     const PIDCtrlParams &getPID(){return pid_params;}
     void setMaxCtrlOutput(const base::VectorXd &max);
-    const base::VectorXd &getMaxCtrlOutput(){return max_ctrl_output;}
+    const base::VectorXd &maxCtrlOutput(){return max_ctrl_output;}
     void setDeadZone(const base::VectorXd &dz);
-    const base::VectorXd &getDeadZone(){return dead_zone;}
+    const base::VectorXd &deadZone(){return dead_zone;}
     void applySaturation(const base::VectorXd& in, const base::VectorXd& max, base::VectorXd &out);
     void applyDeadZone(const base::VectorXd& in, const base::VectorXd& min, base::VectorXd& out);
     uint getDimension(){return dimension;}

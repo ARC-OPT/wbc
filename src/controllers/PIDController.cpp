@@ -11,9 +11,11 @@ PIDController::PIDController(uint dimension) :
     control_error.setConstant(dimension, 0);
     integral.setConstant(dimension, 0);
     derivative.setConstant(dimension, 0);
-    setpoint.resize(dimension, std::numeric_limits<double>::quiet_NaN());
-    feedback.resize(dimension, std::numeric_limits<double>::quiet_NaN());
-    control_output.resize(dimension, std::numeric_limits<double>::quiet_NaN());
+    setpoint.setConstant(dimension, std::numeric_limits<double>::quiet_NaN());
+    feedback.setConstant(dimension, std::numeric_limits<double>::quiet_NaN());
+    control_output.setConstant(dimension, std::numeric_limits<double>::quiet_NaN());
+    max_ctrl_output.setConstant(dimension, std::numeric_limits<double>::max());
+    dead_zone.setConstant(dimension, 0);
 }
 
 void PIDController::update(const double delta_t){
