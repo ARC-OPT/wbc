@@ -49,6 +49,7 @@ public:
     void applySaturation(const base::VectorXd& in, const base::VectorXd& max, base::VectorXd &out);
     void applyDeadZone(const base::VectorXd& in, const base::VectorXd& min, base::VectorXd& out);
     uint getDimension(){return dimension;}
+    base::VectorXd getControlError(){return control_error;}
 
     virtual const base::VectorXd& computeDerivative(const base::VectorXd &control_error, const double delta_t){
         // TODO
