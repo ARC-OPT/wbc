@@ -16,6 +16,7 @@ PIDController::PIDController(uint dimension) :
     control_output.setConstant(dimension, std::numeric_limits<double>::quiet_NaN());
     max_ctrl_output.setConstant(dimension, std::numeric_limits<double>::max());
     dead_zone.setConstant(dimension, 0);
+    prev_control_error.setConstant(dimension, 0);
 }
 
 void PIDController::update(const double delta_t){
@@ -29,7 +30,7 @@ void PIDController::update(const double delta_t){
     applySaturation(integral, pid_params.windup, integral);
     applyDeadZone(control_error, dead_zone, control_error);
 
-    derivative = computeDerivative(control_error, delta_t);
+    derivative = computeDerivative(delta_t);
 
     control_output = pid_params.p_gain.cwiseProduct(control_error) +
                      pid_params.i_gain.cwiseProduct(integral) +
@@ -76,11 +77,20 @@ void PIDController::setMaxCtrlOutput(const base::VectorXd &max){
         throw runtime_error("Size of Max. Ctrl Output is " + to_string(max.size()) + " but should be " + to_string(dimension));
     max_ctrl_output = max;
 }
+
 void PIDController::setDeadZone(const base::VectorXd &dz){
     if(dz.size() != dimension)
         throw std::runtime_error("setDeadZone: Invalid dead zone. Size is "
                                  + std::to_string(dead_zone.size()) + " but should be " + std::to_string(dimension));
     dead_zone = dz;
+}
+
+const base::VectorXd& PIDController::computeDerivative(const double delta_t){
+
+    derivative = (control_error - prev_control_error)/delta_t;
+    prev_control_error = control_error;
+
+    return derivative;
 }
 
 }

@@ -2,29 +2,16 @@
 #define PID_CONTROLLER_HPP
 
 #include <base/Eigen.hpp>
+#include "PIDCtrlParams.hpp"
 
 namespace ctrl_lib{
-
-class PIDCtrlParams{
-public:
-    PIDCtrlParams(){}
-    PIDCtrlParams(uint n){
-        p_gain.setConstant(n, 0);
-        i_gain.setConstant(n, 0);
-        d_gain.setConstant(n, 0);
-        windup.setConstant(n, std::numeric_limits<double>::max());
-    }
-    base::VectorXd p_gain;
-    base::VectorXd i_gain;
-    base::VectorXd d_gain;
-    base::VectorXd windup;
-};
 
 class PIDController{
 protected:
     PIDCtrlParams pid_params;
     uint dimension;
     base::VectorXd control_error;
+    base::VectorXd prev_control_error;
     base::VectorXd dead_zone;
     base::VectorXd max_ctrl_output;
     base::VectorXd integral;
@@ -51,11 +38,7 @@ public:
     uint getDimension(){return dimension;}
     base::VectorXd getControlError(){return control_error;}
 
-    virtual const base::VectorXd& computeDerivative(const base::VectorXd &control_error, const double delta_t){
-        // TODO
-        derivative.setZero();
-        return derivative;
-    };
+    virtual const base::VectorXd& computeDerivative(const double delta_t);
 };
 
 }
