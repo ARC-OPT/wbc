@@ -4,13 +4,15 @@ file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models "*.cpp")
 file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models "*.hpp")
 
 pkg_search_module(kdl_parser REQUIRED kdl_parser)
+pkg_search_module(ctrl_types REQUIRED ctrl_types)
 
 list(APPEND PKGCONFIG_REQUIRES kdl_parser)
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
+list(APPEND PKGCONFIG_REQUIRES ctrl_types)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
-include_directories(${kdl_parser_INCLUDE_DIRS})
-link_directories(${kdl_parser_LIBRARY_DIRS})
+include_directories(${kdl_parser_INCLUDE_DIRS} ${ctrl_types_INCLUDE_DIRS})
+link_directories(${kdl_parser_LIBRARY_DIRS} ${ctrl_types_LIBRARY_DIRS})
 
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME}
