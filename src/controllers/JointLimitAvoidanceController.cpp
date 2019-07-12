@@ -48,6 +48,7 @@ const base::commands::Joints& JointLimitAvoidanceController::update(const base::
         // Set potential field center position depending on which is closer: upper or lower limit
         double c_pos = fabs(max - pos)  < fabs(pos - min) ? max : min;
         fields[i]->pot_field_center.setConstant(1, c_pos);
+        fields[i]->time = feedback.time;
 
         // Compute Control output
         base::VectorXd pos_vect(1);

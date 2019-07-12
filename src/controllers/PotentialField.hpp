@@ -1,6 +1,7 @@
 #pragma once
 
 #include <base/Eigen.hpp>
+#include <base/Time.hpp>
 #include <stdexcept>
 #include <memory>
 
@@ -31,6 +32,8 @@ public:
      * @return Computed gradient. Size will be same as dimension
      */
     virtual const base::VectorXd& update(const base::VectorXd &position) = 0;
+
+    base::Time time;
 
     /** Dimension of the potential field, e.g. a potential field in 3d space would have size 3.*/
     uint dimension;

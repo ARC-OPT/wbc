@@ -8,6 +8,7 @@ namespace ctrl_lib {
 struct PotentialFieldInfo{
 
     void fromPotentialField(PotentialFieldPtr field){
+        time = field->time;
         dimension = field->dimension;
         influence_distance = field->influence_distance;
         distance = field->distance;
@@ -16,6 +17,8 @@ struct PotentialFieldInfo{
         euclidean_distance = distance.norm();
         name = field->name;
     }
+
+    base::Time time;
 
     /** Dimension of the potential field, e.g. a potential field in 3d space would have size 3.*/
     uint dimension;
