@@ -18,7 +18,7 @@ public:
     /**
      * @brief Update the Cartesian reference input for this constraint.
      */
-    virtual void setReference(const base::samples::CartesianState& ref) = 0;
+    virtual void setReference(const base::samples::CartesianState& ref);
 };
 
 } //namespace wbc

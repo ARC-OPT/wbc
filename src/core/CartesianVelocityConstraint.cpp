@@ -13,6 +13,8 @@ CartesianVelocityConstraint::~CartesianVelocityConstraint(){
 
 void CartesianVelocityConstraint::setReference(const base::samples::CartesianState& ref){
 
+    CartesianConstraint::setReference(ref);
+
     if(!ref.hasValidTwist()){
         LOG_ERROR("Constraint %s has invalid velocity and/or angular velocity", config.name.c_str())
         throw std::invalid_argument("Invalid constraint reference value");

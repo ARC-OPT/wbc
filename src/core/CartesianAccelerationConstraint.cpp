@@ -13,6 +13,8 @@ CartesianAccelerationConstraint::~CartesianAccelerationConstraint(){
 
 void CartesianAccelerationConstraint::setReference(const base::samples::CartesianState& ref){
 
+    CartesianConstraint::setReference(ref);
+
     if(!ref.hasValidAcceleration()){
         LOG_ERROR("Constraint %s has invalid linear and/or angular acceleration", config.name.c_str())
         throw std::invalid_argument("Invalid constraint reference value");
