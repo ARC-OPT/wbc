@@ -9,7 +9,7 @@
 
 namespace wbc{
 
-KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain) :
+KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string &root_frame, const std::string &tip_frame) :
     chain(chain),
     jacobian(KDL::Jacobian(chain.getNrOfJoints())),
     jacobian_dot(KDL::Jacobian(chain.getNrOfJoints())){
@@ -22,6 +22,9 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain) :
         if(joint.getType() != KDL::Joint::None)
             joint_names.push_back(joint.getName());
     }
+
+    cartesian_state.source_frame = tip_frame;  // rock frame convention
+    cartesian_state.target_frame = root_frame; // rock frame convention
 }
 
 const base::samples::CartesianState &KinematicChainKDL::cartesianState(){

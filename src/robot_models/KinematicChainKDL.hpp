@@ -25,7 +25,7 @@ protected:
     base::samples::CartesianState cartesian_state;
 
 public:
-    KinematicChainKDL(const KDL::Chain &chain);
+    KinematicChainKDL(const KDL::Chain &chain, const std::string &root_frame, const std::string &tip_frame);
 
     /**
      * @brief Update all joints of the kinematic chain

@@ -112,7 +112,7 @@ void KinematicRobotModelKDL::createChain(const std::string &root_frame, const st
 
     const std::string chain_id = chainID(root_frame, tip_frame);
 
-    KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain);
+    KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain, root_frame, tip_frame);
     kin_chain->update(current_joint_state);
     kdl_chain_map[chain_id] = kin_chain;
 
