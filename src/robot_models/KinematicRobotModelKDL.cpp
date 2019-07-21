@@ -18,7 +18,7 @@ void KinematicRobotModelKDL::clear(){
     kdl_chain_map.clear();
     jac_map.clear();
     jac_dot_map.clear();
-    robot_model_names.clear();
+    robot_models_state.clear();
 }
 
 
@@ -91,7 +91,6 @@ bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& h
         }
 
         std::string root = tree.getRootSegment()->first;
-        robot_model_names.push_back(root);
         addVirtual6DoFJoint(hook, root, pose);
 
         if(!full_tree.addTree(tree, root)){
@@ -164,7 +163,10 @@ void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::samples::Cartesi
         js.position = euler(i);
         js.speed = state.twist.angular(i);
         virtual_joint_state[virtual_joint_state.mapNameToIndex(name)] = js;
-    }
+    }    
+
+    robot_models_state.names.push_back(state.source_frame);
+    robot_models_state.elements.push_back(state);
 }
 
 void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
@@ -180,6 +182,7 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
             throw std::runtime_error("Invalid Cartesian state");
         }
 
+        robot_models_state[v.source_frame] = v;
         updateVirtual6DoFJoint(v);
         if(v.time > current_joint_state.time)
             current_joint_state.time = v.time;

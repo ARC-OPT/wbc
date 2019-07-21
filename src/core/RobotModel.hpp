@@ -7,10 +7,9 @@
 #include <base/samples/Joints.hpp>
 #include <ctrl_types/CartesianState.hpp>
 #include <memory>
+#include "RobotModelConfig.hpp"
 
 namespace wbc{
-
-class RobotModelConfig;
 
 /**
  * @brief Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC
@@ -19,7 +18,7 @@ class RobotModel{
 
 protected:
     std::vector<std::string> joint_names;
-    std::vector<std::string> robot_model_names;
+    RobotModelsState robot_models_state;
     std::string base_frame;
     base::Time last_update;
 
@@ -88,7 +87,7 @@ public:
     base::Time lastUpdate(){return last_update;}
 
     /** Get the names of all robot models*/
-    const std::vector<std::string> robotModelNames(){return robot_model_names;}
+    const RobotModelsState& robotModelsState(){return robot_models_state;}
 
 };
 
