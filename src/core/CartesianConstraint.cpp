@@ -13,7 +13,8 @@ CartesianConstraint::~CartesianConstraint(){
 }
 
 void CartesianConstraint::setReference(const base::samples::CartesianState &ref){
-    this->config.ref_frame = ref.target_frame;
+    if(!ref.target_frame.empty())
+        this->config.ref_frame = ref.target_frame;
 }
 
 } //namespace wbc
