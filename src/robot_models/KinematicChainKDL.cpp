@@ -1,7 +1,6 @@
 #include "KinematicChainKDL.hpp"
 #include <base-logging/Logging.hpp>
 #include <base/samples/Joints.hpp>
-#include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainjnttojacdotsolver.hpp>
@@ -14,8 +13,12 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string 
     jacobian(KDL::Jacobian(chain.getNrOfJoints())),
     jacobian_dot(KDL::Jacobian(chain.getNrOfJoints())){
 
-    joint_state_kdl.q    = KDL::JntArray(chain.getNrOfJoints());
-    joint_state_kdl.qdot = KDL::JntArray(chain.getNrOfJoints());
+    jnt_array_vel.q    = KDL::JntArray(chain.getNrOfJoints());
+    jnt_array_vel.qdot = KDL::JntArray(chain.getNrOfJoints());
+
+    jnt_array_acc.q       = KDL::JntArray(chain.getNrOfJoints());
+    jnt_array_acc.qdot    = KDL::JntArray(chain.getNrOfJoints());
+    jnt_array_acc.qdotdot = KDL::JntArray(chain.getNrOfJoints());
 
     for(size_t i = 0; i < chain.getNrOfSegments(); i++){
         KDL::Joint joint = chain.getSegment(i).getJoint();
@@ -34,6 +37,8 @@ const base::samples::CartesianState &KinematicChainKDL::cartesianState(){
     cartesian_state.pose.orientation = base::Quaterniond(w, x, y, z);
     cartesian_state.twist.linear  << twist_kdl.vel(0), twist_kdl.vel(1), twist_kdl.vel(2);
     cartesian_state.twist.angular << twist_kdl.rot(0), twist_kdl.rot(1), twist_kdl.rot(2);
+    cartesian_state.acceleration.linear = acc.segment(0,3);
+    cartesian_state.acceleration.angular = acc.segment(3,3);
     return cartesian_state;
 }
 
@@ -41,10 +46,14 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
 
     //// update Joints
     cartesian_state.time = joint_state.time;
+    bool has_acceleration = true;
     for(size_t i = 0; i < joint_names.size(); i++)
         try{
-            joint_state_kdl.q(i)    = joint_state.getElementByName(joint_names[i]).position;
-            joint_state_kdl.qdot(i) = joint_state.getElementByName(joint_names[i]).speed;
+            jnt_array_vel.q(i)       = jnt_array_acc.q(i)    = joint_state.getElementByName(joint_names[i]).position;
+            jnt_array_vel.qdot(i)    = jnt_array_acc.qdot(i) = joint_state.getElementByName(joint_names[i]).speed;
+            jnt_array_acc.qdotdot(i) = joint_state.getElementByName(joint_names[i]).acceleration;
+
+            has_acceleration = has_acceleration && joint_state.getElementByName(joint_names[i]).hasAcceleration();
         }
         catch(std::exception e){
             LOG_ERROR("Kinematic Chain %s to %s contains joint %s, but this joint is not in joint state vector",
@@ -57,15 +66,20 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
     KDL::ChainJntToJacDotSolver jac_dot_solver(chain);
 
     //// compute forward kinematics
-    fk_solver_vel.JntToCart(joint_state_kdl, frame_vel);
+    fk_solver_vel.JntToCart(jnt_array_vel, frame_vel);
     twist_kdl = frame_vel.deriv();
     pose_kdl = frame_vel.value();
 
-    //// Compute Jacobians
-    jac_solver.JntToJac(joint_state_kdl.q, jacobian);
+    //// Compute Jacobian
+    jac_solver.JntToJac(jnt_array_vel.q, jacobian);
 
+    //// Compute Jacobian_dot
     jac_dot_solver.setRepresentation(0); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
-    jac_dot_solver.JntToJacDot(joint_state_kdl, jacobian_dot);
+    jac_dot_solver.JntToJacDot(jnt_array_vel, jacobian_dot);
+
+    //// Compute frame acceleration
+    if(has_acceleration)
+        acc = jacobian_dot.data*jnt_array_vel.qdot.data + jacobian.data*jnt_array_acc.qdotdot.data;
 }
 
 
