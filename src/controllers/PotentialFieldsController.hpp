@@ -2,6 +2,7 @@
 #define POTENTIAL_FIELDS_CONTROLLER_HPP
 
 #include "PotentialFieldInfo.hpp"
+#include <vector>
 
 namespace ctrl_lib{
 
