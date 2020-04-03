@@ -2,7 +2,7 @@
 #define CARTESIAN_POTENTIAL_FIELDS_CONTROLLER_HPP
 
 #include "PotentialFieldsController.hpp"
-#include <ctrl_types/CartesianState.hpp>
+#include <ctrl_types/RigidBodyStateSE3.hpp>
 
 namespace ctrl_lib{
 
@@ -11,7 +11,7 @@ namespace ctrl_lib{
  */
 class CartesianPotentialFieldsController : public PotentialFieldsController{
 protected:
-    base::samples::CartesianState cartesian_control_output;
+    base::samples::RigidBodyStateSE3 cartesian_control_output;
 
 public:
     CartesianPotentialFieldsController();
@@ -20,7 +20,7 @@ public:
      * @brief update Compute control output. Saturation will be applied if its has been set
      * @return control_output Control output
      */
-    const base::samples::CartesianState& update(const base::samples::CartesianState& feedback);
+    const base::samples::RigidBodyStateSE3& update(const base::samples::RigidBodyStateSE3& feedback);
 };
 
 }

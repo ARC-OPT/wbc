@@ -8,7 +8,7 @@
 #include <kdl/jntarray.hpp>
 #include <kdl/jntarrayacc.hpp>
 #include <base/Time.hpp>
-#include <ctrl_types/CartesianState.hpp>
+#include <ctrl_types/RigidBodyStateSE3.hpp>
 
 namespace base{
     namespace samples{
@@ -23,7 +23,7 @@ namespace wbc{
 class KinematicChainKDL{
 
 protected:
-    base::samples::CartesianState cartesian_state;
+    base::samples::RigidBodyStateSE3 cartesian_state;
 
 public:
     KinematicChainKDL(const KDL::Chain &chain, const std::string &root_frame, const std::string &tip_frame);
@@ -34,7 +34,7 @@ public:
      */
     void update(const base::samples::Joints& joint_state);
     /** Convert and return current Cartesian state*/
-    const base::samples::CartesianState& cartesianState();
+    const base::samples::RigidBodyStateSE3& rigidBodyState();
 
     KDL::Frame pose_kdl;                             /** KDL Pose of the tip segment in root coordinate of the chain*/
     KDL::FrameVel frame_vel;                         /** Helper for the velocity fk*/

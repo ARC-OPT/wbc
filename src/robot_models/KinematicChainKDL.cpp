@@ -26,11 +26,10 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string 
             joint_names.push_back(joint.getName());
     }
 
-    cartesian_state.source_frame = tip_frame;  // rock frame convention
-    cartesian_state.target_frame = root_frame; // rock frame convention
+    cartesian_state.frame_id = root_frame;
 }
 
-const base::samples::CartesianState &KinematicChainKDL::cartesianState(){
+const base::samples::RigidBodyStateSE3 &KinematicChainKDL::rigidBodyState(){
     cartesian_state.pose.position << pose_kdl.p(0), pose_kdl.p(1), pose_kdl.p(2);
     double x, y, z, w;
     pose_kdl.M.GetQuaternion(x, y, z, w);

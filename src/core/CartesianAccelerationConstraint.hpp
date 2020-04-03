@@ -17,7 +17,7 @@ public:
      * @brief Update the Cartesian reference input for this constraint.
      * @param ref Reference input for this constraint. Only the acceleration part is relevant (Must have a valid linear and angular acceleration!)
      */
-    virtual void setReference(const base::samples::CartesianState& ref);
+    virtual void setReference(const base::samples::RigidBodyStateSE3& ref);
 };
 
 } // namespace wbc

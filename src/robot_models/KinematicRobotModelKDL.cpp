@@ -134,13 +134,14 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     virtual_joint_state.elements.resize(virtual_joint_state.names.size());
     chain.addSegment(KDL::Segment(tip, KDL::Joint(KDL::Joint::None))); // Don't forget to add the actual tip segment to the chain
 
-    base::samples::CartesianState cs;
-    cs.source_frame = tip;
-    cs.target_frame = hook;
+    base::samples::RigidBodyStateSE3 cs;
+    cs.frame_id = hook;
     cs.pose = initial_pose;
     cs.twist.setZero();
     cs.time = base::Time::now();
-    updateVirtual6DoFJoint(cs);
+    updateVirtual6DoFJoint(cs, tip);
+    robot_models_state.names.push_back(tip);
+    robot_models_state.elements.push_back(cs);
 
     if(!full_tree.addChain(chain, hook)){
         LOG_ERROR("Unable to attach chain to tree segment %s", hook.c_str());
@@ -149,43 +150,43 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     return true;
 }
 
-void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::samples::CartesianState& state){
+void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::samples::RigidBodyStateSE3& state, const std::string &tip_frame){
 
     base::JointState js;
     base::Vector3d euler = base::getEuler(state.pose.orientation);
     for(int i = 0; i < 3; i++){
-        std::string name = state.source_frame + virtual_joint_names[i];
+        std::string name = tip_frame + virtual_joint_names[i];
         js.position = state.pose.position(i);
         js.speed = state.twist.linear(i);
         virtual_joint_state[virtual_joint_state.mapNameToIndex(name)] = js;
 
-        name = state.source_frame + virtual_joint_names[i+3];
+        name = tip_frame + virtual_joint_names[i+3];
         js.position = euler(i);
         js.speed = state.twist.angular(i);
         virtual_joint_state[virtual_joint_state.mapNameToIndex(name)] = js;
     }    
-
-    robot_models_state.names.push_back(state.source_frame);
-    robot_models_state.elements.push_back(state);
 }
 
 void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
-                                    const std::vector<base::samples::CartesianState>& virtual_joint_states){
+                                    const RobotModelsState& virtual_joint_states){
 
     current_joint_state = joint_state;
 
     // Update virtual joints
-    for(const auto &v : virtual_joint_states){
+    for(size_t i = 0; i < virtual_joint_states.size(); i++){
 
-        if(!hasFrame(v.source_frame)){
-            LOG_ERROR("Trying to update virtual tree element '%s', which is not part of the robot model", v.source_frame.c_str());
+        std::string name = virtual_joint_states.names[i];
+        base::samples::RigidBodyStateSE3 elem = virtual_joint_states[i];
+
+        if(!hasFrame(name)){
+            LOG_ERROR("Trying to update virtual tree element '%s', which is not part of the robot model", name.c_str());
             throw std::runtime_error("Invalid Cartesian state");
         }
 
-        robot_models_state[v.source_frame] = v;
-        updateVirtual6DoFJoint(v);
-        if(v.time > current_joint_state.time)
-            current_joint_state.time = v.time;
+        robot_models_state[name] = elem;
+        updateVirtual6DoFJoint(elem, name);
+        if(elem.time > current_joint_state.time)
+            current_joint_state.time = elem.time;
     }
 
     // Push current virtual joint state into overall joint states
@@ -199,11 +200,11 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
         it.second->update(current_joint_state);
 }
 
-const base::samples::CartesianState &KinematicRobotModelKDL::cartesianState(const std::string &root_frame, const std::string &tip_frame){
+const base::samples::RigidBodyStateSE3 &KinematicRobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
         LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to cartesianState()");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
     // Create chain if it does not exist
@@ -211,7 +212,7 @@ const base::samples::CartesianState &KinematicRobotModelKDL::cartesianState(cons
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chainID(root_frame, tip_frame)];
-    return kdl_chain->cartesianState();
+    return kdl_chain->rigidBodyState();
 }
 
 const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vector<std::string> &joint_names){

@@ -14,7 +14,7 @@ const base::VectorXd CartesianForcePIDController::wrenchToRaw(const base::sample
     return raw;
 }
 
-const base::samples::CartesianState& CartesianForcePIDController::update(const base::samples::Wrench& setpoint, const base::samples::Wrench& feedback, const double dt){
+const base::samples::RigidBodyStateSE3& CartesianForcePIDController::update(const base::samples::Wrench& setpoint, const base::samples::Wrench& feedback, const double dt){
 
     wrenchToRaw(setpoint, this->setpoint);
     wrenchToRaw(feedback, this->feedback);

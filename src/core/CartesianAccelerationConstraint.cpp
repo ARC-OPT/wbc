@@ -1,6 +1,6 @@
 #include "CartesianAccelerationConstraint.hpp"
 #include <base-logging/Logging.hpp>
-#include <ctrl_types/CartesianState.hpp>
+#include <ctrl_types/RigidBodyStateSE3.hpp>
 
 namespace wbc{
 
@@ -11,7 +11,7 @@ CartesianAccelerationConstraint::CartesianAccelerationConstraint(ConstraintConfi
 CartesianAccelerationConstraint::~CartesianAccelerationConstraint(){
 }
 
-void CartesianAccelerationConstraint::setReference(const base::samples::CartesianState& ref){
+void CartesianAccelerationConstraint::setReference(const base::samples::RigidBodyStateSE3& ref){
 
     CartesianConstraint::setReference(ref);
 

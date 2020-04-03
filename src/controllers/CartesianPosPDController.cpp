@@ -1,5 +1,5 @@
 #include "CartesianPosPDController.hpp"
-#include <ctrl_types/CartesianState.hpp>
+#include <ctrl_types/RigidBodyStateSE3.hpp>
 
 namespace ctrl_lib{
 
@@ -9,13 +9,13 @@ CartesianPosPDController::CartesianPosPDController() :
     control_output.setNaN();
 }
 
-void CartesianPosPDController::extractFeedback(const base::samples::CartesianState& feedback){
+void CartesianPosPDController::extractFeedback(const base::samples::RigidBodyStateSE3& feedback){
     pos.setZero();
     vel.segment(0,3) = feedback.twist.linear;
     vel.segment(3,3) = feedback.twist.angular;
 }
 
-void CartesianPosPDController::extractSetpoint(const base::samples::CartesianState& setpoint, const base::samples::CartesianState& feedback){
+void CartesianPosPDController::extractSetpoint(const base::samples::RigidBodyStateSE3& setpoint, const base::samples::RigidBodyStateSE3& feedback){
     pose_diff = setpoint.pose - feedback.pose;
     ref_pos.segment(0,3) = pose_diff.linear;
     ref_pos.segment(3,3) = pose_diff.angular;
@@ -25,7 +25,7 @@ void CartesianPosPDController::extractSetpoint(const base::samples::CartesianSta
     ref_acc.segment(3,3) = setpoint.acceleration.angular;
 }
 
-const base::samples::CartesianState& CartesianPosPDController::update(const base::samples::CartesianState &setpoint, const base::samples::CartesianState &feedback){
+const base::samples::RigidBodyStateSE3& CartesianPosPDController::update(const base::samples::RigidBodyStateSE3 &setpoint, const base::samples::RigidBodyStateSE3 &feedback){
 
     extractFeedback(feedback);
     extractSetpoint(setpoint, feedback);
@@ -36,8 +36,7 @@ const base::samples::CartesianState& CartesianPosPDController::update(const base
     control_output.twist.angular = control_out_vel.segment(3,3);
     control_output.acceleration.linear  = control_out_acc.segment(0,3);
     control_output.acceleration.angular = control_out_acc.segment(3,3);
-    control_output.source_frame = setpoint.source_frame;
-    control_output.target_frame = setpoint.target_frame;
+    control_output.frame_id = setpoint.frame_id;
     control_output.time = base::Time::now();
 
     return control_output;

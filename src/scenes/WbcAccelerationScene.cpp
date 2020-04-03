@@ -19,7 +19,7 @@ ConstraintPtr WbcAccelerationScene::createConstraint(const ConstraintConfig &con
 void WbcAccelerationScene::update(){
 
     constraints_prio.resize(constraints.size());
-    base::samples::CartesianState ref_frame;
+    base::samples::RigidBodyStateSE3 ref_frame;
 
     // Create equation system
     //    Walk through all priorities and update the optimization problem. The outcome will be
@@ -55,7 +55,7 @@ void WbcAccelerationScene::update(){
                 // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
                 // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
                 // be the origin of ref frame, not the root frame. This is more intuitive when controlling the orientation of e.g. a robot' s end effector.
-                ref_frame = robot_model->cartesianState(constraint->config.root, constraint->config.ref_frame);
+                ref_frame = robot_model->rigidBodyState(constraint->config.root, constraint->config.ref_frame);
                 constraint->y_ref_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(0,3);
                 constraint->y_ref_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(3,3);
 

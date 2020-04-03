@@ -2,7 +2,7 @@
 #include <iostream>
 
 #include "controllers/JointTorquePIDController.hpp"
-#include <ctrl_types/CartesianState.hpp>
+#include <ctrl_types/RigidBodyStateSE3.hpp>.hpp>
 
 using namespace std;
 using namespace ctrl_lib;

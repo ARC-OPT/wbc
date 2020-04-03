@@ -7,7 +7,7 @@ CartesianPotentialFieldsController::CartesianPotentialFieldsController() :
     PotentialFieldsController(3){
 }
 
-const base::samples::CartesianState& CartesianPotentialFieldsController::update(const base::samples::CartesianState& feedback){
+const base::samples::RigidBodyStateSE3& CartesianPotentialFieldsController::update(const base::samples::RigidBodyStateSE3& feedback){
 
     if(!base::isnotnan(feedback.pose.position))
         throw std::runtime_error("CartesianPotentialFieldsController::update: Feedback does not have a valid position entry");

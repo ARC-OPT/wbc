@@ -3,7 +3,7 @@
 
 #include "Constraint.hpp"
 
-namespace base{ namespace samples { class CartesianState; } }
+namespace base{ namespace samples { class RigidBodyStateSE3; } }
 
 namespace wbc {
 
@@ -18,7 +18,7 @@ public:
     /**
      * @brief Update the Cartesian reference input for this constraint.
      */
-    virtual void setReference(const base::samples::CartesianState& ref);
+    virtual void setReference(const base::samples::RigidBodyStateSE3& ref);
 };
 
 } //namespace wbc

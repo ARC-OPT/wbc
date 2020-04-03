@@ -4,7 +4,7 @@
 
 #include "controllers/CartesianPosPDController.hpp"
 #include "controllers/JointPosPDController.hpp"
-#include <ctrl_types/CartesianState.hpp>
+#include <ctrl_types/RigidBodyStateSE3.hpp>.hpp>
 
 using namespace std;
 using namespace ctrl_lib;
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
     BOOST_CHECK(max_ctrl_out == ctrl.maxCtrlOutput());
     BOOST_CHECK(dead_zone == ctrl.deadZone());
 
-    base::samples::CartesianState setpoint;
+    base::samples::RigidBodyStateSE3 setpoint;
     setpoint.pose.position = base::Vector3d((double)rand() / RAND_MAX,
                                             (double)rand() / RAND_MAX,
                                             (double)rand() / RAND_MAX);
@@ -36,7 +36,7 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
                                 Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(1)) *
                                 Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(2));
 
-    base::samples::CartesianState feedback;
+    base::samples::RigidBodyStateSE3 feedback;
     feedback.pose.position.setZero();
     feedback.pose.orientation.setIdentity();
 
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
 
     base::Vector3d euler = base::getEuler(feedback.pose.orientation);
     while(diff > dead_zone.norm() + 1e-3){
-        base::samples::CartesianState control_out;
+        base::samples::RigidBodyStateSE3 control_out;
 
         BOOST_CHECK_NO_THROW(control_out = ctrl.update(setpoint, feedback));
 
