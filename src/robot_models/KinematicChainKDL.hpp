@@ -8,7 +8,7 @@
 #include <kdl/jntarray.hpp>
 #include <kdl/jntarrayacc.hpp>
 #include <base/Time.hpp>
-#include <ctrl_types/RigidBodyStateSE3.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 
 namespace base{
     namespace samples{

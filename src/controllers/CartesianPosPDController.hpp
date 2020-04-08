@@ -2,7 +2,7 @@
 #define CTRL_LIB_CART_POS_PD_CONTROLLER_HPP
 
 #include "PosPDController.hpp"
-#include <ctrl_types/RigidBodyStateSE3.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 
 namespace ctrl_lib {
 

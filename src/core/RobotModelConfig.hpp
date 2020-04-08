@@ -3,7 +3,7 @@
 
 #include <base/Pose.hpp>
 #include <base/NamedVector.hpp>
-#include <ctrl_types/RigidBodyStateSE3.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 
 namespace wbc{
 

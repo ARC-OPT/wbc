@@ -28,5 +28,4 @@
   <depend package="base/types" />
   <depend package="control/kdl_parser" />
   <depend package="control/qpOASES" />
-  <depend package="control/ctrl_types" />
 </package>

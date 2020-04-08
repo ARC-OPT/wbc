@@ -2,9 +2,8 @@ find_package(Boost COMPONENTS system filesystem unit_test_framework REQUIRED)
 include_directories(${PROJECT_SOURCE_DIR}/src)
 
 pkg_search_module(base-types REQUIRED base-types)
-pkg_search_module(ctrl_types REQUIRED ctrl_types)
-include_directories(${base-types_INCLUDE_DIRS} ${ctrl_types_INCLUDE_DIRS})
-link_directories(${base-types_LIBRARY_DIRS} ${ctrl_types_LIBRARY_DIRS})
+include_directories(${base-types_INCLUDE_DIRS})
+link_directories(${base-types_LIBRARY_DIRS})
 
 add_executable(pot_field_controllers pot_field_controllers.cpp ../suite.cpp)
 target_link_libraries(pot_field_controllers

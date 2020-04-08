@@ -4,7 +4,8 @@
 
 #include "controllers/CartesianPosPDController.hpp"
 #include "controllers/JointPosPDController.hpp"
-#include <ctrl_types/RigidBodyStateSE3.hpp>.hpp>
+#include <controllers/ControllerTools.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 
 using namespace std;
 using namespace ctrl_lib;

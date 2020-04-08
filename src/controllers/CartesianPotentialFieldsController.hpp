@@ -2,7 +2,7 @@
 #define CARTESIAN_POTENTIAL_FIELDS_CONTROLLER_HPP
 
 #include "PotentialFieldsController.hpp"
-#include <ctrl_types/RigidBodyStateSE3.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 
 namespace ctrl_lib{
 

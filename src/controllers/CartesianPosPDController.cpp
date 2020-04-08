@@ -1,5 +1,6 @@
 #include "CartesianPosPDController.hpp"
-#include <ctrl_types/RigidBodyStateSE3.hpp>
+#include "ControllerTools.hpp"
+#include <base/samples/RigidBodyStateSE3.hpp>
 
 namespace ctrl_lib{
 

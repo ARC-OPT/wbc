@@ -3,7 +3,7 @@
 
 #include "PIDController.hpp"
 #include <base/samples/Wrench.hpp>
-#include <ctrl_types/RigidBodyStateSE3.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 
 namespace ctrl_lib {
 

@@ -3,6 +3,7 @@
 #include <scenes/WbcVelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <unistd.h>
+#include <controllers/ControllerTools.hpp>
 
 using namespace std;
 using namespace wbc;
