@@ -18,7 +18,7 @@ class RobotModel{
 
 protected:
     std::vector<std::string> joint_names;
-    base::samples::RigidBodyStatesSE3 robot_models_state;
+    base::NamedVector<base::samples::RigidBodyStateSE3> robot_models_state;
     std::string base_frame;
     base::Time last_update;
 
@@ -55,7 +55,7 @@ public:
      * @param poses Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model.
      */
     virtual void update(const base::samples::Joints& joint_state,
-                        const base::samples::RigidBodyStatesSE3& virtual_joint_states = base::samples::RigidBodyStatesSE3()) = 0;
+                        const base::NamedVector<base::samples::RigidBodyStateSE3>& virtual_joint_states = base::NamedVector<base::samples::RigidBodyStateSE3>()) = 0;
 
     /** Returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates!*/
     virtual const base::samples::RigidBodyStateSE3 &rigidBodyState(const std::string &root_frame, const std::string &tip_frame) = 0;
@@ -87,7 +87,7 @@ public:
     base::Time lastUpdate(){return last_update;}
 
     /** Get the names of all robot models*/
-    const base::samples::RigidBodyStatesSE3& robotModelsState(){return robot_models_state;}
+    const base::NamedVector<base::samples::RigidBodyStateSE3>& robotModelsState(){return robot_models_state;}
 
 };
 

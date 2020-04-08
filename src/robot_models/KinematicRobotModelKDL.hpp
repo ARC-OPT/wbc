@@ -94,7 +94,7 @@ public:
      *  of the given rigid body state has to match the segment name in the KDL Tree that shall be updated
      */
     virtual void update(const base::samples::Joints& joint_state,
-                        const base::samples::RigidBodyStatesSE3& virtual_joint_states = base::samples::RigidBodyStatesSE3());
+                        const base::NamedVector<base::samples::RigidBodyStateSE3>& virtual_joint_states = base::NamedVector<base::samples::RigidBodyStateSE3>());
 
     /**
      * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
