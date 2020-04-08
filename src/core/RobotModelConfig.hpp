@@ -10,7 +10,7 @@ namespace wbc{
 /**
  * @brief Robot Model configuration class
  */
-class RobotModelConfig{
+struct RobotModelConfig{
 public:
     RobotModelConfig(){
         initial_pose.fromTransform(Eigen::Affine3d::Identity());
@@ -22,15 +22,10 @@ public:
         hook(_hook),
         initial_pose(_initial_pose){
     }
-    ~RobotModelConfig(){
-    }
 
     std::string file;          /** Path to robot model file*/
     std::string hook;         /** Frame to which this robot model is attached in the overall model*/
     base::Pose initial_pose;  /** Initial pose of this model relative to the hook frame*/
-};
-
-class RobotModelsState : public base::NamedVector<base::samples::RigidBodyStateSE3>{
 };
 
 }

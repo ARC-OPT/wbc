@@ -150,7 +150,7 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     return true;
 }
 
-void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::samples::RigidBodyStateSE3& state, const std::string &tip_frame){
+void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::RigidBodyStateSE3& state, const std::string &tip_frame){
 
     base::JointState js;
     base::Vector3d euler = base::getEuler(state.pose.orientation);
@@ -168,7 +168,7 @@ void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::samples::RigidBo
 }
 
 void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
-                                    const RobotModelsState& virtual_joint_states){
+                                    const base::samples::RigidBodyStatesSE3& virtual_joint_states){
 
     current_joint_state = joint_state;
 
@@ -176,7 +176,8 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
     for(size_t i = 0; i < virtual_joint_states.size(); i++){
 
         std::string name = virtual_joint_states.names[i];
-        base::samples::RigidBodyStateSE3 elem = virtual_joint_states[i];
+        base::RigidBodyStateSE3 elem = virtual_joint_states.elements[i];
+        base::Time time = virtual_joint_states.time;
 
         if(!hasFrame(name)){
             LOG_ERROR("Trying to update virtual tree element '%s', which is not part of the robot model", name.c_str());
@@ -185,8 +186,8 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
 
         robot_models_state[name] = elem;
         updateVirtual6DoFJoint(elem, name);
-        if(elem.time > current_joint_state.time)
-            current_joint_state.time = elem.time;
+        if(time > current_joint_state.time)
+            current_joint_state.time = time;
     }
 
     // Push current virtual joint state into overall joint states

@@ -279,7 +279,7 @@ BOOST_AUTO_TEST_CASE(multi_robot){
     cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
     cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
 
-    RobotModelsState poses;
+    base::samples::RigidBodyStatesSE3 poses;
     poses.elements.push_back(st);
     poses.names.push_back("object");
 
