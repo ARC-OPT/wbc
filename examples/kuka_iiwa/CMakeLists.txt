@@ -1,6 +1,15 @@
 pkg_search_module(base-types REQUIRED base-types)
-include_directories(${base-types_INCLUDE_DIRS})
-link_directories(${base-types_LIBRARY_DIRS})
+pkg_search_module(orocos-kdl REQUIRED orocos-kdl)
+pkg_search_module(qpOASES REQUIRED qpOASES)
+pkg_search_module(kdl_parser REQUIRED kdl_parser)
+include_directories(${base-types_INCLUDE_DIRS}
+                    ${orocos-kdl_INCLUDE_DIRS}
+                    ${qpOASES_INCLUDE_DIRS}
+                    ${kdl_parser_INCLUDE_DIRS})
+link_directories(${base-types_LIBRARY_DIRS}
+                 ${orocos-kdl_LIBRARY_DIRS}
+                 ${qpOASES_LIBRARY_DIRS}
+                 ${kdl_parser_LIBRARY_DIRS})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
 add_executable(cart_pos_ctrl_hls cart_pos_ctrl_hls.cpp)
