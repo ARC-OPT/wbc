@@ -5,7 +5,7 @@
 #include <base/Eigen.hpp>
 #include <map>
 #include <base/samples/Joints.hpp>
-#include <base/samples/RigidBodyStatesSE3.hpp>
+#include <base/samples/RigidBodyStateSE3Vector.hpp>
 #include <memory>
 #include "RobotModelConfig.hpp"
 
