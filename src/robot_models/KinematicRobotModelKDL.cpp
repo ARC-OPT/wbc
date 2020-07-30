@@ -37,9 +37,10 @@ bool KinematicRobotModelKDL::configure(const std::string& model_filename,
         return false;
 
     // If no joint names are given, take them from KDL Tree
-    this->joint_names = joint_names;
-    if(this->joint_names.empty())
-        this->joint_names = jointNamesFromTree(full_tree);
+    actuated_joint_names = joint_names;
+    if(actuated_joint_names.empty())
+        actuated_joint_names = jointNamesFromTree(full_tree);
+    all_joint_names = actuated_joint_names; // Here only a single model is given (no virtual base etc.) so all joints are actuated
 
     // If no base frame is given, take it from KDL tree
     this->base_frame = base_frame;
@@ -55,6 +56,11 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
 
     clear();
 
+    // If no joint names are given, take them from KDL Tree
+    this->actuated_joint_names = joint_names;
+    if(this->actuated_joint_names.empty())
+        this->actuated_joint_names = jointNamesFromTree(full_tree);
+
     for(const RobotModelConfig& cfg : model_config){
 
         KDL::Tree tree;
@@ -66,11 +72,9 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
         if(!addTree(tree, cfg.hook, cfg.initial_pose))
             return false;
     }
-
-    // If no joint names are given, take them from KDL Tree
-    this->joint_names = joint_names;
-    if(this->joint_names.empty())
-        this->joint_names = jointNamesFromTree(full_tree);
+    this->all_joint_names = this->actuated_joint_names;
+    for(auto name : virtual_joint_state.names)
+        this->all_joint_names.push_back(name);
 
     // If no base frame is given, take it from KDL tree
     this->base_frame = base_frame;
@@ -128,8 +132,9 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     KDL::Chain chain;
     for(int i = 0; i < 6; i++){
         std::string joint_name = tip + virtual_joint_names[i];
-        chain.addSegment(KDL::Segment(joint_name, KDL::Joint(joint_name, virtual_joint_types[i]), KDL::Frame::Identity()));
+        chain.addSegment(KDL::Segment("link_" + joint_name, KDL::Joint(joint_name, virtual_joint_types[i]), KDL::Frame::Identity()));
         virtual_joint_state.names.push_back(joint_name);
+
     }
     virtual_joint_state.elements.resize(virtual_joint_state.names.size());
     chain.addSegment(KDL::Segment(tip, KDL::Joint(KDL::Joint::None))); // Don't forget to add the actual tip segment to the chain
@@ -238,6 +243,20 @@ const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vecto
     return joint_state_out;
 }
 
+const base::MatrixXd& KinematicRobotModelKDL::fullJacobian(const std::string &root_frame, const std::string &tip_frame){
+
+    const std::string chain_id = chainID(root_frame, tip_frame);
+    const base::MatrixXd& jac = jacobian(root_frame,tip_frame);
+    KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+
+    full_jac_map[chain_id].setZero(6,noOfJoints());
+    for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
+        int idx = jointIndex(kdl_chain->joint_names[j]);
+        full_jac_map[chain_id].col(idx) = jac.col(j);
+    }
+    return full_jac_map[chain_id];
+}
+
 const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
@@ -251,15 +270,32 @@ const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_f
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+    jac_map[chain_id] = kdl_chain->jacobian.data;
 
-    jac_map[chain_id].setZero(6,noOfJoints());
-    for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
-        int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac_map[chain_id].col(idx) = kdl_chain->jacobian.data.col(j);
-    }
     return jac_map[chain_id];
 }
 
+const base::MatrixXd &KinematicRobotModelKDL::fullJacobianDot(const std::string &root_frame, const std::string &tip_frame){
+
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to jacobianDot()");
+    }
+
+    // Create chain if it does not exist
+    const std::string chain_id = chainID(root_frame, tip_frame);
+    if(kdl_chain_map.count(chain_id) == 0)
+        createChain(root_frame, tip_frame);
+
+    KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+
+    full_jac_dot_map[chain_id].setZero(6,noOfJoints());
+    for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
+        int idx = jointIndex(kdl_chain->joint_names[j]);
+        full_jac_dot_map[chain_id].col(idx) = kdl_chain->jacobian_dot.data.col(j);
+    }
+    return full_jac_dot_map[chain_id];
+}
 
 const base::MatrixXd &KinematicRobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
@@ -274,12 +310,8 @@ const base::MatrixXd &KinematicRobotModelKDL::jacobianDot(const std::string &roo
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+    jac_dot_map[chain_id] = kdl_chain->jacobian_dot.data;
 
-    jac_dot_map[chain_id].setZero(6,noOfJoints());
-    for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
-        int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac_dot_map[chain_id].col(idx) = kdl_chain->jacobian_dot.data.col(j);
-    }
     return jac_dot_map[chain_id];
 }
 
@@ -289,15 +321,15 @@ bool KinematicRobotModelKDL::hasFrame(const std::string &name){
 
 std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::Tree &tree) const{
 
-    std::vector<std::string> joint_names;
+    std::vector<std::string> j_names;
     KDL::SegmentMap::const_iterator it;
     const KDL::SegmentMap& segments = tree.getSegments();
     for(const auto &it : tree.getSegments()){
         KDL::Joint joint = it.second.segment.getJoint();
         if(joint.getType() != KDL::Joint::None)
-            joint_names.push_back(joint.getName());
+            j_names.push_back(joint.getName());
     }
-    return joint_names;
+    return j_names;
 }
 
 }

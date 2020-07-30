@@ -32,15 +32,26 @@ public:
 
 struct HierarchicalQP{
     base::Time time;
-    std::vector<std::string> joint_names; /** Vector of joint names (nq x 1)*/
-    std::vector<QuadraticProgram> prios;  /** hierarchical organized QPs*/
-    base::VectorXd Wq;                    /** Joint weights (nq x 1) */
+    std::vector<std::string> joint_names;          /** Vector of names of all joints*/
+    std::vector<std::string> actuated_joint_names; /** Vector of names of actuated joints*/
+    std::vector<QuadraticProgram> prios;           /** hierarchical organized QPs*/
+    base::VectorXd Wq;                             /** Joint weights (all joints) */
+    base::VectorXd Wq_actuated;                    /** Joint weights (only actuated joints) */
 
+    int jointIdx(const std::string &joint_name){
+        uint idx = std::find(joint_names.begin(), joint_names.end(), joint_name) - joint_names.begin();
+        if(idx >= joint_names.size())
+            throw std::invalid_argument("Index of joint  " + joint_name + " was requested but this joint is not in robot model");
+        return idx;
+    }
     size_t size() const {
         return prios.size();
     }
     size_t nJoints() const {
         return joint_names.size();
+    }
+    size_t nActuatedJoints() const {
+        return actuated_joint_names.size();
     }
     QuadraticProgram& operator[](int i) {
         return prios[i];

@@ -175,82 +175,94 @@ BOOST_AUTO_TEST_CASE(jacobian_and_cartesian_state){
 
 BOOST_AUTO_TEST_CASE(multi_robot){
 
-
-    cout<<"\n----------------------- Testing Robot Model KDL ----------------------"<<endl<<endl;
-
-    vector<string> joint_names;
-    for(int i = 0; i < 7; i++)
-        joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
-
     srand(time(NULL));
 
-    cout<<"Testing Model Creation .."<<endl<<endl;
+    vector<string> actuated_joint_names;
+    for(int i = 0; i < 7; i++)
+        actuated_joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
+    vector<string> all_joint_names = actuated_joint_names;
+    const std::string virtual_joint_names[6] = {"_x", "_y", "_z", "_rot_x", "_rot_y", "_rot_z"};
+    for(int i = 0; i < 6; i++)
+        all_joint_names.push_back("object" + virtual_joint_names[i]);
 
-    base::Pose object_pose;
-    object_pose.position = base::Vector3d(0,0,2);
-    object_pose.orientation.setIdentity();
+    cout<<"Testing Model Creation .."<<endl<<endl;
+    base::samples::Joints joint_state;
+    joint_state.resize(actuated_joint_names.size());
+    joint_state.names = actuated_joint_names;
+    for(int i = 0; i < 7; i++)
+        joint_state[i].position = rand()/(double)RAND_MAX;
+    joint_state.time = base::Time::now();
+    base::Pose initial_object_pose;
+    initial_object_pose.position = base::Vector3d(0,0,0);
+    initial_object_pose.orientation.setIdentity();
 
     KinematicRobotModelKDL robot_model;
     vector<RobotModelConfig> config(2);
-    config[0].file = string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_lbr.urdf";
-    config[1].file = string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/object.urdf";
+    config[0].file = "../../../test/data/kuka_lbr.urdf";
+    config[1].file = "../../../test/data/object.urdf";
     config[1].hook = "kuka_lbr_top_left_camera";
-    config[1].initial_pose = object_pose;
-    BOOST_CHECK_EQUAL(robot_model.configure(config, joint_names, "kuka_lbr_base"), true);
-
-    base::samples::Joints joint_state;
-    joint_state.resize(joint_names.size());
-    joint_state.names = joint_names;
-    joint_state.time = base::Time::now();
-    for(base::JointState& j : joint_state.elements)
-        j.position = rand();
+    config[1].initial_pose = initial_object_pose;
+    BOOST_CHECK_EQUAL(robot_model.configure(config, joint_state.names, "kuka_lbr_base"), true);
+    BOOST_CHECK_EQUAL(robot_model.noOfActuatedJoints(), actuated_joint_names.size());
+    BOOST_CHECK_EQUAL(robot_model.noOfJoints(), all_joint_names.size());
+    for(int i = 0; i < robot_model.noOfActuatedJoints(); i++)
+        BOOST_CHECK_EQUAL(robot_model.actuatedJointNames()[i], actuated_joint_names[i]);
+    for(int i = 0; i < robot_model.noOfJoints(); i++)
+        BOOST_CHECK_EQUAL(robot_model.jointNames()[i], all_joint_names[i]);
 
     cout<<"Testing Model Update ...."<<endl<<endl;
 
-    BOOST_CHECK_NO_THROW(robot_model.update(joint_state););
+    base::samples::RigidBodyStateSE3 object_pose;
+    object_pose.pose.position = base::Vector3d(0,1,0);
+    object_pose.pose.orientation = Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::Unit(2));
+    base::NamedVector<base::samples::RigidBodyStateSE3> poses;
+    poses.elements.push_back(object_pose);
+    poses.names.push_back("object");
+    BOOST_CHECK_NO_THROW(robot_model.update(joint_state, poses););
 
     cout<<"Testing FK ..."<<endl<<endl;
 
-    KDL::JntArray joint_positions(joint_names.size());
-    for(size_t i = 0; i < joint_names.size(); i++)
-        joint_positions(i) = joint_state[i].position;
+    KDL::JntArray joint_positions(joint_state.size() + 6);
+    base::Vector3d euler = base::getEuler(object_pose.pose.orientation);
+    for(size_t i = 0; i < joint_state.size(); i++)
+        joint_positions(6-i) = joint_state[i].position;
+    for(size_t i = 0; i < 3; i++){
+        joint_positions(i+7) = object_pose.pose.position(i);
+        joint_positions(i+7+3) = euler(i);
+    }
 
     KDL::Chain chain;
-    BOOST_CHECK(robot_model.getTree().getChain("kuka_lbr_base", "kuka_lbr_l_tcp", chain) == true);
+    BOOST_CHECK(robot_model.getTree().getChain("kuka_lbr_l_tcp", "object", chain) == true);
     KDL::ChainFkSolverPos_recursive fk_solver(chain);
-
     KDL::Frame pose_kdl;
-    fk_solver.JntToCart(joint_positions, pose_kdl);
+    BOOST_CHECK_EQUAL(fk_solver.JntToCart(joint_positions, pose_kdl),0);
 
-    base::samples::RigidBodyStateSE3 state;
-    BOOST_CHECK_NO_THROW(state = robot_model.rigidBodyState("kuka_lbr_base", "kuka_lbr_l_tcp"););
-
-    for(int i = 0; i < 3; i++)
-        BOOST_CHECK_EQUAL(pose_kdl.p(i), state.pose.position(i));
-
+    cout<<"Pose from KDL: "<<endl;
+    cout<<"x: "<<pose_kdl.p(0)<<" y: "<<pose_kdl.p(1)<<" z: "<<pose_kdl.p(2)<<endl;
     double x,y,z,w;
     pose_kdl.M.GetQuaternion(x,y,z,w);
-
-    BOOST_CHECK_EQUAL(x, state.pose.orientation.x());
-    BOOST_CHECK_EQUAL(y, state.pose.orientation.y());
-    BOOST_CHECK_EQUAL(z, state.pose.orientation.z());
-    BOOST_CHECK_EQUAL(w, state.pose.orientation.w());
-
-    cout<<"EE pose from KDL:"<<endl;
-    cout<<"x: "<<pose_kdl.p(0)<<" y: "<<pose_kdl.p(1)<<" z: "<<pose_kdl.p(2)<<endl;
     cout<<"qx: "<<x<<" qy: "<<y<<" qz: "<<z<<" qw: "<<w<<endl<<endl;
 
-    cout<<"EE pose from robot model:"<<endl;
-    cout<<"x: "<<state.pose.position(0)<<" y: "<<state.pose.position(1)<<" z: "<<state.pose.position(2)<<endl;
-    cout<<"qx: "<<state.pose.orientation.x()<<" qy: "<<state.pose.orientation.y()<<" qz: "<<state.pose.orientation.z()<<" qw: "<<state.pose.orientation.w()<<endl<<endl;
+    base::samples::RigidBodyStateSE3 pose_from_model;
+    BOOST_CHECK_NO_THROW(pose_from_model = robot_model.rigidBodyState("kuka_lbr_l_tcp", "object"););
 
+    for(int i = 0; i < 3; i++)
+        BOOST_CHECK_EQUAL(pose_kdl.p(i), pose_from_model.pose.position(i));
+    BOOST_CHECK_EQUAL(pose_from_model.pose.orientation.x(),x);
+    BOOST_CHECK_EQUAL(pose_from_model.pose.orientation.y(),y);
+    BOOST_CHECK_EQUAL(pose_from_model.pose.orientation.z(),z);
+    BOOST_CHECK_EQUAL(pose_from_model.pose.orientation.w(),w);
+
+    cout<<"Pose from robot model "<<endl;
+    cout<<"x: "<<pose_from_model.pose.position[0]<<" y: "<<pose_from_model.pose.position[1]<<" z: "<<pose_from_model.pose.position[2]<<endl;
+    cout<<"qx: "<<pose_from_model.pose.orientation.x()<<" qy: "<<pose_from_model.pose.orientation.y()<<" qz: "<<pose_from_model.pose.orientation.z()<<" qw: "<<pose_from_model.pose.orientation.w()<<endl<<endl;
 
     cout<<"Testing Jacobian ..."<<endl<<endl;
-    KDL::Jacobian jac_kdl(joint_names.size());
+    KDL::Jacobian jac_kdl(robot_model.noOfJoints());
     KDL::ChainJntToJacSolver jac_solver(chain);
-    jac_solver.JntToJac(joint_positions, jac_kdl);
+    BOOST_CHECK_EQUAL(jac_solver.JntToJac(joint_positions, jac_kdl),0);
 
-    base::MatrixXd jac = robot_model.jacobian("kuka_lbr_base", "kuka_lbr_l_tcp");
+    base::MatrixXd jac = robot_model.jacobian("kuka_lbr_l_tcp", "object");
 
     cout<<"Jacobian from KDL"<<endl;
     cout<<jac_kdl.data<<endl<<endl;
@@ -259,39 +271,7 @@ BOOST_AUTO_TEST_CASE(multi_robot){
     cout<<jac<<endl<<endl;
 
     for(int i = 0; i < jac.rows(); i++)
-        for(int j = 0; j < jac.cols(); j++)
+        for(int j = 0; j < robot_model.noOfJoints(); j++)
             BOOST_CHECK_EQUAL(jac(i,j), jac_kdl.data(i,j));
-
-    cout<<"Object pose in camera coordinates: "<<endl;
-    base::samples::RigidBodyStateSE3 st = robot_model.rigidBodyState("kuka_lbr_top_left_camera", "object");
-    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
-    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
-
-    cout<<"Object pose in base coordinates: "<<endl;
-    st = robot_model.rigidBodyState("kuka_lbr_base", "object");
-    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
-    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
-
-    cout<<"Updating object pose by ...."<<endl<<endl;
-    st.pose.position = base::Vector3d(0,1,0);
-    st.pose.orientation.setIdentity();
-    st.pose.orientation = Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::Unit(2));
-    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
-    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
-
-    base::NamedVector<base::samples::RigidBodyStateSE3> poses;
-    poses.elements.push_back(st);
-    poses.names.push_back("object");
-
-    BOOST_CHECK_NO_THROW(robot_model.update(joint_state, poses));
-
-    cout<<"Object pose in camera coordinates: "<<endl;
-    st = robot_model.rigidBodyState("kuka_lbr_top_left_camera", "object");
-    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
-    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
-
-    cout<<"Object pose in base coordinates: "<<endl;
-    st = robot_model.rigidBodyState("kuka_lbr_base", "object");
-    cout<<st.pose.position(0)<<" "<<st.pose.position(1)<<" "<<st.pose.position(2)<<endl;
-    cout<<st.pose.orientation.x()<<" "<<st.pose.orientation.y()<<" "<<st.pose.orientation.z()<<" "<<st.pose.orientation.w()<<endl<<endl;
 }
+

@@ -44,7 +44,7 @@ void WbcVelocityScene::update(){
                 CartesianVelocityConstraintPtr constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
 
                 // Constraint Jacobian
-                constraint->A = robot_model->jacobian(constraint->config.root, constraint->config.tip);
+                constraint->A = robot_model->fullJacobian(constraint->config.root, constraint->config.tip);
 
                 // Constraint reference
                 // Convert input twist from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
@@ -103,13 +103,13 @@ void WbcVelocityScene::update(){
 
 const ConstraintsStatus& WbcVelocityScene::updateConstraintsStatus(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
 
-    if(solver_output.size() != robot_model->noOfJoints())
+    if(solver_output.size() != robot_model->noOfActuatedJoints())
         throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())
-                                 + " but number of robot joints is " + std::to_string(robot_model->noOfJoints()));
+                                 + " but number of robot joints is " + std::to_string(robot_model->noOfActuatedJoints()));
 
-    solver_output_vel.resize(solver_output.size());
-    robot_vel.resize(joint_state.size());
-    for(size_t i = 0; i < robot_model->noOfJoints(); i++)
+    solver_output_vel.resize(robot_model->noOfActuatedJoints());
+    robot_vel.resize(robot_model->noOfJoints());
+    for(size_t i = 0; i < robot_model->noOfActuatedJoints(); i++)
         solver_output_vel(i) = solver_output[i].speed;
     const std::vector<std::string> joint_names = robot_model->jointNames();
     for(size_t i = 0; i < joint_names.size(); i++)
