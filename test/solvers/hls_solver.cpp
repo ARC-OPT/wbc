@@ -33,6 +33,7 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     prio_0.lower_y << 0.49, 0.787;
 
     wbc::HierarchicalQP hqp;
+    hqp.Wq.setOnes(NO_JOINTS);
     hqp << prio_0;
 
     base::VectorXd solver_output;
