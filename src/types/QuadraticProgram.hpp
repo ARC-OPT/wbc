@@ -24,6 +24,8 @@ public:
     base::VectorXd upper_y; /** Upper bound of the constraint vector (nc x 1) */
     base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
     base::VectorXd Wy;      /** Constraint weights (nc x 1). Default entry is 1. */
+    int nc;                 /** Number of constraints for this prio*/
+    int nq;                 /** Number of all joints (actuated + unactuated)*/
 
     /** Initialize all variables with NaN */
     void resize(const uint nc, const uint nq);
