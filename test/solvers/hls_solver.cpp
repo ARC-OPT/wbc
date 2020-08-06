@@ -9,11 +9,15 @@ using namespace std;
 
 BOOST_AUTO_TEST_CASE(solver_hls)
 {
+    // For small size problems like the one below this solver outperforms qpoases by factor of at least 2
+    // Also computation time is quite constant, while for qpoases it might vary a lot, depending on the number
+    // iterations
+
     srand (time(NULL));
 
-    const uint NO_JOINTS = 3;
-    const uint NO_CONSTRAINTS = 2;
-    const double NORM_MAX = 5.75;
+    const uint NO_JOINTS = 6;
+    const uint NO_CONSTRAINTS = 6;
+    const double NORM_MAX = 100;
     const double MIN_EIGENVALUE = 1e-9;
 
     HierarchicalLSSolver solver;
@@ -27,14 +31,25 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     BOOST_CHECK(solver.getMinEigenvalue() == MIN_EIGENVALUE);
     BOOST_CHECK(solver.getMaxSolverOutputNorm() == NORM_MAX);
 
-    wbc::QuadraticProgram prio_0;
-    prio_0.resize(NO_CONSTRAINTS, NO_JOINTS);
-    prio_0.A << 0.026, 0.203, 0.451, 0.915, 0.161, 0.151;
-    prio_0.lower_y << 0.49, 0.787;
+    wbc::QuadraticProgram qp;
+    qp.resize(NO_CONSTRAINTS, NO_JOINTS);
+    base::Vector6d y;
+    y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
+    qp.lower_y = y;
+    qp.upper_y = y;
+
+    base::Matrix6d A;
+    A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
+         0.553, 0.087,  0.43,  0.71, 0.148,  0.87,
+         0.249, 0.632, 0.711,  0.13, 0.426, 0.963,
+         0.682, 0.123, 0.998, 0.716, 0.961, 0.901,
+         0.891, 0.019, 0.716, 0.534, 0.725, 0.633,
+         0.315, 0.551, 0.462, 0.221, 0.638, 0.244;
+    qp.A = A;
 
     wbc::HierarchicalQP hqp;
     hqp.Wq.setOnes(NO_JOINTS);
-    hqp << prio_0;
+    hqp << qp;
 
     base::VectorXd solver_output;
     struct timeval start, end;
@@ -49,14 +64,14 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
 
     cout<<"\nSolver Input:"<<endl;
-    cout<<"Constraint Matrix A:"<<endl; cout<<prio_0.A<<endl;
-    cout<<"Reference: y = "<<prio_0.lower_y.transpose()<<endl;
+    cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
+    cout<<"Reference: y = "<<y.transpose()<<endl;
 
     cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;
-    Eigen::VectorXd test = prio_0.A*solver_output;
+    Eigen::VectorXd test = A*solver_output;
     cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_CONSTRAINTS; j++)
-        BOOST_CHECK(fabs(test(j) - prio_0.lower_y(j)) < 1e-9);
+        BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
     cout<<"\n............................."<<endl;
 }
