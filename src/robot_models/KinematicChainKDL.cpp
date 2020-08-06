@@ -4,12 +4,14 @@
 #include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainjnttojacdotsolver.hpp>
-#include <kdl/frames_io.hpp>
+#include <kdl/chaindynparam.hpp>
 
 namespace wbc{
 
-KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string &root_frame, const std::string &tip_frame) :
-    chain(chain),
+KinematicChainKDL::KinematicChainKDL(const KDL::Chain &_chain, const std::string &_root_frame, const std::string &_tip_frame) :
+    chain(_chain),
+    root_frame(_root_frame),
+    tip_frame(_tip_frame),
     jacobian(KDL::Jacobian(chain.getNrOfJoints())),
     jacobian_dot(KDL::Jacobian(chain.getNrOfJoints())){
 
@@ -19,6 +21,10 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &chain, const std::string 
     jnt_array_acc.q       = KDL::JntArray(chain.getNrOfJoints());
     jnt_array_acc.qdot    = KDL::JntArray(chain.getNrOfJoints());
     jnt_array_acc.qdotdot = KDL::JntArray(chain.getNrOfJoints());
+
+    coriolis_torque    = KDL::JntArray(chain.getNrOfJoints());
+    gravitation_torque = KDL::JntArray(chain.getNrOfJoints());
+    jnt_space_inertia  = KDL::JntSpaceInertiaMatrix(chain.getNrOfJoints());
 
     for(size_t i = 0; i < chain.getNrOfSegments(); i++){
         KDL::Joint joint = chain.getSegment(i).getJoint();
@@ -41,7 +47,7 @@ const base::samples::RigidBodyStateSE3 &KinematicChainKDL::rigidBodyState(){
     return cartesian_state;
 }
 
-void KinematicChainKDL::update(const base::samples::Joints &joint_state){
+void KinematicChainKDL::update(const base::samples::Joints &joint_state, const base::Vector3d& gravity){
 
     //// update Joints
     cartesian_state.time = joint_state.time;
@@ -63,6 +69,7 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
     KDL::ChainFkSolverVel_recursive fk_solver_vel(chain);
     KDL::ChainJntToJacSolver jac_solver(chain);
     KDL::ChainJntToJacDotSolver jac_dot_solver(chain);
+    KDL::ChainDynParam dyn_solver(chain, KDL::Vector(gravity[0], gravity[1], gravity[2]));
 
     //// compute forward kinematics
     fk_solver_vel.JntToCart(jnt_array_vel, frame_vel);
@@ -70,15 +77,25 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
     pose_kdl = frame_vel.value();
 
     //// Compute Jacobian
-    jac_solver.JntToJac(jnt_array_vel.q, jacobian);
+    if(jac_solver.JntToJac(jnt_array_vel.q, jacobian))
+        throw std::runtime_error("Failed to compute Jacobian for chain " + root_frame + " -> " + tip_frame);
 
     //// Compute Jacobian_dot
     jac_dot_solver.setRepresentation(0); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
-    jac_dot_solver.JntToJacDot(jnt_array_vel, jacobian_dot);
+    if(jac_dot_solver.JntToJacDot(jnt_array_vel, jacobian_dot))
+        throw std::runtime_error("Failed to compute JacobianDot for chain " + root_frame + " -> " + tip_frame);
 
     //// Compute frame acceleration
     if(has_acceleration)
         acc = jacobian_dot.data*jnt_array_vel.qdot.data + jacobian.data*jnt_array_acc.qdotdot.data;
+
+    //// Compute dynamics:
+    if(dyn_solver.JntToCoriolis(jnt_array_vel.q, jnt_array_vel.qdot, coriolis_torque))
+        throw std::runtime_error("Failed to compute Coriolis terms for chain " + root_frame + " -> " + tip_frame);
+    if(dyn_solver.JntToGravity(jnt_array_vel.q, gravitation_torque))
+            throw std::runtime_error("Failed to compute gravity terms for chain " + root_frame + " -> " + tip_frame);
+    if(dyn_solver.JntToMass(jnt_array_vel.q, jnt_space_inertia))
+            throw std::runtime_error("Failed to compute joint space inertia matrix for chain " + root_frame + " -> " + tip_frame);
 }
 
 

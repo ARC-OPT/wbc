@@ -9,6 +9,7 @@
 #include <kdl/jntarrayacc.hpp>
 #include <base/Time.hpp>
 #include <base/samples/RigidBodyStateSE3.hpp>
+#include <kdl/jntspaceinertiamatrix.hpp>
 
 namespace base{
     namespace samples{
@@ -32,7 +33,7 @@ public:
      * @brief Update all joints of the kinematic chain
      * @param joint_state Has to contain at least all joints that are included in the kinematic chain. Each entry has to have a valid position and velocity
      */
-    void update(const base::samples::Joints& joint_state);
+    void update(const base::samples::Joints& joint_state, const base::Vector3d& gravity = base::Vector3d(0,0,9.81));
     /** Convert and return current Cartesian state*/
     const base::samples::RigidBodyStateSE3& rigidBodyState();
 
@@ -46,6 +47,12 @@ public:
     KDL::Jacobian jacobian;                          /** Jacobian of the Chain. Reference frame is root & reference point is tip*/
     KDL::Jacobian jacobian_dot;                      /** Derivative of Jacobian of the Chain. Reference frame & reference point is the root frame*/
     std::vector<std::string> joint_names;            /** Names of the joint included in the kinematic chain*/
+    KDL::JntArray coriolis_torque;                   /** Vector of coriolis terms (Nx1)*/
+    KDL::JntArray gravitation_torque;                /** Vector of gravity terms (Nx1)*/
+    KDL::JntSpaceInertiaMatrix jnt_space_inertia;    /** Jointspace inertia matrix H (NxN)*/
+    std::string root_frame;                          /** UID of the kinematics chain root link*/
+    std::string tip_frame;                           /** UID of the kinematics chain tip link*/
+
 };
 
 } // namespace wbc
