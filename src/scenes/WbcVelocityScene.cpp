@@ -34,7 +34,6 @@ void WbcVelocityScene::update(){
         uint row_index = 0;
         for(uint i = 0; i < constraints[prio].size(); i++){
 
-
             constraints[prio][i]->checkTimeout();
             int type = constraints[prio][i]->config.type;
             uint n_vars = constraints[prio][i]->config.nVariables();
@@ -94,6 +93,10 @@ void WbcVelocityScene::update(){
             constraints_prio[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
             constraints_prio[prio].lower_y.segment(row_index, n_vars) = constraint->y_ref_root;
             constraints_prio[prio].upper_y.segment(row_index, n_vars) = constraint->y_ref_root;
+            constraints_prio[prio].H.setIdentity();
+            constraints_prio[prio].lower_x.resize(0);
+            constraints_prio[prio].upper_x.resize(0);
+            constraints_prio[prio].g.setZero();
 
             row_index += n_vars;
 
