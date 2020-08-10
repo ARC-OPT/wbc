@@ -3,6 +3,7 @@
 #include <kdl_parser/kdl_parser.hpp>
 #include <base-logging/Logging.hpp>
 #include "../core/RobotModelConfig.hpp"
+#include <urdf_parser/urdf_parser.h>
 
 namespace wbc{
 
@@ -33,6 +34,8 @@ bool KinematicRobotModelKDL::configure(const std::string& model_filename,
         return false;
     }
 
+    jointLimitsFromURDF(model_filename, joint_limits);
+
     if(!addTree(tree))
         return false;
 
@@ -46,6 +49,16 @@ bool KinematicRobotModelKDL::configure(const std::string& model_filename,
     this->base_frame = base_frame;
     if(this->base_frame.empty())
         this->base_frame = full_tree.getRootSegment()->second.segment.getName();
+
+    LOG_INFO_S<<"Actuated Joint Names: "<<std::endl;
+    for(auto n : actuatedJointNames())
+        LOG_INFO_S << n;
+    LOG_INFO_S<<std::endl;
+
+    LOG_INFO_S<<"All Joint Names: "<<std::endl;
+    for(auto n : jointNames())
+        LOG_INFO_S << n;
+    LOG_INFO_S<<std::endl;
 
     return true;
 }
@@ -69,6 +82,8 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
             return false;
         }
 
+        jointLimitsFromURDF(cfg.file, joint_limits);
+
         if(!addTree(tree, cfg.hook, cfg.initial_pose))
             return false;
     }
@@ -81,13 +96,25 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
     if(this->base_frame.empty())
         this->base_frame = full_tree.getRootSegment()->second.segment.getName();
 
+    LOG_INFO_S<<"Actuated Joint Names: "<<std::endl;
+    for(auto n : actuatedJointNames())
+        LOG_INFO_S << n;
+    LOG_INFO_S<<std::endl;
+
+    LOG_INFO_S<<"All Joint Names: "<<std::endl;
+    for(auto n : jointNames())
+        LOG_INFO_S << n;
+    LOG_INFO_S<<std::endl;
+
     return true;
 }
 
 bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& hook, const base::Pose &pose){
 
-    if(full_tree.getNrOfSegments() == 0)
+    if(full_tree.getNrOfSegments() == 0){
+        LOG_INFO_S<<"Added full tree with root "<<tree.getRootSegment()->first<<std::endl;
         full_tree = tree;
+    }
     else{
         if(!hasFrame(hook)){
             LOG_ERROR("Hook name is %s, but this segment does not exist in tree", hook.c_str());
@@ -101,6 +128,7 @@ bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& h
             LOG_ERROR("Unable to attach tree with root segment %s", root.c_str());
             return false;
         }
+        LOG_INFO_S<<"Added new tree with root "<<tree.getRootSegment()->first<<" to hook "<<hook<<std::endl;
     }
 
     return true;
@@ -121,6 +149,8 @@ void KinematicRobotModelKDL::createChain(const std::string &root_frame, const st
 
     jac_map[chain_id]     = base::MatrixXd(6, kin_chain->joint_names.size());
     jac_dot_map[chain_id] = base::MatrixXd(6, kin_chain->joint_names.size());
+
+    LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
 }
 
 bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose){
@@ -152,6 +182,12 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
         LOG_ERROR("Unable to attach chain to tree segment %s", hook.c_str());
         return false;
     }
+
+    LOG_INFO_S<<"Added virtual 6 DoF joint tip to hook "<<hook<<std::endl;
+    LOG_INFO_S<<"Virtual joints are now: "<<std::endl;
+    for(auto n : virtual_joint_state.names)
+        LOG_INFO_S<<n<<std::endl;
+
     return true;
 }
 
@@ -330,6 +366,38 @@ std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::T
             j_names.push_back(joint.getName());
     }
     return j_names;
+}
+
+void KinematicRobotModelKDL::jointLimitsFromURDF(const std::string& urdf_file, base::JointLimits& limits){
+    urdf::ModelInterfaceSharedPtr urdf_model = urdf::parseURDFFile(urdf_file);
+    if (!urdf_model)
+        throw std::invalid_argument("Cannot load URDF from file " + urdf_file);
+
+    std::map<std::string, urdf::JointSharedPtr>::const_iterator it;
+    for(it=urdf_model->joints_.begin(); it!=urdf_model->joints_.end(); ++it){
+        const urdf::JointSharedPtr &joint = it->second;
+        base::JointLimitRange range;
+
+        if(joint->limits){
+            range.max.position = joint->limits->upper;
+            range.min.position = joint->limits->lower;
+            range.max.speed = joint->limits->velocity;
+            range.min.speed = -joint->limits->velocity;
+            range.max.effort = joint->limits->effort;
+            range.min.effort = -joint->limits->effort;
+
+            try{
+                limits.getElementByName(it->first);
+            }
+            catch(base::JointLimits::InvalidName e){
+                limits.names.push_back(it->first);
+                limits.elements.push_back(range);
+
+                LOG_INFO_S<<"Added joint limit for joint "<<it->first<<" Max. Pos: "<<range.max.position
+                         <<" Min. Pos: "<<range.min.position<<" Max. Vel: "<<range.max.speed<<" Max. Effort: "<<range.max.effort<<std::endl;
+            }
+        }
+    }
 }
 
 }

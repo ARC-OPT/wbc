@@ -1,5 +1,6 @@
 #include "WbcVelocitySceneQuadraticCost.hpp"
 #include <tools/SVD.hpp>
+#include <base/JointLimits.hpp>
 
 namespace wbc{
 
@@ -24,8 +25,14 @@ void WbcVelocitySceneQuadraticCost::update(){
         constraints_prio[prio].g = -(constraints_prio[prio].A.transpose()*constraints_prio[prio].lower_y).transpose();
         constraints_prio[prio].lower_y.resize(0);
         constraints_prio[prio].upper_y.resize(0);
-        constraints_prio[prio].lower_x.setConstant(nj,-10);
-        constraints_prio[prio].upper_x.setConstant(nj,10);
+        constraints_prio[prio].lower_x.setConstant(nj, -std::numeric_limits<double>::max());
+        constraints_prio[prio].upper_x.setConstant(nj, std::numeric_limits<double>::max());
+        for(auto n : robot_model->actuatedJointNames()){
+            size_t idx = robot_model->jointIndex(n);
+            const base::JointLimitRange &range = robot_model->jointLimits().getElementByName(n);
+            constraints_prio[prio].lower_x(idx) = -10;//range.min.speed;
+            constraints_prio[prio].upper_x(idx) = 10;//range.max.speed;
+        }
         constraints_prio[prio].A.setIdentity();
 
         // Compute variable damping depending on smallest Eigenvalue

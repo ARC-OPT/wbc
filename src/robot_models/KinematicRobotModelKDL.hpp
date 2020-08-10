@@ -58,6 +58,8 @@ protected:
     /** Update the position and orientation of a tree that is attached to the initial robot (see configure for details). */
     void updateVirtual6DoFJoint(const base::RigidBodyStateSE3& state, const std::string &tip_frame);
 
+    void jointLimitsFromURDF(const std::string& urdf_file, base::JointLimits& limits);
+
 public:
     KinematicRobotModelKDL();
     virtual ~KinematicRobotModelKDL();

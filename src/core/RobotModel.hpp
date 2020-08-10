@@ -8,6 +8,7 @@
 #include <base/samples/RigidBodyStateSE3Vector.hpp>
 #include <memory>
 #include "RobotModelConfig.hpp"
+#include <base/JointLimits.hpp>
 
 namespace wbc{
 
@@ -22,6 +23,7 @@ protected:
     base::NamedVector<base::samples::RigidBodyStateSE3> robot_models_state;
     std::string base_frame;
     base::Time last_update;
+    base::JointLimits joint_limits;
 
 public:
     RobotModel();
@@ -112,6 +114,9 @@ public:
 
     /** Get the names of all robot models*/
     const base::NamedVector<base::samples::RigidBodyStateSE3>& robotModelsState(){return robot_models_state;}
+
+    /** Return current joint limits*/
+    const base::JointLimits& jointLimits(){return joint_limits;}
 
 };
 
