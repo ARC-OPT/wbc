@@ -38,7 +38,6 @@ struct HierarchicalQP{
     std::vector<std::string> actuated_joint_names; /** Vector of names of actuated joints*/
     std::vector<QuadraticProgram> prios;           /** hierarchical organized QPs*/
     base::VectorXd Wq;                             /** Joint weights (all joints) */
-    base::VectorXd Wq_actuated;                    /** Joint weights (only actuated joints) */
 
     int jointIdx(const std::string &joint_name){
         uint idx = std::find(joint_names.begin(), joint_names.end(), joint_name) - joint_names.begin();
