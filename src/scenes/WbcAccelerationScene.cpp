@@ -18,6 +18,9 @@ ConstraintPtr WbcAccelerationScene::createConstraint(const ConstraintConfig &con
 
 void WbcAccelerationScene::update(){
 
+    if(!configured)
+        throw std::runtime_error("WBCAcceleration has not been configured!. PLease call configure() before calling update() for the first time!");
+
     constraints_prio.resize(constraints.size());
     base::samples::RigidBodyStateSE3 ref_frame;
 

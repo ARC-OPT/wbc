@@ -20,6 +20,7 @@ protected:
     ConstraintsStatus constraints_status;
     HierarchicalQP constraints_prio;
     std::vector<int> n_constraint_variables_per_prio;
+    bool configured;
 
     /**
      * brief Create a constraint and add it to the WBC scene
@@ -33,7 +34,8 @@ protected:
 
 public:
     WbcScene(RobotModelPtr robot_model) :
-        robot_model(robot_model){}
+        robot_model(robot_model),
+        configured(false){}
 
     virtual ~WbcScene(){
     }

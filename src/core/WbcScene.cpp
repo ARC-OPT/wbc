@@ -11,6 +11,7 @@ void WbcScene::clearConstraints(){
     }
     constraints.clear();
     constraints_status.clear();
+    configured = false;
 }
 
 bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
@@ -41,6 +42,9 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
             constraints_status.elements.push_back(ConstraintStatus());
         }
     }
+
+
+    configured = true;
 
     return true;
 }

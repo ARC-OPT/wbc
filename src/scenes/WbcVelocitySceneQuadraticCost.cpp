@@ -16,6 +16,9 @@ WbcVelocitySceneQuadraticCost::~WbcVelocitySceneQuadraticCost(){
 
 void WbcVelocitySceneQuadraticCost::update(){
 
+    if(!configured)
+        throw std::runtime_error("WbcVelocitySceneQuadraticCost has not been configured!. PLease call configure() before calling update() for the first time!");
+
     WbcVelocityScene::update();
 
     int nj = robot_model->noOfJoints();

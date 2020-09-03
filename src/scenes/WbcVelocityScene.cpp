@@ -18,6 +18,9 @@ ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config)
 
 void WbcVelocityScene::update(){
 
+    if(!configured)
+        throw std::runtime_error("WbcVelocityScene has not been configured!. PLease call configure() before calling update() for the first time!");
+
     constraints_prio.resize(constraints.size());
     base::samples::RigidBodyStateSE3 ref_frame;
 
