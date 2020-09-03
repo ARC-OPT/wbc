@@ -4,6 +4,8 @@
 #include <base-logging/Logging.hpp>
 #include "../core/RobotModelConfig.hpp"
 #include <urdf_parser/urdf_parser.h>
+#include <kdl/treeidsolver_recursive_newton_euler.hpp>
+#include <kdl/treejnttojacsolver.hpp>
 
 namespace wbc{
 
@@ -19,82 +21,57 @@ void KinematicRobotModelKDL::clear(){
     kdl_chain_map.clear();
     jac_map.clear();
     jac_dot_map.clear();
-    robot_models_state.clear();
+    joint_limits.clear();
 }
 
 
 bool KinematicRobotModelKDL::configure(const std::string& model_filename,
                                        const std::vector<std::string> &joint_names,
-                                       const std::string &base_frame){
+                                       bool floating_base){
     clear();
 
-    KDL::Tree tree;
-    if(!kdl_parser::treeFromFile(model_filename, tree)){
-        LOG_ERROR("Unable to parse urdf model from file %s", model_filename.c_str());
-        return false;
-    }
-
-    jointLimitsFromURDF(model_filename, joint_limits);
-
-    if(!addTree(tree))
-        return false;
-
-    // If no joint names are given, take them from KDL Tree
-    actuated_joint_names = joint_names;
-    if(actuated_joint_names.empty())
-        actuated_joint_names = jointNamesFromTree(full_tree);
-    all_joint_names = actuated_joint_names; // Here only a single model is given (no virtual base etc.) so all joints are actuated
-
-    // If no base frame is given, take it from KDL tree
-    this->base_frame = base_frame;
-    if(this->base_frame.empty())
-        this->base_frame = full_tree.getRootSegment()->second.segment.getName();
-
-    LOG_INFO_S<<"Actuated Joint Names: "<<std::endl;
-    for(auto n : actuatedJointNames())
-        LOG_INFO_S << n;
-    LOG_INFO_S<<std::endl;
-
-    LOG_INFO_S<<"All Joint Names: "<<std::endl;
-    for(auto n : jointNames())
-        LOG_INFO_S << n;
-    LOG_INFO_S<<std::endl;
-
-    return true;
+    RobotModelConfig cfg;
+    cfg.file = model_filename;
+    cfg.joint_names = joint_names;
+    std::vector<RobotModelConfig> configs;
+    configs.push_back(cfg);
+    return configure(configs, floating_base);
 }
 
 bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config,
-                                       const std::vector<std::string> &joint_names,
-                                       const std::string &base_frame){
+                                       bool floating_base){
 
     clear();
 
-    // If no joint names are given, take them from KDL Tree
-    this->actuated_joint_names = joint_names;
-    if(this->actuated_joint_names.empty())
-        this->actuated_joint_names = jointNamesFromTree(full_tree);
-
-    for(const RobotModelConfig& cfg : model_config){
-
-        KDL::Tree tree;
-        if(!kdl_parser::treeFromFile(cfg.file, tree)){
-            LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
+    if(floating_base){
+        if(!kdl_parser::treeFromString(floating_base_urdf, full_tree)){
+            LOG_ERROR("Unable to init floating base");
             return false;
         }
+    }
 
+    for(const RobotModelConfig& cfg : model_config){
         jointLimitsFromURDF(cfg.file, joint_limits);
-
-        if(!addTree(tree, cfg.hook, cfg.initial_pose))
+        if(!addModel(cfg))
             return false;
     }
-    this->all_joint_names = this->actuated_joint_names;
-    for(auto name : virtual_joint_state.names)
-        this->all_joint_names.push_back(name);
 
-    // If no base frame is given, take it from KDL tree
-    this->base_frame = base_frame;
-    if(this->base_frame.empty())
-        this->base_frame = full_tree.getRootSegment()->second.segment.getName();
+    base_frame = full_tree.getRootSegment()->second.segment.getName();
+
+    q.resize(noOfJoints());
+    qdot.resize(noOfJoints());
+    qdotdot.resize(noOfJoints());
+    tau.resize(noOfJoints());
+    joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
+    bias_forces.resize(noOfJoints());
+    zero.resize(noOfJoints());
+    zero.data.setZero();
+
+    for(const auto &it : full_tree.getSegments()){
+        KDL::Joint jnt = it.second.segment.getJoint();
+        if(jnt.getType() != KDL::Joint::None)
+            joint_idx_map_kdl[jnt.getName()] = GetTreeElementQNr(it.second);
+    }
 
     LOG_INFO_S<<"Actuated Joint Names: "<<std::endl;
     for(auto n : actuatedJointNames())
@@ -106,29 +83,52 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
         LOG_INFO_S << n;
     LOG_INFO_S<<std::endl;
 
+    LOG_INFO("Full KDL Tree");
+    if(getenv("BASE_LOG_LEVEL")){
+        if(std::string(getenv("BASE_LOG_LEVEL")) == "INFO"){
+            KDL::TreeElement root = full_tree.getRootSegment()->second;
+            std::cout<<"Root Link: "<<root.segment.getName()<<std::endl;
+            printTree(root);
+        }
+    }
+
     return true;
 }
 
-bool KinematicRobotModelKDL::addTree(const KDL::Tree& tree, const std::string& hook, const base::Pose &pose){
+bool KinematicRobotModelKDL::addModel(const RobotModelConfig& cfg){
 
-    if(full_tree.getNrOfSegments() == 0){
-        LOG_INFO_S<<"Added full tree with root "<<tree.getRootSegment()->first<<std::endl;
+    KDL::Tree tree;
+    if(!kdl_parser::treeFromFile(cfg.file, tree)){
+        LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
+        return false;
+    }
+
+    if(full_tree.getNrOfSegments() == 0 && full_tree.getRootSegment()->first == "root"){
         full_tree = tree;
+        LOG_INFO_S<<"Added full tree with root "<<tree.getRootSegment()->first<<" and no. of segments: "<<tree.getNrOfSegments()<<std::endl;
     }
     else{
-        if(!hasFrame(hook)){
-            LOG_ERROR("Hook name is %s, but this segment does not exist in tree", hook.c_str());
+        if(!hasFrame(cfg.hook)){
+            LOG_ERROR("Hook name is %s, but this segment does not exist in tree", cfg.hook.c_str());
             return false;
         }
 
-        std::string root = tree.getRootSegment()->first;
-        addVirtual6DoFJoint(hook, root, pose);
+        KDL::Segment root = tree.getRootSegment()->second.segment;
+        std::string root_name = root.getName();
+        addVirtual6DoFJoint(cfg.hook, root_name, cfg.initial_pose);
+        full_tree.addSegment(root, "link_" + root_name + "_rot_z");
 
-        if(!full_tree.addTree(tree, root)){
-            LOG_ERROR("Unable to attach tree with root segment %s", root.c_str());
+        if(!full_tree.addTree(tree, root_name)){
+            LOG_ERROR("Unable to attach tree with root segment %s", root_name.c_str());
             return false;
         }
-        LOG_INFO_S<<"Added new tree with root "<<tree.getRootSegment()->first<<" to hook "<<hook<<std::endl;
+        LOG_INFO_S<<"Added new tree with root "<<root_name<<" to hook "<<cfg.hook<<std::endl;
+    }
+
+    for(size_t i = 0; i < cfg.joint_names.size(); i++){
+        current_joint_state.elements.push_back(base::JointState());
+        current_joint_state.names.push_back(cfg.joint_names[i]);
+        actuated_joint_names.push_back(cfg.joint_names[i]);
     }
 
     return true;
@@ -155,90 +155,92 @@ void KinematicRobotModelKDL::createChain(const std::string &root_frame, const st
 
 bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose){
 
-
-    const KDL::Joint::JointType virtual_joint_types[6] = {KDL::Joint::TransX, KDL::Joint::TransY, KDL::Joint::TransZ,
-                                                          KDL::Joint::RotZ, KDL::Joint::RotY, KDL::Joint::RotX};
-
     KDL::Chain chain;
     for(int i = 0; i < 6; i++){
         std::string joint_name = tip + virtual_joint_names[i];
-        chain.addSegment(KDL::Segment("link_" + joint_name, KDL::Joint(joint_name, virtual_joint_types[i]), KDL::Frame::Identity()));
-        virtual_joint_state.names.push_back(joint_name);
-
+        KDL::Segment segment = KDL::Segment("link_" + joint_name, KDL::Joint(joint_name, virtual_joint_types[i]),KDL::Frame::Identity());
+        chain.addSegment(segment);
+        current_joint_state.names.push_back(joint_name);
+        current_joint_state.elements.push_back(base::JointState());
     }
-    virtual_joint_state.elements.resize(virtual_joint_state.names.size());
-    chain.addSegment(KDL::Segment(tip, KDL::Joint(KDL::Joint::None))); // Don't forget to add the actual tip segment to the chain
 
-    base::samples::RigidBodyStateSE3 cs;
-    cs.frame_id = hook;
-    cs.pose = initial_pose;
-    cs.twist.setZero();
-    cs.time = base::Time::now();
-    updateVirtual6DoFJoint(cs, tip);
-    robot_models_state.names.push_back(tip);
-    robot_models_state.elements.push_back(cs);
+    base::samples::RigidBodyStateSE3 rbs;
+    rbs.pose = initial_pose;
+    // Set Twist and spatial acceleration to zero initially
+    rbs.twist.setZero();
+    rbs.acceleration.setZero();
+    rbs.frame_id = hook;
+    toJointState(rbs, tip, current_joint_state);
 
     if(!full_tree.addChain(chain, hook)){
         LOG_ERROR("Unable to attach chain to tree segment %s", hook.c_str());
         return false;
     }
 
-    LOG_INFO_S<<"Added virtual 6 DoF joint tip to hook "<<hook<<std::endl;
-    LOG_INFO_S<<"Virtual joints are now: "<<std::endl;
-    for(auto n : virtual_joint_state.names)
-        LOG_INFO_S<<n<<std::endl;
+    LOG_INFO_S<<"Added virtual 6 DoF joint with tip "<<tip<<" to hook "<<hook<<std::endl;
 
     return true;
 }
 
-void KinematicRobotModelKDL::updateVirtual6DoFJoint(const base::RigidBodyStateSE3& state, const std::string &tip_frame){
-
+void KinematicRobotModelKDL::toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state){
     base::JointState js;
-    base::Vector3d euler = base::getEuler(state.pose.orientation);
-    for(int i = 0; i < 3; i++){
-        std::string name = tip_frame + virtual_joint_names[i];
-        js.position = state.pose.position(i);
-        js.speed = state.twist.linear(i);
-        virtual_joint_state[virtual_joint_state.mapNameToIndex(name)] = js;
+    base::Pose tmp_a, tmp_b;
+    tmp_a.position.setZero();
+    tmp_a.orientation = rbs.pose.orientation;
+    tmp_b.position.setZero();
+    tmp_b.orientation.setIdentity();
+    base::Vector3d euler = rbs.pose.toTransform().rotation().eulerAngles(0,1,2); // TODO: Use Rotation Vector instead?
+    for(int j = 0; j < 3; j++){
+        js.position = rbs.pose.position(j);
+        js.speed = rbs.twist.linear(j);
+        js.acceleration = rbs.acceleration.linear(j);
+        joint_state[name + virtual_joint_names[j]] = js;
 
-        name = tip_frame + virtual_joint_names[i+3];
-        js.position = euler(i);
-        js.speed = state.twist.angular(i);
-        virtual_joint_state[virtual_joint_state.mapNameToIndex(name)] = js;
-    }    
+        js.position = euler(j);
+        js.speed = rbs.twist.angular(j);
+        js.acceleration = rbs.acceleration.angular(j);
+        joint_state[name + virtual_joint_names[j+3]] = js;
+    }
 }
 
 void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
                                     const base::NamedVector<base::samples::RigidBodyStateSE3>& virtual_joint_states){
 
-    current_joint_state = joint_state;
+
+    // Update actuated joints
+    for(size_t i = 0; i < joint_state.size(); i++){
+        uint idx = current_joint_state.mapNameToIndex(joint_state.names[i]);
+        current_joint_state[idx] = joint_state[i];
+    }
+    current_joint_state.time = joint_state.time;
+
 
     // Update virtual joints
     for(size_t i = 0; i < virtual_joint_states.size(); i++){
+        toJointState(virtual_joint_states[i], virtual_joint_states.names[i], current_joint_state);
 
-        std::string name = virtual_joint_states.names[i];
-        base::samples::RigidBodyStateSE3 elem = virtual_joint_states[i];
-
-        if(!hasFrame(name)){
-            LOG_ERROR("Trying to update virtual tree element '%s', which is not part of the robot model", name.c_str());
-            throw std::runtime_error("Invalid Cartesian state");
-        }
-
-        robot_models_state[name] = elem;
-        updateVirtual6DoFJoint(elem, name);
-        if(elem.time > current_joint_state.time)
-            current_joint_state.time = elem.time;
+        if(virtual_joint_states[i].time > current_joint_state.time) // Use the latest time stamp of incoming data
+            current_joint_state.time = virtual_joint_states[i].time;
     }
-
-    // Push current virtual joint state into overall joint states
-    for(const auto& n : virtual_joint_state.names)
-        current_joint_state.names.push_back(n);
-    for(const auto& e : virtual_joint_state.elements)
-        current_joint_state.elements.push_back(e);
 
     // update all kinematic chains
     for(const auto& it : kdl_chain_map)
         it.second->update(current_joint_state);
+
+    // Update KDL data types
+    for(const auto &it : full_tree.getSegments()){
+        const KDL::Joint& jnt = it.second.segment.getJoint();
+        if(jnt.getType() != KDL::Joint::None){
+            uint idx = GetTreeElementQNr(it.second);
+            const std::string& name = jnt.getName();
+            q(idx)       = current_joint_state[name].position;
+            qdot(idx)    = current_joint_state[name].speed;
+            qdotdot(idx) = current_joint_state[name].acceleration;
+        }
+    }
+
+    computeJointSpaceInertiaMatrix();
+    computeBiasForces();
 }
 
 const base::samples::RigidBodyStateSE3 &KinematicRobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
@@ -351,6 +353,45 @@ const base::MatrixXd &KinematicRobotModelKDL::jacobianDot(const std::string &roo
     return jac_dot_map[chain_id];
 }
 
+void KinematicRobotModelKDL::computeBiasForces(){
+    // Use ID solver with zero joint accelerations and zero external wrenches to get bias forces/torques
+    KDL::TreeIdSolver_RNE solver(full_tree, KDL::Vector(gravity(0), gravity(1), gravity(2)));
+    solver.CartToJnt(q, qdot, zero, std::map<std::string,KDL::Wrench>(), tau);
+
+    for(const auto &it : full_tree.getSegments()){
+        const KDL::Joint& jnt = it.second.segment.getJoint();
+        if(jnt.getType() != KDL::Joint::None){
+            const std::string& name = jnt.getName();
+            uint idx = GetTreeElementQNr(it.second);
+            bias_forces[current_joint_state.mapNameToIndex(name)] = tau(idx);
+        }
+    }
+}
+
+void KinematicRobotModelKDL::computeJointSpaceInertiaMatrix(){
+    joint_space_inertia_mat.setZero();
+
+    // Use ID solver with zero bias and external wrenches to compute joint space inertia matrix column by column.
+    // TODO: Switch to more efficient method!
+    KDL::TreeIdSolver_RNE solver(full_tree, KDL::Vector::Zero());
+    for(const auto &it : full_tree.getSegments()){
+        const KDL::Joint& jnt = it.second.segment.getJoint();
+        if(jnt.getType() != KDL::Joint::None){
+            const std::string& name = jnt.getName();
+            qdotdot.data.setZero();
+            qdotdot(GetTreeElementQNr(it.second)) = 1;
+            int ret = solver.CartToJnt(q, zero, qdotdot, std::map<std::string,KDL::Wrench>(), tau);
+            if(ret != 0)
+                throw(std::runtime_error("Unable to compute Tree Inverse Dynamics in joint space inertia matrix computation. Error Code is " + std::to_string(ret)));
+            uint idx_col = current_joint_state.mapNameToIndex(name);
+            for(int j = 0; j < noOfJoints(); j++){
+                uint idx_row = current_joint_state.mapNameToIndex(current_joint_state.names[j]);
+                joint_space_inertia_mat(idx_row, idx_col) = tau(idx_row);
+            }
+        }
+    }
+}
+
 bool KinematicRobotModelKDL::hasFrame(const std::string &name){
     return full_tree.getSegments().count(name) > 0;
 }
@@ -397,6 +438,16 @@ void KinematicRobotModelKDL::jointLimitsFromURDF(const std::string& urdf_file, b
                          <<" Min. Pos: "<<range.min.position<<" Max. Vel: "<<range.max.speed<<" Max. Effort: "<<range.max.effort<<std::endl;
             }
         }
+    }
+}
+
+void KinematicRobotModelKDL::printTree(const KDL::TreeElement& tree_element, int level){
+    level+=1;
+    for(auto c : tree_element.children){
+        for(int j=0;j<level;j++) std::cout << " "; //indent
+        KDL::Segment seg = c->second.segment;
+        std::cout<<"Link: "<<seg.getName()<<" Parent: "<<c->second.parent->second.segment.getName()<<std::endl;
+        printTree(c->second, level);
     }
 }
 

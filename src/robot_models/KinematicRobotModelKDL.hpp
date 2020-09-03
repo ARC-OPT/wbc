@@ -7,6 +7,7 @@
 #include <kdl/jacobian.hpp>
 #include <base/samples/Joints.hpp>
 #include <memory>
+#include <kdl/jntarray.hpp>
 
 namespace wbc{
 
@@ -21,18 +22,22 @@ class KinematicRobotModelKDL : public RobotModel{
     typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
     typedef std::map<std::string, base::MatrixXd > JacobianMap;
-    const std::string virtual_joint_names[6] = {"_x", "_y", "_z", "_rot_x", "_rot_y", "_rot_z"};
+    const std::string floating_base_urdf = "<robot name='world'><link name='world'/></robot>";
+    // Helper variables
+    KDL::JntArray q,qdot,qdotdot,tau,zero;
 
 protected:
-    KDL::Tree full_tree;                        /** Overall kinematic tree*/
-    base::samples::Joints current_joint_state;  /** Last joint state that was passed through the call of update()*/
-    base::samples::Joints virtual_joint_state;  /** Last virtual joint state */
-    KinematicChainKDLMap kdl_chain_map;         /** Map of KDL Chains*/
-    JacobianMap jac_map;                        /** Map of jacobians for all kinematic chains*/
-    JacobianMap jac_dot_map;                    /** Map of jacobian derivatives for all kinematic chains*/
-    JacobianMap full_jac_map;                   /** Map of full body jacobians for all kinematic chains*/
-    JacobianMap full_jac_dot_map;               /** Map of full body jacobian derivatives for all kinematic chains*/
-    base::samples::Joints joint_state_out;      /** Helper variable*/
+    KDL::Tree full_tree;                          /** Overall kinematic tree*/
+    JacobianMap jac_map;                          /** Map of jacobians for all kinematic chains*/
+    JacobianMap jac_dot_map;                      /** Map of jacobian derivatives for all kinematic chains*/
+    JacobianMap full_jac_map;                     /** Map of full body jacobians for all kinematic chains*/
+    JacobianMap full_jac_dot_map;                 /** Map of full body jacobian derivatives for all kinematic chains*/
+    base::samples::Joints joint_state_out;        /** Helper variable*/
+    std::map<std::string,int> joint_idx_map_kdl;
+
+    const std::string virtual_joint_names[6] = {"_trans_x", "_trans_y", "_trans_z", "_rot_x", "_rot_y", "_rot_z"};
+    const KDL::Joint::JointType virtual_joint_types[6] = {KDL::Joint::TransX, KDL::Joint::TransY, KDL::Joint::TransZ,
+                                                          KDL::Joint::RotX, KDL::Joint::RotY, KDL::Joint::RotZ};
 
     /**
      * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree
@@ -46,7 +51,7 @@ protected:
      *  of the trees can be updated online by calling update() with poses parameter appropriately set. This will also create the
      *  joint index map*/
 
-    bool addTree(const KDL::Tree& tree, const std::string& hook = "", const base::Pose &pose = base::Pose());
+    bool addModel(const RobotModelConfig& model_config);
     /** Free storage and clear data structures*/
     void clear();
 
@@ -54,15 +59,14 @@ protected:
     const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
     bool addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose);
-
-    /** Update the position and orientation of a tree that is attached to the initial robot (see configure for details). */
-    void updateVirtual6DoFJoint(const base::RigidBodyStateSE3& state, const std::string &tip_frame);
-
     void jointLimitsFromURDF(const std::string& urdf_file, base::JointLimits& limits);
+    void toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state);
+    void printTree(const KDL::TreeElement &tree, int level = 0);
 
 public:
     KinematicRobotModelKDL();
     virtual ~KinematicRobotModelKDL();
+    KinematicChainKDLMap kdl_chain_map;           /** Map of KDL Chains*/
 
     /**
      * @brief Load and configure the robot model with single model file
@@ -73,7 +77,7 @@ public:
      */
     virtual bool configure(const std::string& model_filename,
                            const std::vector<std::string> &joint_names = std::vector<std::string>(),
-                           const std::string &base_frame = "");
+                           bool floating_base = false);
 
     /**
      * @brief Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree.
@@ -82,13 +86,11 @@ public:
      *  of the trees can be updated online by calling update() with poses parameter appropriately set.
      * @param model_config The models configuration(s). These include the path to the URDF model file(s), the relative poses and hooks
      *  to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
-     * @param joint_names Order of joint names within the model. If left empty, the order will be the same as in the KDL tree (alphabetical)
      * @param base_frame Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model.
      * @return True in case of success, else false
      */
     virtual bool configure(const std::vector<RobotModelConfig>& model_config,
-                           const std::vector<std::string> &joint_names = std::vector<std::string>(),
-                           const std::string &base_frame = "");
+                           bool floating_base = false);
 
     /**
      * @brief Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
@@ -145,6 +147,12 @@ public:
       * @return A 6xN Jacobian derivative matrix, where N is the number of robot joints
       */
     virtual const base::MatrixXd &jacobianDot(const std::string &root_frame, const std::string &tip_frame);
+
+    /** @brief Compute and return the joint space inertia matrix for the full robot*/
+    void computeJointSpaceInertiaMatrix();
+
+    /** @brief Compute and return the bias torques/forces (gravity, Coriolis) for the full model*/
+    void computeBiasForces();
 
     /** Check if a frame is available in the model*/
     bool hasFrame(const std::string &name);

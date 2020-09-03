@@ -19,11 +19,13 @@ class RobotModel{
 
 protected:
     std::vector<std::string> actuated_joint_names;
-    std::vector<std::string> all_joint_names;
-    base::NamedVector<base::samples::RigidBodyStateSE3> robot_models_state;
     std::string base_frame;
     base::Time last_update;
     base::JointLimits joint_limits;
+    base::samples::Joints current_joint_state;
+    base::Vector3d gravity;
+    base::MatrixXd joint_space_inertia_mat;
+    base::VectorXd bias_forces;
 
 public:
     RobotModel();
@@ -38,19 +40,17 @@ public:
      */
     virtual bool configure(const std::string& model_filename,
                            const std::vector<std::string> &joint_names = std::vector<std::string>(),
-                           const std::string &base_frame = "") = 0;
+                           bool floating_base = false) = 0;
 
     /**
      * @brief Load and configure the robot model
      * @param model_config The models configuration(s). These include the path to the robot model file(s), the relative poses and hooks
      *                     to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
-     * @param joint_names Order of joint names within the model.
      * @param base_frame Base frame of the model.
      * @return True in case of success, else false
      */
     virtual bool configure(const std::vector<RobotModelConfig>& model_config,
-                           const std::vector<std::string> &joint_names = std::vector<std::string>(),
-                           const std::string &base_frame = "") = 0;
+                           bool floating_base = false) = 0;
 
     /**
      * @brief Update the robot model
@@ -91,14 +91,20 @@ public:
       */
     virtual const base::MatrixXd &fullJacobianDot(const std::string &root_frame, const std::string &tip_frame) = 0;
 
+    /** @brief Return the joint space inertia matrix for the full robot*/
+    const base::MatrixXd& jointSpaceInertiaMatrix(){return joint_space_inertia_mat;}
+
+    /** @brief Return the bias torques (gravity, Coriolis) for the full model*/
+    const base::VectorXd& biasForces(){return bias_forces;}
+
     /** Return the number of actuated joints in the robot model*/
     uint noOfActuatedJoints(){return actuated_joint_names.size();}
 
     /** Return the overall number of joints in the robot model*/
-    uint noOfJoints(){return all_joint_names.size();}
+    uint noOfJoints(){return current_joint_state.size();}
 
     /** Return all joint names*/
-    const std::vector<std::string>& jointNames(){return all_joint_names;}
+    const std::vector<std::string>& jointNames(){return current_joint_state.names;}
 
     /** Return only actuated joint names*/
     const std::vector<std::string>& actuatedJointNames(){return actuated_joint_names;}
@@ -112,11 +118,14 @@ public:
     /** Get time timestamp of the update */
     base::Time lastUpdate(){return last_update;}
 
-    /** Get the names of all robot models*/
-    const base::NamedVector<base::samples::RigidBodyStateSE3>& robotModelsState(){return robot_models_state;}
-
     /** Return current joint limits*/
     const base::JointLimits& jointLimits(){return joint_limits;}
+
+    /** Set the current gravity vector*/
+    void setGravityVector(const base::Vector3d& g){gravity = g;}
+
+    /** Set the current gravity vector*/
+    const base::Vector3d& getGravityVector(){return gravity;}
 
 };
 
