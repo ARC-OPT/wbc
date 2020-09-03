@@ -23,12 +23,11 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     if(hierarchical_qp.size() != 1)
         throw std::runtime_error("QPOASESSolver::solve: Constraints vector size must be 1 for the current implementation");
 
-    const wbc::QuadraticProgram qp = hierarchical_qp[0];
+    const wbc::QuadraticProgram &qp = hierarchical_qp[0];
 
     if(!configured){
         sq_problem = SQProblem(qp.A.cols(), qp.A.rows());
         sq_problem.setOptions(options);
-        no_of_joints = qp.A.cols();
         configured = true;
     }
 
@@ -37,7 +36,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     A = qp.A;
     H = qp.H;
 
-     // Joint space upper and lower bounds
+    // Joint space upper and lower bounds
     real_t *lb_ptr = 0;
     real_t *ub_ptr = 0;
     if(qp.lower_x.size() > 0){
@@ -76,7 +75,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
                                  "but has size " +  std::to_string(A.rows()) + "x" + std::to_string(A.cols()));
     real_t *A_ptr = A.data();
 
-    // Hessian matrix
+    // Hessian matrix:
     if(H.rows() != qp.nq || H.cols() != qp.nq)
         throw std::runtime_error("Hessian matrix H should have size " + std::to_string(qp.nq) + "x" + std::to_string(qp.nq) +
                                  "but has size " +  std::to_string(H.rows()) + "x" + std::to_string(H.cols()));
@@ -102,7 +101,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
             throw std::runtime_error("SQ Problem hotstart failed with error " + std::to_string(ret_val));
     }
 
-    solver_output.resize(no_of_joints);
+    solver_output.resize(hierarchical_qp.nJoints());
     if(sq_problem.getPrimalSolution( solver_output.data() ) == RET_QP_NOT_SOLVED)
         throw std::runtime_error("SQ Problem getPrimalSolution() returned " + std::to_string(RET_QP_NOT_SOLVED));
 }

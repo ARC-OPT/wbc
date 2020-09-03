@@ -44,7 +44,6 @@ protected:
     bool configured;
     int n_wsr, actual_n_wsr;
     qpOASES::returnValue ret_val;
-    uint no_of_joints;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A;
 };
