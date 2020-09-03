@@ -13,6 +13,7 @@ typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraint
 class WbcAccelerationScene : public WbcScene{
 protected:
     base::VectorXd q_dot;
+    base::VectorXd solver_output_acc, robot_acc, robot_vel;
 
     /**
      * brief Create a constraint and add it to the WBC scene

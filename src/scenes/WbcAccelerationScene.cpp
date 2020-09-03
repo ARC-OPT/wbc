@@ -43,13 +43,13 @@ void WbcAccelerationScene::update(){
                 CartesianAccelerationConstraintPtr constraint = std::static_pointer_cast<CartesianAccelerationConstraint>(constraints[prio][i]);
 
                 // Constraint Jacobian
-                constraint->A = robot_model->jacobian(constraint->config.root, constraint->config.tip);
+                constraint->A = robot_model->fullJacobian(constraint->config.root, constraint->config.tip);
 
                 // Constraint reference
                 base::samples::Joints joint_state = robot_model->jointState(robot_model->jointNames());
-                q_dot.resize(joint_state.size());
-                for(size_t i = 0; i < joint_state.size(); i++)
-                    q_dot(i) = joint_state[i].speed;
+                q_dot.resize(robot_model->noOfJoints());
+                for(size_t j = 0; j < joint_state.size(); j++)
+                    q_dot(j) = joint_state[j].speed;
                 constraint->y_ref = constraint->y_ref - robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * q_dot;
 
                 // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
@@ -99,13 +99,62 @@ void WbcAccelerationScene::update(){
             constraints_prio[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
             constraints_prio[prio].lower_y.segment(row_index, n_vars) = constraint->y_ref_root;
             constraints_prio[prio].upper_y.segment(row_index, n_vars) = constraint->y_ref_root;
-            constraints_prio[prio].lower_x.resize(0);
-            constraints_prio[prio].upper_x.resize(0);
-            constraints_prio[prio].H.setIdentity(robot_model->noOfJoints(), robot_model->noOfJoints());
-            constraints_prio[prio].g.setZero();
+
 
             row_index += n_vars;
         }
+        int nj = robot_model->noOfJoints();
+        base::MatrixXd A = constraints_prio[prio].A;
+        base::VectorXd y = constraints_prio[prio].lower_y;
+
+        //constraints_prio[prio].resize(nj, nj);
+
+        // Cost Function: x^T*H*x + x^T*g
+        constraints_prio[prio].H.setIdentity();
+        constraints_prio[prio].H.block(0,0,nj,nj) = A.transpose()*A;
+        constraints_prio[prio].g.setZero();
+        constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
+
+        // Lower and upper Constraints bounds
+        constraints_prio[prio].A.block(0,0,nj,nj).setIdentity();// = robot_model->jointSpaceInertiaMatrix();
+        //constraints_prio[prio].A.block(0,nj,nj,nj).setIdentity();
+        //constraints_prio[prio].A.block(0,nj,nj,nj);// *= -1;
+        constraints_prio[prio].lower_y.resize(0);// = -robot_model->biasForces();
+        constraints_prio[prio].upper_y.resize(0);// = -robot_model->biasForces();
+        // Lower and upper bounds
+        constraints_prio[prio].lower_x.setConstant(-1000);
+        constraints_prio[prio].upper_x.setConstant(1000);
+
+
+        /*for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
+            const std::string &name = robot_model->actuatedJointNames()[i];
+            try{
+                constraints_prio[prio].lower_x[robot_model->jointIndex(name)] = robot_model->jointLimits().getElementByName(name).min.effort;
+                constraints_prio[prio].upper_x[robot_model->jointIndex(name)] = robot_model->jointLimits().getElementByName(name).max.effort;
+            }
+            catch(base::JointLimits::InvalidName e){
+                LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint limits vector"<<std::endl;
+                throw e;
+            }
+        }
+        constraints_prio[prio].lower_x = robot_model->jointSpaceInertiaMatrix().inverse() * (constraints_prio[prio].lower_x - robot_model->biasForces());
+        constraints_prio[prio].upper_x = robot_model->jointSpaceInertiaMatrix().inverse() * (constraints_prio[prio].upper_x - robot_model->biasForces());*/
+
+
+        /*std::cout<<"H"<<std::endl;
+        std::cout<<constraints_prio[prio].H<<std::endl;
+        std::cout<<"g"<<std::endl;
+        std::cout<<constraints_prio[prio].g.transpose()<<std::endl;
+        std::cout<<"A"<<std::endl;
+        std::cout<<constraints_prio[prio].A<<std::endl;
+        std::cout<<"lower_y"<<std::endl;
+        std::cout<<constraints_prio[prio].lower_y.transpose()<<std::endl;
+        std::cout<<"upper_y"<<std::endl;
+        std::cout<<constraints_prio[prio].upper_y.transpose()<<std::endl;
+        std::cout<<"lower_x"<<std::endl;
+        std::cout<<constraints_prio[prio].lower_x.transpose()<<std::endl;
+        std::cout<<"upper_x"<<std::endl;
+        std::cout<<constraints_prio[prio].upper_x.transpose()<<std::endl;*/
     }
 
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
@@ -113,6 +162,43 @@ void WbcAccelerationScene::update(){
 
 const ConstraintsStatus &WbcAccelerationScene::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
 
+    if(solver_output.size() != robot_model->noOfActuatedJoints())
+        throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())
+                                 + " but number of robot joints is " + std::to_string(robot_model->noOfActuatedJoints()));
+
+    solver_output_acc.resize(robot_model->noOfJoints());
+    solver_output_acc.setZero();
+    for(size_t i = 0; i < solver_output.size(); i++){
+        uint idx = robot_model->jointIndex(solver_output.names[i]);
+        solver_output_acc(idx) = solver_output[i].acceleration;
+    }
+    const std::vector<std::string> &joint_names = robot_model->jointNames();
+    robot_acc.resize(robot_model->noOfJoints());
+    robot_vel.resize(robot_model->noOfJoints());
+    for(size_t i = 0; i < joint_names.size(); i++){
+        robot_acc(i) = joint_state[joint_names[i]].acceleration;
+        robot_vel(i) = joint_state[joint_names[i]].speed;
+    }
+
+    for(uint prio = 0; prio < constraints.size(); prio++){
+        for(uint i = 0; i < constraints[prio].size(); i++){
+            ConstraintPtr constraint = constraints[prio][i];
+            const std::string &name = constraint->config.name;
+
+            constraints_status[name].time       = constraint->time;
+            constraints_status[name].config     = constraint->config;
+            constraints_status[name].activation = constraint->activation;
+            constraints_status[name].timeout    = constraint->timeout;
+            constraints_status[name].weights    = constraint->weights;
+            constraints_status[name].y_ref      = constraint->y_ref;
+            constraints_status[name].y_solution = robot_model->fullJacobian(constraint->config.root, constraint->config.tip) * solver_output_acc +
+                                                  robot_model->fullJacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
+            constraints_status[name].y          = robot_model->fullJacobian(constraint->config.root, constraint->config.tip) * robot_acc +
+                                                  robot_model->fullJacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
+        }
+    }
+
+    return constraints_status;
 }
 
 } // namespace wbc
