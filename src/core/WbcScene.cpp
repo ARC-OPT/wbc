@@ -43,6 +43,11 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
         }
     }
 
+    constraints_prio.resize(constraints.size());
+    for(uint prio = 0; prio < constraints.size(); prio++)
+        constraints_prio[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
+    constraints_prio.joint_names = robot_model->jointNames();
+    constraints_prio.actuated_joint_names = robot_model->actuatedJointNames();
 
     configured = true;
 

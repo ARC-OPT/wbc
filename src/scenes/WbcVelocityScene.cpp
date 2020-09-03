@@ -21,7 +21,6 @@ void WbcVelocityScene::update(){
     if(!configured)
         throw std::runtime_error("WbcVelocityScene has not been configured!. PLease call configure() before calling update() for the first time!");
 
-    constraints_prio.resize(constraints.size());
     base::samples::RigidBodyStateSE3 ref_frame;
 
     // Create equation system
@@ -30,8 +29,6 @@ void WbcVelocityScene::update(){
     //    y - Vector of constraint velocities. One vector for each priority
     //    W - Vector of constraint weights. One vector for each priority
     for(uint prio = 0; prio < constraints.size(); prio++){
-
-        constraints_prio[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
 
         // Walk through all tasks of current priority
         uint row_index = 0;
