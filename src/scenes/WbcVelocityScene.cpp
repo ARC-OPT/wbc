@@ -102,6 +102,8 @@ void WbcVelocityScene::update(){
 
         } // constraints on prio
     } // priorities
+
+    constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
 }
 
 const ConstraintsStatus& WbcVelocityScene::updateConstraintsStatus(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){

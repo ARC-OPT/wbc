@@ -107,6 +107,8 @@ void WbcAccelerationScene::update(){
             row_index += n_vars;
         }
     }
+
+    constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
 }
 
 const ConstraintsStatus &WbcAccelerationScene::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
