@@ -5,9 +5,12 @@
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
+#include <rbdl/addons/urdfreader/urdfreader.h>
+#include <rbdl/rbdl.h>
 
 using namespace std;
 using namespace wbc;
+using namespace RigidBodyDynamics;
 
 BOOST_AUTO_TEST_CASE(cartesian_state){
 
@@ -199,10 +202,11 @@ BOOST_AUTO_TEST_CASE(multi_robot){
     KinematicRobotModelKDL robot_model;
     vector<RobotModelConfig> config(2);
     config[0].file = "../../../test/data/kuka_lbr.urdf";
+    config[0].joint_names = joint_state.names;
     config[1].file = "../../../test/data/object.urdf";
     config[1].hook = "kuka_lbr_top_left_camera";
     config[1].initial_pose = initial_object_pose;
-    BOOST_CHECK_EQUAL(robot_model.configure(config, joint_state.names, "kuka_lbr_base"), true);
+    BOOST_CHECK_EQUAL(robot_model.configure(config), true);
     BOOST_CHECK_EQUAL(robot_model.noOfActuatedJoints(), actuated_joint_names.size());
     BOOST_CHECK_EQUAL(robot_model.noOfJoints(), all_joint_names.size());
     for(int i = 0; i < robot_model.noOfActuatedJoints(); i++)
@@ -275,3 +279,78 @@ BOOST_AUTO_TEST_CASE(multi_robot){
             BOOST_CHECK_EQUAL(jac(i,j), jac_kdl.data(i,j));
 }
 
+
+BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
+    for(int n = 0; n < 100; n++){
+        std::string urdf_filename = string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_iiwa.urdf";
+        const int NO_JOINTS = 7;
+        double joint_positions[NO_JOINTS];
+        for(int i = 0; i < NO_JOINTS; i++)
+            joint_positions[i] = double(rand())/RAND_MAX;
+        Model model;
+        BOOST_CHECK(Addons::URDFReadFromFile(urdf_filename.c_str(), &model, false) == true);
+
+        Eigen::VectorXd q(model.dof_count), qdot(model.dof_count);
+        for(int i = 0; i < NO_JOINTS; i++)
+            q(i) = joint_positions[i];
+        qdot.setZero();
+        Eigen::MatrixXd H;
+        H.resize(model.dof_count,model.dof_count);
+        H.setZero();
+        base::Time start=base::Time::now();
+        CompositeRigidBodyAlgorithm(model, q, H);
+        base::Time end=base::Time::now();
+        cout<<"RBDL Joint Space Inertia Matrix: "<<endl;
+        cout<<H<<endl;
+        cout<<"Computation Time: "<<(end-start).toSeconds()*1000<<"ms"<<endl;
+
+        Eigen::VectorXd C;
+        C.resize(model.dof_count);
+        start=base::Time::now();
+        NonlinearEffects(model, q, qdot, C);
+        end=base::Time::now();
+        cout<<"RBDL Bias torques: ";
+        cout<<C.transpose()<<endl;
+        cout<<"Computation Time: "<<(end-start).toSeconds()*1000<<"ms"<<endl;
+
+        wbc::KinematicRobotModelKDL robot_model;
+        std::vector<std::string> joint_names;
+        for(int i = 0; i < 7; i++)
+            joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
+
+        if(!robot_model.configure(urdf_filename, joint_names)){
+            cerr << "Error loading robot model from urdf" << endl;
+            abort();
+        }
+
+        cout<<"WBC Joint Space Inertia Matrix: "<<endl;
+        base::samples::Joints joint_state;
+        for(int i = 0; i < NO_JOINTS; i++){
+            joint_state.names.push_back(joint_names[i]);
+            base::JointState js;
+            js.position = joint_positions[i];
+            js.speed = 0;
+            joint_state.elements.push_back(js);
+        }
+        robot_model.update(joint_state);
+        start=base::Time::now();
+        robot_model.computeJointSpaceInertiaMatrix();
+        end=base::Time::now();
+        cout<<robot_model.jointSpaceInertiaMatrix()<<endl;
+        cout<<"Computation Time: "<<(end-start).toSeconds()*1000<<"ms"<<endl;
+
+        cout<<"WBC bias torques: ";
+        start=base::Time::now();
+        robot_model.computeBiasForces();
+        end=base::Time::now();
+        cout<<robot_model.biasForces().transpose()<<endl;
+        cout<<"Computation Time: "<<(end-start).toSeconds()*1000<<"ms"<<endl;
+
+        for(int i = 0; i < NO_JOINTS; i++){
+            BOOST_CHECK(fabs(robot_model.biasForces()[i] - C[i])  < 1e-9);
+            for(int j = 0; j < NO_JOINTS; j++){
+                BOOST_CHECK(fabs(robot_model.jointSpaceInertiaMatrix()(i,j) - H(i,j)) < 1e-9);
+            }
+        }
+    }
+}

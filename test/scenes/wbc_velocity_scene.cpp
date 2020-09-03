@@ -31,7 +31,8 @@ BOOST_AUTO_TEST_CASE(test_configure){
     shared_ptr<KinematicRobotModelKDL> robot_model = make_shared<KinematicRobotModelKDL>();
     vector<RobotModelConfig> config(1);
     config[0].file = std::string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_lbr.urdf";
-    BOOST_CHECK_EQUAL(robot_model->configure(config, joint_names, "kuka_lbr_base"), true);
+    config[0].joint_names = joint_names;
+    BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     // Configure WBC Scene
     WbcVelocityScene wbc_scene(robot_model);
