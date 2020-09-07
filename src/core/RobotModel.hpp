@@ -26,6 +26,7 @@ protected:
     base::Vector3d gravity;
     base::MatrixXd joint_space_inertia_mat;
     base::VectorXd bias_forces;
+    base::MatrixXd actuation_matrix;
 
 public:
     RobotModel();
@@ -124,9 +125,11 @@ public:
     /** Set the current gravity vector*/
     void setGravityVector(const base::Vector3d& g){gravity = g;}
 
-    /** Set the current gravity vector*/
+    /** Return the current gravity vector*/
     const base::Vector3d& getGravityVector(){return gravity;}
 
+    /** Return current actuation matrix*/
+    const base::MatrixXd& getActuationMatrix(){return actuation_matrix;}
 };
 
 typedef std::shared_ptr<RobotModel> RobotModelPtr;

@@ -73,6 +73,11 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
             joint_idx_map_kdl[jnt.getName()] = GetTreeElementQNr(it.second);
     }
 
+    actuation_matrix.resize(noOfJoints(),noOfJoints());
+    actuation_matrix.setZero();
+    for(auto n : actuated_joint_names)
+        actuation_matrix(jointIndex(n), jointIndex(n)) = 1.0;
+
     LOG_INFO_S<<"Actuated Joint Names: "<<std::endl;
     for(auto n : actuatedJointNames())
         LOG_INFO_S << n;
