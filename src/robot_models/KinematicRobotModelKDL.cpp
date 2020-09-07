@@ -163,7 +163,10 @@ bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const 
     KDL::Chain chain;
     for(int i = 0; i < 6; i++){
         std::string joint_name = tip + virtual_joint_names[i];
-        KDL::Segment segment = KDL::Segment("link_" + joint_name, KDL::Joint(joint_name, virtual_joint_types[i]),KDL::Frame::Identity());
+        KDL::Segment segment = KDL::Segment("link_" + joint_name,
+                                            KDL::Joint(joint_name, virtual_joint_types[i]),
+                                            KDL::Frame::Identity(),
+                                            KDL::RigidBodyInertia(0.0,KDL::Vector::Zero(),KDL::RotationalInertia(0,0,0)));
         chain.addSegment(segment);
         current_joint_state.names.push_back(joint_name);
         current_joint_state.elements.push_back(base::JointState());
