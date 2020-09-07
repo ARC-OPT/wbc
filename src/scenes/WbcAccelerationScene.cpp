@@ -30,6 +30,8 @@ void WbcAccelerationScene::update(){
     //    W - Vector of constraint weights. One vector for each priority
     for(uint prio = 0; prio < constraints.size(); prio++){
 
+        constraints_prio[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
+
         // Walk through all tasks of current priority
         uint row_index = 0;
         for(uint i = 0; i < constraints[prio].size(); i++){
@@ -50,7 +52,7 @@ void WbcAccelerationScene::update(){
                 q_dot.resize(robot_model->noOfJoints());
                 for(size_t j = 0; j < joint_state.size(); j++)
                     q_dot(j) = joint_state[j].speed;
-                constraint->y_ref = constraint->y_ref - robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * q_dot;
+                constraint->y_ref = constraint->y_ref - robot_model->fullJacobianDot(constraint->config.root, constraint->config.tip) * q_dot;
 
                 // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
                 // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
@@ -107,20 +109,38 @@ void WbcAccelerationScene::update(){
         base::MatrixXd A = constraints_prio[prio].A;
         base::VectorXd y = constraints_prio[prio].lower_y;
 
-        //constraints_prio[prio].resize(nj, nj);
+        /** Variable order: (qdd, f, tau)*/
+        //constraints_prio[prio].resize(nj+12, 2*nj + 12);
+        constraints_prio[prio].resize(nj, 2*nj);
 
-        // Cost Function: x^T*H*x + x^T*g
-        constraints_prio[prio].H.setIdentity();
+        // Cost Function: x^T*H*x + x^T*
+        constraints_prio[prio].H.setZero();
         constraints_prio[prio].H.block(0,0,nj,nj) = A.transpose()*A;
         constraints_prio[prio].g.setZero();
         constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
 
-        // Lower and upper Constraints bounds
-        constraints_prio[prio].A.block(0,0,nj,nj).setIdentity();// = robot_model->jointSpaceInertiaMatrix();
-        //constraints_prio[prio].A.block(0,nj,nj,nj).setIdentity();
-        //constraints_prio[prio].A.block(0,nj,nj,nj);// *= -1;
-        constraints_prio[prio].lower_y.resize(0);// = -robot_model->biasForces();
-        constraints_prio[prio].upper_y.resize(0);// = -robot_model->biasForces();
+        // Constraints: [[J_L   0   0 ]   [qdd]      [-Jd_L*qd]
+        //               [J_R   0   0 ] * [f  ]  =   [-Jd_R*qd]
+        //               [M -J^T -S^T]]   [tau]      [-h]
+        constraints_prio[prio].A.setZero();
+        // First row: Contact point left does not move
+        /*constraints_prio[prio].A.block(0,0,6,nj)    = robot_model->fullJacobian("world", "FL_SupportCenter");
+        constraints_prio[prio].lower_y.segment(0,6) = constraints_prio[prio].upper_y.segment(0,6) = -robot_model->fullJacobianDot("world", "FL_SupportCenter") * q_dot;
+        // Second row: Contact point right does not move
+        constraints_prio[prio].A.block(6,0,6,nj)    = robot_model->fullJacobian("world", "FR_SupportCenter");
+        constraints_prio[prio].lower_y.segment(6,6) = constraints_prio[prio].upper_y.segment(6,6) = -robot_model->fullJacobianDot("world", "FR_SupportCenter") * q_dot;
+        // Third row: Rigid Body Dynamics
+        constraints_prio[prio].A.block(12,  0,    nj, nj) =  robot_model->jointSpaceInertiaMatrix();
+        constraints_prio[prio].A.block(12, nj,    nj,  6) = -robot_model->fullJacobian("world", "FL_SupportCenter").transpose();
+        constraints_prio[prio].A.block(12, nj+6,  nj,  6) = -robot_model->fullJacobian("world", "FR_SupportCenter").transpose();
+        constraints_prio[prio].A.block(12, nj+12, nj, nj) = -robot_model->getActuationMatrix();
+        constraints_prio[prio].lower_y.segment(12,nj) = constraints_prio[prio].upper_y.segment(12,nj) = -robot_model->biasForces();*/
+
+        constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
+        constraints_prio[prio].A.block(0, nj, nj, nj) = -robot_model->getActuationMatrix();
+        constraints_prio[prio].lower_y = constraints_prio[prio].upper_y = -robot_model->biasForces();
+
+
         // Lower and upper bounds
         constraints_prio[prio].lower_x.setConstant(-1000);
         constraints_prio[prio].upper_x.setConstant(1000);
@@ -129,19 +149,40 @@ void WbcAccelerationScene::update(){
         /*for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
             const std::string &name = robot_model->actuatedJointNames()[i];
             try{
-                constraints_prio[prio].lower_x[robot_model->jointIndex(name)] = robot_model->jointLimits().getElementByName(name).min.effort;
-                constraints_prio[prio].upper_x[robot_model->jointIndex(name)] = robot_model->jointLimits().getElementByName(name).max.effort;
+                constraints_prio[prio].lower_x[robot_model->jointIndex(name)+nj] = robot_model->jointLimits().getElementByName(name).min.effort;
+                constraints_prio[prio].upper_x[robot_model->jointIndex(name)+nj] = robot_model->jointLimits().getElementByName(name).max.effort;
             }
             catch(base::JointLimits::InvalidName e){
                 LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint limits vector"<<std::endl;
                 throw e;
             }
         }
-        constraints_prio[prio].lower_x = robot_model->jointSpaceInertiaMatrix().inverse() * (constraints_prio[prio].lower_x - robot_model->biasForces());
-        constraints_prio[prio].upper_x = robot_model->jointSpaceInertiaMatrix().inverse() * (constraints_prio[prio].upper_x - robot_model->biasForces());*/
+
+        for(int i = 0; i < 6; i++){
+            constraints_prio[prio].lower_x[i] = -1000;
+            constraints_prio[prio].upper_x[i] = 1000;
+            constraints_prio[prio].lower_x[i+nj] = -1000;
+            constraints_prio[prio].upper_x[i+nj] = 1000;
+
+        }*/
+
+        std::cout<<"Bias: "<<robot_model->biasForces().transpose()<<std::endl;
 
 
-        /*std::cout<<"H"<<std::endl;
+//        for(auto n : robot_model->jointNames())
+//            std::cout<<n<<std::endl;
+//        std::cout<<std::endl;
+
+//        std::cout<<"robot Pose: "<<std::endl;
+//        std::cout<<robot_model->rigidBodyState("world", "RH5_Root_Link").pose.position.transpose()<<std::endl;
+//        std::cout<<robot_model->rigidBodyState("world", "RH5_Root_Link").pose.orientation.coeffs().transpose()<<std::endl;
+
+//        std::cout<<"Jacobian Left Leg: "<<std::endl;
+//        std::cout<<robot_model->fullJacobian("world", "FL_SupportCenter")<<std::endl;
+//        std::cout<<"Jacobian Right Leg: "<<std::endl;
+//        std::cout<<robot_model->fullJacobian("world", "FR_SupportCenter")<<std::endl;
+
+        std::cout<<"H"<<std::endl;
         std::cout<<constraints_prio[prio].H<<std::endl;
         std::cout<<"g"<<std::endl;
         std::cout<<constraints_prio[prio].g.transpose()<<std::endl;
@@ -154,8 +195,9 @@ void WbcAccelerationScene::update(){
         std::cout<<"lower_x"<<std::endl;
         std::cout<<constraints_prio[prio].lower_x.transpose()<<std::endl;
         std::cout<<"upper_x"<<std::endl;
-        std::cout<<constraints_prio[prio].upper_x.transpose()<<std::endl;*/
+        std::cout<<constraints_prio[prio].upper_x.transpose()<<std::endl;
     }
+
 
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
 }
