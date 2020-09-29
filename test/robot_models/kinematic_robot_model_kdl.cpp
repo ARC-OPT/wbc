@@ -281,18 +281,18 @@ BOOST_AUTO_TEST_CASE(multi_robot){
 
 
 BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
-    for(int n = 0; n < 100; n++){
+    for(int n = 0; n < 1; n++){
         std::string urdf_filename = string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_iiwa.urdf";
-        const int NO_JOINTS = 7;
-        double joint_positions[NO_JOINTS];
-        for(int i = 0; i < NO_JOINTS; i++)
-            joint_positions[i] = double(rand())/RAND_MAX;
         Model model;
-        BOOST_CHECK(Addons::URDFReadFromFile(urdf_filename.c_str(), &model, false) == true);
-
+        BOOST_CHECK(Addons::URDFReadFromFile(urdf_filename.c_str(), &model, true) == true);
         Eigen::VectorXd q(model.dof_count), qdot(model.dof_count);
-        for(int i = 0; i < NO_JOINTS; i++)
-            q(i) = joint_positions[i];
+        for(int i = 0; i < model.dof_count; i++)
+            q(i) = 0;//double(rand())/RAND_MAX;
+        q(5) = 0.5;
+        std::cout<<"q"<<std::endl;
+        for(int i = 0; i < q.size(); i++)
+            std::cout<<q(i)<<std::endl;
+
         qdot.setZero();
         Eigen::MatrixXd H;
         H.resize(model.dof_count,model.dof_count);
@@ -318,21 +318,36 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         for(int i = 0; i < 7; i++)
             joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
 
-        if(!robot_model.configure(urdf_filename, joint_names)){
+        RobotModelConfig config;
+        config.hook = "world";
+        config.initial_pose.position.setZero();
+        config.initial_pose.orientation.setIdentity();
+        config.file = urdf_filename;
+        config.joint_names = joint_names;
+        std::vector<RobotModelConfig> configs;
+        configs.push_back(config);
+        if(!robot_model.configure(configs, true)){
             cerr << "Error loading robot model from urdf" << endl;
             abort();
         }
-
         cout<<"WBC Joint Space Inertia Matrix: "<<endl;
         base::samples::Joints joint_state;
-        for(int i = 0; i < NO_JOINTS; i++){
-            joint_state.names.push_back(joint_names[i]);
+        joint_state.resize(robot_model.noOfJoints());
+        joint_state.names = robot_model.jointNames();
+        for(int i = 0; i < robot_model.noOfJoints(); i++){
             base::JointState js;
-            js.position = joint_positions[i];
+            js.position = q(i);
             js.speed = 0;
-            joint_state.elements.push_back(js);
+            joint_state[i] = js;
         }
+        joint_state.time = base::Time::now();
         robot_model.update(joint_state);
+
+        std::cout<<"Joint state"<<std::endl;
+        for(auto s : robot_model.jointState(robot_model.jointNames()).elements)
+            std::cout<<s.position<<std::endl;
+
+
         start=base::Time::now();
         robot_model.computeJointSpaceInertiaMatrix();
         end=base::Time::now();
@@ -346,9 +361,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         cout<<robot_model.biasForces().transpose()<<endl;
         cout<<"Computation Time: "<<(end-start).toSeconds()*1000<<"ms"<<endl;
 
-        for(int i = 0; i < NO_JOINTS; i++){
+        for(int i = 0; i < model.dof_count; i++){
             BOOST_CHECK(fabs(robot_model.biasForces()[i] - C[i])  < 1e-9);
-            for(int j = 0; j < NO_JOINTS; j++){
+            for(int j = 0; j < model.dof_count; j++){
                 BOOST_CHECK(fabs(robot_model.jointSpaceInertiaMatrix()(i,j) - H(i,j)) < 1e-9);
             }
         }

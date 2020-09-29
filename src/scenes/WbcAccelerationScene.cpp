@@ -142,11 +142,11 @@ void WbcAccelerationScene::update(){
 
 
         // Lower and upper bounds
-        constraints_prio[prio].lower_x.setConstant(-1000);
-        constraints_prio[prio].upper_x.setConstant(1000);
+        constraints_prio[prio].lower_x.setConstant(-10000);
+        constraints_prio[prio].upper_x.setConstant(10000);
 
 
-        /*for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
+        for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
             const std::string &name = robot_model->actuatedJointNames()[i];
             try{
                 constraints_prio[prio].lower_x[robot_model->jointIndex(name)+nj] = robot_model->jointLimits().getElementByName(name).min.effort;
@@ -157,14 +157,6 @@ void WbcAccelerationScene::update(){
                 throw e;
             }
         }
-
-        for(int i = 0; i < 6; i++){
-            constraints_prio[prio].lower_x[i] = -1000;
-            constraints_prio[prio].upper_x[i] = 1000;
-            constraints_prio[prio].lower_x[i+nj] = -1000;
-            constraints_prio[prio].upper_x[i+nj] = 1000;
-
-        }*/
 
         std::cout<<"Bias: "<<robot_model->biasForces().transpose()<<std::endl;
 
