@@ -16,7 +16,7 @@ link_directories(${base-types_LIBRARY_DIRS}
                  ${qpOASES_LIBRARY_DIRS}
                  ${orocos-kdl_LIBRARY_DIRS}
                  ${kdl_parser_LIBRARY_DIRS}
-                 ${rbdl_LIBRARY_DIRS})
+                 ${RBDL_LIBRARY_DIRS})
 
 add_executable(kinematic_robot_model_kdl kinematic_robot_model_kdl.cpp ../suite.cpp)
 target_link_libraries(kinematic_robot_model_kdl
