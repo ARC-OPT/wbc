@@ -102,7 +102,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     }
 
     int nj = hierarchical_qp.nJoints();
-    solver_output.resize(2*hierarchical_qp.nJoints());
+    solver_output.resize(2*hierarchical_qp.nJoints()+6);
     if(sq_problem.getPrimalSolution( solver_output.data() ) == RET_QP_NOT_SOLVED)
         throw std::runtime_error("SQ Problem getPrimalSolution() returned " + std::to_string(RET_QP_NOT_SOLVED));
 }

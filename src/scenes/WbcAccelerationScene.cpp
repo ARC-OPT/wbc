@@ -111,7 +111,7 @@ void WbcAccelerationScene::update(){
 
         /** Variable order: (qdd, f, tau)*/
         //constraints_prio[prio].resize(nj+12, 2*nj + 12);
-        constraints_prio[prio].resize(nj, 2*nj);
+        constraints_prio[prio].resize(nj+6, 2*nj+6);
 
         // Cost Function: x^T*H*x + x^T*
         constraints_prio[prio].H.setZero();
@@ -119,34 +119,28 @@ void WbcAccelerationScene::update(){
         constraints_prio[prio].g.setZero();
         constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
 
-        // Constraints: [[J_L   0   0 ]   [qdd]      [-Jd_L*qd]
-        //               [J_R   0   0 ] * [f  ]  =   [-Jd_R*qd]
+        // Constraints: [[J   0   0 ]   [qdd]      [-Jd*qd]
         //               [M -J^T -S^T]]   [tau]      [-h]
         constraints_prio[prio].A.setZero();
         // First row: Contact point left does not move
-        /*constraints_prio[prio].A.block(0,0,6,nj)    = robot_model->fullJacobian("world", "FL_SupportCenter");
-        constraints_prio[prio].lower_y.segment(0,6) = constraints_prio[prio].upper_y.segment(0,6) = -robot_model->fullJacobianDot("world", "FL_SupportCenter") * q_dot;
-        // Second row: Contact point right does not move
-        constraints_prio[prio].A.block(6,0,6,nj)    = robot_model->fullJacobian("world", "FR_SupportCenter");
-        constraints_prio[prio].lower_y.segment(6,6) = constraints_prio[prio].upper_y.segment(6,6) = -robot_model->fullJacobianDot("world", "FR_SupportCenter") * q_dot;
-        // Third row: Rigid Body Dynamics
-        constraints_prio[prio].A.block(12,  0,    nj, nj) =  robot_model->jointSpaceInertiaMatrix();
-        constraints_prio[prio].A.block(12, nj,    nj,  6) = -robot_model->fullJacobian("world", "FL_SupportCenter").transpose();
-        constraints_prio[prio].A.block(12, nj+6,  nj,  6) = -robot_model->fullJacobian("world", "FR_SupportCenter").transpose();
-        constraints_prio[prio].A.block(12, nj+12, nj, nj) = -robot_model->getActuationMatrix();
-        constraints_prio[prio].lower_y.segment(12,nj) = constraints_prio[prio].upper_y.segment(12,nj) = -robot_model->biasForces();*/
+        constraints_prio[prio].A.block(0,0,6,nj)    = robot_model->fullJacobian("world", "LLAnkle_FT");
+        constraints_prio[prio].lower_y.segment(0,6) = constraints_prio[prio].upper_y.segment(0,6) = -robot_model->fullJacobianDot("world", "LLAnkle_FT") * q_dot;
+        // Second row: Rigid Body Dynamics
+        constraints_prio[prio].A.block(6,  0,    nj, nj) =  robot_model->jointSpaceInertiaMatrix();
+        constraints_prio[prio].A.block(6, nj,    nj,  6) = -robot_model->fullJacobian("world", "LLAnkle_FT").transpose();
+        constraints_prio[prio].A.block(6, nj+6, nj, nj) = -robot_model->getActuationMatrix();
+        constraints_prio[prio].lower_y.segment(6,nj) = constraints_prio[prio].upper_y.segment(6,nj) = -robot_model->biasForces();
 
-        constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
+        /*constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
         constraints_prio[prio].A.block(0, nj, nj, nj) = -robot_model->getActuationMatrix();
-        constraints_prio[prio].lower_y = constraints_prio[prio].upper_y = -robot_model->biasForces();
+        constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();*/
 
-
-        // Lower and upper bounds
+        // Lower and upper bou  nds
         constraints_prio[prio].lower_x.setConstant(-10000);
         constraints_prio[prio].upper_x.setConstant(10000);
 
 
-        for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
+        /*for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
             const std::string &name = robot_model->actuatedJointNames()[i];
             try{
                 constraints_prio[prio].lower_x[robot_model->jointIndex(name)+nj] = robot_model->jointLimits().getElementByName(name).min.effort;
@@ -156,24 +150,9 @@ void WbcAccelerationScene::update(){
                 LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint limits vector"<<std::endl;
                 throw e;
             }
-        }
+        }*/
 
         std::cout<<"Bias: "<<robot_model->biasForces().transpose()<<std::endl;
-
-
-//        for(auto n : robot_model->jointNames())
-//            std::cout<<n<<std::endl;
-//        std::cout<<std::endl;
-
-//        std::cout<<"robot Pose: "<<std::endl;
-//        std::cout<<robot_model->rigidBodyState("world", "RH5_Root_Link").pose.position.transpose()<<std::endl;
-//        std::cout<<robot_model->rigidBodyState("world", "RH5_Root_Link").pose.orientation.coeffs().transpose()<<std::endl;
-
-//        std::cout<<"Jacobian Left Leg: "<<std::endl;
-//        std::cout<<robot_model->fullJacobian("world", "FL_SupportCenter")<<std::endl;
-//        std::cout<<"Jacobian Right Leg: "<<std::endl;
-//        std::cout<<robot_model->fullJacobian("world", "FR_SupportCenter")<<std::endl;
-
         std::cout<<"H"<<std::endl;
         std::cout<<constraints_prio[prio].H<<std::endl;
         std::cout<<"g"<<std::endl;
