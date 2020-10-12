@@ -1,11 +1,10 @@
 #ifndef ROBOTMODEL_HPP
 #define ROBOTMODEL_HPP
 
-#include <vector>
 #include <base/Eigen.hpp>
 #include <map>
 #include <base/samples/Joints.hpp>
-#include <base/samples/RigidBodyStateSE3Vector.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 #include <memory>
 #include "RobotModelConfig.hpp"
 #include <base/JointLimits.hpp>
@@ -40,8 +39,7 @@ public:
      * @return True in case of success, else false
      */
     virtual bool configure(const std::string& model_filename,
-                           const std::vector<std::string> &joint_names = std::vector<std::string>(),
-                           bool floating_base = false) = 0;
+                           const std::vector<std::string> &joint_names) = 0;
 
     /**
      * @brief Load and configure the robot model
@@ -50,8 +48,7 @@ public:
      * @param base_frame Base frame of the model.
      * @return True in case of success, else false
      */
-    virtual bool configure(const std::vector<RobotModelConfig>& model_config,
-                           bool floating_base = false) = 0;
+    virtual bool configure(const std::vector<RobotModelConfig>& model_config) = 0;
 
     /**
      * @brief Update the robot model

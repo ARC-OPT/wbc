@@ -6,6 +6,7 @@
 #include <urdf_parser/urdf_parser.h>
 #include <kdl/treeidsolver_recursive_newton_euler.hpp>
 #include <kdl/treejnttojacsolver.hpp>
+#include <algorithm>
 
 namespace wbc{
 
@@ -26,34 +27,104 @@ void KinematicRobotModelKDL::clear(){
 
 
 bool KinematicRobotModelKDL::configure(const std::string& model_filename,
-                                       const std::vector<std::string> &joint_names,
-                                       bool floating_base){
+                                       const std::vector<std::string> &joint_names){
     clear();
 
     RobotModelConfig cfg;
     cfg.file = model_filename;
+    cfg.type = ModelType::ROBOT;
     cfg.joint_names = joint_names;
+    cfg.actuated_joint_names = joint_names;
     std::vector<RobotModelConfig> configs;
     configs.push_back(cfg);
-    return configure(configs, floating_base);
+    return configure(configs);
 }
 
-bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config,
-                                       bool floating_base){
+bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config){
 
     clear();
 
-    if(floating_base){
-        if(!kdl_parser::treeFromString(floating_base_urdf, full_tree)){
-            LOG_ERROR("Unable to init floating base");
-            return false;
-        }
+    if(model_config.empty()){
+        LOG_ERROR("The passed robot model config is empty! You have to pass at least one robot model!");
+        return false;
     }
 
-    for(const RobotModelConfig& cfg : model_config){
-        jointLimitsFromURDF(cfg.file, joint_limits);
-        if(!addModel(cfg))
+    for(int i = 0; i < model_config.size(); i++){
+
+        const RobotModelConfig& cfg = model_config[i];
+
+        if(cfg.type == ModelType::UNSET){
+            LOG_ERROR("Robot Model Config #%i is invalid: Model type unset", i);
             return false;
+        }
+        if(cfg.file.empty()){
+            LOG_ERROR("Robot Model Config #%i is invalid: No model file given in robot model config", i);
+            return false;
+        }
+        if(cfg.joint_names.empty()){
+            LOG_ERROR("Robot Model Config #%i is invalid: Joint names vector is empty!", i);
+            return false;
+        }
+
+        if(cfg.hook.empty() && i > 0){
+            LOG_ERROR("Robot Model Config #%i is invalid: Hook is empty! To which link do you want to attach this model?", i);
+            return false;
+        }
+
+        if(cfg.type == ModelType::VIRTUAL_6_DOF_JOINT){
+            if(!cfg.actuated_joint_names.empty()){
+                LOG_ERROR("Robot Model Config #%i is invalid: If model type is VIRTUAL_6_DOF_JOINT, the model must NOT contain actuated joints", i);
+                return false;
+            }
+
+            std::vector<std::string> joint_names_urdf = jointNamesFromURDF(cfg.file);
+            if(!std::is_permutation(cfg.joint_names.begin(), cfg.joint_names.end(), joint_names_urdf.begin())){
+                LOG_ERROR("Robot Model Config #%i is invalid: Given joint names must match joint names in URDF file", i);
+                return false;
+            }
+        }
+
+        jointLimitsFromURDF(cfg.file, joint_limits);
+
+        KDL::Tree tree;
+        if(!kdl_parser::treeFromFile(cfg.file, tree)){
+            LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
+            return false;
+        }
+
+        if(full_tree.getNrOfSegments() == 0 && full_tree.getRootSegment()->first == "root"){
+            full_tree = tree;
+            LOG_INFO_S<<"Added full tree with root "<<tree.getRootSegment()->first<<" and no. of segments: "<<tree.getNrOfSegments()<<std::endl;
+        }
+        else{
+            if(!hasFrame(cfg.hook)){
+                LOG_ERROR("Hook name is %s, but this segment does not exist in tree", cfg.hook.c_str());
+                return false;
+            }
+            KDL::Segment root = tree.getRootSegment()->second.segment;
+            std::string root_name = root.getName();
+
+            // KDL::Tree::addTree() omits the root segment of the attached tree for some reason, so we have to explicity add it here
+            full_tree.addSegment(root, cfg.hook);
+
+            if(!full_tree.addTree(tree, root_name)){
+                LOG_ERROR("Unable to attach tree with root segment %s", root_name.c_str());
+                return false;
+            }
+
+            LOG_INFO_S<<"Added new tree with root "<<root_name<<" to hook "<<cfg.hook<<std::endl;
+        }
+
+        for(size_t i = 0; i < cfg.joint_names.size(); i++){
+            current_joint_state.elements.push_back(base::JointState());
+            current_joint_state.names.push_back(cfg.joint_names[i]);
+        }
+        for(size_t i = 0; i < cfg.actuated_joint_names.size(); i++)
+            actuated_joint_names.push_back(cfg.actuated_joint_names[i]);
+
+        if(cfg.type == ModelType::VIRTUAL_6_DOF_JOINT)
+            toJointState(cfg.initial_state, robotNameFromURDF(cfg.file), current_joint_state);
+
     }
 
     base_frame = full_tree.getRootSegment()->second.segment.getName();
@@ -90,50 +161,11 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
 
     LOG_INFO("Full KDL Tree");
     if(getenv("BASE_LOG_LEVEL")){
-        if(std::string(getenv("BASE_LOG_LEVEL")) == "INFO"){
+        if(std::string(getenv("BASE_LOG_LEVEL")) == "INFO" || std::string(getenv("BASE_LOG_LEVEL")) == "DEBUG"){
             KDL::TreeElement root = full_tree.getRootSegment()->second;
             std::cout<<"Root Link: "<<root.segment.getName()<<std::endl;
             printTree(root);
         }
-    }
-
-    return true;
-}
-
-bool KinematicRobotModelKDL::addModel(const RobotModelConfig& cfg){
-
-    KDL::Tree tree;
-    if(!kdl_parser::treeFromFile(cfg.file, tree)){
-        LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
-        return false;
-    }
-
-    if(full_tree.getNrOfSegments() == 0 && full_tree.getRootSegment()->first == "root"){
-        full_tree = tree;
-        LOG_INFO_S<<"Added full tree with root "<<tree.getRootSegment()->first<<" and no. of segments: "<<tree.getNrOfSegments()<<std::endl;
-    }
-    else{
-        if(!hasFrame(cfg.hook)){
-            LOG_ERROR("Hook name is %s, but this segment does not exist in tree", cfg.hook.c_str());
-            return false;
-        }
-
-        KDL::Segment root = tree.getRootSegment()->second.segment;
-        std::string root_name = root.getName();
-        addVirtual6DoFJoint(cfg.hook, root_name, cfg.initial_pose);
-        full_tree.addSegment(root, "link_" + root_name + "_rot_z");
-
-        if(!full_tree.addTree(tree, root_name)){
-            LOG_ERROR("Unable to attach tree with root segment %s", root_name.c_str());
-            return false;
-        }
-        LOG_INFO_S<<"Added new tree with root "<<root_name<<" to hook "<<cfg.hook<<std::endl;
-    }
-
-    for(size_t i = 0; i < cfg.joint_names.size(); i++){
-        current_joint_state.elements.push_back(base::JointState());
-        current_joint_state.names.push_back(cfg.joint_names[i]);
-        actuated_joint_names.push_back(cfg.joint_names[i]);
     }
 
     return true;
@@ -158,39 +190,15 @@ void KinematicRobotModelKDL::createChain(const std::string &root_frame, const st
     LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
 }
 
-bool KinematicRobotModelKDL::addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose){
-
-    KDL::Chain chain;
-    for(int i = 0; i < 6; i++){
-        std::string joint_name = tip + virtual_joint_names[i];
-        KDL::Segment segment = KDL::Segment("link_" + joint_name,
-                                            KDL::Joint(joint_name, virtual_joint_types[i]),
-                                            KDL::Frame::Identity(),
-                                            KDL::RigidBodyInertia(0.0,KDL::Vector::Zero(),KDL::RotationalInertia(0,0,0)));
-        chain.addSegment(segment);
-        current_joint_state.names.push_back(joint_name);
-        current_joint_state.elements.push_back(base::JointState());
-    }
-
-    base::samples::RigidBodyStateSE3 rbs;
-    rbs.pose = initial_pose;
-    // Set Twist and spatial acceleration to zero initially
-    rbs.twist.setZero();
-    rbs.acceleration.setZero();
-    rbs.frame_id = hook;
-    toJointState(rbs, tip, current_joint_state);
-
-    if(!full_tree.addChain(chain, hook)){
-        LOG_ERROR("Unable to attach chain to tree segment %s", hook.c_str());
-        return false;
-    }
-
-    LOG_INFO_S<<"Added virtual 6 DoF joint with tip "<<tip<<" to hook "<<hook<<std::endl;
-
-    return true;
-}
-
 void KinematicRobotModelKDL::toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state){
+
+    if(!rbs.hasValidPose() ||
+       !rbs.hasValidTwist() ||
+       !rbs.hasValidAcceleration()){
+       LOG_ERROR("Unable to convert rigid body state of virtual 6 DoF joint to joint state! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion");
+       throw std::runtime_error("Invalid Rigid Body State");
+    }
+
     base::JointState js;
     base::Pose tmp_a, tmp_b;
     tmp_a.position.setZero();
@@ -222,7 +230,6 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
     }
     current_joint_state.time = joint_state.time;
 
-
     // Update virtual joints
     for(size_t i = 0; i < virtual_joint_states.size(); i++){
         toJointState(virtual_joint_states[i], virtual_joint_states.names[i], current_joint_state);
@@ -241,6 +248,13 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
         if(jnt.getType() != KDL::Joint::None){
             uint idx = GetTreeElementQNr(it.second);
             const std::string& name = jnt.getName();
+
+            if(!hasJoint(name)){
+                LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the KDL Tree, but it is not in the joint state vector."
+                            << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
+                throw std::runtime_error("Incomplete Joint State");
+            }
+
             q(idx)       = current_joint_state[name].position;
             qdot(idx)    = current_joint_state[name].speed;
             qdotdot(idx) = current_joint_state[name].acceleration;
@@ -404,8 +418,31 @@ bool KinematicRobotModelKDL::hasFrame(const std::string &name){
     return full_tree.getSegments().count(name) > 0;
 }
 
-std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::Tree &tree) const{
+bool KinematicRobotModelKDL::hasJoint(const std::string &name){
+    return std::find(current_joint_state.names.begin(), current_joint_state.names.end(), name) != current_joint_state.names.end();
+}
 
+
+const std::string &KinematicRobotModelKDL::robotNameFromURDF(const std::string &filename){
+    urdf::ModelInterfaceSharedPtr urdf_model = urdf::parseURDFFile(filename);
+    return urdf_model->getName();
+}
+
+const std::string &KinematicRobotModelKDL::rootLinkFromURDF(const std::string &filename){
+    KDL::Tree tree;
+    if(!kdl_parser::treeFromFile(filename, tree))
+        throw std::runtime_error("Unable to load URDF from file " + filename);
+    return tree.getRootSegment()->second.segment.getName();
+}
+
+std::vector<std::string> KinematicRobotModelKDL::jointNamesFromURDF(const std::string &filename){
+    KDL::Tree tree;
+    if(!kdl_parser::treeFromFile(filename, tree))
+        throw std::runtime_error("Unable to load URDF from file " + filename);
+    return KinematicRobotModelKDL::jointNamesFromTree(tree);
+}
+
+std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::Tree &tree){
     std::vector<std::string> j_names;
     KDL::SegmentMap::const_iterator it;
     const KDL::SegmentMap& segments = tree.getSegments();
@@ -417,10 +454,10 @@ std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::T
     return j_names;
 }
 
-void KinematicRobotModelKDL::jointLimitsFromURDF(const std::string& urdf_file, base::JointLimits& limits){
-    urdf::ModelInterfaceSharedPtr urdf_model = urdf::parseURDFFile(urdf_file);
+void KinematicRobotModelKDL::jointLimitsFromURDF(const std::string& filename, base::JointLimits& limits){
+    urdf::ModelInterfaceSharedPtr urdf_model = urdf::parseURDFFile(filename);
     if (!urdf_model)
-        throw std::invalid_argument("Cannot load URDF from file " + urdf_file);
+        throw std::invalid_argument("Cannot load URDF from file " + filename);
 
     std::map<std::string, urdf::JointSharedPtr>::const_iterator it;
     for(it=urdf_model->joints_.begin(); it!=urdf_model->joints_.end(); ++it){

@@ -22,7 +22,6 @@ class KinematicRobotModelKDL : public RobotModel{
     typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
     typedef std::map<std::string, base::MatrixXd > JacobianMap;
-    const std::string floating_base_urdf = "<robot name='world'><link name='world'/></robot>";
     // Helper variables
     KDL::JntArray q,qdot,qdotdot,tau,zero;
 
@@ -51,17 +50,13 @@ protected:
      *  of the trees can be updated online by calling update() with poses parameter appropriately set. This will also create the
      *  joint index map*/
 
-    bool addModel(const RobotModelConfig& model_config);
     /** Free storage and clear data structures*/
     void clear();
 
     /** ID of kinematic chain given root and tip*/
     const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
-    bool addVirtual6DoFJoint(const std::string &hook, const std::string& tip, const base::Pose& initial_pose);
-    void jointLimitsFromURDF(const std::string& urdf_file, base::JointLimits& limits);
     void toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state);
-    void printTree(const KDL::TreeElement &tree, int level = 0);
 
 public:
     KinematicRobotModelKDL();
@@ -76,8 +71,7 @@ public:
      * @return True in case of success, else false
      */
     virtual bool configure(const std::string& model_filename,
-                           const std::vector<std::string> &joint_names = std::vector<std::string>(),
-                           bool floating_base = false);
+                           const std::vector<std::string> &joint_names);
 
     /**
      * @brief Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree.
@@ -89,8 +83,7 @@ public:
      * @param base_frame Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model.
      * @return True in case of success, else false
      */
-    virtual bool configure(const std::vector<RobotModelConfig>& model_config,
-                           bool floating_base = false);
+    virtual bool configure(const std::vector<RobotModelConfig>& model_config);
 
     /**
      * @brief Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
@@ -157,8 +150,21 @@ public:
     /** Check if a frame is available in the model*/
     bool hasFrame(const std::string &name);
 
+    /** Check if a joint is available in the model*/
+    bool hasJoint(const std::string &name);
+
+    /** Return all non-fixed joints from the given URDF file*/
+    static std::vector<std::string> jointNamesFromURDF(const std::string &filename);
+
     /** Return all non-fixed joints from the given KDL tree*/
-    std::vector<std::string> jointNamesFromTree(const KDL::Tree &tree) const;
+    static std::vector<std::string> jointNamesFromTree(const KDL::Tree &tree);
+
+    static void jointLimitsFromURDF(const std::string& urdf_file, base::JointLimits& limits);
+
+    static const std::string getURDFVirtual6DoFLinkage(const std::string &root_link, const std::string& tip_link);
+    static const std::string &rootLinkFromURDF(const std::string &filename);
+    static const std::string &robotNameFromURDF(const std::string &filename);
+    static void printTree(const KDL::TreeElement &tree, int level = 0);
 
     /** Return full tree (KDL model)*/
     KDL::Tree getTree(){return full_tree;}
