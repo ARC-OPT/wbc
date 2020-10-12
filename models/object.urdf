@@ -1,0 +1,57 @@
+<robot name="object">
+    <link name='link_object_trans_x'/>
+    <link name='link_object_trans_y'/>
+    <link name='link_object_trans_z'/>
+    <link name='link_object_rot_x'/>
+    <link name='link_object_rot_y'/>
+    <link name='link_object_rot_z'/>
+    <link name="object"/>
+
+    <joint name='object_trans_x' type='prismatic'>
+      <parent link='link_object_trans_x'/>
+      <child link='link_object_trans_y'/>
+      <origin rpy='0 0 0' xyz='0 0 0'/>
+      <axis xyz='1 0 0'/>
+      <limit effort='1000' lower='-1000' upper='1000' velocity='1000'/>
+    </joint>
+
+    <joint name='object_trans_y' type='prismatic'>
+      <parent link='link_object_trans_y'/>
+      <child link='link_object_trans_z'/>
+      <origin rpy='0 0 0' xyz='0 0 0'/>
+      <axis xyz='0 1 0'/>
+      <limit effort='1000' lower='-1000' upper='1000' velocity='1000'/>
+    </joint>
+
+    <joint name='object_trans_z' type='prismatic'>
+      <parent link='link_object_trans_z'/>
+      <child link='link_object_rot_x'/>
+      <origin rpy='0 0 0' xyz='0 0 0'/>
+      <axis xyz='0 0 1'/>
+      <limit effort='1000' lower='-1000' upper='1000' velocity='1000'/>
+    </joint>
+
+    <joint name='object_rot_x' type='revolute'>
+      <parent link='link_object_rot_x'/>
+      <child link='link_object_rot_y'/>
+      <origin rpy='0 0 0' xyz='0 0 0'/>
+      <axis xyz='1 0 0'/>
+      <limit effort='1000' lower='-1000' upper='1000' velocity='1000'/>
+    </joint>
+
+    <joint name='object_rot_y' type='revolute'>
+      <parent link='link_object_rot_y'/>
+      <child link='link_object_rot_z'/>
+      <origin rpy='0 0 0' xyz='0 0 0'/>
+      <axis xyz='0 1 0'/>
+      <limit effort='1000' lower='-1000' upper='1000' velocity='1000'/>
+    </joint>
+
+    <joint name='object_rot_z' type='revolute'>
+      <parent link='link_object_rot_z'/>
+      <child link='object'/>
+      <origin rpy='0 0 0' xyz='0 0 0'/>
+      <axis xyz='0 0 1'/>
+      <limit effort='1000' lower='-1000' upper='1000' velocity='1000'/>
+    </joint>
+</robot>

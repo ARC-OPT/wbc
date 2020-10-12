@@ -992,7 +992,7 @@
         <child link="kuka_lbr_l_palm_link"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_1_joint_0" type="revolute">
+    <joint name="kuka_lbr_l_finger_1_joint_0" type="fixed">
       <origin xyz="0.0214 -0.036 0.0455" rpy="-1.570696 -0.000796 -7e-06"/>
       <parent link="kuka_lbr_l_palm_link"/>
       <child link="kuka_lbr_l_finger_1_link_0"/>
@@ -1000,7 +1000,7 @@
       <limit lower="-0.296706" upper="0.296706" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_1_joint_1" type="revolute">
+    <joint name="kuka_lbr_l_finger_1_joint_1" type="fixed">
       <origin xyz="0.02 0 0" rpy="0 0 0"/>
       <parent link="kuka_lbr_l_finger_1_link_0"/>
       <child link="kuka_lbr_l_finger_1_link_1"/>
@@ -1008,7 +1008,7 @@
       <limit lower="0" upper="1.22173" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_1_joint_2" type="revolute">
+    <joint name="kuka_lbr_l_finger_1_joint_2" type="fixed">
       <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
       <parent link="kuka_lbr_l_finger_1_link_1"/>
       <child link="kuka_lbr_l_finger_1_link_2"/>
@@ -1016,7 +1016,7 @@
       <limit lower="0" upper="1.570796" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_1_joint_3" type="revolute">
+    <joint name="kuka_lbr_l_finger_1_joint_3" type="fixed">
       <origin xyz="0.039 0 0" rpy="0 0 0"/>
       <parent link="kuka_lbr_l_finger_1_link_2"/>
       <child link="kuka_lbr_l_finger_1_link_3"/>
@@ -1024,7 +1024,7 @@
       <limit lower="-0.663225" upper="1.047198" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_2_joint_0" type="revolute">
+    <joint name="kuka_lbr_l_finger_2_joint_0" type="fixed">
       <origin xyz="0.0214 0.036 0.0455" rpy="-1.570696 -0.000796 -7e-06"/>
       <parent link="kuka_lbr_l_palm_link"/>
       <child link="kuka_lbr_l_finger_2_link_0"/>
@@ -1032,7 +1032,7 @@
       <limit lower="-0.296706" upper="0.296706" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_2_joint_1" type="revolute">
+    <joint name="kuka_lbr_l_finger_2_joint_1" type="fixed">
       <origin xyz="0.02 0 0" rpy="0 0 0"/>
       <parent link="kuka_lbr_l_finger_2_link_0"/>
       <child link="kuka_lbr_l_finger_2_link_1"/>
@@ -1040,7 +1040,7 @@
       <limit lower="0" upper="1.22173" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_2_joint_2" type="revolute">
+    <joint name="kuka_lbr_l_finger_2_joint_2" type="fixed">
       <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
       <parent link="kuka_lbr_l_finger_2_link_1"/>
       <child link="kuka_lbr_l_finger_2_link_2"/>
@@ -1048,7 +1048,7 @@
       <limit lower="0" upper="1.570796" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_2_joint_3" type="revolute">
+    <joint name="kuka_lbr_l_finger_2_joint_3" type="fixed">
       <origin xyz="0.039 0 0" rpy="0 0 0"/>
       <parent link="kuka_lbr_l_finger_2_link_2"/>
       <child link="kuka_lbr_l_finger_2_link_3"/>
@@ -1062,7 +1062,7 @@
       <child link="kuka_lbr_l_finger_middle_link_0"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_middle_joint_1" type="revolute">
+    <joint name="kuka_lbr_l_finger_middle_joint_1" type="fixed">
       <origin xyz="0.02 0 0" rpy="0 0 0"/>
       <parent link="kuka_lbr_l_finger_middle_link_0"/>
       <child link="kuka_lbr_l_finger_middle_link_1"/>
@@ -1070,7 +1070,7 @@
       <limit lower="-0.094073" upper="1.127657" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_middle_joint_2" type="revolute">
+    <joint name="kuka_lbr_l_finger_middle_joint_2" type="fixed">
       <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
       <parent link="kuka_lbr_l_finger_middle_link_1"/>
       <child link="kuka_lbr_l_finger_middle_link_2"/>
@@ -1078,7 +1078,7 @@
       <limit lower="0" upper="1.570796" effort="100" velocity="100"/>
     </joint>
 
-    <joint name="kuka_lbr_l_finger_middle_joint_3" type="revolute">
+    <joint name="kuka_lbr_l_finger_middle_joint_3" type="fixed">
       <origin xyz="0.039 0 0" rpy="0 0 0"/>
       <parent link="kuka_lbr_l_finger_middle_link_2"/>
       <child link="kuka_lbr_l_finger_middle_link_3"/>
@@ -1372,7 +1372,7 @@
           <child link="kuka_lbr_r_palm_link"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_1_joint_0" type="revolute">
+      <joint name="kuka_lbr_r_finger_1_joint_0" type="fixed">
         <origin xyz="0.0214 -0.036 0.0455" rpy="-1.570696 -0.000796 -7e-06"/>
         <parent link="kuka_lbr_r_palm_link"/>
         <child link="kuka_lbr_r_finger_1_link_0"/>
@@ -1380,7 +1380,7 @@
         <limit lower="-0.296706" upper="0.296706" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_1_joint_1" type="revolute">
+      <joint name="kuka_lbr_r_finger_1_joint_1" type="fixed">
         <origin xyz="0.02 0 0" rpy="0 0 0"/>
         <parent link="kuka_lbr_r_finger_1_link_0"/>
         <child link="kuka_lbr_r_finger_1_link_1"/>
@@ -1388,7 +1388,7 @@
         <limit lower="0" upper="1.22173" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_1_joint_2" type="revolute">
+      <joint name="kuka_lbr_r_finger_1_joint_2" type="fixed">
         <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
         <parent link="kuka_lbr_r_finger_1_link_1"/>
         <child link="kuka_lbr_r_finger_1_link_2"/>
@@ -1396,7 +1396,7 @@
         <limit lower="0" upper="1.570796" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_1_joint_3" type="revolute">
+      <joint name="kuka_lbr_r_finger_1_joint_3" type="fixed">
         <origin xyz="0.039 0 0" rpy="0 0 0"/>
         <parent link="kuka_lbr_r_finger_1_link_2"/>
         <child link="kuka_lbr_r_finger_1_link_3"/>
@@ -1404,7 +1404,7 @@
         <limit lower="-0.663225" upper="1.047198" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_2_joint_0" type="revolute">
+      <joint name="kuka_lbr_r_finger_2_joint_0" type="fixed">
         <origin xyz="0.0214 0.036 0.0455" rpy="-1.570696 -0.000796 -7e-06"/>
         <parent link="kuka_lbr_r_palm_link"/>
         <child link="kuka_lbr_r_finger_2_link_0"/>
@@ -1412,7 +1412,7 @@
         <limit lower="-0.296706" upper="0.296706" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_2_joint_1" type="revolute">
+      <joint name="kuka_lbr_r_finger_2_joint_1" type="fixed">
         <origin xyz="0.02 0 0" rpy="0 0 0"/>
         <parent link="kuka_lbr_r_finger_2_link_0"/>
         <child link="kuka_lbr_r_finger_2_link_1"/>
@@ -1420,7 +1420,7 @@
         <limit lower="0" upper="1.22173" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_2_joint_2" type="revolute">
+      <joint name="kuka_lbr_r_finger_2_joint_2" type="fixed">
         <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
         <parent link="kuka_lbr_r_finger_2_link_1"/>
         <child link="kuka_lbr_r_finger_2_link_2"/>
@@ -1428,7 +1428,7 @@
         <limit lower="0" upper="1.570796" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_2_joint_3" type="revolute">
+      <joint name="kuka_lbr_r_finger_2_joint_3" type="fixed">
         <origin xyz="0.039 0 0" rpy="0 0 0"/>
         <parent link="kuka_lbr_r_finger_2_link_2"/>
         <child link="kuka_lbr_r_finger_2_link_3"/>
@@ -1442,7 +1442,7 @@
         <child link="kuka_lbr_r_finger_middle_link_0"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_middle_joint_1" type="revolute">
+      <joint name="kuka_lbr_r_finger_middle_joint_1" type="fixed">
         <origin xyz="0.02 0 0" rpy="0 0 0"/>
         <parent link="kuka_lbr_r_finger_middle_link_0"/>
         <child link="kuka_lbr_r_finger_middle_link_1"/>
@@ -1450,7 +1450,7 @@
         <limit lower="-0.094073" upper="1.127657" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_middle_joint_2" type="revolute">
+      <joint name="kuka_lbr_r_finger_middle_joint_2" type="fixed">
         <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
         <parent link="kuka_lbr_r_finger_middle_link_1"/>
         <child link="kuka_lbr_r_finger_middle_link_2"/>
@@ -1458,7 +1458,7 @@
         <limit lower="0" upper="1.570796" effort="100" velocity="100"/>
       </joint>
 
-      <joint name="kuka_lbr_r_finger_middle_joint_3" type="revolute">
+      <joint name="kuka_lbr_r_finger_middle_joint_3" type="fixed">
         <origin xyz="0.039 0 0" rpy="0 0 0"/>
         <parent link="kuka_lbr_r_finger_middle_link_2"/>
         <child link="kuka_lbr_r_finger_middle_link_3"/>
