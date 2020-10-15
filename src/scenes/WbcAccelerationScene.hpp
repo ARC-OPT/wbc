@@ -20,7 +20,7 @@ protected:
      */
     virtual ConstraintPtr createConstraint(const ConstraintConfig &config);
 
-
+    base::Time stamp;
 
 public:
     WbcAccelerationScene(RobotModelPtr robot_model) :

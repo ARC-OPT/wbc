@@ -3,6 +3,7 @@
 
 #include "../qp_solver.hpp"
 #include <qpOASES.hpp>
+#include <base/Time.hpp>
 
 namespace wbc {
 class HierarchicalQP;
@@ -46,6 +47,7 @@ protected:
     qpOASES::returnValue ret_val;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A;
+    base::Time stamp;
 };
 
 }

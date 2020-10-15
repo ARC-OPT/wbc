@@ -109,19 +109,20 @@ void WbcAccelerationScene::update(){
         base::MatrixXd A = constraints_prio[prio].A;
         base::VectorXd y = constraints_prio[prio].lower_y;
 
-        /** Variable order: (qdd, f, tau)*/
-        //constraints_prio[prio].resize(nj+12, 2*nj + 12);
-        constraints_prio[prio].resize(nj+6, 2*nj+6);
 
-        // Cost Function: x^T*H*x + x^T*
+        // Single, rigid environment contact
+        // Variable order: (qdd, f, tau)
+        /*constraints_prio[prio].resize(nj+6, 2*nj+6);
         constraints_prio[prio].H.setZero();
         constraints_prio[prio].H.block(0,0,nj,nj) = A.transpose()*A;
         constraints_prio[prio].g.setZero();
         constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
 
-        // Constraints: [[J   0   0 ]   [qdd]      [-Jd*qd]
-        //               [M -J^T -S^T]]   [tau]      [-h]
+        // Constraints: [[J   0   0 ]     [qdd] =    [-Jd*qd]
+        //               [M -J^T -S^T]]   [f]   =    [-h]
+        //                                [tau] =
         constraints_prio[prio].A.setZero();
+
         // First row: Contact point left does not move
         constraints_prio[prio].A.block(0,0,6,nj)    = robot_model->fullJacobian("world", "LLAnkle_FT");
         constraints_prio[prio].lower_y.segment(0,6) = constraints_prio[prio].upper_y.segment(0,6) = -robot_model->fullJacobianDot("world", "LLAnkle_FT") * q_dot;
@@ -130,10 +131,29 @@ void WbcAccelerationScene::update(){
         constraints_prio[prio].A.block(6, nj,    nj,  6) = -robot_model->fullJacobian("world", "LLAnkle_FT").transpose();
         constraints_prio[prio].A.block(6, nj+6, nj, nj) = -robot_model->getActuationMatrix();
         constraints_prio[prio].lower_y.segment(6,nj) = constraints_prio[prio].upper_y.segment(6,nj) = -robot_model->biasForces();
+        //constraints_prio[prio].lower_y.segment(6,6).setZero();
+        //constraints_prio[prio].lower_y.segment(6,6).setZero();*/
 
-        /*constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
+
+        // No environment contact
+        // Variable order: (qdd, tau)
+        constraints_prio[prio].resize(nj, 2*nj);
+        // Cost Function: x^T*H*x + x^T*
+        constraints_prio[prio].H.setZero();
+        constraints_prio[prio].H.block(0,0,nj,nj) = A.transpose()*A;
+        constraints_prio[prio].g.setZero();
+        constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
+
+        // Constraints: [[M -S^T]] * [qdd tau] = [-h]
+        base::Vector6d f_ext;
+        f_ext << -0.0016937263217112032, -0.0031835690480501865, -75.94681724308107, -0.07960479827699948, 2.7142051814597408, -0.00011199983616109183;
+        constraints_prio[prio].A.setZero();
+        constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
         constraints_prio[prio].A.block(0, nj, nj, nj) = -robot_model->getActuationMatrix();
-        constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();*/
+        constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) =
+                -robot_model->biasForces() - robot_model->fullJacobian("world", "LLAnkle_FT").transpose() * f_ext;
+        constraints_prio[prio].lower_y.segment(0,6).setZero();
+        constraints_prio[prio].upper_y.segment(0,6).setZero();
 
         // Lower and upper bou  nds
         constraints_prio[prio].lower_x.setConstant(-10000);
@@ -152,24 +172,27 @@ void WbcAccelerationScene::update(){
             }
         }*/
 
-        std::cout<<"Bias: "<<robot_model->biasForces().transpose()<<std::endl;
-        std::cout<<"H"<<std::endl;
-        std::cout<<constraints_prio[prio].H<<std::endl;
-        std::cout<<"g"<<std::endl;
-        std::cout<<constraints_prio[prio].g.transpose()<<std::endl;
-        std::cout<<"A"<<std::endl;
-        std::cout<<constraints_prio[prio].A<<std::endl;
-        std::cout<<"lower_y"<<std::endl;
-        std::cout<<constraints_prio[prio].lower_y.transpose()<<std::endl;
-        std::cout<<"upper_y"<<std::endl;
-        std::cout<<constraints_prio[prio].upper_y.transpose()<<std::endl;
-        std::cout<<"lower_x"<<std::endl;
-        std::cout<<constraints_prio[prio].lower_x.transpose()<<std::endl;
-        std::cout<<"upper_x"<<std::endl;
-        std::cout<<constraints_prio[prio].upper_x.transpose()<<std::endl;
+        if((base::Time::now()-stamp).toSeconds() > 1 ){
+            std::cout<<"Bias: "<<robot_model->biasForces().transpose()<<std::endl;
+            std::cout<<"H"<<std::endl;
+            std::cout<<constraints_prio[prio].H<<std::endl;
+            std::cout<<"g"<<std::endl;
+            std::cout<<constraints_prio[prio].g.transpose()<<std::endl;
+            std::cout<<"A"<<std::endl;
+            std::cout<<constraints_prio[prio].A<<std::endl;
+            std::cout<<"lower_y"<<std::endl;
+            std::cout<<constraints_prio[prio].lower_y.transpose()<<std::endl;
+            std::cout<<"upper_y"<<std::endl;
+            std::cout<<constraints_prio[prio].upper_y.transpose()<<std::endl;
+            std::cout<<"lower_x"<<std::endl;
+            std::cout<<constraints_prio[prio].lower_x.transpose()<<std::endl;
+            std::cout<<"upper_x"<<std::endl;
+            std::cout<<constraints_prio[prio].upper_x.transpose()<<std::endl<<std::endl;
+            stamp = base::Time::now();
+        }
     }
 
-
+    constraints_prio.joint_state = robot_model->jointState(robot_model->actuatedJointNames());
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
 }
 

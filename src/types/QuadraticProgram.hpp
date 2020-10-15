@@ -3,6 +3,7 @@
 
 #include <base/Eigen.hpp>
 #include <base/Time.hpp>
+#include <base/samples/Joints.hpp>
 
 namespace wbc{
 
@@ -34,6 +35,7 @@ public:
 
 struct HierarchicalQP{
     base::Time time;
+    base::samples::Joints joint_state;
     std::vector<std::string> joint_names;          /** Vector of names of all joints*/
     std::vector<std::string> actuated_joint_names; /** Vector of names of actuated joints*/
     std::vector<QuadraticProgram> prios;           /** hierarchical organized QPs*/

@@ -227,6 +227,7 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
     for(size_t i = 0; i < joint_state.size(); i++){
         uint idx = current_joint_state.mapNameToIndex(joint_state.names[i]);
         current_joint_state[idx] = joint_state[i];
+        current_joint_state[idx].acceleration = 0.0;
     }
     current_joint_state.time = joint_state.time;
 

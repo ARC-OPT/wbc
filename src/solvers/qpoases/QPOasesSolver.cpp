@@ -91,20 +91,63 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
 
     actual_n_wsr = n_wsr;
     if(!sq_problem.isInitialised()){
+        std::cout<<"NWSR IS "<<actual_n_wsr<<std::endl;
         ret_val = sq_problem.init(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
-        if(ret_val != SUCCESSFUL_RETURN)
+        if(ret_val != SUCCESSFUL_RETURN){
+            std::cout<<"SOLVER INPUT: "<<std::endl;
+            std::cout<<"H"<<std::endl;
+            std::cout<<qp.H<<std::endl;
+            std::cout<<"g"<<std::endl;
+            std::cout<<qp.g.transpose()<<std::endl;
+            std::cout<<"A"<<std::endl;
+            std::cout<<qp.A<<std::endl;
+            std::cout<<"lower_y"<<std::endl;
+            std::cout<<qp.lower_y.transpose()<<std::endl;
+            std::cout<<"upper_y"<<std::endl;
+            std::cout<<qp.upper_y.transpose()<<std::endl;
+            std::cout<<"lower_x"<<std::endl;
+            std::cout<<qp.lower_x.transpose()<<std::endl;
+            std::cout<<"upper_x"<<std::endl;
+            std::cout<<qp.upper_x.transpose()<<std::endl<<std::endl;
             throw std::runtime_error("SQ Problem initialization failed with error " + std::to_string(ret_val));
+        }
     }
     else{
         ret_val = sq_problem.hotstart(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
-        if(ret_val != SUCCESSFUL_RETURN)
+        if(ret_val != SUCCESSFUL_RETURN){
+            std::cout<<"SOLVER INPUT: "<<std::endl;
+            std::cout<<"H"<<std::endl;
+            std::cout<<qp.H<<std::endl;
+            std::cout<<"g"<<std::endl;
+            std::cout<<qp.g.transpose()<<std::endl;
+            std::cout<<"A"<<std::endl;
+            std::cout<<qp.A<<std::endl;
+            std::cout<<"lower_y"<<std::endl;
+            std::cout<<qp.lower_y.transpose()<<std::endl;
+            std::cout<<"upper_y"<<std::endl;
+            std::cout<<qp.upper_y.transpose()<<std::endl;
+            std::cout<<"lower_x"<<std::endl;
+            std::cout<<qp.lower_x.transpose()<<std::endl;
+            std::cout<<"upper_x"<<std::endl;
+            std::cout<<qp.upper_x.transpose()<<std::endl<<std::endl;
             throw std::runtime_error("SQ Problem hotstart failed with error " + std::to_string(ret_val));
+        }
     }
 
     int nj = hierarchical_qp.nJoints();
-    solver_output.resize(2*hierarchical_qp.nJoints()+6);
+    //solver_output.resize(2*hierarchical_qp.nJoints()+6);
+    solver_output.resize(2*hierarchical_qp.nJoints());
     if(sq_problem.getPrimalSolution( solver_output.data() ) == RET_QP_NOT_SOLVED)
         throw std::runtime_error("SQ Problem getPrimalSolution() returned " + std::to_string(RET_QP_NOT_SOLVED));
+
+    if((base::Time::now()-stamp).toSeconds()>1){
+        stamp = base::Time::now();
+        std::cout<<"Solution Acc: "<<solver_output.segment(0,nj).transpose()<<std::endl;
+        //std::cout<<"Solution F_ext: "<<solver_output.segment(nj,6).transpose()<<std::endl;
+        std::cout<<"Solution Tau: "<<solver_output.segment(nj,nj).transpose()<<std::endl;
+        std::cout<<"--------------------------------------------------------------"<<std::endl;
+    }
+
 }
 
 returnValue QPOASESSolver::getReturnValue(){
