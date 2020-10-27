@@ -63,7 +63,7 @@ public:
     };
 
     HierarchicalLSSolver();
-    ~HierarchicalLSSolver();
+    virtual ~HierarchicalLSSolver();
 
     /**
      * @brief configure Resizes member variables

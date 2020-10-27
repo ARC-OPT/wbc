@@ -14,7 +14,7 @@ namespace wbc_solvers {
 class QPOASESSolver : public QPSolver{
 public:
     QPOASESSolver();
-    ~QPOASESSolver();
+    virtual ~QPOASESSolver();
 
     /**
      * @brief solve Solve the given quadratic program

@@ -12,6 +12,8 @@ namespace wbc_solvers{
 
 class QPSolver{
 public:
+    QPSolver(){}
+    virtual ~QPSolver(){}
     /**
      * @brief solve Solve the given quadratic program
      * @param constraints Description of the hierarchical quadratic program to solve. Each vector entry correspond to a stage in the hierarchy where
