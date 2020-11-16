@@ -149,7 +149,7 @@ void WbcAccelerationScene::update(){
         f_ext << -0.0016937263217112032, -0.0031835690480501865, -75.94681724308107, -0.07960479827699948, 2.7142051814597408, -0.00011199983616109183;
         constraints_prio[prio].A.setZero();
         constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
-        constraints_prio[prio].A.block(0, nj, nj, nj) = -robot_model->getActuationMatrix();
+        constraints_prio[prio].A.block(0, nj, nj, nj) = -robot_model->getSelectionMatrix();
         constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) =
                 -robot_model->biasForces() - robot_model->fullJacobian("world", "LLAnkle_FT").transpose() * f_ext;
         constraints_prio[prio].lower_y.segment(0,6).setZero();

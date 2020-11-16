@@ -25,7 +25,7 @@ protected:
     base::Vector3d gravity;
     base::MatrixXd joint_space_inertia_mat;
     base::VectorXd bias_forces;
-    base::MatrixXd actuation_matrix;
+    base::MatrixXd selection_matrix;
 
 public:
     RobotModel();
@@ -125,8 +125,10 @@ public:
     /** Return the current gravity vector*/
     const base::Vector3d& getGravityVector(){return gravity;}
 
-    /** Return current actuation matrix*/
-    const base::MatrixXd& getActuationMatrix(){return actuation_matrix;}
+    /** Return current selection matrix that maps complete joint vector to actuated joint vector. The matrix
+      * consists of only zeros and ones. Size is na x nq, where na is the number of actuated joints and
+      * nq the total number of joints. */
+    const base::MatrixXd& getSelectionMatrix(){return selection_matrix;}
 };
 
 typedef std::shared_ptr<RobotModel> RobotModelPtr;
