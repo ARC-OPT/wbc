@@ -1,4 +1,4 @@
-#include <robot_models/KinematicRobotModelKDL.hpp>
+#include <robot_models/RobotModelKDL.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/WbcVelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
@@ -30,7 +30,7 @@ int main(int argc, char** argv){
     wbc_config.push_back(cart_constraint);
 
     // Configure Robot model
-    RobotModelPtr robot_model = make_shared<KinematicRobotModelKDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelKDL>();
     vector<RobotModelConfig> config(1);
     config[0].file = "../../../examples/kuka_iiwa/data/urdf/kuka_iiwa.urdf";
     config[0].joint_names = joint_names;

@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "robot_models/KinematicRobotModelKDL.hpp"
+#include "robot_models/RobotModelKDL.hpp"
 #include "robot_models/KinematicChainKDL.hpp"
 #include "core/RobotModelConfig.hpp"
 #include <kdl/chainfksolverpos_recursive.hpp>
@@ -17,13 +17,13 @@ BOOST_AUTO_TEST_CASE(forward_kinematics_wbc_vs_kdl){
     string urdf_model_file = "../../../models/kuka_iiwa.urdf";
 
     base::samples::Joints joint_state;
-    vector<string> joint_names = KinematicRobotModelKDL::jointNamesFromURDF(urdf_model_file);
+    vector<string> joint_names = RobotModelKDL::jointNamesFromURDF(urdf_model_file);
     joint_state.resize(joint_names.size());
     joint_state.names = joint_names;
     for(base::JointState& j : joint_state.elements)
         j.position = j.speed = 0;
 
-    KinematicRobotModelKDL robot_model;
+    RobotModelKDL robot_model;
     BOOST_CHECK(robot_model.configure(urdf_model_file, joint_names) == true);
 
     KDL::Chain chain;
@@ -89,7 +89,7 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
 
     string urdf_model_file = "../../../models/single_joint.urdf";
 
-    KinematicRobotModelKDL robot_model;
+    RobotModelKDL robot_model;
     robot_model.configure(urdf_model_file, joint_names);
 
     double t = 0;
@@ -177,7 +177,7 @@ BOOST_AUTO_TEST_CASE(multiple_robots_test){
     std::string robot_urdf_filename  = "../../../models/kuka_lbr.urdf";
     std::string object_urdf_filename = "../../../models/object.urdf";
 
-    vector<string> robot_joint_names  = KinematicRobotModelKDL::jointNamesFromURDF(robot_urdf_filename);
+    vector<string> robot_joint_names  = RobotModelKDL::jointNamesFromURDF(robot_urdf_filename);
     vector<string> object_joint_names;
     object_joint_names.push_back("object_trans_x");
     object_joint_names.push_back("object_trans_y");
@@ -198,7 +198,7 @@ BOOST_AUTO_TEST_CASE(multiple_robots_test){
 
     cout<<"Testing Model Creation ...."<<endl<<endl;
 
-    KinematicRobotModelKDL robot_model;
+    RobotModelKDL robot_model;
     vector<RobotModelConfig> config(2);
     config[0].file = robot_urdf_filename;
     config[0].joint_names = config[0].actuated_joint_names = robot_joint_names;
@@ -222,7 +222,7 @@ BOOST_AUTO_TEST_CASE(multiple_robots_test){
     object_pose.pose.orientation = Eigen::AngleAxisd(M_PI/2, Eigen::Vector3d::Unit(2));
     base::NamedVector<base::samples::RigidBodyStateSE3> poses;
     poses.elements.push_back(object_pose);
-    poses.names.push_back(KinematicRobotModelKDL::robotNameFromURDF(object_urdf_filename));
+    poses.names.push_back(RobotModelKDL::robotNameFromURDF(object_urdf_filename));
     BOOST_CHECK_NO_THROW(robot_model.update(joint_state, poses));
 
     cout<<"Testing FK ..."<<endl<<endl;
@@ -328,7 +328,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
 
         // WBC (KDL) Robot Model
 
-        wbc::KinematicRobotModelKDL robot_model;
+        wbc::RobotModelKDL robot_model;
         std::vector<std::string> joint_names;
         for(int i = 0; i < 7; i++)
             joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
 
         // WBC (KDL) Robot Model
 
-        wbc::KinematicRobotModelKDL robot_model;
+        wbc::RobotModelKDL robot_model;
         std::vector<std::string> joint_names;
         for(int i = 0; i < 7; i++)
             joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
@@ -559,7 +559,7 @@ BOOST_AUTO_TEST_CASE(floating_base)
     std::string urdf_filename_floating_base = "../../../models/kuka_iiwa_floating_base.urdf";
     std::string floating_base_filename = "../../../models/floating_base.urdf";
 
-    wbc::KinematicRobotModelKDL robot_model;
+    wbc::RobotModelKDL robot_model;
     vector<RobotModelConfig> configs;
     RobotModelConfig config_robot, config_floating_base;
     config_floating_base.file = floating_base_filename;
@@ -571,13 +571,13 @@ BOOST_AUTO_TEST_CASE(floating_base)
     config_floating_base.joint_names.push_back("floating_base_rot_z");
     config_robot.file = urdf_filename;
     config_robot.hook = "link_floating_base_rot_z";
-    config_robot.joint_names = config_robot.actuated_joint_names = KinematicRobotModelKDL::jointNamesFromURDF(urdf_filename);
+    config_robot.joint_names = config_robot.actuated_joint_names = RobotModelKDL::jointNamesFromURDF(urdf_filename);
     configs.push_back(config_floating_base);
     configs.push_back(config_robot);
     BOOST_CHECK(robot_model.configure(configs) == true);
 
-    wbc::KinematicRobotModelKDL robot_model_floating_base;
-    BOOST_CHECK(robot_model_floating_base.configure(urdf_filename_floating_base, KinematicRobotModelKDL::jointNamesFromURDF(urdf_filename_floating_base)) == true);
+    wbc::RobotModelKDL robot_model_floating_base;
+    BOOST_CHECK(robot_model_floating_base.configure(urdf_filename_floating_base, RobotModelKDL::jointNamesFromURDF(urdf_filename_floating_base)) == true);
 
     base::samples::Joints joint_state;
     joint_state.resize(robot_model.noOfActuatedJoints());

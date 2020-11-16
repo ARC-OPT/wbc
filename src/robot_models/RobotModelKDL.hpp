@@ -1,5 +1,5 @@
-#ifndef KINEMATICROBOTMODELKDL_HPP
-#define KINEMATICROBOTMODELKDL_HPP
+#ifndef ROBOTMODELKDL_HPP
+#define ROBOTMODELKDL_HPP
 
 #include "../core/RobotModel.hpp"
 
@@ -17,7 +17,7 @@ class KinematicChainKDL;
  *  @brief This model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added
  *  and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios.
  */
-class KinematicRobotModelKDL : public RobotModel{
+class RobotModelKDL : public RobotModel{
 
     typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
@@ -59,8 +59,8 @@ protected:
     void toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state);
 
 public:
-    KinematicRobotModelKDL();
-    virtual ~KinematicRobotModelKDL();
+    RobotModelKDL();
+    virtual ~RobotModelKDL();
     KinematicChainKDLMap kdl_chain_map;           /** Map of KDL Chains*/
 
     /**

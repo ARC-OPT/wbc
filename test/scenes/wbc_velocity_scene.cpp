@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "robot_models/KinematicRobotModelKDL.hpp"
+#include "robot_models/RobotModelKDL.hpp"
 #include "core/RobotModelConfig.hpp"
 #include "scenes/WbcVelocityScene.hpp"
 
@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(test_configure){
     wbc_config.push_back(cart_constraint);
 
     // Configure Robot model
-    shared_ptr<KinematicRobotModelKDL> robot_model = make_shared<KinematicRobotModelKDL>();
+    shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     vector<RobotModelConfig> config(1);
     config[0].file = std::string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_lbr.urdf";
     config[0].joint_names = joint_names;

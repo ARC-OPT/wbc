@@ -1,4 +1,4 @@
-#include "KinematicRobotModelKDL.hpp"
+#include "RobotModelKDL.hpp"
 #include "KinematicChainKDL.hpp"
 #include <kdl_parser/kdl_parser.hpp>
 #include <base-logging/Logging.hpp>
@@ -10,13 +10,13 @@
 
 namespace wbc{
 
-KinematicRobotModelKDL::KinematicRobotModelKDL(){
+RobotModelKDL::RobotModelKDL(){
 }
 
-KinematicRobotModelKDL::~KinematicRobotModelKDL(){
+RobotModelKDL::~RobotModelKDL(){
 }
 
-void KinematicRobotModelKDL::clear(){
+void RobotModelKDL::clear(){
     current_joint_state.clear();
     full_tree = KDL::Tree();
     kdl_chain_map.clear();
@@ -26,7 +26,7 @@ void KinematicRobotModelKDL::clear(){
 }
 
 
-bool KinematicRobotModelKDL::configure(const std::string& model_filename,
+bool RobotModelKDL::configure(const std::string& model_filename,
                                        const std::vector<std::string> &joint_names){
     clear();
 
@@ -40,7 +40,7 @@ bool KinematicRobotModelKDL::configure(const std::string& model_filename,
     return configure(configs);
 }
 
-bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config){
+bool RobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config){
 
     clear();
 
@@ -171,7 +171,7 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
     return true;
 }
 
-void KinematicRobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
+void RobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
     KDL::Chain chain;
     if(!full_tree.getChain(root_frame, tip_frame, chain)){
         LOG_ERROR("Unable to extract kinematics chain from %s to %s from KDL tree", root_frame.c_str(), tip_frame.c_str());
@@ -190,7 +190,7 @@ void KinematicRobotModelKDL::createChain(const std::string &root_frame, const st
     LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
 }
 
-void KinematicRobotModelKDL::toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state){
+void RobotModelKDL::toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state){
 
     if(!rbs.hasValidPose() ||
        !rbs.hasValidTwist() ||
@@ -219,7 +219,7 @@ void KinematicRobotModelKDL::toJointState(const base::samples::RigidBodyStateSE3
     }
 }
 
-void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
+void RobotModelKDL::update(const base::samples::Joints& joint_state,
                                     const base::NamedVector<base::samples::RigidBodyStateSE3>& virtual_joint_states){
 
 
@@ -266,10 +266,10 @@ void KinematicRobotModelKDL::update(const base::samples::Joints& joint_state,
     computeBiasForces();
 }
 
-const base::samples::RigidBodyStateSE3 &KinematicRobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
+const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
@@ -281,10 +281,10 @@ const base::samples::RigidBodyStateSE3 &KinematicRobotModelKDL::rigidBodyState(c
     return kdl_chain->rigidBodyState();
 }
 
-const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vector<std::string> &joint_names){
+const base::samples::Joints& RobotModelKDL::jointState(const std::vector<std::string> &joint_names){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jointState()");
     }
 
@@ -297,14 +297,14 @@ const base::samples::Joints& KinematicRobotModelKDL::jointState(const std::vecto
             joint_state_out[i] = current_joint_state.getElementByName(joint_names[i]);
         }
         catch(std::exception e){
-            LOG_ERROR("KinematicRobotModelKDL: Requested state of joint %s but this joint does not exist in robot model", joint_names[i].c_str());
+            LOG_ERROR("RobotModelKDL: Requested state of joint %s but this joint does not exist in robot model", joint_names[i].c_str());
             throw std::invalid_argument("Invalid call to jointState()");
         }
     }
     return joint_state_out;
 }
 
-const base::MatrixXd& KinematicRobotModelKDL::fullJacobian(const std::string &root_frame, const std::string &tip_frame){
+const base::MatrixXd& RobotModelKDL::fullJacobian(const std::string &root_frame, const std::string &tip_frame){
 
     const std::string chain_id = chainID(root_frame, tip_frame);
     const base::MatrixXd& jac = jacobian(root_frame,tip_frame);
@@ -318,10 +318,10 @@ const base::MatrixXd& KinematicRobotModelKDL::fullJacobian(const std::string &ro
     return full_jac_map[chain_id];
 }
 
-const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
+const base::MatrixXd& RobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobian()");
     }
 
@@ -336,10 +336,10 @@ const base::MatrixXd& KinematicRobotModelKDL::jacobian(const std::string &root_f
     return jac_map[chain_id];
 }
 
-const base::MatrixXd &KinematicRobotModelKDL::fullJacobianDot(const std::string &root_frame, const std::string &tip_frame){
+const base::MatrixXd &RobotModelKDL::fullJacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobianDot()");
     }
 
@@ -358,10 +358,10 @@ const base::MatrixXd &KinematicRobotModelKDL::fullJacobianDot(const std::string 
     return full_jac_dot_map[chain_id];
 }
 
-const base::MatrixXd &KinematicRobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
+const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
-        LOG_ERROR("KinematicRobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobianDot()");
     }
 
@@ -376,7 +376,7 @@ const base::MatrixXd &KinematicRobotModelKDL::jacobianDot(const std::string &roo
     return jac_dot_map[chain_id];
 }
 
-void KinematicRobotModelKDL::computeBiasForces(){
+void RobotModelKDL::computeBiasForces(){
     // Use ID solver with zero joint accelerations and zero external wrenches to get bias forces/torques
     KDL::TreeIdSolver_RNE solver(full_tree, KDL::Vector(gravity(0), gravity(1), gravity(2)));
     solver.CartToJnt(q, qdot, zero, std::map<std::string,KDL::Wrench>(), tau);
@@ -391,7 +391,7 @@ void KinematicRobotModelKDL::computeBiasForces(){
     }
 }
 
-void KinematicRobotModelKDL::computeJointSpaceInertiaMatrix(){
+void RobotModelKDL::computeJointSpaceInertiaMatrix(){
     joint_space_inertia_mat.setZero();
 
     // Use ID solver with zero bias and external wrenches to compute joint space inertia matrix column by column.
@@ -415,35 +415,35 @@ void KinematicRobotModelKDL::computeJointSpaceInertiaMatrix(){
     }
 }
 
-bool KinematicRobotModelKDL::hasFrame(const std::string &name){
+bool RobotModelKDL::hasFrame(const std::string &name){
     return full_tree.getSegments().count(name) > 0;
 }
 
-bool KinematicRobotModelKDL::hasJoint(const std::string &name){
+bool RobotModelKDL::hasJoint(const std::string &name){
     return std::find(current_joint_state.names.begin(), current_joint_state.names.end(), name) != current_joint_state.names.end();
 }
 
 
-const std::string &KinematicRobotModelKDL::robotNameFromURDF(const std::string &filename){
+const std::string &RobotModelKDL::robotNameFromURDF(const std::string &filename){
     urdf::ModelInterfaceSharedPtr urdf_model = urdf::parseURDFFile(filename);
     return urdf_model->getName();
 }
 
-const std::string &KinematicRobotModelKDL::rootLinkFromURDF(const std::string &filename){
+const std::string &RobotModelKDL::rootLinkFromURDF(const std::string &filename){
     KDL::Tree tree;
     if(!kdl_parser::treeFromFile(filename, tree))
         throw std::runtime_error("Unable to load URDF from file " + filename);
     return tree.getRootSegment()->second.segment.getName();
 }
 
-std::vector<std::string> KinematicRobotModelKDL::jointNamesFromURDF(const std::string &filename){
+std::vector<std::string> RobotModelKDL::jointNamesFromURDF(const std::string &filename){
     KDL::Tree tree;
     if(!kdl_parser::treeFromFile(filename, tree))
         throw std::runtime_error("Unable to load URDF from file " + filename);
-    return KinematicRobotModelKDL::jointNamesFromTree(tree);
+    return RobotModelKDL::jointNamesFromTree(tree);
 }
 
-std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::Tree &tree){
+std::vector<std::string> RobotModelKDL::jointNamesFromTree(const KDL::Tree &tree){
     std::vector<std::string> j_names;
     KDL::SegmentMap::const_iterator it;
     const KDL::SegmentMap& segments = tree.getSegments();
@@ -455,7 +455,7 @@ std::vector<std::string> KinematicRobotModelKDL::jointNamesFromTree(const KDL::T
     return j_names;
 }
 
-void KinematicRobotModelKDL::jointLimitsFromURDF(const std::string& filename, base::JointLimits& limits){
+void RobotModelKDL::jointLimitsFromURDF(const std::string& filename, base::JointLimits& limits){
     urdf::ModelInterfaceSharedPtr urdf_model = urdf::parseURDFFile(filename);
     if (!urdf_model)
         throw std::invalid_argument("Cannot load URDF from file " + filename);
@@ -487,7 +487,7 @@ void KinematicRobotModelKDL::jointLimitsFromURDF(const std::string& filename, ba
     }
 }
 
-void KinematicRobotModelKDL::printTree(const KDL::TreeElement& tree_element, int level){
+void RobotModelKDL::printTree(const KDL::TreeElement& tree_element, int level){
     level+=1;
     for(auto c : tree_element.children){
         for(int j=0;j<level;j++) std::cout << " "; //indent
