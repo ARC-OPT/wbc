@@ -7,8 +7,8 @@ namespace wbc{
 
 enum ModelType{
     UNSET = 0,
-    ROBOT = 1,
-    VIRTUAL_6_DOF_JOINT = 2
+    URDF = 1,        /** Standard URDF model file*/
+    SUBMECHANISM = 2 /** For hyrodyn based robot models: yaml file defining the submechanisms*/
 };
 
 /**
@@ -17,31 +17,46 @@ enum ModelType{
 struct RobotModelConfig{
 public:
     RobotModelConfig(){
-        initial_state.pose.fromTransform(Eigen::Affine3d::Identity());
-        initial_state.twist.setZero();
-        initial_state.acceleration.setZero();
         type = ModelType::UNSET;
+        floating_base = false;
+        world_frame_id = "world";
+        floating_base_state.pose.position.setZero();
+        floating_base_state.pose.orientation.setIdentity();
+        floating_base_state.twist.setZero();
+        floating_base_state.acceleration.setZero();
     }
     RobotModelConfig(const std::string& file,
                      const std::vector<std::string> joint_names,
                      const std::vector<std::string> actuated_joint_names,
                      const ModelType& type,
-                     const std::string& hook = "",
-                     const base::samples::RigidBodyStateSE3& initial_state = base::samples::RigidBodyStateSE3()) :
+                     const bool floating_base = false,
+                     const std::string &world_frame_id = "world",
+                     const base::RigidBodyStateSE3& floating_base_state = base::RigidBodyStateSE3()
+                     ) :
         file(file),
         joint_names(joint_names),
         actuated_joint_names(actuated_joint_names),
         type(type),
-        hook(hook),
-        initial_state(initial_state){
+        floating_base(floating_base),
+        world_frame_id(world_frame_id),
+        floating_base_state(floating_base_state){
+
     }
 
-    std::string file;                               /** Path to robot model file*/
-    std::vector<std::string> joint_names;           /** Set the order of joint names here..*/
-    std::vector<std::string> actuated_joint_names;  /** Set the order of actuated joint names here.*/
-    ModelType type;                                 /** The type of model, see ModelType*/
-    std::string hook;                               /** Optional: In case of multiple models, define the Link to which this robot model is attached in the overall model*/
-    base::samples::RigidBodyStateSE3 initial_state; /** Optional: In case of multiple models, define the initial state of this model*/
+    /** Absolute path to robot model file*/
+    std::string file;
+    /** Define all joints to use from the URDF model. The order here will be used in all computed quantities, like Jacobians, etc..*/
+    std::vector<std::string> joint_names;
+    /** Define all actuated joints here*/
+    std::vector<std::string> actuated_joint_names;
+    /** The type of model, see ModelType*/
+    ModelType type;
+    /** Only for model type URDF: Attach a virtual 6 DoF floating base to the model*/
+    bool floating_base;
+    /** Optional, only for model type URDF and only if floating_base is set to true: ID of the world frame, defaults to 'world'*/
+    std::string world_frame_id;
+    /** Optional, only for model type URDF and only if floating_base is set to true: Initial state of the floating base. Pose defaults to identity, twist/acceleration to zero*/
+    base::RigidBodyStateSE3 floating_base_state;
 };
 
 }

@@ -45,14 +45,14 @@ void WbcAccelerationScene::update(){
                 CartesianAccelerationConstraintPtr constraint = std::static_pointer_cast<CartesianAccelerationConstraint>(constraints[prio][i]);
 
                 // Constraint Jacobian
-                constraint->A = robot_model->fullJacobian(constraint->config.root, constraint->config.tip);
+                constraint->A = robot_model->jacobian(constraint->config.root, constraint->config.tip);
 
                 // Constraint reference
                 base::samples::Joints joint_state = robot_model->jointState(robot_model->jointNames());
                 q_dot.resize(robot_model->noOfJoints());
                 for(size_t j = 0; j < joint_state.size(); j++)
                     q_dot(j) = joint_state[j].speed;
-                constraint->y_ref = constraint->y_ref - robot_model->fullJacobianDot(constraint->config.root, constraint->config.tip) * q_dot;
+                constraint->y_ref = constraint->y_ref - robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * q_dot;
 
                 // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
                 // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
@@ -106,90 +106,12 @@ void WbcAccelerationScene::update(){
             row_index += n_vars;
         }
         int nj = robot_model->noOfJoints();
-        base::MatrixXd A = constraints_prio[prio].A;
-        base::VectorXd y = constraints_prio[prio].lower_y;
+        const base::MatrixXd& A = constraints_prio[prio].A;
+        const base::VectorXd& y = constraints_prio[prio].lower_y;
 
-
-        // Single, rigid environment contact
-        // Variable order: (qdd, f, tau)
-        /*constraints_prio[prio].resize(nj+6, 2*nj+6);
-        constraints_prio[prio].H.setZero();
-        constraints_prio[prio].H.block(0,0,nj,nj) = A.transpose()*A;
-        constraints_prio[prio].g.setZero();
-        constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
-
-        // Constraints: [[J   0   0 ]     [qdd] =    [-Jd*qd]
-        //               [M -J^T -S^T]]   [f]   =    [-h]
-        //                                [tau] =
-        constraints_prio[prio].A.setZero();
-
-        // First row: Contact point left does not move
-        constraints_prio[prio].A.block(0,0,6,nj)    = robot_model->fullJacobian("world", "LLAnkle_FT");
-        constraints_prio[prio].lower_y.segment(0,6) = constraints_prio[prio].upper_y.segment(0,6) = -robot_model->fullJacobianDot("world", "LLAnkle_FT") * q_dot;
-        // Second row: Rigid Body Dynamics
-        constraints_prio[prio].A.block(6,  0,    nj, nj) =  robot_model->jointSpaceInertiaMatrix();
-        constraints_prio[prio].A.block(6, nj,    nj,  6) = -robot_model->fullJacobian("world", "LLAnkle_FT").transpose();
-        constraints_prio[prio].A.block(6, nj+6, nj, nj) = -robot_model->getActuationMatrix();
-        constraints_prio[prio].lower_y.segment(6,nj) = constraints_prio[prio].upper_y.segment(6,nj) = -robot_model->biasForces();
-        //constraints_prio[prio].lower_y.segment(6,6).setZero();
-        //constraints_prio[prio].lower_y.segment(6,6).setZero();*/
-
-
-        // No environment contact
-        // Variable order: (qdd, tau)
-        constraints_prio[prio].resize(nj, 2*nj);
-        // Cost Function: x^T*H*x + x^T*
-        constraints_prio[prio].H.setZero();
-        constraints_prio[prio].H.block(0,0,nj,nj) = A.transpose()*A;
-        constraints_prio[prio].g.setZero();
-        constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
-
-        // Constraints: [[M -S^T]] * [qdd tau] = [-h]
-        base::Vector6d f_ext;
-        f_ext << -0.0016937263217112032, -0.0031835690480501865, -75.94681724308107, -0.07960479827699948, 2.7142051814597408, -0.00011199983616109183;
-        constraints_prio[prio].A.setZero();
-        constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
-        constraints_prio[prio].A.block(0, nj, nj, nj) = -robot_model->getSelectionMatrix();
-        constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) =
-                -robot_model->biasForces() - robot_model->fullJacobian("world", "LLAnkle_FT").transpose() * f_ext;
-        constraints_prio[prio].lower_y.segment(0,6).setZero();
-        constraints_prio[prio].upper_y.segment(0,6).setZero();
-
-        // Lower and upper bou  nds
-        constraints_prio[prio].lower_x.setConstant(-10000);
-        constraints_prio[prio].upper_x.setConstant(10000);
-
-
-        /*for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
-            const std::string &name = robot_model->actuatedJointNames()[i];
-            try{
-                constraints_prio[prio].lower_x[robot_model->jointIndex(name)+nj] = robot_model->jointLimits().getElementByName(name).min.effort;
-                constraints_prio[prio].upper_x[robot_model->jointIndex(name)+nj] = robot_model->jointLimits().getElementByName(name).max.effort;
-            }
-            catch(base::JointLimits::InvalidName e){
-                LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint limits vector"<<std::endl;
-                throw e;
-            }
-        }*/
-
-        if((base::Time::now()-stamp).toSeconds() > 1 ){
-            std::cout<<"Bias: "<<robot_model->biasForces().transpose()<<std::endl;
-            std::cout<<"H"<<std::endl;
-            std::cout<<constraints_prio[prio].H<<std::endl;
-            std::cout<<"g"<<std::endl;
-            std::cout<<constraints_prio[prio].g.transpose()<<std::endl;
-            std::cout<<"A"<<std::endl;
-            std::cout<<constraints_prio[prio].A<<std::endl;
-            std::cout<<"lower_y"<<std::endl;
-            std::cout<<constraints_prio[prio].lower_y.transpose()<<std::endl;
-            std::cout<<"upper_y"<<std::endl;
-            std::cout<<constraints_prio[prio].upper_y.transpose()<<std::endl;
-            std::cout<<"lower_x"<<std::endl;
-            std::cout<<constraints_prio[prio].lower_x.transpose()<<std::endl;
-            std::cout<<"upper_x"<<std::endl;
-            std::cout<<constraints_prio[prio].upper_x.transpose()<<std::endl<<std::endl;
-            stamp = base::Time::now();
-        }
+        // Cost Function: x^T*H*x + x^T * g
+        constraints_prio[prio].H = A.transpose()*A;
+        constraints_prio[prio].g = -(A.transpose()*y).transpose();
     }
 
     constraints_prio.joint_state = robot_model->jointState(robot_model->actuatedJointNames());
@@ -227,10 +149,10 @@ const ConstraintsStatus &WbcAccelerationScene::updateConstraintsStatus(const bas
             constraints_status[name].timeout    = constraint->timeout;
             constraints_status[name].weights    = constraint->weights;
             constraints_status[name].y_ref      = constraint->y_ref;
-            constraints_status[name].y_solution = robot_model->fullJacobian(constraint->config.root, constraint->config.tip) * solver_output_acc +
-                                                  robot_model->fullJacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
-            constraints_status[name].y          = robot_model->fullJacobian(constraint->config.root, constraint->config.tip) * robot_acc +
-                                                  robot_model->fullJacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
+            constraints_status[name].y_solution = robot_model->jacobian(constraint->config.root, constraint->config.tip) * solver_output_acc +
+                                                  robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
+            constraints_status[name].y          = robot_model->jacobian(constraint->config.root, constraint->config.tip) * robot_acc +
+                                                  robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
         }
     }
 

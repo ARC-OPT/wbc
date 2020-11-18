@@ -1,56 +1,21 @@
-#ifndef ROBOTMODELKDL_HPP
-#define ROBOTMODELKDL_HPP
+#ifndef ROBOTMODELHYRODYN_HPP
+#define ROBOTMODELHYRODYN_HPP
 
 #include "../core/RobotModel.hpp"
-
-#include <kdl/tree.hpp>
-#include <kdl/jacobian.hpp>
+#include <base/samples/RigidBodyStateSE3.hpp>
 #include <base/samples/Joints.hpp>
-#include <memory>
-#include <kdl/jntarray.hpp>
+#include <hyrodyn/robot_model_hyrodyn.hpp>
 
 namespace wbc{
 
-class KinematicChainKDL;
-
-/**
- *  @brief This model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added
- *  and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios.
- */
-class RobotModelKDL : public RobotModel{
-
-    typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
-    typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
-    // Helper variables
-    KDL::JntArray q,qdot,qdotdot,tau,zero;
-
+class RobotModelHyrodyn : public RobotModel, hyrodyn::RobotModel_HyRoDyn{
 protected:
-    KDL::Tree full_tree;                          /** Overall kinematic tree*/
-    std::map<std::string,int> joint_idx_map_kdl;
-    KinematicChainKDLMap kdl_chain_map;           /** Map of KDL Chains*/
-    /**
-     * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree
-     * @param root_frame Root frame of the chain
-     * @param tip_frame Tip frame of the chain
-     */
-    void createChain(const std::string &root_frame, const std::string &tip_frame);
+    base::samples::RigidBodyStateSE3 rbs;
 
-    /** Add a KDL Tree to the model. If the model is empty, the overall KDL::Tree will be replaced by the given tree. If there
-     *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
-     *  of the trees can be updated online by calling update() with poses parameter appropriately set. This will also create the
-     *  joint index map*/
-
-    /** Free storage and clear data structures*/
-    void clear();
-
-    /** ID of kinematic chain given root and tip*/
-    const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
-
-    void updateFloatingBase(const base::RigidBodyStateSE3& rbs, base::samples::Joints& joint_state);
-
+    void toJointState(const base::samples::RigidBodyStateSE3& rbs, const std::string &name, base::samples::Joints& joint_state);
 public:
-    RobotModelKDL();
-    virtual ~RobotModelKDL();
+    RobotModelHyrodyn();
+    virtual ~RobotModelHyrodyn();
 
     /**
      * @brief Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree.
@@ -104,18 +69,7 @@ public:
 
     /** Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system*/
     virtual const base::VectorXd &biasForces();
-
-    /** Check if a frame is available in the model*/
-    bool hasFrame(const std::string &name);
-
-    /** Check if a joint is available in the model*/
-    bool hasJoint(const std::string &name);
-
-    /** Return full tree (KDL model)*/
-    KDL::Tree getTree(){return full_tree;}
-
 };
-
 }
 
-#endif // KINEMATICMODEL_HPP
+#endif
