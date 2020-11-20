@@ -43,7 +43,8 @@ public:
     KDL::Chain chain;                                /** The underlying KDL chain*/
     KDL::JntArrayVel jnt_array_vel;                  /** Vector of positions and velocities of all included joints*/
     KDL::JntArrayAcc jnt_array_acc;                  /** Vector of positions, velocities and accelerations of all included joints*/
-    KDL::Jacobian jacobian;                          /** Jacobian of the Chain. Reference frame is root & reference point is tip*/
+    KDL::Jacobian space_jacobian;                    /** Space Jacobian of the Chain. Reference frame is root & reference point is tip*/
+    KDL::Jacobian body_jacobian;                     /** Body Jacobian of the Chain. Reference frame is root & reference point is tip*/
     KDL::Jacobian jacobian_dot;                      /** Derivative of Jacobian of the Chain. Reference frame & reference point is the root frame*/
     std::vector<std::string> joint_names;            /** Names of the joint included in the kinematic chain*/
     std::string root_frame;                          /** UID of the kinematics chain root link*/

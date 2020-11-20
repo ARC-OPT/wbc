@@ -12,7 +12,8 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &_chain, const std::string
     chain(_chain),
     root_frame(_root_frame),
     tip_frame(_tip_frame),
-    jacobian(KDL::Jacobian(chain.getNrOfJoints())),
+    space_jacobian(KDL::Jacobian(chain.getNrOfJoints())),
+    body_jacobian(KDL::Jacobian(chain.getNrOfJoints())),
     jacobian_dot(KDL::Jacobian(chain.getNrOfJoints())){
 
     jnt_array_vel.q    = KDL::JntArray(chain.getNrOfJoints());
@@ -71,9 +72,11 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
     twist_kdl = frame_vel.deriv();
     pose_kdl = frame_vel.value();
 
-    //// Compute Jacobian
-    if(jac_solver.JntToJac(jnt_array_vel.q, jacobian))
+    //// Compute Jacobians
+    if(jac_solver.JntToJac(jnt_array_vel.q, space_jacobian))
         throw std::runtime_error("Failed to compute Jacobian for chain " + root_frame + " -> " + tip_frame);
+    body_jacobian = space_jacobian;
+    body_jacobian.changeBase(pose_kdl.M.Inverse());
 
     //// Compute Jacobian_dot
     jac_dot_solver.setRepresentation(0); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
@@ -82,7 +85,7 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
 
     //// Compute frame acceleration
     if(has_acceleration)
-        acc = jacobian_dot.data*jnt_array_vel.qdot.data + jacobian.data*jnt_array_acc.qdotdot.data;
+        acc = jacobian_dot.data*jnt_array_vel.qdot.data + space_jacobian.data*jnt_array_acc.qdotdot.data;
 }
 
 

@@ -1,4 +1,4 @@
-#ifndef ROBOTMODEL_HPP
+﻿#ifndef ROBOTMODEL_HPP
 #define ROBOTMODEL_HPP
 
 #include <base/Eigen.hpp>
@@ -25,12 +25,12 @@ protected:
     base::MatrixXd joint_space_inertia_mat;
     base::VectorXd bias_forces;
     base::MatrixXd selection_matrix;
-    JacobianMap jac_map;
-    JacobianMap jac_dot_map;
     base::samples::Joints joint_state_out;
     std::vector<std::string> floating_base_names;
     base::samples::RigidBodyStateSE3 floating_base_state;
     bool has_floating_base;
+    std::vector<std::string> contact_points;
+    std::vector<std::string> active_contacts;
 
     void clear();
 
@@ -61,13 +61,19 @@ public:
     /** Returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates!*/
     virtual const base::samples::RigidBodyStateSE3 &rigidBodyState(const std::string &root_frame, const std::string &tip_frame) = 0;
 
-    /** @brief Returns the Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. By convention reference frame & reference point
-      *  of the Jacobian will be the root frame. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+    /** @brief Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
       * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
       * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
       */
-    virtual const base::MatrixXd &jacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
+    virtual const base::MatrixXd &spaceJacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
+
+    /** @brief Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+      * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
+      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
+      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+      */
+    virtual const base::MatrixXd &bodyJacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
 
     /** @brief Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. By convention reference frame & reference point
       *  of the Jacobian will be the root frame. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
@@ -118,6 +124,12 @@ public:
 
     /** Returns the current state of the floating base*/
     const base::samples::RigidBodyStateSE3& floatingBaseState(){return floating_base_state;}
+
+    /** Provide link names of active contacts*/
+    void setActiveContacts(const std::vector<std::string> contacts){active_contacts = contacts;}
+
+    /** Provide links names that are possibly in contact with the environment (typically the end effector links)*/
+    void setContactPoints(const std::vector<std::string> contacts){contact_points = contacts;}
 };
 
 typedef std::shared_ptr<RobotModel> RobotModelPtr;

@@ -13,11 +13,16 @@ RobotModel::~RobotModel(){
 }
 
 void RobotModel::clear(){
+    actuated_joint_names.clear();
+    base_frame = "";
+    gravity = base::Vector3d(0,0,-9.81);
     has_floating_base = false;
     joint_limits.clear();
     current_joint_state.clear();
-    jac_map.clear();
-    jac_dot_map.clear();
+    joint_state_out.clear();
+    floating_base_names.clear();
+    contact_points.clear();
+    active_contacts.clear();
 }
 
 uint RobotModel::jointIndex(const std::string &joint_name){

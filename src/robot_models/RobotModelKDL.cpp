@@ -58,8 +58,12 @@ bool RobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config)
     for(size_t i = 0; i < cfg.actuated_joint_names.size(); i++)
         actuated_joint_names.push_back(cfg.actuated_joint_names[i]);
 
-    if(has_floating_base)
+    if(has_floating_base){
         updateFloatingBase(cfg.floating_base_state, current_joint_state);
+        floating_base_state.pose = cfg.floating_base_state.pose;
+        floating_base_state.twist = cfg.floating_base_state.twist;
+        floating_base_state.acceleration = cfg.floating_base_state.acceleration;
+    }
 
     base_frame = full_tree.getRootSegment()->second.segment.getName();
 
@@ -71,6 +75,7 @@ bool RobotModelKDL::configure(const std::vector<RobotModelConfig>& model_config)
     bias_forces.resize(noOfJoints());
     zero.resize(noOfJoints());
     zero.data.setZero();
+    jacobian.resize(6,noOfJoints());
 
     for(const auto &it : full_tree.getSegments()){
         KDL::Joint jnt = it.second.segment.getJoint();
@@ -117,9 +122,6 @@ void RobotModelKDL::createChain(const std::string &root_frame, const std::string
     KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain, root_frame, tip_frame);
     kin_chain->update(current_joint_state);
     kdl_chain_map[chain_id] = kin_chain;
-
-    jac_map[chain_id]     = base::MatrixXd(6, kin_chain->joint_names.size());
-    jac_dot_map[chain_id] = base::MatrixXd(6, kin_chain->joint_names.size());
 
     LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
 }
@@ -197,7 +199,7 @@ const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std:
     return kdl_chain->rigidBodyState();
 }
 
-const base::MatrixXd& RobotModelKDL::jacobian(const std::string &root_frame, const std::string &tip_frame){
+const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
@@ -213,12 +215,36 @@ const base::MatrixXd& RobotModelKDL::jacobian(const std::string &root_frame, con
     if(kdl_chain->stamp != current_joint_state.time) // Have to recompute!
         kdl_chain->update(current_joint_state);
 
-    jac_map[chain_id].setZero(6,noOfJoints());
+    jacobian.setZero(6,noOfJoints());
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac_map[chain_id].col(idx) = kdl_chain->jacobian.data.col(j);
+        jacobian.col(idx) = kdl_chain->space_jacobian.data.col(j);
     }
-    return jac_map[chain_id];
+    return jacobian;
+}
+
+const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
+
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    }
+
+    // Create chain if it does not exist
+    const std::string chain_id = chainID(root_frame, tip_frame);
+    if(kdl_chain_map.count(chain_id) == 0)
+        createChain(root_frame, tip_frame);
+
+    KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+    if(kdl_chain->stamp != current_joint_state.time) // Have to recompute!
+        kdl_chain->update(current_joint_state);
+
+    jacobian.setZero(6,noOfJoints());
+    for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
+        int idx = jointIndex(kdl_chain->joint_names[j]);
+        jacobian.col(idx) = kdl_chain->body_jacobian.data.col(j);
+    }
+    return jacobian;
 }
 
 const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
@@ -237,12 +263,12 @@ const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, 
     if(kdl_chain->stamp != current_joint_state.time) // Have to recompute!
         kdl_chain->update(current_joint_state);
 
-    jac_dot_map[chain_id].setZero(6,noOfJoints());
+    jacobian.setZero(6,noOfJoints());
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac_dot_map[chain_id].col(idx) = kdl_chain->jacobian_dot.data.col(j);
+        jacobian.col(idx) = kdl_chain->jacobian_dot.data.col(j);
     }
-    return jac_dot_map[chain_id];
+    return jacobian;
 }
 
 const base::VectorXd &RobotModelKDL::biasForces(){

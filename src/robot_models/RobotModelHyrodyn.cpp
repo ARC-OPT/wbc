@@ -41,6 +41,9 @@ bool RobotModelHyrodyn::configure(const std::vector<RobotModelConfig>& model_con
                 robot_urdf_file = "/tmp/floating_base_model.urdf";
                 doc->SaveFile(robot_urdf_file);
                 has_floating_base = true;
+                floating_base_state.pose = cfg.floating_base_state.pose;
+                floating_base_state.twist = cfg.floating_base_state.twist;
+                floating_base_state.acceleration = cfg.floating_base_state.acceleration;
             }
             break;
         }
@@ -69,6 +72,8 @@ bool RobotModelHyrodyn::configure(const std::vector<RobotModelConfig>& model_con
     }
     for(size_t i = 0; i < jointnames_active.size(); i++)
         actuated_joint_names.push_back(jointnames_active[i]);
+
+    jacobian.resize(6,noOfJoints());
 
     return true;
 }
@@ -121,7 +126,7 @@ const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const 
     return rbs;
 }
 
-const base::MatrixXd &RobotModelHyrodyn::jacobian(const std::string &root_frame, const std::string &tip_frame){
+const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
@@ -135,14 +140,35 @@ const base::MatrixXd &RobotModelHyrodyn::jacobian(const std::string &root_frame,
 
     calculate_space_jacobian(tip_frame);
     uint n_cols = Js.cols();
-    jac_map[tip_frame] = base::MatrixXd(6, n_cols);
+    jacobian.block(0,0,3,n_cols) = Js.block(3,0,3,n_cols);
+    jacobian.block(3,0,3,n_cols) = Js.block(0,0,3,n_cols);
+    return jacobian;
+}
 
-    jac_map[tip_frame].block(0,0,3,n_cols) = Js.block(3,0,3,n_cols);
-    jac_map[tip_frame].block(3,0,3,n_cols) = Js.block(0,0,3,n_cols);
-    return jac_map[tip_frame];
+const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
+
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    }
+
+    if(root_frame != base_frame){
+        LOG_ERROR_S<<"Requested Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
+        throw std::runtime_error("Invalid root frame");
+    }
+
+    calculate_body_jacobian(tip_frame);
+    uint n_cols = Js.cols();
+
+    jacobian.block(0,0,3,n_cols) = Jb.block(3,0,3,n_cols);
+    jacobian.block(3,0,3,n_cols) = Jb.block(0,0,3,n_cols);
+    return jacobian;
 }
 
 const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
+
+    throw std::runtime_error("jacobianDot has not been implemented for hyrodyn based robot model");
+
     if(current_joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
@@ -153,11 +179,7 @@ const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_fra
         throw std::runtime_error("Invalid root frame");
     }
 
-    calculate_space_jacobian(tip_frame);
-    uint n_cols = Js.cols();
-    jac_dot_map[tip_frame] = base::MatrixXd(6, n_cols);
-    jac_dot_map[tip_frame].setZero();
-    return jac_dot_map[tip_frame];
+    return jacobian;
 }
 
 const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){

@@ -13,11 +13,16 @@ link_directories(${hyrodyn_LIBRARY_DIRS}
                  ${rbdl_LIBRARY_DIRS})
 
 include_directories(${PROJECT_SOURCE_DIR}/src)
-add_executable(rh5_simplified_test_main rh5_simplified_test_main.cpp)
-target_link_libraries(rh5_simplified_test_main
+add_executable(rh5_one_leg_floating_base rh5_one_leg_floating_base.cpp)
+target_link_libraries(rh5_one_leg_floating_base
                       wbc-solvers-qpoases
                       wbc-scenes
                       wbc-robot_models
                       ${hyrodyn_LIBRARIES}
                       ${rbdl_LIBRARIES})
+add_executable(rh5_one_leg rh5_one_leg.cpp)
+target_link_libraries(rh5_one_leg
+                      wbc-solvers-qpoases
+                      wbc-scenes
+                      wbc-robot_models)
 

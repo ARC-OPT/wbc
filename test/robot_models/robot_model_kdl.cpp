@@ -145,7 +145,7 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
         BOOST_CHECK(fabs(zero - cstate.twist.angular(1)) <= 1e-7);
         BOOST_CHECK(fabs(zero - cstate.twist.angular(2)) <= 1e-7);
 
-        base::VectorXd twist = robot_model.jacobian("base", "ee") * joint_vel;
+        base::VectorXd twist = robot_model.spaceJacobian("base", "ee") * joint_vel;
         printf("Linear Vel from Jacobian: %.4f %.4f %.4f\n", twist(0), twist(1), twist(2));
         printf("Angular Vel from Jacobian: %.4f %.4f %.4f\n\n", twist(3), twist(4), twist(5));
         for(int i = 0; i < 3; i++){
@@ -153,7 +153,7 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
             BOOST_CHECK(fabs(twist(i+3) - cstate.twist.angular(i)) <= 1e-7);
         }
 
-        base::VectorXd acceleration = robot_model.jacobianDot("base", "ee")*joint_vel + robot_model.jacobian("base", "ee")*joint_acc;
+        base::VectorXd acceleration = robot_model.jacobianDot("base", "ee")*joint_vel + robot_model.spaceJacobian("base", "ee")*joint_acc;
 
         double expected_y_acc = -acc*cos(pos) +  vel*vel*sin(pos);
         double expected_z_acc = -acc*sin(pos) -vel*vel*cos(pos);
@@ -258,7 +258,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         base::Vector3d position_wbc = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_link_7").pose.position;
         base::Matrix3d orientation_wbc = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_link_7").pose.orientation.toRotationMatrix();
         base::Twist twist_wbc = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_link_7").twist;
-        base::MatrixXd jac_wbc = robot_model.jacobian("kuka_lbr_l_link_0", "kuka_lbr_l_link_7");
+        base::MatrixXd jac_wbc = robot_model.spaceJacobian("kuka_lbr_l_link_0", "kuka_lbr_l_link_7");
 
         // Check joint space inertia matrix
         for(int i = 0; i < rbdl_model.dof_count; i++)
@@ -426,7 +426,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
         base::Vector3d position_wbc = rbs.pose.position;
         base::Matrix3d orientation_wbc = rbs.pose.orientation.toRotationMatrix();
         base::Twist twist_wbc = rbs.twist;
-        base::MatrixXd jac_wbc = robot_model.jacobian("world", "kuka_lbr_l_link_7");
+        base::MatrixXd jac_wbc = robot_model.spaceJacobian("world", "kuka_lbr_l_link_7");
 
         start = base::Time::now();
         base::MatrixXd jnt_space_inertia_mat_wbc = robot_model.jointSpaceInertiaMatrix();

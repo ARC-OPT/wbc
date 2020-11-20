@@ -50,7 +50,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     BOOST_CHECK_NO_THROW(robot_model_kdl.update(joint_state));
 
     base::samples::RigidBodyStateSE3 rbs_kdl = robot_model_kdl.rigidBodyState(base_link, ee_link);
-    base::MatrixXd J_kdl = robot_model_kdl.jacobian(base_link, ee_link);
+    base::MatrixXd Js_kdl = robot_model_kdl.spaceJacobian(base_link, ee_link);
+    base::MatrixXd Jb_kdl = robot_model_kdl.bodyJacobian(base_link, ee_link);
 
     cout<<"KDL Model: Computing Joint Space inertia matrix ..."<<endl;
     base::Time start = base::Time::now();
@@ -77,7 +78,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state));
 
     base::samples::RigidBodyStateSE3 rbs_hyrodyn = robot_model_kdl.rigidBodyState(base_link, ee_link);
-    base::MatrixXd J_hyrodyn = robot_model_hyrodyn.jacobian(base_link, ee_link);
+    base::MatrixXd Js_hyrodyn = robot_model_hyrodyn.spaceJacobian(base_link, ee_link);
+    base::MatrixXd Jb_hyrodyn = robot_model_hyrodyn.bodyJacobian(base_link, ee_link);
 
     cout<<"Hyrodyn Model: Computing Joint Space inertia matrix ..."<<endl;
     start = base::Time::now();
@@ -98,8 +100,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<"Twist"<<endl;
     cout<<rbs_kdl.twist.linear.transpose()<<endl;
     cout<<rbs_kdl.twist.angular.transpose()<<endl;
-    cout<<"Jacobian"<<endl;
-    cout<<J_kdl<<endl;
+    cout<<"Space Jacobian"<<endl;
+    cout<<Js_kdl<<endl;
+    cout<<"Body Jacobian"<<endl;
+    cout<<Jb_kdl<<endl;
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_kdl<<endl;
     cout<<"Bias Forces"<<endl;
@@ -112,8 +116,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<"Twist"<<endl;
     cout<<rbs_hyrodyn.twist.linear.transpose()<<endl;
     cout<<rbs_hyrodyn.twist.angular.transpose()<<endl;
-    cout<<"Jacobian"<<endl;
-    cout<<J_hyrodyn<<endl;
+    cout<<"Space Jacobian"<<endl;
+    cout<<Js_hyrodyn<<endl;
+    cout<<"Body Jacobian"<<endl;
+    cout<<Jb_hyrodyn<<endl;
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_hyrodyn<<endl;
     cout<<"Bias Forces"<<endl;
@@ -129,7 +135,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
         BOOST_CHECK(fabs(rbs_kdl.twist.angular(i) - rbs_hyrodyn.twist.angular(i)) < 1e-9);
     for(int i = 0; i < 6; i++)
         for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(J_kdl(i,j) - J_hyrodyn(i,j)) < 1e-3);
+            BOOST_CHECK(fabs(Js_kdl(i,j) - Js_hyrodyn(i,j)) < 1e-3);
+    for(int i = 0; i < 6; i++)
+        for(int j = 0; j < na; j++)
+            BOOST_CHECK(fabs(Jb_kdl(i,j) - Jb_hyrodyn(i,j)) < 1e-3);
     for(int i = 0; i < na; i++)
         for(int j = 0; j < na; j++)
             BOOST_CHECK(fabs(H_kdl(i,j) - H_hyrodyn(i,j)) < 1e-3);
@@ -151,7 +160,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
                                        {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z",
                                         "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                                        {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                                       wbc::ModelType::URDF, true));
+                                       wbc::ModelType::URDF,
+                                       true,
+                                       "world",
+                                       floating_base_state));
     RobotModelKDL robot_model_kdl;
     BOOST_CHECK(robot_model_kdl.configure(configs) == true);
     uint na = robot_model_kdl.noOfActuatedJoints();
@@ -179,7 +191,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     BOOST_CHECK_NO_THROW(robot_model_kdl.update(joint_state, floating_base_state));
 
     base::samples::RigidBodyStateSE3 rbs_kdl = robot_model_kdl.rigidBodyState(base_link, ee_link);
-    base::MatrixXd J_kdl = robot_model_kdl.jacobian(base_link, ee_link);
+    base::MatrixXd Js_kdl = robot_model_kdl.spaceJacobian(base_link, ee_link);
+    base::MatrixXd Jb_kdl = robot_model_kdl.bodyJacobian(base_link, ee_link);
+
     cout<<"KDL Model: Computing Joint Space inertia matrix ..."<<endl;
     base::Time start = base::Time::now();
     base::MatrixXd H_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
@@ -203,14 +217,18 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
                                         "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                                        {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                                        wbc::ModelType::URDF,
-                                       true));
+                                       true,
+                                       "world",
+                                       floating_base_state));
 
     robot_model_hyrodyn.configure(configs);
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state, floating_base_state));
 
 
     base::samples::RigidBodyStateSE3 rbs_hyrodyn = robot_model_hyrodyn.rigidBodyState(base_link, ee_link);
-    base::MatrixXd J_hyrodyn = robot_model_hyrodyn.jacobian(base_link, ee_link);
+    base::MatrixXd Js_hyrodyn = robot_model_hyrodyn.spaceJacobian(base_link, ee_link);
+    base::MatrixXd Jb_hyrodyn = robot_model_hyrodyn.bodyJacobian(base_link, ee_link);
+
     cout<<"Hyrodyn Model: Computing Joint Space inertia matrix ..."<<endl;
     start = base::Time::now();
     base::MatrixXd H_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
@@ -230,8 +248,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     cout<<"Twist"<<endl;
     cout<<rbs_kdl.twist.linear.transpose()<<endl;
     cout<<rbs_kdl.twist.angular.transpose()<<endl;
-    cout<<"Jacobian"<<endl;
-    cout<<J_kdl<<endl;
+    cout<<"Space Jacobian"<<endl;
+    cout<<Js_kdl<<endl;
+    cout<<"Body Jacobian"<<endl;
+    cout<<Jb_kdl<<endl;
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_kdl<<endl;
     cout<<"Bias Forces"<<endl;
@@ -244,8 +264,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     cout<<"Twist"<<endl;
     cout<<rbs_hyrodyn.twist.linear.transpose()<<endl;
     cout<<rbs_hyrodyn.twist.angular.transpose()<<endl;
-    cout<<"Jacobian"<<endl;
-    cout<<J_hyrodyn<<endl;
+    cout<<"Space Jacobian"<<endl;
+    cout<<Js_hyrodyn<<endl;
+    cout<<"Body Jacobian"<<endl;
+    cout<<Jb_hyrodyn<<endl;
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_hyrodyn<<endl;
     cout<<"Bias Forces"<<endl;
@@ -261,7 +283,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
         BOOST_CHECK(fabs(rbs_kdl.twist.angular(i) - rbs_hyrodyn.twist.angular(i)) < 1e-9);
     for(int i = 0; i < 6; i++)
         for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(J_kdl(i,j) - J_hyrodyn(i,j)) < 1e-3);
+            BOOST_CHECK(fabs(Js_kdl(i,j) - Js_hyrodyn(i,j)) < 1e-3);
+    for(int i = 0; i < 6; i++)
+        for(int j = 0; j < na; j++)
+            BOOST_CHECK(fabs(Jb_kdl(i,j) - Jb_hyrodyn(i,j)) < 1e-3);
     for(int i = 0; i < na; i++)
         for(int j = 0; j < na; j++)
             BOOST_CHECK(fabs(H_kdl(i,j) - H_hyrodyn(i,j)) < 1e-3);
