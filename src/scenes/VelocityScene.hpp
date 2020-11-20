@@ -1,7 +1,7 @@
 #ifndef WBCVELOCITYSCENE_HPP
 #define WBCVELOCITYSCENE_HPP
 
-#include "../core/WbcScene.hpp"
+#include "../core/Scene.hpp"
 #include "../core/JointVelocityConstraint.hpp"
 #include "../core/CartesianVelocityConstraint.hpp"
 

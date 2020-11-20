@@ -1,6 +1,6 @@
 #include <robot_models/RobotModelKDL.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <scenes/WbcVelocityScene.hpp>
+#include <scenes/VelocityScene.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>

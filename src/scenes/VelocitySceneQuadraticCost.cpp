@@ -1,4 +1,4 @@
-#include "WbcVelocitySceneQuadraticCost.hpp"
+#include "VelocitySceneQuadraticCost.hpp"
 #include <tools/SVD.hpp>
 #include <base/JointLimits.hpp>
 

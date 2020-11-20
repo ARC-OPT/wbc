@@ -1,7 +1,7 @@
 #ifndef WBCVELOCITYSCENEQUADRATICCOST_HPP
 #define WBCVELOCITYSCENEQUADRATICCOST_HPP
 
-#include "../scenes/WbcVelocityScene.hpp"
+#include "../scenes/VelocityScene.hpp"
 
 namespace wbc{
 

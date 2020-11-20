@@ -1,4 +1,4 @@
-#include "WbcVelocityScene.hpp"
+#include "VelocityScene.hpp"
 #include "../core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
 
@@ -43,7 +43,7 @@ void WbcVelocityScene::update(){
                 CartesianVelocityConstraintPtr constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
 
                 // Constraint Jacobian
-                constraint->A = robot_model->jacobian(constraint->config.root, constraint->config.tip);
+                constraint->A = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
 
                 // Constraint reference
                 // Convert input twist from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the

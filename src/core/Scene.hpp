@@ -16,6 +16,7 @@ class OptProblem;
 class WbcScene{
 protected:
     RobotModelPtr robot_model;
+    SolverPtr robot_model;
     std::vector< std::vector<ConstraintPtr> > constraints;
     ConstraintsStatus constraints_status;
     HierarchicalQP constraints_prio;

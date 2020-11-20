@@ -1,4 +1,4 @@
-#include "WbcScene.hpp"
+#include "Scene.hpp"
 
 namespace wbc{
 
