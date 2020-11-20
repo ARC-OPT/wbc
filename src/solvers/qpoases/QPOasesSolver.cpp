@@ -98,12 +98,13 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
 //    y_opt << 0, 0, 0, 0, 0, 0, -0.0399277,  0.0987355,   0.106366,    2.22985,   -2.52088,  0.0791769;
     if(!sq_problem.isInitialised()){
         ret_val = sq_problem.init(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);//, (real_t*)x_opt.data());
-        if(ret_val != SUCCESSFUL_RETURN){
+        if(ret_val != SUCCESSFUL_RETURN)
             throw std::runtime_error("SQ Problem initialization failed with error " + std::to_string(ret_val));
-        }
     }
     else{
         ret_val = sq_problem.hotstart(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
+        if(ret_val != SUCCESSFUL_RETURN)
+            throw std::runtime_error("SQ Problem hotstart failed with error " + std::to_string(ret_val));
     }
 
     int nj = hierarchical_qp.nJoints();
