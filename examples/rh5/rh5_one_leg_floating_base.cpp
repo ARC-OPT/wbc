@@ -49,6 +49,7 @@ int main(){
     options.enableRegularisation = BT_TRUE;
     options.enableFarBounds = BT_FALSE;
     options.printLevel = PL_NONE;
+    options.print();
     solver.setOptions(options);
     options.print();
     solver.setMaxNoWSR(1000);
@@ -98,7 +99,7 @@ int main(){
         vel.segment(6,6) = qd;
 
         // Constraint Matrix
-        base::MatrixXd A = robot_model.jacobian(world_link, contact_link);
+        base::MatrixXd A = robot_model.spaceJacobian(world_link, contact_link);
         // Target Acceleration of contact point
         base::Vector6d y = -robot_model.jacobianDot(world_link, contact_link) * vel;
 
@@ -117,10 +118,8 @@ int main(){
         qp.A.setZero();
         //qp.A.block(0,  0, 6, nj) =  A;
         qp.A.block(0,  0, nj, nj) =  robot_model.jointSpaceInertiaMatrix();
-        //qp.A.block(0,  nj, nj, 6) =  -A.transpose();
         qp.A.block(0, nj, nj, na) = -robot_model.selectionMatrix().transpose();
-        //qp.lower_y.segment(0,6) = qp.upper_y.segment(0,6) = -robot_model.jacobianDot(world_link, contact_link) * vel;
-        qp.lower_y = qp.upper_y = -robot_model.biasForces();// + A.transpose() * f_ext;
+        qp.lower_y.segment(0,nj) = qp.upper_y.segment(0,nj) = -robot_model.biasForces() + A.transpose() * f_ext;
         qp.lower_y.segment(0,6).setZero();
         qp.upper_y.segment(0,6).setZero();
         qp.lower_x.setConstant(-10000);
@@ -128,11 +127,13 @@ int main(){
 
         pinv = qp.A.completeOrthogonalDecomposition().pseudoInverse();
 
-        /*cout<<"Bias: "<<robot_model.biasForces().transpose()<<endl;
-        cout<<"H"<<endl;
+        cout<<"Bias: "<<robot_model.biasForces().transpose()<<endl;
+        /*cout<<"H"<<endl;
         cout<<qp.H<<endl;
         cout<<"g"<<endl;
         cout<<qp.g.transpose()<<endl;*/
+        cout<<"A.transpose() * f_ext"<<endl;
+        cout<<A.transpose() * f_ext<<endl;
         cout<<"A"<<endl;
         cout<<qp.A<<endl;
         cout<<"lower_y"<<endl;
@@ -190,8 +191,8 @@ int main(){
     cout<<endl;
     cout<<"Solution WBC: "<<endl;
     cout<<"Acc:   "<<solver_output.segment(0,nj).transpose()<<endl;
-    cout<<"F_ext: "<<solver_output.segment(nj,6).transpose()<<endl;
-    cout<<"Tau:   "<<solver_output.segment(nj+6,na).transpose()<<endl;
+    cout<<"Tau:   "<<solver_output.segment(nj,na).transpose()<<endl;
+    cout<<"F_ext: "<<solver_output.segment(nj+na,6).transpose()<<endl;
     cout<<endl;
     cout<<"Solution Hyrodyn:"<<endl;
     cout<<"Tau actuated:                "<<robot_model_hyrodyn.Tau_actuated.transpose()<<endl;
@@ -200,6 +201,7 @@ int main(){
     cout<<"Solution pinv: "<<endl;
     cout<<"Acc:   "<<(pinv*qp.lower_y).segment(0,nj).transpose()<<endl;
     cout<<"tau:   "<<(pinv*qp.lower_y).segment(nj,na).transpose()<<endl;
+    cout<<"F_ext: "<<(pinv*qp.lower_y).segment(nj+na,6).transpose()<<endl;
 
     /*cout<<"Rigid Body Dynamics check: "<<endl;
     base::VectorXd bias_check = robot_model.jointSpaceInertiaMatrix()*solver_output.segment(0,nj) +
