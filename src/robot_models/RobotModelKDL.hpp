@@ -23,7 +23,10 @@ class RobotModelKDL : public RobotModel{
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
     // Helper variables
     KDL::JntArray q,qdot,qdotdot,tau,zero;
-    base::MatrixXd jacobian;
+    typedef std::map<std::string, base::MatrixXd > JacobianMap;
+    JacobianMap space_jac_map;
+    JacobianMap body_jac_map;
+    JacobianMap jac_dot_map;
 
 protected:
     KDL::Tree full_tree;                          /** Overall kinematic tree*/
@@ -47,7 +50,6 @@ protected:
     /** ID of kinematic chain given root and tip*/
     const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
-    void updateFloatingBase(const base::RigidBodyStateSE3& rbs, base::samples::Joints& joint_state);
 
 public:
     RobotModelKDL();
@@ -63,7 +65,7 @@ public:
      * @param base_frame Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model.
      * @return True in case of success, else false
      */
-    virtual bool configure(const std::vector<RobotModelConfig>& model_config);
+    virtual bool configure(const RobotModelConfig& cfg);
 
     /**
      * @brief Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
@@ -111,12 +113,6 @@ public:
 
     /** Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system*/
     virtual const base::VectorXd &biasForces();
-
-    /** Check if a frame is available in the model*/
-    bool hasFrame(const std::string &name);
-
-    /** Check if a joint is available in the model*/
-    bool hasJoint(const std::string &name);
 
     /** Return full tree (KDL model)*/
     KDL::Tree getTree(){return full_tree;}

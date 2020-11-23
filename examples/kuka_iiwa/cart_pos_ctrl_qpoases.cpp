@@ -31,24 +31,25 @@ int main(int argc, char** argv){
 
     // Configure Robot model
     RobotModelPtr robot_model = make_shared<RobotModelKDL>();
-    vector<RobotModelConfig> config(1);
-    config[0].file = "../../../examples/kuka_iiwa/data/urdf/kuka_iiwa.urdf";
-    config[0].joint_names = joint_names;
+    RobotModelConfig config;
+    config.file = "../../../examples/kuka_iiwa/data/urdf/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = joint_names;
     if(!robot_model->configure(config))
         return -1;
 
-    // Configure WBC Scene
-    WbcVelocityScene wbc_scene(robot_model);
-    if(!wbc_scene.configure(wbc_config))
-        return -1;
-
     // Create solver
-    wbc_solvers::QPOASESSolver solver;
+    QPOASESSolver solver;
     qpOASES::Options options;
     options.setToDefault();
     options.printLevel = qpOASES::PL_NONE;
     solver.setMaxNoWSR(100);
     solver.setOptions(options);
+
+    // Configure WBC Scene
+    VelocityScene wbc_scene(robot_model);
+    if(!wbc_scene.configure(wbc_config))
+        return -1;
 
     // Create controller
     ctrl_lib::CartesianPosPDController controller;
@@ -95,6 +96,7 @@ int main(int argc, char** argv){
         // Update joint state
         for(size_t i = 0; i < joint_state.size(); i++)
             joint_state[i].position += solver_output(i) * loop_time;
+        joint_state.time = base::Time::now();
 
         cout<<"setpoint: x: "<<setpoint.pose.position(0)<<" y: "<<setpoint.pose.position(1)<<" z: "<<setpoint.pose.position(2)<<endl;
         cout<<"setpoint: qx: "<<setpoint.pose.orientation.x()<<" qy: "<<setpoint.pose.orientation.y()<<" qz: "<<setpoint.pose.orientation.z()<<" qw: "<<setpoint.pose.orientation.w()<<endl<<endl;

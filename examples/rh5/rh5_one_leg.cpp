@@ -7,7 +7,6 @@
 
 using namespace wbc;
 using namespace std;
-using namespace wbc_solvers;
 using namespace qpOASES;
 
 double whiteNoise(const double std_dev)
@@ -21,29 +20,12 @@ double whiteNoise(const double std_dev)
 }
 
 int main(){
-    vector<RobotModelConfig> configs;
-    configs.push_back(RobotModelConfig("../../../models/urdf/rh5/rh5.urdf",
-                                       {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                                       {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                                       wbc::ModelType::URDF));
+    RobotModelConfig config("../../../models/urdf/rh5/rh5.urdf",
+                           {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
+                           {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
 
     RobotModelPtr robot_model = std::make_shared<RobotModelKDL>();
-    if(!robot_model->configure(configs))
-        return -1;
-
-    ConstraintConfig config;
-    config.name = "left_leg_posture";
-    config.type = cart;
-    config.root = "RH5_Root_Link";
-    config.tip = "LLAnkle_FT";
-    config.ref_frame = "RH5_Root_Link";
-    config.priority = 0;
-    config.weights = {1,1,1,1,1,1};
-    config.activation = 1;
-    std::vector<ConstraintConfig> constraint_configs;
-    constraint_configs.push_back(config);
-    WbcAccelerationScene scene(robot_model);
-    if(!scene.configure(constraint_configs))
+    if(!robot_model->configure(config))
         return -1;
 
     QPOASESSolver solver;
@@ -55,15 +37,29 @@ int main(){
     solver.setOptions(options);
     solver.setMaxNoWSR(1000);
 
+    std::vector<ConstraintConfig> wbc_config(1);
+    wbc_config[0].name = "left_leg_posture";
+    wbc_config[0].type = cart;
+    wbc_config[0].root = "RH5_Root_Link";
+    wbc_config[0].tip = "LLAnkle_FT";
+    wbc_config[0].ref_frame = "RH5_Root_Link";
+    wbc_config[0].priority = 0;
+    wbc_config[0].weights = {1,1,1,1,1,1};
+    wbc_config[0].activation = 1;
+    AccelerationScene scene(robot_model);
+    if(!scene.configure(wbc_config))
+        return -1;
+
     uint nj = robot_model->noOfJoints();
     uint na = robot_model->noOfActuatedJoints();
 
-    base::VectorXd solver_output;
     base::samples::Joints joint_state;
     base::VectorXd q,qd,qdd;
     q.resize(nj);
     qd.resize(nj);
     qdd.resize(nj);
+
+    base::VectorXd solver_output;
 
     for(int n = 0; n < 10; n++){
         cout<<"------------------- Iteration "<<n<<" ---------------------"<<endl;
@@ -91,12 +87,12 @@ int main(){
             scene.getConstraint("left_leg_posture")->y_ref[i] = whiteNoise(1e-4);
 
         scene.update();
+
         HierarchicalQP hqp;
         scene.getHierarchicalQP(hqp);
-
         solver.solve(hqp, solver_output);
 
-        std::cout<<"Solution Acc: "<<solver_output.transpose()<<std::endl;
+        std::cout<<"Solution Acc: "<<solver_output.transpose()<<endl;
     }
 
     return 0;

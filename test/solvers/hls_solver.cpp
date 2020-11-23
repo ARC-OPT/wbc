@@ -4,7 +4,7 @@
 #include <iostream>
 #include <sys/time.h>
 
-using namespace wbc_solvers;
+using namespace wbc;
 using namespace std;
 
 BOOST_AUTO_TEST_CASE(solver_hls)

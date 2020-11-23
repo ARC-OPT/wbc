@@ -24,6 +24,7 @@ link_directories(${base-types_LIBRARY_DIRS}
 add_executable(robot_model_kdl robot_model_kdl.cpp ../suite.cpp)
 target_link_libraries(robot_model_kdl
                       wbc-robot_models
+                      wbc-tools
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
                       ${RBDL_LIBRARY}
                       ${RBDL_URDFReader_LIBRARY})
@@ -31,4 +32,5 @@ target_link_libraries(robot_model_kdl
 add_executable(robot_model_hyrodyn robot_model_hyrodyn.cpp ../suite.cpp)
 target_link_libraries(robot_model_hyrodyn
                       wbc-robot_models
+                      wbc-tools
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

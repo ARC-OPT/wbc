@@ -1,6 +1,6 @@
 #include "SVD.hpp"
 
-namespace wbc_solvers {
+namespace wbc {
 
 int svd_eigen_decomposition(const base::MatrixXd& A,
                             base::MatrixXd& U,

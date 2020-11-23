@@ -8,7 +8,7 @@
 
 namespace wbc{
 
-class RobotModelHyrodyn : public RobotModel, hyrodyn::RobotModel_HyRoDyn{
+class RobotModelHyrodyn : public RobotModel, public hyrodyn::RobotModel_HyRoDyn{
 protected:
     base::samples::RigidBodyStateSE3 rbs;
 
@@ -29,7 +29,7 @@ public:
      * @param base_frame Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model.
      * @return True in case of success, else false
      */
-    virtual bool configure(const std::vector<RobotModelConfig>& model_config);
+    virtual bool configure(const RobotModelConfig& cfg);
 
     /**
      * @brief Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required

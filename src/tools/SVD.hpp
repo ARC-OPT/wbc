@@ -27,7 +27,7 @@
 
 #include <base/Eigen.hpp>
 
-namespace wbc_solvers{
+namespace wbc{
 
 inline double PYTHAG(double a,double b) {
     double at,bt,ct;

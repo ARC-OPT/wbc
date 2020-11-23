@@ -4,16 +4,19 @@ file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/types "*.hpp")
 file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/types "*.cpp")
 
 pkg_search_module(base-types REQUIRED base-types)
+pkg_search_module(urdfdom REQUIRED urdfdom)
 
 list(APPEND PKGCONFIG_REQUIRES base-types)
+list(APPEND PKGCONFIG_REQUIRES urdfdom)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
-include_directories(${base-types_INCLUDE_DIRS})
-link_directories(${base-types_LIBRARY_DIRS})
+include_directories(${base-types_INCLUDE_DIRS} ${urdfdom_INCLUDE_DIRS})
+link_directories(${base-types_LIBRARY_DIRS} ${urdfdom_LIBRARY_DIRS})
 
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME}
-                      ${base-types_LIBRARIES})
+                      ${base-types_LIBRARIES}
+                      ${urdfdom_LIBRARIES})
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}

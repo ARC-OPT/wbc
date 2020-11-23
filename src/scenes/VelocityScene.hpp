@@ -1,5 +1,5 @@
-#ifndef WBCVELOCITYSCENE_HPP
-#define WBCVELOCITYSCENE_HPP
+#ifndef VELOCITYSCENE_HPP
+#define VELOCITYSCENE_HPP
 
 #include "../core/Scene.hpp"
 #include "../core/JointVelocityConstraint.hpp"
@@ -10,25 +10,24 @@ namespace wbc{
 typedef std::shared_ptr<CartesianVelocityConstraint> CartesianVelocityConstraintPtr;
 typedef std::shared_ptr<JointVelocityConstraint> JointVelocityConstraintPtr;
 
-class WbcVelocityScene : public WbcScene{
+class VelocityScene : public WbcScene{
 protected:
     base::VectorXd solver_output_vel, robot_vel;
-
     /**
      * @brief Create a constraint and add it to the WBC scene
      */
     virtual ConstraintPtr createConstraint(const ConstraintConfig &config);
 
 public:
-    WbcVelocityScene(RobotModelPtr robot_model) :
+    VelocityScene(RobotModelPtr robot_model) :
         WbcScene(robot_model){}
-    virtual ~WbcVelocityScene(){
+    virtual ~VelocityScene(){
     }
 
     /**
      * @brief Update the wbc scene
      */
-    virtual void update();
+    virtual const HierarchicalQP& update();
 
     /**
      * @brief Compute y and y_solution for each constraint. y_solution denotes the constraint velocity that can be achieved

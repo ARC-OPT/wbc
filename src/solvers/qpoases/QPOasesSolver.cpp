@@ -6,7 +6,7 @@
 
 using namespace qpOASES;
 
-namespace wbc_solvers{
+namespace wbc{
 
 QPOASESSolver::QPOASESSolver(){
     configured = false;

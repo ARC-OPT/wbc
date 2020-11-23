@@ -7,7 +7,7 @@
 #include <kdl/chainjnttojacsolver.hpp>
 #include <rbdl/addons/urdfreader/urdfreader.h>
 #include <rbdl/rbdl.h>
-#include "robot_models/URDFTools.hpp"
+#include "tools/URDFTools.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -25,10 +25,7 @@ BOOST_AUTO_TEST_CASE(forward_kinematics_wbc_vs_kdl){
         j.position = j.speed = 0;
 
     RobotModelKDL robot_model;
-    std::vector<RobotModelConfig> configs;
-    configs.push_back(RobotModelConfig(urdf_model_file, joint_names, joint_names, URDF, false));
-
-    BOOST_CHECK(robot_model.configure(configs) == true);
+    BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_model_file, joint_names, joint_names, false)) == true);
 
     KDL::Chain chain;
     BOOST_CHECK_NO_THROW(robot_model.getTree().getChain("kuka_lbr_l_link_0", "kuka_lbr_l_tcp", chain));
@@ -94,9 +91,7 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
     string urdf_model_file = "../../../models/urdf/others/single_joint.urdf";
 
     RobotModelKDL robot_model;
-    std::vector<RobotModelConfig> configs;
-    configs.push_back(RobotModelConfig(urdf_model_file, joint_names, joint_names, URDF));
-    BOOST_CHECK(robot_model.configure(configs) == true);
+    BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_model_file, joint_names, joint_names)) == true);
 
     double t = 0;
     base::VectorXd joint_vel(joint_state.size());
@@ -154,7 +149,6 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
         }
 
         base::VectorXd acceleration = robot_model.jacobianDot("base", "ee")*joint_vel + robot_model.spaceJacobian("base", "ee")*joint_acc;
-
         double expected_y_acc = -acc*cos(pos) +  vel*vel*sin(pos);
         double expected_z_acc = -acc*sin(pos) -vel*vel*cos(pos);
         printf("Expected Linear Acc:  %.4f %.4f %.4f\n",   zero, expected_y_acc, expected_z_acc);
@@ -200,9 +194,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
     for(int i = 0; i < rbdl_model.dof_count; i++)
         joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
 
-    std::vector<RobotModelConfig> configs;
-    configs.push_back(RobotModelConfig(urdf_filename, joint_names, joint_names, URDF));
-    BOOST_CHECK(robot_model.configure(configs) == true);
+    BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_filename, joint_names, joint_names)) == true);
     base::samples::Joints joint_state;
     joint_state.resize(robot_model.noOfJoints());
     joint_state.names = robot_model.jointNames();
@@ -357,9 +349,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
         actuated_joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
         joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
     }
-    std::vector<RobotModelConfig> configs;
-    configs.push_back(RobotModelConfig(urdf_filename, joint_names, actuated_joint_names, URDF, true));
-    BOOST_CHECK(robot_model.configure(configs) == true);
+
+    BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_filename, joint_names, actuated_joint_names, true)) == true);
     base::samples::Joints joint_state;
     joint_state.resize(robot_model.noOfActuatedJoints());
     joint_state.names = robot_model.actuatedJointNames();
@@ -518,13 +509,13 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
         actuated_joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
         joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
     }
-    configs.push_back(RobotModelConfig(urdf_filename, joint_names, actuated_joint_names, URDF, true));
-    BOOST_CHECK(robot_model.configure(configs) == true);
+    RobotModelConfig config(urdf_filename, joint_names, actuated_joint_names, true);
+    BOOST_CHECK(robot_model.configure(config) == true);
 
     wbc::RobotModelKDL robot_model_floating_base;
-    configs[0].file = urdf_filename_floating_base;
-    configs[0].floating_base = false;
-    BOOST_CHECK(robot_model_floating_base.configure(configs) == true);
+    config.file = urdf_filename_floating_base;
+    config.floating_base = false;
+    BOOST_CHECK(robot_model_floating_base.configure(config) == true);
 
     base::samples::Joints joint_state;
     joint_state.resize(robot_model.noOfActuatedJoints());

@@ -1,5 +1,5 @@
-#ifndef WBCVELOCITYSCENEQUADRATICCOST_HPP
-#define WBCVELOCITYSCENEQUADRATICCOST_HPP
+#ifndef VELOCITYSCENEQUADRATICCOST_HPP
+#define VELOCITYSCENEQUADRATICCOST_HPP
 
 #include "../scenes/VelocityScene.hpp"
 
@@ -10,7 +10,7 @@ namespace wbc{
  * as follows: H = A^T*A and g = -(A^T*y)^T. Variable damping can be applied optionally to guide the robot safely
  * through kinematic singularities.
  */
-class WbcVelocitySceneQuadraticCost : public WbcVelocityScene{
+class VelocitySceneQuadraticCost : public VelocityScene{
 protected:
     double min_eval_damping_thresh, damping_factor;
     base::VectorXd s_vals, tmp;
@@ -22,13 +22,13 @@ public:
      * @param robot_model Pointer to the robot model
      * @param model_tasks_as_constraints Model tasks as constraints (true) or as part of the cost function
      */
-    WbcVelocitySceneQuadraticCost(RobotModelPtr robot_model);
-    virtual ~WbcVelocitySceneQuadraticCost();
+    VelocitySceneQuadraticCost(RobotModelPtr robot_model);
+    virtual ~VelocitySceneQuadraticCost();
 
     /**
      * @brief Update the wbc scene
      */
-    virtual void update();
+    virtual const HierarchicalQP& update();
 
     void setDampingThreshold(double thresh){min_eval_damping_thresh = thresh;}
     double getCurrentDampingFactor(){return damping_factor;}

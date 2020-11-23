@@ -3,13 +3,11 @@
 
 #include <base/Eigen.hpp>
 #include <vector>
-#include "../qp_solver.hpp"
+#include "../../core/QPSolver.hpp"
 
-namespace wbc {
+namespace wbc{
+
 class HierarchicalQP;
-}
-
-namespace wbc_solvers{
 
 /**
  * @brief Implementation of a hierarchical weighted damped least squares solver. It solves a hierarchy of quadratic programs of the form

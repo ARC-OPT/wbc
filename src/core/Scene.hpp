@@ -5,10 +5,9 @@
 #include "../types/QuadraticProgram.hpp"
 #include <base/commands/Joints.hpp>
 #include "RobotModel.hpp"
+#include "QPSolver.hpp"
 
 namespace wbc{
-
-class OptProblem;
 
 /**
  * @brief Base class for all wbc scenes
@@ -16,7 +15,6 @@ class OptProblem;
 class WbcScene{
 protected:
     RobotModelPtr robot_model;
-    SolverPtr robot_model;
     std::vector< std::vector<ConstraintPtr> > constraints;
     ConstraintsStatus constraints_status;
     HierarchicalQP constraints_prio;
@@ -49,9 +47,9 @@ public:
 
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
-     * @param ctrl_output Control solution that fulfill the given constraints as good as possible
+     * @return Hierarchical quadratic program (solver input)
      */
-    virtual void update() = 0;
+    virtual const HierarchicalQP& update() = 0;
 
     /**
      * @brief Return a Particular constraint. Throw if the constraint does not exist

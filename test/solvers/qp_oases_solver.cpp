@@ -4,7 +4,7 @@
 #include "types/QuadraticProgram.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
 
-using namespace wbc_solvers;
+using namespace wbc;
 using namespace std;
 using namespace qpOASES;
 

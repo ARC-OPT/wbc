@@ -2,6 +2,7 @@
 #include "robot_models/RobotModelKDL.hpp"
 #include "core/RobotModelConfig.hpp"
 #include "scenes/VelocityScene.hpp"
+#include "solvers/hls/HierarchicalLSSolver.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -29,12 +30,12 @@ BOOST_AUTO_TEST_CASE(test_configure){
 
     // Configure Robot model
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
-    vector<RobotModelConfig> config(1);
-    config[0].file = std::string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_lbr.urdf";
-    config[0].joint_names = joint_names;
+    RobotModelConfig config;
+    config.file = std::string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_lbr.urdf";
+    config.joint_names = joint_names;
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     // Configure WBC Scene
-    WbcVelocityScene wbc_scene(robot_model);
+    VelocityScene wbc_scene(robot_model);
     BOOST_CHECK_EQUAL(wbc_scene.configure(wbc_config), true);
 }

@@ -19,4 +19,5 @@ add_executable(wbc_velocity_scene wbc_velocity_scene.cpp ../suite.cpp)
 target_link_libraries(wbc_velocity_scene
                       wbc-scenes
                       wbc-robot_models
+                      wbc-solvers-hls
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})

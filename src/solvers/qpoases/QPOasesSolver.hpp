@@ -1,15 +1,13 @@
 #ifndef WBC_SOLVERS_QP_OASES_SOLVER_HPP
 #define WBC_SOLVERS_QP_OASES_SOLVER_HPP
 
-#include "../qp_solver.hpp"
+#include "../../core/QPSolver.hpp"
 #include <qpOASES.hpp>
 #include <base/Time.hpp>
 
 namespace wbc {
-class HierarchicalQP;
-}
 
-namespace wbc_solvers {
+class HierarchicalQP;
 
 class QPOASESSolver : public QPSolver{
 public:

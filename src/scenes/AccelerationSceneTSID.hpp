@@ -1,5 +1,5 @@
-#ifndef ACCELERATIONSCENE_HPP
-#define ACCELERATIONSCENE_HPP
+#ifndef WBCACCELERATIONSCENE_HPP
+#define WBCACCELERATIONSCENETSID_HPP
 
 #include "../core/Scene.hpp"
 #include "../core/JointAccelerationConstraint.hpp"
@@ -10,10 +10,13 @@ namespace wbc{
 typedef std::shared_ptr<CartesianAccelerationConstraint> CartesianAccelerationConstraintPtr;
 typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraintPtr;
 
-class AccelerationScene : public WbcScene{
+class AccelerationSceneTSID : public WbcScene{
 protected:
+    // Helper variables
     base::VectorXd q_dot;
     base::VectorXd solver_output_acc, robot_acc, robot_vel;
+    base::MatrixXd A;
+    base::VectorXd y;
 
     /**
      * brief Create a constraint and add it to the WBC scene
@@ -23,9 +26,9 @@ protected:
     base::Time stamp;
 
 public:
-    AccelerationScene(RobotModelPtr robot_model) :
+    AccelerationSceneTSID(RobotModelPtr robot_model) :
         WbcScene(robot_model){}
-    virtual ~AccelerationScene(){
+    virtual ~AccelerationSceneTSID(){
     }
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem

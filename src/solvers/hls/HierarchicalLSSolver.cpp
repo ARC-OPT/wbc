@@ -5,7 +5,7 @@
 
 using namespace std;
 
-namespace wbc_solvers{
+namespace wbc{
 
 HierarchicalLSSolver::HierarchicalLSSolver() :
     no_of_joints(0),

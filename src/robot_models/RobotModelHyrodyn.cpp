@@ -1,6 +1,6 @@
 #include "RobotModelHyrodyn.hpp"
 #include <base-logging/Logging.hpp>
-#include "URDFTools.hpp"
+#include <urdf_parser/urdf_parser.h>
 
 namespace wbc{
 
@@ -10,69 +10,16 @@ RobotModelHyrodyn::RobotModelHyrodyn(){
 RobotModelHyrodyn::~RobotModelHyrodyn(){
 }
 
-bool RobotModelHyrodyn::configure(const std::vector<RobotModelConfig>& model_config){
-    clear();
+bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
 
-    std::string robot_urdf_file, submechanism_file;
-    urdf::ModelInterfaceSharedPtr robot_urdf;
-    for(int i = 0; i < model_config.size(); i++){
-
-        const RobotModelConfig& cfg = model_config[i];
-        if(cfg.type == ModelType::UNSET){
-            LOG_ERROR("Robot Model Config #%i is invalid: Model type unset", i);
-            return false;
-        }
-        if(cfg.file.empty()){
-            LOG_ERROR("Robot Model Config #%i is invalid: No model file given in robot model config", i);
-            return false;
-        }
-
-        switch(cfg.type){
-        case URDF: {
-            robot_urdf_file = cfg.file;
-            if(cfg.floating_base){
-                robot_urdf = urdf::parseURDFFile(cfg.file);
-                if(!robot_urdf){
-                    LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
-                    return false;
-                }
-                floating_base_names = URDFTools::addFloatingBaseToURDF(robot_urdf);
-                TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
-                robot_urdf_file = "/tmp/floating_base_model.urdf";
-                doc->SaveFile(robot_urdf_file);
-                has_floating_base = true;
-                floating_base_state.pose = cfg.floating_base_state.pose;
-                floating_base_state.twist = cfg.floating_base_state.twist;
-                floating_base_state.acceleration = cfg.floating_base_state.acceleration;
-            }
-            break;
-        }
-        case SUBMECHANISM:{
-            submechanism_file = cfg.file;
-            break;
-        }
-        default:{
-            LOG_ERROR_S<<"Robot Model type "<<cfg.type<<" is not supported by Hyrodyn robot model"<<std::endl;
-            return false;
-        }
-        }
-    }
-
-    if(robot_urdf_file.empty() || submechanism_file.empty()){
-        LOG_ERROR("Robot Model Config is invalid: You have to pass at least one robot model (urdf) file and one submechanism file");
+    if(!RobotModel::configure(cfg))
         return false;
-    }
 
-    load_robotmodel(robot_urdf_file, submechanism_file);
+    TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
+    std::string robot_urdf_file = "/tmp/floating_base_model.urdf";
+    doc->SaveFile(robot_urdf_file);
 
-    base_frame = URDFTools::rootLinkFromURDF(robot_urdf_file);
-    for(size_t i = 0; i < jointnames_independent.size(); i++){
-        current_joint_state.elements.push_back(base::JointState());
-        current_joint_state.names.push_back(jointnames_independent[i]);
-    }
-    for(size_t i = 0; i < jointnames_active.size(); i++)
-        actuated_joint_names.push_back(jointnames_active[i]);
-
+    load_robotmodel(robot_urdf_file, cfg.submechanism_file);
     jacobian.resize(6,noOfJoints());
 
     return true;
@@ -86,12 +33,11 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state,
     // Convert floating base state
     uint start_idx = 0;
     if(floating_base_robot){
-        y.segment(0,3)   = floating_base_state.pose.position;
-        y.segment(3,3)   = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
-        yd.segment(0,3)  = floating_base_state.twist.linear;
-        yd.segment(3,3)  = floating_base_state.twist.linear;
-        ydd.segment(3,3) = floating_base_state.acceleration.linear;
-        ydd.segment(3,3) = floating_base_state.acceleration.linear;
+        for(int i = 0; i < 6; i++){
+            y(i)   = current_joint_state[floating_base_names[i]].position;
+            yd(i)   = current_joint_state[floating_base_names[i]].speed;
+            ydd(i)   = current_joint_state[floating_base_names[i]].acceleration;
+        }
         start_idx = 6;
     }
     // Update KDL data types
@@ -167,7 +113,7 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
 
 const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
-    throw std::runtime_error("jacobianDot has not been implemented for hyrodyn based robot model");
+    //throw std::runtime_error("jacobianDot has not been implemented for hyrodyn based robot model");
 
     if(current_joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
@@ -179,6 +125,7 @@ const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_fra
         throw std::runtime_error("Invalid root frame");
     }
 
+    jacobian.setZero();
     return jacobian;
 }
 

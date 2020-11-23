@@ -4,22 +4,22 @@
 
 namespace wbc{
 
-WbcVelocitySceneQuadraticCost::WbcVelocitySceneQuadraticCost(RobotModelPtr robot_model) :
-    WbcVelocityScene(robot_model),
+VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model) :
+    VelocityScene(robot_model),
     min_eval_damping_thresh(0),
     damping_factor(1){
 
 }
 
-WbcVelocitySceneQuadraticCost::~WbcVelocitySceneQuadraticCost(){
+VelocitySceneQuadraticCost::~VelocitySceneQuadraticCost(){
 }
 
-void WbcVelocitySceneQuadraticCost::update(){
+const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
     if(!configured)
-        throw std::runtime_error("WbcVelocitySceneQuadraticCost has not been configured!. PLease call configure() before calling update() for the first time!");
+        throw std::runtime_error("VelocitySceneQuadraticCost has not been configured!. PLease call configure() before calling update() for the first time!");
 
-    WbcVelocityScene::update();
+    VelocityScene::update();
 
     int nj = robot_model->noOfJoints();
     for(uint prio = 0; prio < constraints.size(); prio++){
@@ -45,7 +45,7 @@ void WbcVelocitySceneQuadraticCost::update(){
             tmp.resize(nj);
             sing_vect_r.resize(nj, nj);
             U.resize(nj, nj);
-            wbc_solvers::svd_eigen_decomposition(constraints_prio[prio].H, U, s_vals, sing_vect_r, tmp);
+            svd_eigen_decomposition(constraints_prio[prio].H, U, s_vals, sing_vect_r, tmp);
 
             double s_min = s_vals.block(0,0,std::min(nj, nc),1).minCoeff();
             if(s_min <= min_eval_damping_thresh)
@@ -55,6 +55,8 @@ void WbcVelocitySceneQuadraticCost::update(){
             constraints_prio[prio].g*=damping_factor;
         }
     } // priorities
+
+    return constraints_prio;
 }
 
 } // namespace wbc

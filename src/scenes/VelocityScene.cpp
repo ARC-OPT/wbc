@@ -4,7 +4,7 @@
 
 namespace wbc{
 
-ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config){
+ConstraintPtr VelocityScene::createConstraint(const ConstraintConfig &config){
 
     if(config.type == cart)
         return std::make_shared<CartesianVelocityConstraint>(config, robot_model->noOfJoints());
@@ -16,10 +16,10 @@ ConstraintPtr WbcVelocityScene::createConstraint(const ConstraintConfig &config)
     }
 }
 
-void WbcVelocityScene::update(){
+const HierarchicalQP& VelocityScene::update(){
 
     if(!configured)
-        throw std::runtime_error("WbcVelocityScene has not been configured!. PLease call configure() before calling update() for the first time!");
+        throw std::runtime_error("VelocityScene has not been configured!. PLease call configure() before calling update() for the first time!");
 
     base::samples::RigidBodyStateSE3 ref_frame;
 
@@ -104,9 +104,11 @@ void WbcVelocityScene::update(){
     } // priorities
 
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
+
+    return constraints_prio;
 }
 
-const ConstraintsStatus& WbcVelocityScene::updateConstraintsStatus(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
+const ConstraintsStatus& VelocityScene::updateConstraintsStatus(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
 
     if(solver_output.size() != robot_model->noOfActuatedJoints())
         throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())

@@ -4,7 +4,7 @@
 
 namespace wbc{
 
-ConstraintPtr WbcAccelerationScene::createConstraint(const ConstraintConfig &config){
+ConstraintPtr AccelerationScene::createConstraint(const ConstraintConfig &config){
 
     if(config.type == cart)
         return std::make_shared<CartesianAccelerationConstraint>(config, robot_model->noOfJoints());
@@ -16,17 +16,15 @@ ConstraintPtr WbcAccelerationScene::createConstraint(const ConstraintConfig &con
     }
 }
 
-void WbcAccelerationScene::update(){
+const HierarchicalQP& AccelerationScene::update(){
 
     if(!configured)
-        throw std::runtime_error("WBCAcceleration has not been configured!. PLease call configure() before calling update() for the first time!");
+        throw std::runtime_error("AccelerationScene has not been configured!. PLease call configure() before calling update() for the first time!");
 
     if(constraints.size() != 1){
-        LOG_ERROR("Number of priorities in WBCAccelerationScene should be 1, but is %i", constraints.size());
+        LOG_ERROR("Number of priorities in AccelerationScene should be 1, but is %i", constraints.size());
         throw std::runtime_error("Invalid constraint configuration");
     }
-
-
 
     base::samples::RigidBodyStateSE3 ref_frame;
 
@@ -85,7 +83,7 @@ void WbcAccelerationScene::update(){
                 int idx = robot_model->jointIndex(constraint->config.joint_names[k]);
                 constraint->A(k,idx) = 1.0;
                 constraint->y_ref_root = constraint->y_ref;     // In joint space y_ref is equal to y_ref_root
-                constraint->weights_root = constraint->weights; // Same of the weights
+                constraint->weights_root = constraint->weights; // Same for the weights
             }
         }
         else{
@@ -122,9 +120,11 @@ void WbcAccelerationScene::update(){
 
     constraints_prio.joint_state = robot_model->jointState(robot_model->actuatedJointNames());
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
+
+    return constraints_prio;
 }
 
-const ConstraintsStatus &WbcAccelerationScene::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
+const ConstraintsStatus &AccelerationScene::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
 
     if(solver_output.size() != robot_model->noOfActuatedJoints())
         throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())

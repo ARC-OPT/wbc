@@ -3,12 +3,11 @@
 
 #include <vector>
 #include <base/Eigen.hpp>
+#include <memory>
 
-namespace wbc {
+namespace wbc{
+
 class HierarchicalQP;
-}
-
-namespace wbc_solvers{
 
 class QPSolver{
 public:
@@ -20,8 +19,11 @@ public:
      *                    the first entry has the highest priority.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd &solver_output) = 0;
+    virtual void solve(const HierarchicalQP& hierarchical_qp, base::VectorXd &solver_output) = 0;
 };
+
+typedef std::shared_ptr<QPSolver> QPSolverPtr;
+
 }
 
 #endif
