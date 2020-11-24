@@ -20,7 +20,7 @@ double whiteNoise(const double std_dev)
 }
 
 int main(){
-    RobotModelConfig config("../../../models/urdf/rh5/rh5.urdf",
+    RobotModelConfig config("../../../models/urdf/rh5/rh5_one_leg.urdf",
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
 

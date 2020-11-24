@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
 
     const string base_link = "RH5_Root_Link";
     const string ee_link = "LLAnkle_FT";
-    RobotModelConfig config("../../../models/urdf/rh5/rh5.urdf",
+    RobotModelConfig config("../../../models/urdf/rh5/rh5_one_leg.urdf",
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
     RobotModelKDL robot_model_kdl;
@@ -64,10 +64,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
 
     RobotModelHyrodyn robot_model_hyrodyn;
-    config = RobotModelConfig("../../../models/urdf/rh5/rh5.urdf",
+    config = RobotModelConfig("../../../models/urdf/rh5/rh5_one_leg.urdf",
                              {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                              {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
-    config.submechanism_file = "../../../models/hyrodyn/rh5/rh5_submechanisms.yml";
+    config.submechanism_file = "../../../models/hyrodyn/rh5/rh5_one_leg.yml";
     robot_model_hyrodyn.configure(config);
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state));
 
@@ -148,14 +148,14 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
     floating_base_state.twist.setZero();
     floating_base_state.acceleration.setZero();
-    RobotModelConfig config("../../../models/urdf/rh5/rh5.urdf",
+    RobotModelConfig config("../../../models/urdf/rh5/rh5_one_leg.urdf",
                            {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z",
                             "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                             true,
                             "world",
                             floating_base_state);
-    config.submechanism_file = "../../../models/hyrodyn/rh5/rh5_submechanisms_floating_base.yml";
+    config.submechanism_file = "../../../models/hyrodyn/rh5/rh5_one_leg_floating_base.yml";
     RobotModelKDL robot_model_kdl;
     BOOST_CHECK(robot_model_kdl.configure(config) == true);
     uint na = robot_model_kdl.noOfActuatedJoints();
