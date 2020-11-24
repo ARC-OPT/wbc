@@ -19,8 +19,8 @@ protected:
     virtual ConstraintPtr createConstraint(const ConstraintConfig &config);
 
 public:
-    VelocityScene(RobotModelPtr robot_model) :
-        WbcScene(robot_model){}
+    VelocityScene(RobotModelPtr robot_model, QPSolverPtr solver) :
+        WbcScene(robot_model, solver){}
     virtual ~VelocityScene(){
     }
 
@@ -28,6 +28,12 @@ public:
      * @brief Update the wbc scene
      */
     virtual const HierarchicalQP& update();
+
+    /**
+     * @brief Update the wbc scene and return the (updated) optimization problem
+     * @return Hierarchical quadratic program (solver input)
+     */
+    virtual const base::commands::Joints& solve(const HierarchicalQP& hqp);
 
     /**
      * @brief Compute y and y_solution for each constraint. y_solution denotes the constraint velocity that can be achieved

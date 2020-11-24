@@ -28,14 +28,14 @@ int main(){
     if(!robot_model->configure(config))
         return -1;
 
-    QPOASESSolver solver;
-    Options options = solver.getOptions();
+    QPSolverPtr solver = std::make_shared<QPOASESSolver>();
+    Options options = std::dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
     options.enableRegularisation = BT_TRUE;
     options.enableFarBounds = BT_FALSE;
     options.printLevel = PL_NONE;
     options.print();
-    solver.setOptions(options);
-    solver.setMaxNoWSR(1000);
+    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
+    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
     std::vector<ConstraintConfig> wbc_config(1);
     wbc_config[0].name = "left_leg_posture";
@@ -46,7 +46,7 @@ int main(){
     wbc_config[0].priority = 0;
     wbc_config[0].weights = {1,1,1,1,1,1};
     wbc_config[0].activation = 1;
-    AccelerationScene scene(robot_model);
+    AccelerationScene scene(robot_model, solver);
     if(!scene.configure(wbc_config))
         return -1;
 
@@ -90,7 +90,7 @@ int main(){
 
         HierarchicalQP hqp;
         scene.getHierarchicalQP(hqp);
-        solver.solve(hqp, solver_output);
+        solver->solve(hqp, solver_output);
 
         std::cout<<"Solution Acc: "<<solver_output.transpose()<<endl;
     }

@@ -118,10 +118,27 @@ const HierarchicalQP& AccelerationScene::update(){
     constraints_prio[prio].lower_x.setConstant(-1000);
     constraints_prio[prio].upper_x.setConstant(1000);
 
-    constraints_prio.joint_state = robot_model->jointState(robot_model->actuatedJointNames());
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
 
     return constraints_prio;
+}
+
+const base::commands::Joints& AccelerationScene::solve(const HierarchicalQP& hqp){
+
+    // solve
+    solver_output_acc.resize(hqp[0].nq);
+    solver->solve(hqp, solver_output_acc);
+
+    // Convert Output
+    solver_output_joints.resize(robot_model->noOfActuatedJoints());
+    solver_output_joints.names = robot_model->actuatedJointNames();
+    for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
+        const std::string& name = robot_model->actuatedJointNames()[i];
+        uint idx = robot_model->jointIndex(name);
+        solver_output_joints[name].acceleration = solver_output_acc[idx];
+    }
+    solver_output_joints.time = base::Time::now();
+    return solver_output_joints;
 }
 
 const ConstraintsStatus &AccelerationScene::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){

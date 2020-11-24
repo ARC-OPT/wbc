@@ -4,8 +4,8 @@
 
 namespace wbc{
 
-VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model) :
-    VelocityScene(robot_model),
+VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver) :
+    VelocityScene(robot_model, solver),
     min_eval_damping_thresh(0),
     damping_factor(1){
 

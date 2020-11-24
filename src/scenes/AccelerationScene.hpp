@@ -23,8 +23,8 @@ protected:
     base::Time stamp;
 
 public:
-    AccelerationScene(RobotModelPtr robot_model) :
-        WbcScene(robot_model){}
+    AccelerationScene(RobotModelPtr robot_model, QPSolverPtr solver) :
+        WbcScene(robot_model, solver){}
     virtual ~AccelerationScene(){
     }
     /**
@@ -32,6 +32,12 @@ public:
      * @param ctrl_output Control solution that fulfill the given constraints as good as possible
      */
     virtual const HierarchicalQP& update();
+
+    /**
+     * @brief Update the wbc scene and return the (updated) optimization problem
+     * @return Hierarchical quadratic program (solver input)
+     */
+    virtual const base::commands::Joints& solve(const HierarchicalQP& hqp);
 
     /**
      * @brief evaluateConstraints Evaluate the fulfillment of the constraints given the current robot state and the solver output

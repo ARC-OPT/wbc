@@ -108,6 +108,24 @@ const HierarchicalQP& VelocityScene::update(){
     return constraints_prio;
 }
 
+const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
+
+    // solve
+    solver_output_vel.resize(hqp[0].nq);
+    solver->solve(hqp, solver_output_vel);
+
+    // Convert Output
+    solver_output_joints.resize(robot_model->noOfActuatedJoints());
+    solver_output_joints.names = robot_model->actuatedJointNames();
+    for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
+        const std::string& name = robot_model->actuatedJointNames()[i];
+        uint idx = robot_model->jointIndex(name);
+        solver_output_joints[name].speed = solver_output_vel[idx];
+    }
+    solver_output_joints.time = base::Time::now();
+    return solver_output_joints;
+}
+
 const ConstraintsStatus& VelocityScene::updateConstraintsStatus(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
 
     if(solver_output.size() != robot_model->noOfActuatedJoints())

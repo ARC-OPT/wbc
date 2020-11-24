@@ -45,9 +45,6 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     qp.g = -(A.transpose()*y).transpose();
     wbc::HierarchicalQP hqp;
     hqp << qp;
-    for(int i = 0; i < NO_JOINTS; i++)
-        hqp.joint_names.push_back("joint_" + std::to_string(i+1));
-    hqp.actuated_joint_names = hqp.joint_names;
 
     QPOASESSolver solver;
     solver.setMaxNoWSR(NO_WSR);

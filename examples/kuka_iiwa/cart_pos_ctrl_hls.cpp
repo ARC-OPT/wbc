@@ -39,11 +39,11 @@ int main(int argc, char** argv){
         return -1;
 
     // Create solver
-    HierarchicalLSSolver solver;
-    solver.setMaxSolverOutputNorm(10);
+    QPSolverPtr solver = std::make_shared<HierarchicalLSSolver>();
+    std::dynamic_pointer_cast<HierarchicalLSSolver>(solver)->setMaxSolverOutputNorm(10);
 
     // Configure WBC Scene
-    VelocityScene wbc_scene(robot_model);
+    VelocityScene wbc_scene(robot_model, solver);
     if(!wbc_scene.configure(wbc_config))
         return -1;
 
@@ -88,7 +88,7 @@ int main(int argc, char** argv){
 
         HierarchicalQP hqp;
         wbc_scene.getHierarchicalQP(hqp);
-        solver.solve(hqp, solver_output);
+        solver->solve(hqp, solver_output);
 
         // Update joint state
         for(size_t i = 0; i < joint_state.size(); i++)

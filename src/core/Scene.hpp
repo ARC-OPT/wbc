@@ -15,11 +15,13 @@ namespace wbc{
 class WbcScene{
 protected:
     RobotModelPtr robot_model;
+    QPSolverPtr solver;
     std::vector< std::vector<ConstraintPtr> > constraints;
     ConstraintsStatus constraints_status;
     HierarchicalQP constraints_prio;
     std::vector<int> n_constraint_variables_per_prio;
     bool configured;
+    base::commands::Joints solver_output_joints;
 
     /**
      * brief Create a constraint and add it to the WBC scene
@@ -32,8 +34,9 @@ protected:
     void clearConstraints();
 
 public:
-    WbcScene(RobotModelPtr robot_model) :
+    WbcScene(RobotModelPtr robot_model, QPSolverPtr solver) :
         robot_model(robot_model),
+        solver(solver),
         configured(false){}
 
     virtual ~WbcScene(){
@@ -50,6 +53,12 @@ public:
      * @return Hierarchical quadratic program (solver input)
      */
     virtual const HierarchicalQP& update() = 0;
+
+    /**
+     * @brief Update the wbc scene and return the (updated) optimization problem
+     * @return Hierarchical quadratic program (solver input)
+     */
+    virtual const base::commands::Joints& solve(const HierarchicalQP& hqp) = 0;
 
     /**
      * @brief Return a Particular constraint. Throw if the constraint does not exist
@@ -85,6 +94,11 @@ public:
      * @brief Return constraints sorted by priority for the solver
      */
     void getHierarchicalQP(HierarchicalQP& hqp){hqp = constraints_prio;}
+
+    /**
+     * @brief Get current solver output
+     */
+    const base::commands::Joints& getSolverOutput(){return solver_output_joints;}
 };
 
 } // namespace wbc

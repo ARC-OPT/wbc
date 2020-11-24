@@ -39,15 +39,15 @@ int main(int argc, char** argv){
         return -1;
 
     // Create solver
-    QPOASESSolver solver;
+    QPSolverPtr solver = std::make_shared<QPOASESSolver>();
     qpOASES::Options options;
     options.setToDefault();
     options.printLevel = qpOASES::PL_NONE;
-    solver.setMaxNoWSR(100);
-    solver.setOptions(options);
+    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(100);
+    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
 
     // Configure WBC Scene
-    VelocityScene wbc_scene(robot_model);
+    VelocityScene wbc_scene(robot_model, solver);
     if(!wbc_scene.configure(wbc_config))
         return -1;
 
@@ -91,7 +91,7 @@ int main(int argc, char** argv){
         wbc_scene.update();
         HierarchicalQP qp;
         wbc_scene.getHierarchicalQP(qp);
-        solver.solve(qp, solver_output);
+        solver->solve(qp, solver_output);
 
         // Update joint state
         for(size_t i = 0; i < joint_state.size(); i++)

@@ -107,7 +107,6 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
             throw std::runtime_error("SQ Problem hotstart failed with error " + std::to_string(ret_val));
     }
 
-    int nj = hierarchical_qp.nJoints();
     solver_output.resize(qp.nq);
     if(sq_problem.getPrimalSolution( solver_output.data() ) == RET_QP_NOT_SOLVED)
         throw std::runtime_error("SQ Problem getPrimalSolution() returned " + std::to_string(RET_QP_NOT_SOLVED));

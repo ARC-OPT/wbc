@@ -142,8 +142,74 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     return constraints_prio;
 }
 
-const ConstraintsStatus& AccelerationSceneTSID::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
+const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP& hqp){
 
+    // solve
+    solver_output_acc.resize(hqp[0].nq);
+    solver->solve(hqp, solver_output_acc);
+
+    // Convert solver output: Accelerationand torque
+    uint nj = robot_model->noOfJoints();
+    uint na = robot_model->noOfActuatedJoints();
+    solver_output_joints.resize(robot_model->noOfActuatedJoints());
+    solver_output_joints.names = robot_model->actuatedJointNames();
+    for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
+        const std::string& name = robot_model->actuatedJointNames()[i];
+        uint idx = robot_model->jointIndex(name);
+        solver_output_joints[name].acceleration = solver_output_acc[idx];
+        solver_output_joints[name].effort = solver_output_acc[i+nj];
+    }
+    solver_output_joints.time = base::Time::now();
+
+    // Convert solver output: contact wrenches
+    contact_wrenches.resize(robot_model->getContactPoints().size());
+    contact_wrenches.names = robot_model->getContactPoints();
+    for(uint i = 0; i < robot_model->getContactPoints().size(); i++){
+        contact_wrenches[i].force = solver_output_acc.segment(nj+na+i*6,3);
+        contact_wrenches[i].torque = solver_output_acc.segment(nj+na+i*6+3,3);
+    }
+    contact_wrenches.time = base::Time::now();
+    return solver_output_joints;
+}
+
+const ConstraintsStatus& AccelerationSceneTSID::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
+    if(solver_output.size() != robot_model->noOfActuatedJoints())
+        throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())
+                                 + " but number of robot joints is " + std::to_string(robot_model->noOfActuatedJoints()));
+
+    solver_output_acc.resize(robot_model->noOfJoints());
+    solver_output_acc.setZero();
+    for(size_t i = 0; i < solver_output.size(); i++){
+        uint idx = robot_model->jointIndex(solver_output.names[i]);
+        solver_output_acc(idx) = solver_output[i].acceleration;
+    }
+    const std::vector<std::string> &joint_names = robot_model->jointNames();
+    robot_acc.resize(robot_model->noOfJoints());
+    robot_vel.resize(robot_model->noOfJoints());
+    for(size_t i = 0; i < joint_names.size(); i++){
+        robot_acc(i) = joint_state[joint_names[i]].acceleration;
+        robot_vel(i) = joint_state[joint_names[i]].speed;
+    }
+
+    for(uint prio = 0; prio < constraints.size(); prio++){
+        for(uint i = 0; i < constraints[prio].size(); i++){
+            ConstraintPtr constraint = constraints[prio][i];
+            const std::string &name = constraint->config.name;
+
+            constraints_status[name].time       = constraint->time;
+            constraints_status[name].config     = constraint->config;
+            constraints_status[name].activation = constraint->activation;
+            constraints_status[name].timeout    = constraint->timeout;
+            constraints_status[name].weights    = constraint->weights;
+            constraints_status[name].y_ref      = constraint->y_ref_root;
+            constraints_status[name].y_solution = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * solver_output_acc +
+                                                  robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
+            constraints_status[name].y          = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * robot_acc +
+                                                  robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
+        }
+    }
+
+    return constraints_status;
 }
 
 }

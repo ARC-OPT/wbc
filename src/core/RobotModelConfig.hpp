@@ -24,8 +24,7 @@ public:
                      const bool floating_base = false,
                      const std::string &world_frame_id = "world",
                      const base::RigidBodyStateSE3& floating_base_state = base::RigidBodyStateSE3(),
-                     const std::vector<std::string> &contact_points = std::vector<std::string>()
-                     ) :
+                     const std::vector<std::string> &contact_points = std::vector<std::string>()) :
         file(file),
         joint_names(joint_names),
         actuated_joint_names(actuated_joint_names),

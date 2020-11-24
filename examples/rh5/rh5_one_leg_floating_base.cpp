@@ -21,11 +21,7 @@ double whiteNoise(const double std_dev)
     return std_dev * sqrt( -2.0 * log( rand_no ) ) * tmp;
 }
 
-
 int main(){
-
-    const string world_link = "world";
-    const string contact_link = "LLAnkle_FT";
 
     base::samples::RigidBodyStateSE3 floating_base_state;
     floating_base_state.pose.position = base::Vector3d(-0.027769312129200783, 0.0, 0.918141273555804);
@@ -55,21 +51,20 @@ int main(){
     wbc_config[0].weights = {1,1,1,1,1,1};
     wbc_config[0].activation = 1;
 
-    AccelerationSceneTSID scene(robot_model);
-
-    if(!scene.configure(wbc_config))
-        return -1;
-
-    QPOASESSolver solver;
-    Options options = solver.getOptions();
+    QPSolverPtr solver = std::make_shared<QPOASESSolver>();
+    Options options = std::dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
     options.enableRegularisation = BT_TRUE;
     options.enableFarBounds = BT_FALSE;
     options.printLevel = PL_NONE;
     options.print();
-    solver.setOptions(options);
+    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
     options.print();
-    solver.setMaxNoWSR(1000);
+    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
+    AccelerationSceneTSID scene(robot_model, solver);
+    if(!scene.configure(wbc_config))
+
+        return -1;
     uint nj = robot_model->noOfJoints();
     uint na = robot_model->noOfActuatedJoints();
 
@@ -116,7 +111,7 @@ int main(){
         cout<<"upper_x "<<hqp[0].upper_x.transpose()<<endl;
         cout<<"Bias "<<robot_model->biasForces().transpose()<<endl<<endl;
 
-        solver.solve(hqp,solver_output);
+        solver->solve(hqp,solver_output);
 
     }
 
@@ -145,8 +140,8 @@ int main(){
     robot_model_hyrodyn.f_ext.resize(1);
     robot_model_hyrodyn.f_ext[0].set(f_ext_wbc(3),f_ext_wbc(4),f_ext_wbc(5),f_ext_wbc(0),f_ext_wbc(1),f_ext_wbc(2));
     robot_model_hyrodyn.wrench_points.push_back("LLAnkle_FT");
-    robot_model_hyrodyn.wrench_resolution.push_back(true);
-    robot_model_hyrodyn.wrench_interaction.push_back(true);
+    robot_model_hyrodyn.wrench_resolution.push_back(true);  // Wrench is measure in Body Coordinates
+    robot_model_hyrodyn.wrench_interaction.push_back(true); // Resistive
 
     robot_model_hyrodyn.calculate_inverse_dynamics();
     robot_model_hyrodyn.calculate_inverse_statics();

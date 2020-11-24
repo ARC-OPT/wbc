@@ -36,6 +36,7 @@ BOOST_AUTO_TEST_CASE(test_configure){
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     // Configure WBC Scene
-    VelocityScene wbc_scene(robot_model);
+    QPSolverPtr solver;
+    VelocityScene wbc_scene(robot_model, solver);
     BOOST_CHECK_EQUAL(wbc_scene.configure(wbc_config), true);
 }
