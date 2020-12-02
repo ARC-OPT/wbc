@@ -79,7 +79,7 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
     body_jacobian.changeBase(pose_kdl.M.Inverse());
 
     //// Compute Jacobian_dot
-    jac_dot_solver.setRepresentation(0); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
+    jac_dot_solver.setRepresentation(KDL::ChainJntToJacDotSolver::HYBRID); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
     if(jac_dot_solver.JntToJacDot(jnt_array_vel, jacobian_dot))
         throw std::runtime_error("Failed to compute JacobianDot for chain " + root_frame + " -> " + tip_frame);
 
