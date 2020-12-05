@@ -1,6 +1,16 @@
 # This file is a template, and might need editing before it works on your project.
 # Full project: https://gitlab.com/pages/doxygen
 
+build:
+    image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-hyrodyn_ubuntu:18.04
+    stage: build
+    script:
+    - aup --config
+    - aup
+    - sed -i '1s/^/set(ROCK_TEST_ENABLED ON)\n /' CMakeLists.txt
+    - amake
+    - build/test/test_suite
+
 generate_doxygen_documentation:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
   stage: deploy
