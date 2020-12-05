@@ -1,19 +1,20 @@
 # This file is a template, and might need editing before it works on your project.
 # Full project: https://gitlab.com/pages/doxygen
-image: alpine
 
-pages:
-  environment: api
+generate_doxygen_documentation:
+  image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
+  stage: deploy
   before_script:
-  - apk add --no-cache doxygen
+  - apt update
+  - apt install -y doxygen graphviz
   script:
-  - doxygen Doxyfile.in
+  - doxygen Doxyfile
   - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  - mv doc_html/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  - cp -R doc/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   artifacts:
     paths:
-    - public
+    - doc/
   only:
   - master
 
