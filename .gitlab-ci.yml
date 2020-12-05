@@ -8,7 +8,7 @@ generate_doxygen_documentation:
   - apt update
   - apt install -y doxygen graphviz
   script:
-  - doxygen Doxyfile
+  - doxygen Doxyfile.in
   - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   - cp -R doc/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
