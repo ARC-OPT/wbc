@@ -1,19 +1,36 @@
 # This file is a template, and might need editing before it works on your project.
 # Full project: https://gitlab.com/pages/doxygen
-image: alpine
 
-pages:
-  environment: api
+build:
+    image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-rh5_ubuntu:18.04
+    stage: build
+    script:
+    - aup --config
+    - aup
+    - sed -i '1s/^/set(ROCK_TEST_ENABLED ON)\n /' CMakeLists.txt
+    - amake
+    - build/test/controllers/pid_controllers
+    - build/test/controllers/pos_pd_controllers
+    - build/test/controllers/pot_field_controllers
+    - build/test/robot_models/kinematic_robot_model_kdl
+    - build/test/scenes/wbc_velocity_scene
+    - build/test/solvers/hls_solver
+    - build/test/solvers/qp_oases_solver
+
+generate_doxygen_documentation:
+  image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
+  stage: deploy
   before_script:
-  - apk add --no-cache doxygen
+  - apt update
+  - apt install -y doxygen graphviz
   script:
   - doxygen Doxyfile.in
   - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  - mv doc_html/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+  - cp -R doc/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
   artifacts:
     paths:
-    - public
+    - doc/
   only:
   - master
 
