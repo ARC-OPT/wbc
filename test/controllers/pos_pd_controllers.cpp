@@ -58,7 +58,7 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
 
         base::Vector3d euler_target = base::getEuler(setpoint.pose.orientation);
 
-        printf("..................................................................\n");
+        /*printf("..................................................................\n");
         printf("Time:                 %s\n", control_out.time.toString().c_str());
         printf("\n");
         printf("Setpoint position:    x: %.6f,   y: %.6f,  z: %.6f\n", setpoint.pose.position(0), setpoint.pose.position(1), setpoint.pose.position(2));
@@ -78,7 +78,7 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
                                                                         ctrl.pGain()(3), ctrl.pGain()(4), ctrl.pGain()(5));
         printf("D-Gain:               %.6f %.6f %.6f %.6f %.6f %.6f\n", ctrl.dGain()(0), ctrl.dGain()(1), ctrl.dGain()(2),
                                                                         ctrl.dGain()(3), ctrl.dGain()(4), ctrl.dGain()(5));
-        printf("..................................................................\n\n");
+        printf("..................................................................\n\n");*/
 
         base::Vector6d tw;
         tw << (setpoint.pose - feedback.pose).linear, (setpoint.pose - feedback.pose).angular;
@@ -133,7 +133,7 @@ BOOST_AUTO_TEST_CASE(jnt_pos_pd_controller){
 
         BOOST_CHECK_NO_THROW(control_out = ctrl.update(setpoint, feedback));
 
-        printf("..................................................................\n");
+        /*printf("..................................................................\n");
         printf("Time:              %s\n", control_out.time.toString().c_str());
         printf("\n");
         printf("Setpoint:          %.6f %.6f\n", setpoint[0].position, setpoint[1].position);
@@ -144,7 +144,7 @@ BOOST_AUTO_TEST_CASE(jnt_pos_pd_controller){
         printf("Dead Zone:         %.6f %.6f\n", ctrl.deadZone()(0), ctrl.deadZone()(1));
         printf("P-Gain:            %.6f %.6f\n", ctrl.pGain()(0), ctrl.pGain()(1));
         printf("D-Gain:            %.6f %.6f\n", ctrl.dGain()(0), ctrl.dGain()(1));
-        printf("..................................................................\n\n");
+        printf("..................................................................\n\n");*/
         for(int i = 0; i < control_out.size(); i++)
             feedback[i].position += control_out[i].speed * dt;
 

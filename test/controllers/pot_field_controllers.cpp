@@ -17,14 +17,14 @@ void runPotentialFieldController(std::string filename,
 
     FILE* fp = fopen(filename.c_str(), "w");
 
-    cout << "Running potential field controller: " << endl << endl;
+    /*cout << "Running potential field controller: " << endl << endl;
     cout << "Maximum Ctrl. Out. is " << ctrl->getMaxControlOutput().transpose()<< endl;
     cout << "Maximum influence distance is ";
     for(size_t i = 0; i < ctrl->getFields().size(); i++)
         cout << ctrl->getFields()[i]->influence_distance << " ";
     cout<<endl;
     cout << "Prop. Gain is " << ctrl->getPGain().transpose() << endl;
-    sleep(1);
+    sleep(1);*/
 
     base::samples::RigidBodyStateSE3 feedback = start_pos, control_output;
     std::vector<PotentialFieldPtr> fields = ctrl->getFields();
@@ -44,10 +44,10 @@ void runPotentialFieldController(std::string filename,
 
     }
     fclose(fp);
-    cout << "Results have been saved in " << filename << "  in following order: x x0 y" << endl;
+    /*cout << "Results have been saved in " << filename << "  in following order: x x0 y" << endl;
     cout << "  where: x      = Current position" << endl;
     cout << "         x0     = Potential field origin" << endl;
-    cout << "         y      = Control output" << endl << endl;
+    cout << "         y      = Control output" << endl << endl;*/
 }
 
 int plot(std::string gnuplot_command){
@@ -93,10 +93,10 @@ BOOST_AUTO_TEST_CASE(radial_field)
     BOOST_CHECK(controller.getFields()[0]->distance.norm() >= influence_distance);
 
     // Install gnuplot and uncomment to plot right away
-    std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current position (x)', "
+    /*std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current position (x)', "
                       "'tmp.txt' using 4 with lines title 'Pot. Field center (x0)', "
                       "'tmp.txt' using 7 with lines title 'ctrl. out (y)'";
-    plot(cmd);
+    plot(cmd);*/
 }
 
 BOOST_AUTO_TEST_CASE(constrained_radial_field)
@@ -138,10 +138,10 @@ BOOST_AUTO_TEST_CASE(constrained_radial_field)
     BOOST_CHECK(controller.getFields()[0]->distance.norm() >= influence_distance);
 
     // Install gnuplot and uncomment to plot right away
-    std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current position (x)',"
+    /*std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current position (x)',"
                       "'tmp.txt' using 4 with lines title 'Pot. Field center (x0)', "
                       "'tmp.txt' using 7 with lines title 'ctrl. out (y)'";
-    plot(cmd);
+    plot(cmd);*/
 }
 
 BOOST_AUTO_TEST_CASE(planar_field){
@@ -186,9 +186,9 @@ BOOST_AUTO_TEST_CASE(planar_field){
     BOOST_CHECK(controller.getFields()[0]->distance.norm() >= influence_distance);
 
     // Install gnuplot and uncomment to plot right away
-    std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current x-position',"
+    /*std::string cmd = "plot 'tmp.txt' using 1 with lines title 'Current x-position',"
                       "'tmp.txt' using 2 with lines title 'Current y-Position'";
-    plot(cmd);
+    plot(cmd);*/
 }
 
 BOOST_AUTO_TEST_CASE(multi_radial_field)
@@ -237,12 +237,12 @@ BOOST_AUTO_TEST_CASE(multi_radial_field)
     BOOST_CHECK(controller.getFields()[0]->distance.norm() >= field1->influence_distance);
     BOOST_CHECK(controller.getFields()[1]->distance.norm() >= field2->influence_distance);
 
-    std::string cmd = "plot 'tmp.txt' using 1:2 with lines title 'Current position',"
+    /*std::string cmd = "plot 'tmp.txt' using 1:2 with lines title 'Current position',"
                       "'tmp.txt' using 4:5 title 'Pot. Field 1 center', "
                       "'tmp.txt' using 7:8 title 'Pot. Field 2 center'";
 
     // Install gnuplot and uncomment to plot right away
-    plot(cmd);
+    plot(cmd);*/
 }
 
 
@@ -299,10 +299,10 @@ BOOST_AUTO_TEST_CASE(joint_limit_avoidance)
         feedback[0].position += control_out[0].speed * dt;
         feedback[1].position += control_out[1].speed * dt;
 
-        printf("Current position:  %.4f %.4f\n", feedback[0].position, feedback[1].position);
+       /* printf("Current position:  %.4f %.4f\n", feedback[0].position, feedback[1].position);
         printf("Control output:    %.4f %.4f\n", control_out[0].speed, control_out[1].speed);
         printf("Pot. field center: %4f %.4f\n", controller.getFields()[0]->pot_field_center(0), controller.getFields()[1]->pot_field_center(0));
-        printf(".........................................\n");
+        printf(".........................................\n");*/
         usleep(dt*1000*1000);
     }
 }

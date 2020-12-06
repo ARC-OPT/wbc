@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
+    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
     std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
     cout<<"No of joints: "<<NO_JOINTS<<endl;
     cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
@@ -52,11 +52,11 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     cout<<"Constraint Matrix A:"<<endl; cout<<prio_0.A<<endl;
     cout<<"Reference: y = "<<prio_0.lower_y.transpose()<<endl;
 
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;
+    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = prio_0.A*solver_output;
-    cout<<"Test: A * q_dot = "<<test.transpose();
+    //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - prio_0.lower_y(j)) < 1e-9);
 
-    cout<<"\n............................."<<endl;
+    //cout<<"\n............................."<<endl;
 }
