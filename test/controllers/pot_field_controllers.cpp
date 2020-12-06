@@ -293,7 +293,8 @@ BOOST_AUTO_TEST_CASE(joint_limit_avoidance)
 
     double dt = 0.01;
     base::commands::Joints control_out;
-    while(true){
+    int n = 0;
+    while(n++<100){
         BOOST_CHECK_NO_THROW(control_out = controller.update(feedback));
 
         feedback[0].position += control_out[0].speed * dt;
