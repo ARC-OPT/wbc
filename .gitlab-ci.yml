@@ -16,22 +16,26 @@ build:
     #- cd build/test/solvers/ && ./hls_solver
     #- cd build/test/solvers/ && ./qp_oases_solver
 
-generate_doxygen_documentation:
-  image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
-  stage: deploy
-  before_script:
-  - apt update
-  - apt install -y doxygen graphviz
-  script:
-  - doxygen Doxyfile.in
-  - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  - cp -R doc/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  artifacts:
-    paths:
-    - doc/
-  only:
-  - master
+include:
+   - project: 'build_server/gitlab_ci_includes'
+     file: 'api_publish.yml'
+
+#generate_doxygen_documentation:
+#  image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
+#  stage: deploy
+#  before_script:
+#  - apt update
+#  - apt install -y doxygen graphviz
+#  script:
+#  - doxygen Doxyfile.in
+#  - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+#  - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+#  - cp -R doc/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+#  artifacts:
+#    paths:
+#    - doc/
+#  only:
+#  - master
 
 software_catalogue_entry:
   image: d-reg.hb.dfki.de:5000/ubuntu:overview_generator
