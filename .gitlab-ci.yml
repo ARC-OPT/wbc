@@ -5,6 +5,7 @@ build:
     image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-wbc_ubuntu:18.04
     stage: build
     script:
+    - aup --config
     - aup control/wbc
     - amake control/wbc
     - build/test/controllers/pid_controllers
