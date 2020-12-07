@@ -20,7 +20,18 @@ An advantage of this approach is that complex tasks can be composed from low-dim
 easier to specify and control than the complete task are once. Also, the redundancy of the robot is exploited automatically utilizing 
 all the dof of the system (whole body). 
 
+### Installation Under Rock
 
+* New Bootstrap: See [here](https://git.hb.dfki.de/wbc/buildconf)
+* Existing Rock Installation: Add the wbc package set to your autoproj/manifest file: 
+    ```
+    package_sets:
+    - dfkigit: wbc/wbc_package_set
+    ```    
+  followed by `aup control/wbc` and then `amake control/wbc`
+ 
+### Installation Without Rock
+* See [here](https://git.hb.dfki.de/wbc/documentation/-/wikis/WBC%20Install%20Instruction%20outside%20of%20ROCK)
 
 
 

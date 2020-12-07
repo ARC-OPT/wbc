@@ -2,37 +2,40 @@
 # Full project: https://gitlab.com/pages/doxygen
 
 build:
-    image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-rh5_ubuntu:18.04
+    image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-wbc_ubuntu:18.04
     stage: build
     script:
     - aup --config
-    - aup
-    - sed -i '1s/^/set(ROCK_TEST_ENABLED ON)\n /' CMakeLists.txt
-    - amake
-    - build/test/controllers/pid_controllers
-    - build/test/controllers/pos_pd_controllers
-    - build/test/controllers/pot_field_controllers
-    - build/test/robot_models/kinematic_robot_model_kdl
-    - build/test/scenes/wbc_velocity_scene
-    - build/test/solvers/hls_solver
-    - build/test/solvers/qp_oases_solver
+    - aup control/wbc
+    - amake control/wbc
+    #- cd build/test/controllers && ./pid_controllers
+    #- cd build/test/controllers/ && ./pos_pd_controllers
+    #- cd build/test/controllers/ && ./pot_field_controllers
+    #- cd build/test/robot_models/ && ./kinematic_robot_model_kdl
+    #- cd build/test/scenes/ && ./wbc_velocity_scene
+    #- cd build/test/solvers/ && ./hls_solver
+    #- cd build/test/solvers/ && ./qp_oases_solver
 
-generate_doxygen_documentation:
-  image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
-  stage: deploy
-  before_script:
-  - apt update
-  - apt install -y doxygen graphviz
-  script:
-  - doxygen Doxyfile.in
-  - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  - cp -R doc/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
-  artifacts:
-    paths:
-    - doc/
-  only:
-  - master
+include:
+   - project: 'build_server/gitlab_ci_includes'
+     file: 'api_publish.yml'
+
+#generate_doxygen_documentation:
+#  image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
+#  stage: deploy
+#  before_script:
+#  - apt update
+#  - apt install -y doxygen graphviz
+#  script:
+#  - doxygen Doxyfile.in
+#  - rm -rf /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+#  - mkdir -p /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+#  - cp -R doc/* /home/www/htdocs/apis/$CI_PROJECT_NAMESPACE/$CI_PROJECT_NAME
+#  artifacts:
+#    paths:
+#    - doc/
+#  only:
+#  - master
 
 software_catalogue_entry:
   image: d-reg.hb.dfki.de:5000/ubuntu:overview_generator
