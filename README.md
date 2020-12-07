@@ -1,6 +1,7 @@
 # WBC Documentation
 
-### [Code API](http://bob.dfki.uni-bremen.de/apis/wbc/wbc/) | [Documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home)
+* [Code API](http://bob.dfki.uni-bremen.de/apis/wbc/wbc/) 
+* [Full Documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home)
 
 WBC (Whole Body Control) is an approach for specifying and controlling complex robotic tasks based on *constraints*. 
 The term was coined by Luis Sentis in his phd thesis 
