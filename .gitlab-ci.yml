@@ -8,13 +8,13 @@ build:
     - aup --config
     - aup control/wbc
     - amake control/wbc
-    - control/wbc/build/test/controllers/pid_controllers
-    - build/test/controllers/pos_pd_controllers
-    - build/test/controllers/pot_field_controllers
-    - build/test/robot_models/kinematic_robot_model_kdl
-    - build/test/scenes/wbc_velocity_scene
-    - build/test/solvers/hls_solver
-    - build/test/solvers/qp_oases_solver
+    - cd build/test/controllers && ./pid_controllers
+    - cd build/test/controllers/ && ./pos_pd_controllers
+    - cd build/test/controllers/ && ./pot_field_controllers
+    - cd build/test/robot_models/ && ./kinematic_robot_model_kdl
+    - cd build/test/scenes/ && ./wbc_velocity_scene
+    - cd build/test/solvers/ && ./hls_solver
+    - cd build/test/solvers/ && ./qp_oases_solver
 
 generate_doxygen_documentation:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/latex_ubuntu:18.04
