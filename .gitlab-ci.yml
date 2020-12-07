@@ -2,7 +2,7 @@
 # Full project: https://gitlab.com/pages/doxygen
 
 build:
-    image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-rh5_ubuntu:18.04
+    image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-wbc_ubuntu:18.04
     stage: build
     script:
     - aup --config
