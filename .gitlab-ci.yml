@@ -8,7 +8,7 @@ build:
     - aup --config
     - aup control/wbc
     - amake control/wbc
-    - pwd
+    - ls
     - cd build/test/controllers && ./pid_controllers
     - cd build/test/controllers/ && ./pos_pd_controllers
     - cd build/test/controllers/ && ./pot_field_controllers
