@@ -5,10 +5,8 @@ build:
     image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-wbc_ubuntu:18.04
     stage: build
     script:
-    - aup --config
-    - aup
-    - sed -i '1s/^/set(ROCK_TEST_ENABLED ON)\n /' CMakeLists.txt
-    - amake
+    - aup control/wbc
+    - amake control/wbc
     - build/test/controllers/pid_controllers
     - build/test/controllers/pos_pd_controllers
     - build/test/controllers/pot_field_controllers
