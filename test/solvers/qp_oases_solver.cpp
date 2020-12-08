@@ -59,9 +59,8 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     BOOST_CHECK_NO_THROW(solver.solve(hqp, solver_output));
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
-    std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
 
-    cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
+    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
     std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
     cout<<"No of joints: "<<NO_JOINTS<<endl;
     cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
@@ -70,13 +69,13 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
     cout<<"Reference: y = "<<y.transpose()<<endl;
 
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;
+    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
-    cout<<"Test: A * q_dot = "<<test.transpose();
+    //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
-    cout<<"\n............................."<<endl;
+    //cout<<"\n............................."<<endl;
 }
 
 BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
@@ -129,7 +128,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
+    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
     std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
     cout<<"No of joints: "<<NO_JOINTS<<endl;
     cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
@@ -138,11 +137,11 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
     cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
     cout<<"Reference: y = "<<y.transpose()<<endl;
 
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;
+    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
-    cout<<"Test: A * q_dot = "<<test.transpose();
+    //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
-    cout<<"\n............................."<<endl;
+    //cout<<"\n............................."<<endl;
 }

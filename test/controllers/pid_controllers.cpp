@@ -42,7 +42,7 @@ BOOST_AUTO_TEST_CASE(joint_torque_pid_controller){
 
         BOOST_CHECK_NO_THROW(control_output = controller.update(setpoint, feedback, dt));
 
-        printf("..................................................................\n");
+        /*printf("..................................................................\n");
         printf("Time:              %s\n", control_output.time.toString().c_str());
         printf("\n");
         printf("Setpoint:          %.6f %.6f\n", setpoint[0].effort, setpoint[1].effort);
@@ -54,7 +54,7 @@ BOOST_AUTO_TEST_CASE(joint_torque_pid_controller){
         printf("P-Gain:            %.6f %.6f\n", controller.getPID().p_gain(0), controller.getPID().p_gain(1));
         printf("I-Gain:            %.6f %.6f\n", controller.getPID().i_gain(0), controller.getPID().i_gain(1));
         printf("D-Gain:            %.6f %.6f\n", controller.getPID().d_gain(0), controller.getPID().d_gain(1));
-        printf("..................................................................\n\n");
+        printf("..................................................................\n\n");*/
 
         for(int i = 0; i < control_output.size(); i++)
             feedback[i].effort += control_output[i].speed * dt;
