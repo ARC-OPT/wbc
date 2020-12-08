@@ -53,12 +53,12 @@ BOOST_AUTO_TEST_CASE(forward_kinematics_wbc_vs_kdl){
         base::samples::RigidBodyStateSE3 cstate;
         BOOST_CHECK_NO_THROW( cstate = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_tcp"));
         base::Vector3d euler = base::getEuler(cstate.pose.orientation);
-        printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
+        /*printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
         printf("Orientation: %.4f %.4f %.4f\n",   euler(0),                euler(1),                euler(2));
         printf("Linear Vel:  %.4f %.4f %.4f\n",   cstate.twist.linear(0),  cstate.twist.linear(1),  cstate.twist.linear(2));
         printf("Angular Vel: %.4f %.4f %.4f\n",   cstate.twist.angular(0), cstate.twist.angular(1), cstate.twist.angular(2));
         printf("Linear Acc:  %.4f %.4f %.4f\n",   cstate.acceleration.linear(0),  cstate.acceleration.linear(1),  cstate.acceleration.linear(2));
-        printf("Angular Acc: %.4f %.4f %.4f\n\n", cstate.acceleration.angular(0), cstate.acceleration.angular(1), cstate.acceleration.angular(2));
+        printf("Angular Acc: %.4f %.4f %.4f\n\n", cstate.acceleration.angular(0), cstate.acceleration.angular(1), cstate.acceleration.angular(2));*/
 
         for(int i = 0; i < 3; i++){
             BOOST_CHECK(cstate.pose.position(i) == frame_vel.GetFrame().p(i));
@@ -106,7 +106,6 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
         }
         joint_state.time = base::Time::now();
         robot_model.update(joint_state);
-        cout<<"Robot model update took "<<(base::Time::now() - joint_state.time).toSeconds()*1000<<" ms"<<endl<<endl;
 
         base::samples::RigidBodyStateSE3 cstate = robot_model.rigidBodyState("base", "ee");
         base::Vector3d euler = base::getEuler(cstate.pose.orientation);
@@ -116,33 +115,33 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
         double vel = joint_state[joint_state.mapNameToIndex("base_to_rot")].speed;
         double acc = joint_state[joint_state.mapNameToIndex("base_to_rot")].acceleration;
 
-        printf("Expected position: %.4f %.4f %.4f\n",   zero, -sin(pos), cos(pos));
-        printf("Computed Position: %.4f %.4f %.4f\n\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
+        /*printf("Expected position: %.4f %.4f %.4f\n",   zero, -sin(pos), cos(pos));
+        printf("Computed Position: %.4f %.4f %.4f\n\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));*/
         BOOST_CHECK(fabs(zero - cstate.pose.position(0)) <= 1e-7);
         BOOST_CHECK(fabs(-sin(pos) - cstate.pose.position(1)) <= 1e-7);
         BOOST_CHECK(fabs(cos(pos) - cstate.pose.position(2)) <= 1e-7);
 
-        printf("Expected Orientation: %.4f %.4f %.4f\n",   zero, zero, pos);
-        printf("Computed Orientation: %.4f %.4f %.4f\n\n",   euler(0),  euler(1), euler(2));
+        /*printf("Expected Orientation: %.4f %.4f %.4f\n",   zero, zero, pos);
+        printf("Computed Orientation: %.4f %.4f %.4f\n\n",   euler(0),  euler(1), euler(2));*/
         BOOST_CHECK(fabs(zero -  euler(0)) <= 1e-7);
         BOOST_CHECK(fabs(zero - euler(1)) <= 1e-7);
         BOOST_CHECK(fabs(pos - euler(2)) <= 1e-7);
 
-        printf("Expected Linear Vel:  %.4f %.4f %.4f\n",   zero, -vel*cos(pos), -vel*sin(pos));
-        printf("Computed Linear Vel:  %.4f %.4f %.4f\n\n",   cstate.twist.linear(0), cstate.twist.linear(1), cstate.twist.linear(2));
+        /*printf("Expected Linear Vel:  %.4f %.4f %.4f\n",   zero, -vel*cos(pos), -vel*sin(pos));
+        printf("Computed Linear Vel:  %.4f %.4f %.4f\n\n",   cstate.twist.linear(0), cstate.twist.linear(1), cstate.twist.linear(2));*/
         BOOST_CHECK(fabs(zero - cstate.twist.linear(0)) <= 1e-7);
         BOOST_CHECK(fabs(-vel*cos(pos) - cstate.twist.linear(1)) <= 1e-7);
         BOOST_CHECK(fabs(-vel*sin(pos) - cstate.twist.linear(2)) <= 1e-7);
 
-        printf("Expected Angular Vel:  %.4f %.4f %.4f\n",   vel, zero, zero);
-        printf("Computed Angular Vel:  %.4f %.4f %.4f\n\n",   cstate.twist.angular(0), cstate.twist.angular(1), cstate.twist.angular(2));
+        /*printf("Expected Angular Vel:  %.4f %.4f %.4f\n",   vel, zero, zero);
+        printf("Computed Angular Vel:  %.4f %.4f %.4f\n\n",   cstate.twist.angular(0), cstate.twist.angular(1), cstate.twist.angular(2));*/
         BOOST_CHECK(fabs(vel - cstate.twist.angular(0)) <= 1e-7);
         BOOST_CHECK(fabs(zero - cstate.twist.angular(1)) <= 1e-7);
         BOOST_CHECK(fabs(zero - cstate.twist.angular(2)) <= 1e-7);
 
         base::VectorXd twist = robot_model.spaceJacobian("base", "ee") * joint_vel;
-        printf("Linear Vel from Jacobian: %.4f %.4f %.4f\n", twist(0), twist(1), twist(2));
-        printf("Angular Vel from Jacobian: %.4f %.4f %.4f\n\n", twist(3), twist(4), twist(5));
+        /*printf("Linear Vel from Jacobian: %.4f %.4f %.4f\n", twist(0), twist(1), twist(2));
+        printf("Angular Vel from Jacobian: %.4f %.4f %.4f\n\n", twist(3), twist(4), twist(5));*/
         for(int i = 0; i < 3; i++){
             BOOST_CHECK(fabs(twist(i) - cstate.twist.linear(i)) <= 1e-7);
             BOOST_CHECK(fabs(twist(i+3) - cstate.twist.angular(i)) <= 1e-7);
@@ -151,20 +150,20 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
         base::VectorXd acceleration = robot_model.jacobianDot("base", "ee")*joint_vel + robot_model.spaceJacobian("base", "ee")*joint_acc;
         double expected_y_acc = -acc*cos(pos) +  vel*vel*sin(pos);
         double expected_z_acc = -acc*sin(pos) -vel*vel*cos(pos);
-        printf("Expected Linear Acc:  %.4f %.4f %.4f\n",   zero, expected_y_acc, expected_z_acc);
-        printf("Computed Linear Acc:  %.4f %.4f %.4f\n\n",   acceleration(0), acceleration(1), acceleration(2));
+        /*printf("Expected Linear Acc:  %.4f %.4f %.4f\n",   zero, expected_y_acc, expected_z_acc);
+        printf("Computed Linear Acc:  %.4f %.4f %.4f\n\n",   acceleration(0), acceleration(1), acceleration(2));*/
         BOOST_CHECK(fabs(zero - acceleration(0)) <= 1e-7);
         BOOST_CHECK(fabs(expected_y_acc - acceleration(1)) <= 1e-7);
         BOOST_CHECK(fabs(expected_z_acc - acceleration(2)) <= 1e-7);
 
-        printf("Expected Angular Acc:  %.4f %.4f %.4f\n",   acc, zero, zero);
-        printf("Computed Angular Acc:  %.4f %.4f %.4f\n\n",   acceleration(3), acceleration(4), acceleration(5));
+        /*printf("Expected Angular Acc:  %.4f %.4f %.4f\n",   acc, zero, zero);
+        printf("Computed Angular Acc:  %.4f %.4f %.4f\n\n",   acceleration(3), acceleration(4), acceleration(5));*/
         BOOST_CHECK(fabs(acc - acceleration(3)) <= 1e-7);
         BOOST_CHECK(fabs(zero - acceleration(4)) <= 1e-7);
         BOOST_CHECK(fabs(zero - acceleration(5)) <= 1e-7);
 
 
-        printf("...........................................................\n");
+        //printf("...........................................................\n");
         usleep(0.1*1000*1000);
         t+=0.1;
     }
@@ -280,7 +279,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
             for(int j = 0; j < 7; j++)
                 BOOST_CHECK(fabs(jac_rbdl(i,j) - jac_wbc(i+3,j)) < 1e-5);
 
-        cout<<"Joint space inertia Matrix"<<endl;
+        /*cout<<"Joint space inertia Matrix"<<endl;
 
         cout<<"RBDL "<<endl;
         cout<<H<<endl;
@@ -315,7 +314,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         cout<<"WBC: "<<endl;
         cout<<jac_wbc<<endl<<endl;
 
-        cout<<"-------------------------------------------------"<<endl<<endl;
+        cout<<"-------------------------------------------------"<<endl<<endl;*/
     }
 }
 
@@ -429,7 +428,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
         end = base::Time::now();
         double time_wbc_bias_torques = (end-start).toSeconds();
 
-        cout<<"RBDL "<<endl;
+        /*cout<<"RBDL "<<endl;
         cout<<H<<endl;
         cout<<"Computation Time "<<time_rbdl_joint_space_inertia_comp<<endl<<endl;
         cout<<"WBC "<<endl;
@@ -462,7 +461,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
         cout<<"WBC: "<<endl;
         cout<<jac_wbc<<endl<<endl;
 
-        cout<<"-------------------------------------------------"<<endl<<endl;
+        cout<<"-------------------------------------------------"<<endl<<endl;*/
 
         // Check joint space inertia matrix
         for(int i = 0; i < rbdl_model.dof_count; i++)

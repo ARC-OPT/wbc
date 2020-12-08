@@ -50,18 +50,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     base::samples::RigidBodyStateSE3 rbs_kdl = robot_model_kdl.rigidBodyState(base_link, ee_link);
     base::MatrixXd Js_kdl = robot_model_kdl.spaceJacobian(base_link, ee_link);
     base::MatrixXd Jb_kdl = robot_model_kdl.bodyJacobian(base_link, ee_link);
-
-    cout<<"KDL Model: Computing Joint Space inertia matrix ..."<<endl;
-    base::Time start = base::Time::now();
     base::MatrixXd H_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
-    base::Time end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
-
-    cout<<"KDL Model: Computing Bias forces..."<<endl;
-    start = base::Time::now();
     base::MatrixXd C_kdl = robot_model_kdl.biasForces();
-    end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
 
     RobotModelHyrodyn robot_model_hyrodyn;
     config = RobotModelConfig("../../../models/urdf/rh5/rh5_one_leg.urdf",
@@ -74,20 +64,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     base::samples::RigidBodyStateSE3 rbs_hyrodyn = robot_model_kdl.rigidBodyState(base_link, ee_link);
     base::MatrixXd Js_hyrodyn = robot_model_hyrodyn.spaceJacobian(base_link, ee_link);
     base::MatrixXd Jb_hyrodyn = robot_model_hyrodyn.bodyJacobian(base_link, ee_link);
-
-    cout<<"Hyrodyn Model: Computing Joint Space inertia matrix ..."<<endl;
-    start = base::Time::now();
     base::MatrixXd H_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
-    end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
-
-    cout<<"Hyrodyn Model: Computing Bias forces..."<<endl;
-    start = base::Time::now();
     base::MatrixXd C_hyrodyn = robot_model_hyrodyn.biasForces();
-    end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
 
-    cout<<"Robot Model KDL"<<endl;
+    /*cout<<"Robot Model KDL"<<endl;
     cout<<"Pose"<<endl;
     cout<<rbs_kdl.pose.position.transpose()<<endl;
     cout<<rbs_kdl.pose.orientation.coeffs().transpose()<<endl;
@@ -117,7 +97,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_hyrodyn<<endl;
     cout<<"Bias Forces"<<endl;
-    cout<<C_hyrodyn.transpose()<<endl<<endl;
+    cout<<C_hyrodyn.transpose()<<endl<<endl;*/
 
     for(int i = 0; i < 3; i++)
         BOOST_CHECK(fabs(rbs_kdl.pose.position(i) - rbs_hyrodyn.pose.position(i)) < 1e-9);
@@ -185,18 +165,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     base::samples::RigidBodyStateSE3 rbs_kdl = robot_model_kdl.rigidBodyState(base_link, ee_link);
     base::MatrixXd Js_kdl = robot_model_kdl.spaceJacobian(base_link, ee_link);
     base::MatrixXd Jb_kdl = robot_model_kdl.bodyJacobian(base_link, ee_link);
-
-    cout<<"KDL Model: Computing Joint Space inertia matrix ..."<<endl;
-    base::Time start = base::Time::now();
     base::MatrixXd H_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
-    base::Time end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
-
-    cout<<"KDL Model: Computing Bias forces..."<<endl;
-    start = base::Time::now();
     base::MatrixXd C_kdl = robot_model_kdl.biasForces();
-    end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
 
     RobotModelHyrodyn robot_model_hyrodyn;
     robot_model_hyrodyn.configure(config);
@@ -206,20 +176,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     base::samples::RigidBodyStateSE3 rbs_hyrodyn = robot_model_hyrodyn.rigidBodyState(base_link, ee_link);
     base::MatrixXd Js_hyrodyn = robot_model_hyrodyn.spaceJacobian(base_link, ee_link);
     base::MatrixXd Jb_hyrodyn = robot_model_hyrodyn.bodyJacobian(base_link, ee_link);
-
-    cout<<"Hyrodyn Model: Computing Joint Space inertia matrix ..."<<endl;
-    start = base::Time::now();
     base::MatrixXd H_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
-    end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
-
-    cout<<"Hyrodyn Model: Computing Bias forces..."<<endl;
-    start = base::Time::now();
     base::MatrixXd C_hyrodyn = robot_model_hyrodyn.biasForces();
-    end = base::Time::now();
-    cout<<"... took "<<(end-start).toSeconds()<<" seconds"<<endl;
 
-    cout<<"Robot Model KDL"<<endl;
+    /*cout<<"Robot Model KDL"<<endl;
     cout<<"Pose"<<endl;
     cout<<rbs_kdl.pose.position.transpose()<<endl;
     cout<<rbs_kdl.pose.orientation.coeffs().transpose()<<endl;
@@ -249,7 +209,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_hyrodyn<<endl;
     cout<<"Bias Forces"<<endl;
-    cout<<C_hyrodyn.transpose()<<endl<<endl;
+    cout<<C_hyrodyn.transpose()<<endl<<endl;*/
 
     for(int i = 0; i < 3; i++)
         BOOST_CHECK(fabs(rbs_kdl.pose.position(i) - rbs_hyrodyn.pose.position(i)) < 1e-6);
