@@ -9,11 +9,14 @@ namespace wbc{
 
 /**
  * @brief Describes a quadratic program of the form
- *
- *       minimize       x^T * H * x + x^T * g
- *           x
- *       subject to    lower_x  <=  x <= upper_x
- *                     lower_y  <= Ax <= upper_y
+ *  \f[
+ *        \begin{array}{ccc}
+ *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{H}\mathbf{x}+\mathbf{x}^T\mathbf{g}& \\
+ *             & & \\
+ *        s.t. & lb(\mathbf{Ax}) \leq \mathbf{Ax} \leq ub(\mathbf{Ax})& \\
+ *             & lb(\mathbf{x}) \leq \mathbf{x} \leq ub(\mathbf{x})& \\
+ *        \end{array}
+ *  \f]
  */
 class QuadraticProgram{
 public:
@@ -33,9 +36,12 @@ public:
 
 };
 
+/**
+ * @brief Describes a hierarchy of quadratic programs
+ */
 struct HierarchicalQP{
     base::Time time;
-    std::vector<QuadraticProgram> prios;           /** hierarchical organized QPs*/
+    std::vector<QuadraticProgram> prios;           /** Hierarchical organized QPs. The first entriy is the highest priority*/
     base::VectorXd Wq;                             /** Joint weights (all joints) */
 
     size_t size() const {

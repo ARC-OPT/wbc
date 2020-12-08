@@ -9,6 +9,17 @@ namespace wbc {
 
 class HierarchicalQP;
 
+/**
+ * @brief The QPOASESSolver class is a wrapper for the qp-solver qpoases (see https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf). It solves problems of shape:
+ *  \f[
+ *        \begin{array}{ccc}
+ *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{H}\mathbf{x}+\mathbf{x}^T\mathbf{g}& \\
+ *             & & \\
+ *        s.t. & lb(\mathbf{Ax}) \leq \mathbf{Ax} \leq ub(\mathbf{Ax})& \\
+ *             & lb(\mathbf{x}) \leq \mathbf{x} \leq ub(\mathbf{x})& \\
+ *        \end{array}
+ *  \f]
+ */
 class QPOASESSolver : public QPSolver{
 public:
     QPOASESSolver();
@@ -17,7 +28,7 @@ public:
     /**
      * @brief solve Solve the given quadratic program
      * @param constraints Description of the hierarchical quadratic program to solve. Each vector entry correspond to a stage in the hierarchy where
-     *                    the first entry has the highest priority.
+     *                    the first entry has the highest priority. Currently only one priority level is implemented.
      * @param solver_output solution of the quadratic program
      */
     virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);

@@ -30,8 +30,12 @@ public:
     virtual const HierarchicalQP& update();
 
     /**
-     * @brief Update the wbc scene and return the (updated) optimization problem
-     * @return Hierarchical quadratic program (solver input)
+     * @brief Solve the given optimization problem
+     *  \f[
+     *     \left(\begin{array}{cc} \omega \\ v \end{array}\right)_B = \left(\begin{array}{cc} R & 0 \\ \left[p\right]R & R \end{array}\right) \left(\begin{array}{cc} \omega \\ v \end{array}\right)_A
+     *  \f]
+     *
+     * @return Solver output as joint velocity command
      */
     virtual const base::commands::Joints& solve(const HierarchicalQP& hqp);
 

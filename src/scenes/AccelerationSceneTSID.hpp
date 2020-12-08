@@ -39,8 +39,8 @@ public:
     virtual const HierarchicalQP& update();
 
     /**
-     * @brief Update the wbc scene and return the (updated) optimization problem
-     * @return Hierarchical quadratic program (solver input)
+     * @brief Solve the given optimization problem
+     * @return Solver output as joint acceleration command
      */
     virtual const base::commands::Joints& solve(const HierarchicalQP& hqp);
 
