@@ -113,20 +113,13 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
 
 const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
-    //throw std::runtime_error("jacobianDot has not been implemented for hyrodyn based robot model");
+    throw std::runtime_error("Not implemented: jacobianDot has not been implemented for RobotModelHyrodyn");
+}
 
-    if(current_joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
-    }
-
-    if(root_frame != base_frame){
-        LOG_ERROR_S<<"Requested Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
-        throw std::runtime_error("Invalid root frame");
-    }
-
-    jacobian.setZero();
-    return jacobian;
+const base::Acceleration &RobotModelHyrodyn::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
+    calculate_spatial_acceleration_bias(tip_frame);
+    spatial_acc_bias = base::Acceleration(spatial_acceleration_bias.segment(3,3), spatial_acceleration_bias.segment(0,3));
+    return spatial_acc_bias;
 }
 
 const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){

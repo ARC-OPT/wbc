@@ -27,6 +27,7 @@ class RobotModelKDL : public RobotModel{
     JacobianMap space_jac_map;
     JacobianMap body_jac_map;
     JacobianMap jac_dot_map;
+    base::VectorXd tmp_acc;
 
 protected:
     KDL::Tree full_tree;                          /** Overall kinematic tree*/
@@ -100,13 +101,20 @@ public:
     virtual const base::MatrixXd &bodyJacobian(const std::string &root_frame, const std::string &tip_frame);
 
     /** @brief Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. By convention reference frame & reference point
-      *  of the Jacobian will be the root frame. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+      *  of the Jacobian will be the root frame (corresponding to the body Jacobian). Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
       * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
       * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
       * @return A 6xN Jacobian derivative matrix, where N is the number of robot joints
       */
     virtual const base::MatrixXd &jacobianDot(const std::string &root_frame, const std::string &tip_frame);
+
+    /** @brief Returns the spatial acceleration bias, i.e. the term Jdot*qdot
+      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
+      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+      * @return A Nx1 vector, where N is the number of robot joints
+      */
+    virtual const base::Acceleration &spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame);
 
     /** Compute and return the joint space mass-inertia matrix, which is nj x nj, where nj is the number of joints of the system*/
     virtual const base::MatrixXd &jointSpaceInertiaMatrix();

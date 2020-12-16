@@ -10,10 +10,28 @@ namespace wbc{
 typedef std::shared_ptr<CartesianAccelerationConstraint> CartesianAccelerationConstraintPtr;
 typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraintPtr;
 
+/**
+ * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:
+ *  \f[
+ *        \begin{array}{ccc}
+ *        min(\mathbf{\ddot{q}}) & \frac{1}{2} \mathbf{\ddot{q}}^T\mathbf{H}\mathbf{\ddot{q}}+\mathbf{\ddot{q}}^T\mathbf{g}& \\
+ *             & & \\
+ *        \end{array}
+ *  \f]
+ *  \f[
+ *        \begin{array}{ccc}
+ *         \mathbf{H} & = & \mathbf{J}^T \mathbf{J} \\
+ *         \mathbf{g} & = & -(\mathbf{J}^T (\ddot{\mathbf{x}}_{des}-\dot{\mathbf{J}}\dot{\mathbf{q}}))^T \\
+ *             & & \\
+ *        \end{array}
+ *  \f]
+ * where \f$\ddot{\mathbf{q}}\f$ is the vector of robot joint accelerations, \f$\ddot{\mathbf{x}}_{des}\f$ the desired task space accelerations of all tasks stacked in a single vector,
+ *  \f$\mathbf{J}\f$
+ */
 class AccelerationScene : public WbcScene{
 protected:
     base::VectorXd q_dot;
-    base::VectorXd solver_output_acc, robot_acc, robot_vel;
+    base::VectorXd solver_output_acc, robot_acc;
 
     /**
      * brief Create a constraint and add it to the WBC scene

@@ -24,6 +24,7 @@ protected:
     base::Vector3d gravity;
     base::MatrixXd joint_space_inertia_mat;
     base::VectorXd bias_forces;
+    base::Acceleration spatial_acc_bias;
     base::MatrixXd selection_matrix;
     base::samples::Joints joint_state_out;
     std::vector<std::string> floating_base_names;
@@ -77,8 +78,15 @@ public:
       */
     virtual const base::MatrixXd &bodyJacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
 
+    /** @brief Returns the spatial acceleration bias, i.e. the term Jdot*qdot
+      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
+      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+      * @return A Nx1 vector, where N is the number of robot joints
+      */
+    virtual const base::Acceleration &spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame) = 0;
+
     /** @brief Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. By convention reference frame & reference point
-      *  of the Jacobian will be the root frame. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+      *  of the Jacobian will be the root frame (corresponding to the body Jacobian). Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
       * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
       * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.

@@ -2,8 +2,12 @@
 #define CARTESIANACCELERATIONCONSTRAINT_HPP
 
 #include "CartesianConstraint.hpp"
+#include <base/Acceleration.hpp>
 
 namespace wbc{
+
+base::Vector6d operator+(base::Vector6d a, base::Acceleration b);
+base::Vector6d operator-(base::Vector6d a, base::Acceleration b);
 
 /**
  * @brief Implementation of a Cartesian acceleration constraint.

@@ -179,6 +179,12 @@ const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, 
     return jac_dot_map[chain_id];
 }
 
+const base::Acceleration &RobotModelKDL::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
+    tmp_acc = jacobianDot(root_frame, tip_frame)*qdot.data;
+    spatial_acc_bias = base::Acceleration(tmp_acc.segment(0,3), tmp_acc.segment(3,3));
+    return spatial_acc_bias;
+}
+
 const base::VectorXd &RobotModelKDL::biasForces(){
 
     if(current_joint_state.time.isNull()){

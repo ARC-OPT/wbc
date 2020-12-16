@@ -15,7 +15,7 @@ class AccelerationSceneTSID : public WbcScene{
 protected:
     // Helper variables
     base::VectorXd q_dot;
-    base::VectorXd solver_output_acc, robot_acc, robot_vel;
+    base::VectorXd solver_output_acc, robot_acc;
     base::samples::Wrenches contact_wrenches;
     base::MatrixXd A;
     base::VectorXd y;

@@ -60,7 +60,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             q_dot.resize(robot_model->noOfJoints());
             for(size_t j = 0; j < joint_state.size(); j++)
                 q_dot(j) = joint_state[j].speed;
-            constraint->y_ref = constraint->y_ref - robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * q_dot;
+            constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
 
             // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
             // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
@@ -185,16 +185,14 @@ const ConstraintsStatus& AccelerationSceneTSID::updateConstraintsStatus(const ba
     }
     const std::vector<std::string> &joint_names = robot_model->jointNames();
     robot_acc.resize(robot_model->noOfJoints());
-    robot_vel.resize(robot_model->noOfJoints());
-    for(size_t i = 0; i < joint_names.size(); i++){
+    for(size_t i = 0; i < joint_names.size(); i++)
         robot_acc(i) = joint_state[joint_names[i]].acceleration;
-        robot_vel(i) = joint_state[joint_names[i]].speed;
-    }
 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
             ConstraintPtr constraint = constraints[prio][i];
             const std::string &name = constraint->config.name;
+            base::Acceleration bias_acc = robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
 
             constraints_status[name].time       = constraint->time;
             constraints_status[name].config     = constraint->config;
@@ -202,10 +200,8 @@ const ConstraintsStatus& AccelerationSceneTSID::updateConstraintsStatus(const ba
             constraints_status[name].timeout    = constraint->timeout;
             constraints_status[name].weights    = constraint->weights;
             constraints_status[name].y_ref      = constraint->y_ref_root;
-            constraints_status[name].y_solution = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * solver_output_acc +
-                                                  robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
-            constraints_status[name].y          = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * robot_acc +
-                                                  robot_model->jacobianDot(constraint->config.root, constraint->config.tip) * robot_vel;
+            constraints_status[name].y_solution = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * solver_output_acc + bias_acc;
+            constraints_status[name].y          = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * robot_acc + bias_acc;
         }
     }
 
