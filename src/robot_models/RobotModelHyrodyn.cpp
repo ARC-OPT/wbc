@@ -139,17 +139,9 @@ const base::VectorXd &RobotModelHyrodyn::biasForces(){
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
-    // TODO: Use Hyrodyn ID with zero acceleration here
-
-    VectorXd q(m.dof_count);
-    HyRoDyn::calc_sysstate_q(m, *alcs, y, q);
-
-    VectorXd qd(m.dof_count);
-    HyRoDyn::calc_sysstate_qdot(m, *alcs, y, yd, qd);
-
-    Math::VectorNd C(m.dof_count);
-    NonlinearEffects(m, q, qd, C);
-    bias_forces = C;
+    ydd.setZero(); // TODO: Should be restored after the ID computation
+    calculate_inverse_dynamics_independentjointspace();
+    bias_forces = Tau_independentjointspace;
     return bias_forces;
 }
 
