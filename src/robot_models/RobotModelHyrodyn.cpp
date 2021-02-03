@@ -63,12 +63,14 @@ const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const 
     }
 
     calculate_forward_kinematics(tip_frame);
-    rbs.pose.position    = pose.segment(0,3);
-    rbs.pose.orientation = base::Quaterniond(pose[6],pose[3],pose[4],pose[5]);
-    rbs.twist.linear     = twist.segment(3,3);
-    rbs.twist.angular    = twist.segment(0,3);
-    rbs.time             = current_joint_state.time;
-    rbs.frame_id         = tip_frame;
+    rbs.pose.position        = pose.segment(0,3);
+    rbs.pose.orientation     = base::Quaterniond(pose[6],pose[3],pose[4],pose[5]);
+    rbs.twist.linear         = twist.segment(3,3);
+    rbs.twist.angular        = twist.segment(0,3);
+    rbs.acceleration.linear  = spatial_acceleration.segment(3,3);
+    rbs.acceleration.angular = spatial_acceleration.segment(0,3);
+    rbs.time                 = current_joint_state.time;
+    rbs.frame_id             = tip_frame;
     return rbs;
 }
 
