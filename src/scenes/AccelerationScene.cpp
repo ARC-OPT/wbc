@@ -142,29 +142,20 @@ const base::commands::Joints& AccelerationScene::solve(const HierarchicalQP& hqp
     return solver_output_joints;
 }
 
-const ConstraintsStatus &AccelerationScene::updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state){
+const ConstraintsStatus &AccelerationScene::updateConstraintsStatus(){
 
-    if(solver_output.size() != robot_model->noOfActuatedJoints())
-        throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())
-                                 + " but number of robot joints is " + std::to_string(robot_model->noOfActuatedJoints()));
-
-    solver_output_acc.resize(robot_model->noOfJoints());
-    solver_output_acc.setZero();
-    for(size_t i = 0; i < solver_output.size(); i++){
-        uint idx = robot_model->jointIndex(solver_output.names[i]);
-        solver_output_acc(idx) = solver_output[i].acceleration;
-    }
-    const std::vector<std::string> &joint_names = robot_model->jointNames();
     robot_acc.resize(robot_model->noOfJoints());
-    for(size_t i = 0; i < joint_names.size(); i++){
-        robot_acc(i) = joint_state[joint_names[i]].acceleration;
-    }
+    uint nj = robot_model->noOfJoints();
+    const base::samples::Joints &joint_state = robot_model->jointState(robot_model->jointNames());
+    for(size_t i = 0; i < nj; i++)
+        robot_acc(i) = joint_state[i].acceleration;
 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
             ConstraintPtr constraint = constraints[prio][i];
             const std::string &name = constraint->config.name;
-            base::Acceleration bias_acc         = robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
+            base::Acceleration bias_acc = robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
+            const base::MatrixXd &jac = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
 
             constraints_status[name].time       = constraint->time;
             constraints_status[name].config     = constraint->config;
@@ -172,8 +163,8 @@ const ConstraintsStatus &AccelerationScene::updateConstraintsStatus(const base::
             constraints_status[name].timeout    = constraint->timeout;
             constraints_status[name].weights    = constraint->weights;
             constraints_status[name].y_ref      = constraint->y_ref;
-            constraints_status[name].y_solution = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * solver_output_acc + bias_acc;
-            constraints_status[name].y          = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip) * robot_acc + bias_acc;
+            constraints_status[name].y_solution = jac * solver_output + bias_acc;
+            constraints_status[name].y          = jac * robot_acc + bias_acc;
         }
     }
 

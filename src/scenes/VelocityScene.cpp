@@ -126,19 +126,13 @@ const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
     return solver_output_joints;
 }
 
-const ConstraintsStatus& VelocityScene::updateConstraintsStatus(const base::commands::Joints& solver_output, const base::samples::Joints& joint_state){
+const ConstraintsStatus& VelocityScene::updateConstraintsStatus(){
 
-    if(solver_output.size() != robot_model->noOfActuatedJoints())
-        throw std::runtime_error("Size of solver output is " + std::to_string(solver_output.size())
-                                 + " but number of robot joints is " + std::to_string(robot_model->noOfActuatedJoints()));
-
-    solver_output_vel.resize(robot_model->noOfActuatedJoints());
     robot_vel.resize(robot_model->noOfJoints());
-    for(size_t i = 0; i < robot_model->noOfActuatedJoints(); i++)
-        solver_output_vel(i) = solver_output[i].speed;
-    const std::vector<std::string> joint_names = robot_model->jointNames();
-    for(size_t i = 0; i < joint_names.size(); i++)
-        robot_vel(i) = joint_state[joint_names[i]].speed;
+    uint nj = robot_model->noOfJoints();
+    const base::samples::Joints &joint_state = robot_model->jointState(robot_model->jointNames());
+    for(size_t i = 0; i < nj; i++)
+        robot_vel(i) = joint_state[i].speed;
 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
@@ -151,7 +145,7 @@ const ConstraintsStatus& VelocityScene::updateConstraintsStatus(const base::comm
             constraints_status[name].timeout    = constraint->timeout;
             constraints_status[name].weights    = constraint->weights;
             constraints_status[name].y_ref      = constraint->y_ref;
-            constraints_status[name].y_solution = constraint->A * solver_output_vel;
+            constraints_status[name].y_solution = constraint->A * solver_output;
             constraints_status[name].y          = constraint->A * robot_vel;
         }
     }

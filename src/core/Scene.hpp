@@ -88,7 +88,7 @@ public:
     /**
      * @brief updateConstraintsStatus Evaluate the fulfillment of the constraints given the current robot state and the solver output
      */
-    virtual const ConstraintsStatus &updateConstraintsStatus(const base::samples::Joints& solver_output, const base::samples::Joints& joint_state) = 0;
+    virtual const ConstraintsStatus &updateConstraintsStatus() = 0;
 
     /**
      * @brief Return constraints sorted by priority for the solver
