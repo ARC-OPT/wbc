@@ -12,7 +12,7 @@ typedef std::shared_ptr<JointVelocityConstraint> JointVelocityConstraintPtr;
 
 class VelocityScene : public WbcScene{
 protected:
-    base::VectorXd solver_output_vel, robot_vel;
+    base::VectorXd solver_output, robot_vel;
     /**
      * @brief Create a constraint and add it to the WBC scene
      */

@@ -127,8 +127,8 @@ const HierarchicalQP& AccelerationScene::update(){
 const base::commands::Joints& AccelerationScene::solve(const HierarchicalQP& hqp){
 
     // solve
-    solver_output_acc.resize(hqp[0].nq);
-    solver->solve(hqp, solver_output_acc);
+    solver_output.resize(hqp[0].nq);
+    solver->solve(hqp, solver_output);
 
     // Convert Output
     solver_output_joints.resize(robot_model->noOfActuatedJoints());
@@ -136,7 +136,7 @@ const base::commands::Joints& AccelerationScene::solve(const HierarchicalQP& hqp
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
-        solver_output_joints[name].acceleration = solver_output_acc[idx];
+        solver_output_joints[name].acceleration = solver_output[idx];
     }
     solver_output_joints.time = base::Time::now();
     return solver_output_joints;
