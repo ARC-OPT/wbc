@@ -34,6 +34,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     A.resize(nc, nj); // Task Jacobian
     y.resize(nc); // Desired task space acceleration
+    wy.resize(nc); // Task weights
 
     // QP Size: (NJoints+NContacts*2*6 x NJoints+NActuatedJoints+NContacts*6)
     // Variable order: (acc,torque,f_ext)
@@ -92,14 +93,23 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             throw std::invalid_argument("Invalid constraint configuration");
         }
 
+        // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
+        // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
+        if(constraint->activation == 0){
+           constraint->y_ref.setZero();
+           constraint->y_ref_root.setZero();
+        }
 
-        constraints_prio[prio].Wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
+        wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
         A.block(row_index, 0, n_vars, nj) = constraint->A;
         y.segment(row_index, n_vars) = constraint->y_ref_root;
         row_index += n_vars;
     }
 
-    // Cost Function: Find minimal joint accelerations that also minimize task constraints (task space gradient points along desired task space accelerations)
+    // Multiply task weights
+    y = wy.cwiseProduct(y);
+
+    // Cost Function: Find joint accelerations that minimize the given task constraints (task space gradient points along desired task space accelerations)
     // Only minimize acceleration, not torques
     // min_x 0.5*x^T*H*x - 2x^T*g
     // --> H = J^T * J

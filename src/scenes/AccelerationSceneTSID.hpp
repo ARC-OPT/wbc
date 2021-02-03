@@ -18,7 +18,7 @@ protected:
     base::VectorXd solver_output, robot_acc, solver_output_acc;
     base::samples::Wrenches contact_wrenches;
     base::MatrixXd A;
-    base::VectorXd y;
+    base::VectorXd y, wy;
 
     /**
      * brief Create a constraint and add it to the WBC scene
