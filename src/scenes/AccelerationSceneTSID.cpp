@@ -45,6 +45,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     for(uint i = 0; i < constraints[prio].size(); i++){
 
         int type = constraints[prio][i]->config.type;
+        constraints[prio][i]->checkTimeout();
         uint n_vars = constraints[prio][i]->config.nVariables(); // Variable for this task constraint
         ConstraintPtr constraint;
 
@@ -150,7 +151,6 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
         constraints_prio[prio].upper_x(i+nj) = robot_model->jointLimits()[name].max.effort;
     }
-
     return constraints_prio;
 }
 
