@@ -26,8 +26,6 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         throw std::runtime_error("Invalid constraint configuration");
     }
 
-    robot_model->jointSpaceInertiaMatrix();
-
     int prio = 0; // Only one priority is implemented here!
     uint nj = robot_model->noOfJoints();
     uint na = robot_model->noOfActuatedJoints();
@@ -127,7 +125,11 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     // 2. For all contacts: Js*qdd = -Jsdot*qd (Rigid Contacts, contact points do not move!)
     for(int i = 0; i < contact_points.size(); i++){
         constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points[i]);
-        constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -robot_model->jacobianDot(robot_model->baseFrame(), contact_points[i])*q_dot;
+        base::Vector6d acc;
+        base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contact_points[i]);
+        acc.segment(0,3) = a.linear;
+        acc.segment(3,3) = a.angular;
+        constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
     }
 
     // Torque Limits
