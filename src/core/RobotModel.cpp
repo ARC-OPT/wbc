@@ -36,7 +36,6 @@ void RobotModel::updateFloatingBase(const base::RigidBodyStateSE3& rbs, base::sa
        LOG_ERROR("Invalid status of floating base given! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion)");
        throw std::runtime_error("Invalid floating base status");
     }
-
     floating_base_state.pose = rbs.pose;
     floating_base_state.twist = rbs.twist;
     floating_base_state.acceleration = rbs.acceleration;
@@ -133,7 +132,6 @@ void RobotModel::update(const base::samples::Joints& joint_state, const base::sa
             throw e;
         }
         current_joint_state[idx] = joint_state[i];
-        current_joint_state[idx].acceleration = 0.0;
     }
     current_joint_state.time = joint_state.time;
     if(has_floating_base)
