@@ -14,8 +14,8 @@ typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraint
  * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:
  *  \f[
  *        \begin{array}{ccc}
- *        min(\mathbf{\ddot{q}}) & \frac{1}{2} \mathbf{\ddot{q}}^T\mathbf{H}\mathbf{\ddot{q}}+\mathbf{\ddot{q}}^T\mathbf{g}& \\
- *             & & \\
+ *        minimize & \frac{1}{2} \mathbf{\ddot{q}}^T\mathbf{H}\mathbf{\ddot{q}}+\mathbf{\ddot{q}}^T\mathbf{g}& \\
+ *            \mathbf{\ddot{q}} & & \\
  *        \end{array}
  *  \f]
  *  \f[
@@ -25,8 +25,9 @@ typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraint
  *             & & \\
  *        \end{array}
  *  \f]
- * where \f$\ddot{\mathbf{q}}\f$ is the vector of robot joint accelerations, \f$\ddot{\mathbf{x}}_{des}\f$ the desired task space accelerations of all tasks stacked in a single vector,
- *  \f$\mathbf{J}\f$
+ * \f$\ddot{\mathbf{q}}\f$ - Vector of robot joint accelerations<br>
+ * \f$\ddot{\mathbf{x}}_{des}\f$ - desired task space accelerations of all tasks stacked in a vector<br>
+ * \f$\mathbf{J}\f$ - task Jacobians of all tasks stacked in a single matrix<br>
  */
 class AccelerationScene : public WbcScene{
 protected:

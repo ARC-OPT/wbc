@@ -10,6 +10,22 @@ namespace wbc{
 typedef std::shared_ptr<CartesianVelocityConstraint> CartesianVelocityConstraintPtr;
 typedef std::shared_ptr<JointVelocityConstraint> JointVelocityConstraintPtr;
 
+/**
+ * @brief Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:
+ *  \f[
+ *        \begin{array}{ccc}
+ *        minimize & \| \dot{\mathbf{q}} \|_2& \\
+ *            \mathbf{\dot{q}} & & \\
+ *             & & \\
+ *           s.t. & \mathbf{J\dot{q}}=\dot{\mathbf{x}}_{des}
+ *        \end{array}
+ *  \f]
+ * \f$\dot{\mathbf{q}}\f$ - Vector of robot joint velocities<br>
+ * \f$\dot{\mathbf{x}}_{des}\f$ - desired task space velocities of all tasks stacked in a vector<br>
+ * \f$\mathbf{J}\f$ - task Jacobians of all tasks stacked in a single matrix<br>
+ *
+ * The tasks are modeled as equality constraints to the above optimization problem.
+ */
 class VelocityScene : public WbcScene{
 protected:
     base::VectorXd solver_output, robot_vel;
