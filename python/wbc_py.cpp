@@ -5,7 +5,7 @@ namespace bp = boost::python;
 
 template<class T>
 inline
-bp::list from_std_vector(const std::vector<T>& v)
+bp::list to_python(const std::vector<T>& v)
 {
     bp::object get_iter = bp::iterator<std::vector<T> >();
     bp::object iter = get_iter(v);
@@ -15,15 +15,13 @@ bp::list from_std_vector(const std::vector<T>& v)
 
 template< typename T >
 inline
-std::vector< T > to_std_vector( const bp::list& iterable )
+std::vector< T > from_python( const bp::list& iterable )
 {
     return std::vector< T >( bp::stl_input_iterator< T >( iterable ),
                              bp::stl_input_iterator< T >( ) );
 }
 
-namespace  wbc_py {
-
-base::samples::RigidBodyStateSE3 to_rbs(RigidBodyStateSE3 in){
+base::samples::RigidBodyStateSE3 from_python(wbc_py::RigidBodyStateSE3 in){
     base::samples::RigidBodyStateSE3 out;
     for(int i = 0; i < 4; i++)
         out.pose.orientation = base::Quaterniond(bp::extract<double>(in.pose.orientation[0]),
@@ -39,44 +37,46 @@ base::samples::RigidBodyStateSE3 to_rbs(RigidBodyStateSE3 in){
         out.wrench.force[i] = bp::extract<double>(in.wrench.force[i]);
         out.wrench.torque[i] = bp::extract<double>(in.wrench.torque[i]);
     }
+    out.time = base::Time::now();
     return out;
 }
 
-RigidBodyStateSE3 from_rbs(base::samples::RigidBodyStateSE3 in){
-    RigidBodyStateSE3 out;
+wbc_py::RigidBodyStateSE3 to_python(base::samples::RigidBodyStateSE3 in){
+    wbc_py::RigidBodyStateSE3 out;
     for(int i = 0; i < 4; i++)
-        out.pose.orientation.append(in.pose.orientation.coeffs()[i]);
+        out.pose.orientation[i] = in.pose.orientation.coeffs()[i];
     for(int i = 0; i < 3; i++){
-        out.pose.position.append(in.pose.position[i]);
-        out.twist.linear.append(in.twist.linear[i]);
-        out.twist.angular.append(in.twist.angular[i]);
-        out.acceleration.linear.append(in.acceleration.linear[i]);
-        out.acceleration.angular.append(in.acceleration.angular[i]);
-        out.wrench.force.append(in.wrench.force[i]);
-        out.wrench.torque.append(in.wrench.torque[i]);
+        out.pose.position[i] = in.pose.position[i];
+        out.twist.linear[i] = in.twist.linear[i];
+        out.twist.angular[i] = in.twist.angular[i];
+        out.acceleration.linear[i] = in.acceleration.linear[i];
+        out.acceleration.angular[i] = in.acceleration.angular[i];
+        out.wrench.force[i] = in.wrench.force[i];
+        out.wrench.torque[i] = in.wrench.torque[i];
     }
     return out;
 }
 
-bool RobotModelHyrodyn::configure(const RobotModelConfig &cfg){
+namespace  wbc_py {
+
+bool RobotModel::configure(const RobotModelConfig &cfg){
     wbc::RobotModelConfig wbc_cfg(cfg.file,
-                                  to_std_vector<std::string>(cfg.actuated_joint_names),
-                                  to_std_vector<std::string>(cfg.joint_names),
+                                  from_python<std::string>(cfg.joint_names),
+                                  from_python<std::string>(cfg.actuated_joint_names),
                                   cfg.floating_base,
                                   cfg.world_frame_id,
-                                  to_rbs(cfg.floating_base_state),
-                                  to_std_vector<std::string>(cfg.contact_points),
+                                  from_python(cfg.floating_base_state),
+                                  from_python<std::string>(cfg.contact_points),
                                   cfg.submechanism_file);
-    return robot_model.configure(wbc_cfg);
+    return robot_model->configure(wbc_cfg);
 }
 
-void RobotModelHyrodyn::update(bp::list names,
-                               bp::list positions,
-                               bp::list velocities,
-                               bp::list accelerations,
-                               RigidBodyStateSE3 floating_base_state){
+void RobotModel::update(bp::list names,
+                        bp::list positions,
+                        bp::list velocities,
+                        bp::list accelerations){
     base::samples::Joints joints;
-    joints.names = to_std_vector<std::string>(names);
+    joints.names = from_python<std::string>(names);
     for(int i = 0; i < bp::len(names); i++){
         base::JointState state;
         state.position     = bp::extract<double>(positions[i]);
@@ -84,14 +84,61 @@ void RobotModelHyrodyn::update(bp::list names,
         state.acceleration = bp::extract<double>(accelerations[i]);
         joints.elements.push_back(state);
     }
-    robot_model.update(joints,to_rbs(floating_base_state));
+    joints.time = base::Time::now();
+    robot_model->update(joints);
 }
 
-RigidBodyStateSE3 RobotModelHyrodyn::rigidBodyState(const string &root, const string &tip){
-    return from_rbs(robot_model.rigidBodyState(root,tip));
+void RobotModel::update2(bp::list names,
+                         bp::list positions,
+                         bp::list velocities,
+                         bp::list accelerations,
+                         RigidBodyStateSE3 floating_base_state){
+    base::samples::Joints joints;
+    joints.names = from_python<std::string>(names);
+    for(int i = 0; i < bp::len(names); i++){
+        base::JointState state;
+        state.position     = bp::extract<double>(positions[i]);
+        state.speed        = bp::extract<double>(velocities[i]);
+        state.acceleration = bp::extract<double>(accelerations[i]);
+        joints.elements.push_back(state);
+    }
+    joints.time = base::Time::now();
+    robot_model->update(joints, from_python(floating_base_state));
 }
 
+RigidBodyStateSE3 RobotModel::rigidBodyState(const std::string &root, const std::string &tip){
+    return to_python(robot_model->rigidBodyState(root,tip));
 }
+
+bp::list RobotModel::spaceJacobian(const std::string& root, const std::string &tip){
+
+}
+
+bp::list RobotModel::bodyJacobian(const std::string& root, const std::string &tip){
+
+}
+
+Acceleration RobotModel::spatialAccelerationBias(const std::string& root, const std::string &tip){
+
+}
+
+bp::list RobotModel::jointSpaceInertiaMatrix(){
+
+}
+
+bp::list RobotModel::biasForces(){
+
+}
+
+bp::list RobotModel::jointNames(){
+    return to_python(robot_model->jointNames());
+}
+
+bp::list RobotModel::actuatedJointNames(){
+    return to_python(robot_model->actuatedJointNames());
+}
+
+} // namespace wbc_py
 
 BOOST_PYTHON_MODULE(wbc_py){
 
@@ -130,12 +177,25 @@ BOOST_PYTHON_MODULE(wbc_py){
     bp::class_<wbc_py::RobotModelHyrodyn>("RobotModelHyrodyn")
             .def("configure",&wbc_py::RobotModelHyrodyn::configure)
             .def("update",&wbc_py::RobotModelHyrodyn::update)
+            .def("update",&wbc_py::RobotModelHyrodyn::update2)
             .def("rigidBodyState",&wbc_py::RobotModelHyrodyn::rigidBodyState)
             .def("spaceJacobian",&wbc_py::RobotModelHyrodyn::spaceJacobian)
             .def("bodyJacobian",&wbc_py::RobotModelHyrodyn::bodyJacobian)
             .def("spatialAccelerationBias",&wbc_py::RobotModelHyrodyn::spatialAccelerationBias)
             .def("jointSpaceInertiaMatrix",&wbc_py::RobotModelHyrodyn::jointSpaceInertiaMatrix)
-            .def("biasForces",&wbc_py::RobotModelHyrodyn::biasForces);
+            .def("biasForces",&wbc_py::RobotModelHyrodyn::biasForces)
+            .def("noOfJoints",&wbc_py::RobotModelHyrodyn::noOfJoints);
 
+    bp::class_<wbc_py::RobotModelKDL>("RobotModelKDL")
+            .def("configure",&wbc_py::RobotModelKDL::configure)
+            .def("update",&wbc_py::RobotModelKDL::update)
+            .def("update",&wbc_py::RobotModelKDL::update2)
+            .def("rigidBodyState",&wbc_py::RobotModelKDL::rigidBodyState)
+            .def("spaceJacobian",&wbc_py::RobotModelKDL::spaceJacobian)
+            .def("bodyJacobian",&wbc_py::RobotModelKDL::bodyJacobian)
+            .def("spatialAccelerationBias",&wbc_py::RobotModelKDL::spatialAccelerationBias)
+            .def("jointSpaceInertiaMatrix",&wbc_py::RobotModelKDL::jointSpaceInertiaMatrix)
+            .def("biasForces",&wbc_py::RobotModelKDL::biasForces)
+            .def("noOfJoints",&wbc_py::RobotModelKDL::noOfJoints);
 }
 
