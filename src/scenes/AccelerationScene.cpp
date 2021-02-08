@@ -154,17 +154,19 @@ const ConstraintsStatus &AccelerationScene::updateConstraintsStatus(){
         for(uint i = 0; i < constraints[prio].size(); i++){
             ConstraintPtr constraint = constraints[prio][i];
             const std::string &name = constraint->config.name;
-            base::Acceleration bias_acc = robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
-            const base::MatrixXd &jac = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
 
             constraints_status[name].time       = constraint->time;
             constraints_status[name].config     = constraint->config;
             constraints_status[name].activation = constraint->activation;
             constraints_status[name].timeout    = constraint->timeout;
             constraints_status[name].weights    = constraint->weights;
-            constraints_status[name].y_ref      = constraint->y_ref;
-            constraints_status[name].y_solution = jac * solver_output + bias_acc;
-            constraints_status[name].y          = jac * robot_acc + bias_acc;
+            constraints_status[name].y_ref      = constraint->y_ref_root;
+            if(constraint->config.type == cart){
+                const base::MatrixXd &jac = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
+                const base::Acceleration &bias_acc = robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
+                constraints_status[name].y_solution = jac * solver_output + bias_acc;
+                constraints_status[name].y          = jac * robot_acc + bias_acc;
+            }
         }
     }
 
