@@ -142,8 +142,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                             true,
                             "world",
-                            floating_base_state);
-    config.submechanism_file = "../../../models/hyrodyn/rh5/rh5_one_leg_floating_base.yml";
+                            floating_base_state,
+                            std::vector<std::string>(),
+                            "../../../models/hyrodyn/rh5/rh5_one_leg_floating_base.yml");
     RobotModelKDL robot_model_kdl;
     BOOST_CHECK(robot_model_kdl.configure(config) == true);
     uint na = robot_model_kdl.noOfActuatedJoints();

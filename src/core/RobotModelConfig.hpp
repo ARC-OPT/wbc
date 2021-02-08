@@ -24,14 +24,16 @@ public:
                      const bool floating_base = false,
                      const std::string &world_frame_id = "world",
                      const base::RigidBodyStateSE3& floating_base_state = base::RigidBodyStateSE3(),
-                     const std::vector<std::string> &contact_points = std::vector<std::string>()) :
+                     const std::vector<std::string> &contact_points = std::vector<std::string>(),
+                     const std::string& submechanism_file = "") :
         file(file),
         joint_names(joint_names),
         actuated_joint_names(actuated_joint_names),
         floating_base(floating_base),
         world_frame_id(world_frame_id),
         floating_base_state(floating_base_state),
-        contact_points(contact_points){
+        contact_points(contact_points),
+        submechanism_file(submechanism_file){
 
     }
 
