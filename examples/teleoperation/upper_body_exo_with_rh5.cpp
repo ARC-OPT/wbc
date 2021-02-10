@@ -50,7 +50,22 @@ int main(){
     cout<<rbs.twist.linear.transpose()<<endl;
     cout<<rbs.twist.angular.transpose()<<endl;*/
 
-    // To transform twist and wrenches you can use the adjoint implemented in base::RigidBodyStateSE3
+    // To transform poses you can use the toTransform() method
+
+    // For poses
+    base::Pose pose_left_exo_hand_ft_in_ALWrist_FT = rbs.pose;
+    base::Pose pose_ALWrist_FT_in_root = robot_model.rigidBodyState("root_link_upper_body_exo", "ALWrist_FT").pose;
+    base::Pose pose_left_exo_hand_ft_in_root;
+    pose_left_exo_hand_ft_in_root.fromTransform(pose_ALWrist_FT_in_root.toTransform()*pose_left_exo_hand_ft_in_ALWrist_FT.toTransform());
+
+    /*cout<<"Pose left_exo_hand_ft in ALWrist_FT"<<endl;
+    cout<<pose_left_exo_hand_ft_in_ALWrist_FT.position.transpose()<<endl;
+    cout<<pose_left_exo_hand_ft_in_ALWrist_FT.orientation.coeffs().transpose()<<endl;
+    cout<<"Pose left_exo_hand_ft in root"<<endl;
+    cout<<pose_left_exo_hand_ft_in_root.position.transpose()<<endl;
+    cout<<pose_left_exo_hand_ft_in_root.orientation.coeffs().transpose()<<endl;*/
+
+    // To transform twist and wrenches you can use the *-operator implemented in base::RigidBodyStateSE3
 
     // For twists
     base::Twist twist_in_ALWrist_FT(base::Vector3d(1,0,0),base::Vector3d(0,0,0));
