@@ -1,0 +1,819 @@
+<robot name="recupera_exo">
+  <joint name="left_arm_elbow_joint" type="revolute">
+    <origin xyz="0.0 -0.15 -0.013" rpy="0.0 0.0 -1.5708"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="left_exo_upperarm_adjustment_length"/>
+    <child link="left_exo_elbow"/>
+    <limit effort="400.0" lower="-1.5707963267948966" upper="0.17453292519943295" velocity="3.141"/>
+  </joint>
+  <joint name="left_arm_forearm_joint" type="fixed">
+    <origin xyz="-5e-05 0.066952 -0.0088696" rpy="1.1395 0.0 -3.1416"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="left_exo_elbow"/>
+    <child link="left_exo_forearm"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <joint name="left_arm_shoulder_joint0" type="revolute">
+    <origin xyz="0.048 -0.0706 0.07" rpy="1.5708 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="upperbody_exo_adjustment_2_left"/>
+    <child link="left_exo_shoulder_0"/>
+    <limit effort="400.0" lower="-0.3490658503988659" upper="1.0471975511965976" velocity="3.141"/>
+  </joint>
+  <joint name="left_arm_shoulder_joint1" type="revolute">
+    <origin xyz="0.0 0.0 0.137416146003" rpy="1.5708 -4.235164736271502e-22 -3.1415853071795867"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="left_exo_shoulder_0"/>
+    <child link="left_exo_shoulder_1_0"/>
+    <limit effort="400.0" lower="-0.6981317007977318" upper="0.6108652381980153" velocity="3.141"/>
+  </joint>
+  <joint name="left_arm_shoulder_joint2" type="revolute">
+    <origin xyz="-0.07800199306624725 3.6828390337362293e-10 0.0001002622578823581" rpy="1.5708 1.1102230246251565e-16 1.57076"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="left_exo_shoulder_1_0"/>
+    <child link="left_exo_upperarm"/>
+    <limit effort="400.0" lower="-0.2617993877991494" upper="2.2689280275926285" velocity="3.141"/>
+  </joint>
+  <link name="left_exo_elbow">
+    <inertial>
+      <origin xyz="0.025408 0.040416 0.0029747" rpy="0.0 0.0 0.0"/>
+      <mass value="0.48868"/>
+      <inertia ixx="0.0011555" ixy="-0.00033439" ixz="0.00020286" iyy="0.00064071" iyz="0.00041254" izz="0.0011403"/>
+    </inertial>
+    <visual name="visual_left_exo_elbow">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_elbow.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_elbow">
+      <origin xyz="0.01563628038898654 0.04098316674675821 0.005875913731947259" rpy="2.817226855368564 1.3924069910871721 -1.9000253277753316"/>
+      <geometry>
+        <box size="0.0641991273357621 0.096738483483087 0.1538695279861391"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_exo_forearm">
+    <inertial>
+      <origin xyz="0.00088283 -0.030709 0.14237" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0825"/>
+      <inertia ixx="0.0084406" ixy="-0.00016718" ixz="-0.0012812" iyy="0.0089351" iyz="0.0002854" izz="0.001334"/>
+    </inertial>
+    <visual name="visual_left_exo_forearm">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_forearm.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_forearm">
+      <origin xyz="-0.0015037043230499202 -0.02845220563871334 0.1290124634442706" rpy="0.018543413041000482 -0.2274979051644995 3.00902839033342"/>
+      <geometry>
+        <box size="0.10666131011456936 0.10728392837900094 0.31274169332222135"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_exo_forearm_ft">
+    <inertial>
+      <origin xyz="4.176e-09 -1.3068e-05 0.01548" rpy="0.0 0.0 0.0"/>
+      <mass value="0.030094"/>
+      <inertia ixx="1.9696e-05" ixy="-1.9699e-11" ixz="4.6467e-13" iyy="8.6004e-06" iyz="-1.4938e-09" izz="1.912e-05"/>
+    </inertial>
+    <visual name="visual_left_exo_forearm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_forearm_ft.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_forearm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_forearm_ft.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_exo_hand_ft">
+    <inertial>
+      <origin xyz="-0.0024896 0.041838 0.052615" rpy="0.0 0.0 0.0"/>
+      <mass value="0.17139"/>
+      <inertia ixx="0.00011222" ixy="7.6601e-06" ixz="-1.0575e-05" iyy="0.00012919" iyz="-2.1118e-05" izz="0.00012762"/>
+    </inertial>
+    <visual name="visual_left_exo_hand_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_hand_ft.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <link name="left_exo_handinterface">
+    <inertial>
+      <origin xyz="-0.0086106 0.031389 -0.0096563" rpy="0.0 0.0 0.0"/>
+      <mass value="0.071011"/>
+      <inertia ixx="6.9303e-05" ixy="-6.3018e-06" ixz="4.3024e-06" iyy="4.8344e-05" iyz="6.4903e-06" izz="3.7922e-05"/>
+    </inertial>
+    <visual name="visual_left_exo_handinterface">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_handinterface.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_handinterface">
+      <origin xyz="-0.005498283357494407 0.02839797806258709 -0.01262018829584122" rpy="-3.141592653589793 6.123233995736765e-17 -0.3714835551419219"/>
+      <geometry>
+        <box size="0.04330624105379988 0.0801726035701069 0.09285148233175278"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="left_exo_handinterface_joint" type="fixed">
+    <origin xyz="-0.022469 0.08621 0.058639" rpy="2.8623 0.0 -3.0543"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="left_exo_hand_ft"/>
+    <child link="left_exo_handinterface"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="left_exo_shoulder_0">
+    <inertial>
+      <origin xyz="0.054662 0.0048185 -0.052196" rpy="0.0 0.0 0.0"/>
+      <mass value="1.1321749991438361"/>
+      <inertia ixx="0.0017597590713535594" ixy="-0.00015937091709170977" ixz="0.00040587333702483356" iyy="0.0019668901492510024" iyz="0.00041696605055296275" izz="0.0015265747793954377"/>
+    </inertial>
+    <visual name="visual_left_exo_shoulder_0">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_shoulder_0.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_shoulder_0">
+      <origin xyz="0.05255659599139945 0.0066327347878806795 -0.05958976653080318" rpy="2.064442378980072 0.0828287508836534 2.475160703526545"/>
+      <geometry>
+        <box size="0.09547430032599344 0.10493297280927388 0.16228312269958398"/>
+      </geometry>
+    </collision>
+    <visual name="visual_left_exo_shoulder_1_3">
+      <origin xyz="0.048 -0.0582 -0.01" rpy="1.5708 -4.235164736271502e-22 -3.1415853071795867"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_shoulder_1_3.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <visual name="visual_left_exo_shoulder_1_4">
+      <origin xyz="0.20799990890019587 -0.04579882457478521 -0.010000045547743282" rpy="1.5708 -4.235164736271502e-22 -3.1415853071795867"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_shoulder_1_4.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <link name="left_exo_shoulder_1_0">
+    <inertial>
+      <origin xyz="-0.11804066867510407 -0.20448108336496626 -0.03604553774211764" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.876876720610505"/>
+      <inertia ixx="0.0013987459109580029" ixy="-0.00024698258265657905" ixz="-5.983310129914985e-05" iyy="0.001025593789041997" iyz="-0.0001704604779249889" izz="0.00123216"/>
+    </inertial>
+    <visual name="visual_left_exo_shoulder_1_0">
+      <origin xyz="-0.06654066867510408 -0.20447931166496627 -0.04509973774211764" rpy="0.0 -0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_shoulder_1_0.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <visual name="visual_left_exo_shoulder_1_1">
+      <origin xyz="-0.1665406686751041 -0.20447931166496627 -0.04509973774211764" rpy="0.0 -0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_shoulder_1_1.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <visual name="visual_left_exo_shoulder_1_2">
+      <origin xyz="-0.10010166867510409 6.883350337216765e-07 -0.04679973774211764" rpy="0.0 -0.0 1.2566"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_shoulder_1_2.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_shoulder_1_2">
+      <origin xyz="-0.1410022944398998 -0.016849049240574787 0.007877542150046948" rpy="3.141592624269928 0.5408012526497962 -1.5708333945306434"/>
+      <geometry>
+        <box size="0.08686069179306714 0.10280000409005986 0.18089828094906077"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_exo_upperarm">
+    <inertial>
+      <origin xyz="-0.0011283 -0.14863 -0.014065" rpy="0.0 0.0 0.0"/>
+      <mass value="0.22665"/>
+      <inertia ixx="0.0021353" ixy="-2.1291e-05" ixz="-2.0356e-06" iyy="3.8953e-05" iyz="-0.00012951" izz="0.0021277"/>
+    </inertial>
+    <visual name="visual_left_exo_upperarm">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_upperarm.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_upperarm">
+      <origin xyz="7.088714607502422e-19 -0.10758154233917594 -0.011576749496161443" rpy="-1.5707963267948966 -1.5707963267948966 0.0"/>
+      <geometry>
+        <box size="0.023153498545290026 0.029999999329447746 0.24503692705184218"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="left_exo_upperarm_adjustment_contactinterface">
+    <inertial>
+      <origin xyz="5.1676e-05 -0.015984 0.011395" rpy="0.0 0.0 0.0"/>
+      <mass value="0.094757"/>
+      <inertia ixx="1.2099e-05" ixy="8.9748e-08" ixz="7.4452e-08" iyy="8.9636e-06" iyz="-7.5161e-07" izz="1.1123e-05"/>
+    </inertial>
+    <visual name="visual_left_exo_upperarm_adjustment_contactinterface">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_upperarm_adjustment_contactinterface.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="left_exo_upperarm_adjustment_contactinterface_joint" type="fixed">
+    <origin xyz="0.0 -0.16 0.0015" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="left_exo_upperarm"/>
+    <child link="left_exo_upperarm_adjustment_contactinterface"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="left_exo_upperarm_adjustment_length">
+    <inertial>
+      <origin xyz="-0.00052682 -0.11269 -0.037523" rpy="0.0 0.0 0.0"/>
+      <mass value="0.39149"/>
+      <inertia ixx="0.0010019" ixy="6.32e-06" ixz="-8.7581e-06" iyy="0.00037588" iyz="6.933e-05" izz="0.00097338"/>
+    </inertial>
+    <visual name="visual_left_exo_upperarm_adjustment_length">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_upperarm_adjustment_length.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_upperarm_adjustment_length">
+      <origin xyz="-0.014750000089406962 -0.08924999926239252 -0.03785000159405172" rpy="1.5707963267948968 -1.5707963267948966 0.0"/>
+      <geometry>
+        <box size="0.08570000203326344 0.11950000375509262 0.1895000021904707"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="left_exo_upperarm_adjustment_length_joint" type="fixed">
+    <origin xyz="0.0 -0.12 -0.008" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="left_exo_upperarm"/>
+    <child link="left_exo_upperarm_adjustment_length"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="left_exo_upperarm_ft">
+    <inertial>
+      <origin xyz="-4.583e-09 4.831e-06 0.023587" rpy="0.0 0.0 0.0"/>
+      <mass value="0.046203"/>
+      <inertia ixx="2.4484e-05" ixy="3.9513e-11" ixz="-8.0684e-12" iyy="8.974e-05" iyz="2.9413e-09" izz="7.7716e-05"/>
+    </inertial>
+    <visual name="visual_left_exo_upperarm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_upperarm_ft.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_left_exo_upperarm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/left_exo_upperarm_ft.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="left_forearm_ft" type="fixed">
+    <origin xyz="-0.0011169 -0.0033761 0.16469" rpy="0.0 -1.1395 -1.8762"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <parent link="left_exo_forearm"/>
+    <child link="left_exo_forearm_ft"/>
+  </joint>
+  <joint name="left_hand_ft" type="fixed">
+    <origin xyz="0.0409 -0.027604 0.26238" rpy="1.5708 0.5186 -1.8762"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <parent link="left_exo_forearm"/>
+    <child link="left_exo_hand_ft"/>
+  </joint>
+  <joint name="left_upperarm_ft" type="fixed">
+    <origin xyz="0.0 -0.015 0.0241" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <parent link="left_exo_upperarm_adjustment_contactinterface"/>
+    <child link="left_exo_upperarm_ft"/>
+  </joint>
+  <joint name="right_arm_elbow_joint" type="revolute">
+    <origin xyz="0.0 -0.15 -0.00895" rpy="0.0 0.0 -1.5708"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="right_exo_upperarm_adjustment_length"/>
+    <child link="right_exo_elbow"/>
+    <limit effort="400.0" lower="-0.17453292519943295" upper="1.5707963267948966" velocity="3.141"/>
+  </joint>
+  <joint name="right_arm_forearm_joint" type="fixed">
+    <origin xyz="-5e-05 -0.066952 -0.01292" rpy="-1.1395 0.0 3.1416"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="right_exo_elbow"/>
+    <child link="right_exo_forearm"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <joint name="right_arm_shoulder_joint0" type="revolute">
+    <origin xyz="0.048 0.0627 0.07" rpy="-1.5708 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="upperbody_exo_adjustment_2_right"/>
+    <child link="right_exo_shoulder_0"/>
+    <limit effort="400.0" lower="-1.0471975511965976" upper="0.3490658503988659" velocity="3.141"/>
+  </joint>
+  <joint name="right_arm_shoulder_joint1" type="revolute">
+    <origin xyz="0.0 0.0 0.1453159836497176" rpy="1.5708 -0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="right_exo_shoulder_0"/>
+    <child link="right_exo_shoulder_1_0"/>
+    <limit effort="400.0" lower="-0.6981317007977318" upper="0.6108652381980153" velocity="3.141"/>
+  </joint>
+  <joint name="right_arm_shoulder_joint2" type="revolute">
+    <origin xyz="0.07800232439679361 3.700794670713492e-10 0.0001007510935505107" rpy="1.5707999999999998 1.1102230246251565e-16 -1.5707853071795863"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="right_exo_shoulder_1_0"/>
+    <child link="right_exo_upperarm"/>
+    <limit effort="400.0" lower="-2.2689280275926285" upper="0.2617993877991494" velocity="3.141"/>
+  </joint>
+  <link name="right_exo_elbow">
+    <inertial>
+      <origin xyz="0.025476 -0.039087 -0.00054988" rpy="0.0 0.0 0.0"/>
+      <mass value="0.50261"/>
+      <inertia ixx="0.0011852" ixy="0.00033063" ixz="0.00020155" iyy="0.00064608" iyz="-0.00042372" izz="0.0011662"/>
+    </inertial>
+    <visual name="visual_right_exo_elbow">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_elbow.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_elbow">
+      <origin xyz="0.020106354588371025 -0.03995080475735327 0.001796206893880841" rpy="2.804403059034864 -1.3876109628715207 -1.107275312795098"/>
+      <geometry>
+        <box size="0.06372348223115212 0.09590607737068484 0.15611990721315383"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_exo_forearm">
+    <inertial>
+      <origin xyz="0.000947994817835945 0.0312938313161247 0.142010120820868" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0859107102205"/>
+      <inertia ixx="0.00839157244591549" ixy="0.000143065842111151" ixz="-0.00125682572089479" iyy="0.0088645247913265" iyz="-0.000344296184164152" izz="0.00132163592900035"/>
+    </inertial>
+    <visual name="visual_right_exo_forearm">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_forearm.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_forearm">
+      <origin xyz="-0.0014727445724495379 0.027638248600460467 0.1269021725434231" rpy="0.005570393749331044 0.22831851770163775 0.12866563748769705"/>
+      <geometry>
+        <box size="0.10608359512189144 0.10845917886215765 0.30791552975042946"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_exo_forearm_ft">
+    <inertial>
+      <origin xyz="1.97050741834737e-08 -1.30769639495043e-05 0.0154798583483512" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0300937901790044"/>
+      <inertia ixx="1.96964490199223e-05" ixy="-1.4359899503139e-11" ixz="-7.24239045455329e-12" iyy="8.60042531496603e-06" iyz="-1.46883114445641e-09" izz="1.91195767108212e-05"/>
+    </inertial>
+    <visual name="visual_right_exo_forearm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_forearm_ft.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_forearm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_forearm_ft.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_exo_hand_ft">
+    <inertial>
+      <origin xyz="-0.00487433925027148 0.0456011675756129 0.0484647221545998" rpy="0.0 0.0 0.0"/>
+      <mass value="0.177583964256969"/>
+      <inertia ixx="0.000113506498916563" ixy="-8.1445651359398e-06" ixz="1.16527737121733e-05" iyy="0.000120143089208482" iyz="-1.71169016310658e-05" izz="0.000147029094743974"/>
+    </inertial>
+    <visual name="visual_right_exo_hand_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_hand_ft.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <link name="right_exo_handinterface">
+    <inertial>
+      <origin xyz="0.00979105029170105 0.0304731746676387 -0.00213172742712162" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0792149376294176"/>
+      <inertia ixx="7.57680901840309e-05" ixy="7.20128683089933e-06" ixz="-5.79414361392544e-06" iyy="5.41025907780288e-05" iyz="8.61977527975192e-06" izz="3.99999319142523e-05"/>
+    </inertial>
+    <visual name="visual_right_exo_handinterface">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_handinterface.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.752941176470588 0.752941176470588 0.752941176470588 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_handinterface">
+      <origin xyz="0.0057667672322533215 0.02873176473757876 -0.0081279668956995" rpy="0.0 6.123233995736766e-17 -2.77010904618616"/>
+      <geometry>
+        <box size="0.043306290957229585 0.08017259885810545 0.09285147860646248"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="right_exo_handinterface_joint" type="fixed">
+    <origin xyz="0.0071773 0.088577 0.063226" rpy="2.8623 0.0 -3.0543"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="right_exo_hand_ft"/>
+    <child link="right_exo_handinterface"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="right_exo_shoulder_0">
+    <inertial>
+      <origin xyz="0.054381 -0.0048183 -0.044379" rpy="0.0 0.0 0.0"/>
+      <mass value="1.1314137745646773"/>
+      <inertia ixx="0.0017522599999999998" ixy="0.00023715876783882525" ixz="0.0002700759438561506" iyy="0.0019495898507493686" iyz="-0.0004159662617373543" izz="0.001524074149250631"/>
+    </inertial>
+    <visual name="visual_right_exo_shoulder_0">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_shoulder_0.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_shoulder_0">
+      <origin xyz="0.05298952812653125 -0.009200987944940158 -0.05416138372729198" rpy="1.026761420072474 0.12330099564933707 -2.5162202666333666"/>
+      <geometry>
+        <box size="0.09832002062591387 0.10092145734735786 0.17124556939007773"/>
+      </geometry>
+    </collision>
+    <visual name="visual_right_exo_shoulder_1_3">
+      <origin xyz="0.048 0.0592 -0.0021" rpy="1.5708 -0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_shoulder_1_3.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <visual name="visual_right_exo_shoulder_1_4">
+      <origin xyz="0.20799999999999996 0.0458000000000904 -0.0021000492209483843" rpy="1.5708 -0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_shoulder_1_4.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <link name="right_exo_shoulder_1_0">
+    <inertial>
+      <origin xyz="0.11804099999999998 -0.2044774470098883 -0.03604504890644949" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.8809488508030952"/>
+      <inertia ixx="0.0014115482441123843" ixy="0.00026815726297583494" ixz="9.437239817157934e-05" iyy="0.0010913111558876155" iyz="-0.00015905893919381642" izz="0.0011947400000000001"/>
+    </inertial>
+    <visual name="visual_right_exo_shoulder_1_0">
+      <origin xyz="0.06654099999999999 -0.20447914930988828 -0.045099248906449486" rpy="0.0 -0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_shoulder_1_0.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <visual name="visual_right_exo_shoulder_1_1">
+      <origin xyz="0.166541 -0.20447914930988828 -0.045099248906449486" rpy="0.0 -0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_shoulder_1_1.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <visual name="visual_right_exo_shoulder_1_2">
+      <origin xyz="0.100102 8.506901117144583e-07 -0.04679924890644949" rpy="0.0 -0.0 1.885"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_shoulder_1_2.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_shoulder_1_2">
+      <origin xyz="0.1457903306021397 -0.005247072391058399 0.0160622360857043" rpy="2.9841119069272724 0.2543945013207674 -1.570937987583792"/>
+      <geometry>
+        <box size="0.06810638420692994 0.10405508406551299 0.2053697135071369"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_exo_upperarm">
+    <inertial>
+      <origin xyz="0.0011861 -0.15611 -0.014261" rpy="0.0 0.0 0.0"/>
+      <mass value="0.21579"/>
+      <inertia ixx="0.0018821" ixy="1.9372e-05" ixz="1.983e-06" iyy="3.7733e-05" iyz="-0.00012291" izz="0.0018747"/>
+    </inertial>
+    <visual name="visual_right_exo_upperarm">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_upperarm.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_upperarm">
+      <origin xyz="-1.3832991457199425e-18 -0.10758154233917594 -0.011450000219056705" rpy="-1.5707963267948966 -1.5707963267948966 0.0"/>
+      <geometry>
+        <box size="0.022899999991040032 0.029999999329447743 0.24503692705184218"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="right_exo_upperarm_adjustment_contactinterface">
+    <inertial>
+      <origin xyz="-5.1676e-05 0.015984 0.011395" rpy="0.0 0.0 0.0"/>
+      <mass value="0.094757"/>
+      <inertia ixx="1.2099e-05" ixy="8.9748e-08" ixz="-7.4452e-08" iyy="8.9636e-06" iyz="7.5161e-07" izz="1.1123e-05"/>
+    </inertial>
+    <visual name="visual_right_exo_upperarm_adjustment_contactinterface">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_upperarm_adjustment_contactinterface.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="right_exo_upperarm_adjustment_contactinterface_joint" type="fixed">
+    <origin xyz="0.0 -0.19 0.0015" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="right_exo_upperarm"/>
+    <child link="right_exo_upperarm_adjustment_contactinterface"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="right_exo_upperarm_adjustment_length">
+    <inertial>
+      <origin xyz="0.001238 -0.11741 -0.036865" rpy="0.0 0.0 0.0"/>
+      <mass value="0.33141"/>
+      <inertia ixx="0.00096177" ixy="-1.2248e-05" ixz="9.7114e-06" iyy="0.00036897" iyz="5.8121e-05" izz="0.00092135"/>
+    </inertial>
+    <visual name="visual_right_exo_upperarm_adjustment_length">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_upperarm_adjustment_length.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_upperarm_adjustment_length">
+      <origin xyz="0.014750000089406965 -0.08924999926239252 -0.03859999938867986" rpy="1.5707963267948968 -1.5707963267948966 0.0"/>
+      <geometry>
+        <box size="0.08719999762251973 0.11950000375509262 0.1895000021904707"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="right_exo_upperarm_adjustment_length_joint" type="fixed">
+    <origin xyz="0.0 -0.12 -0.008" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="right_exo_upperarm"/>
+    <child link="right_exo_upperarm_adjustment_length"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="right_exo_upperarm_ft">
+    <inertial>
+      <origin xyz="-4.583e-09 4.831e-06 0.023587" rpy="0.0 0.0 0.0"/>
+      <mass value="0.046203"/>
+      <inertia ixx="2.4484e-05" ixy="3.9513e-11" ixz="-8.0684e-12" iyy="8.974e-05" iyz="2.9413e-09" izz="7.7716e-05"/>
+    </inertial>
+    <visual name="visual_right_exo_upperarm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_upperarm_ft.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_right_exo_upperarm_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/right_exo_upperarm_ft.obj"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="right_forearm_ft" type="fixed">
+    <origin xyz="-0.0010215 0.0034062 0.16469" rpy="0.0 -1.1395 1.8762"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <parent link="right_exo_forearm"/>
+    <child link="right_exo_forearm_ft"/>
+  </joint>
+  <joint name="right_hand_ft" type="fixed">
+    <origin xyz="0.038263 0.036297 0.2582" rpy="1.5708 -0.34406 -1.2654"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <parent link="right_exo_forearm"/>
+    <child link="right_exo_hand_ft"/>
+  </joint>
+  <joint name="right_upperarm_ft" type="fixed">
+    <origin xyz="0.0 0.015 0.0241" rpy="0.0 0.0 3.1416"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <parent link="right_exo_upperarm_adjustment_contactinterface"/>
+    <child link="right_exo_upperarm_ft"/>
+  </joint>
+  <link name="root_link_upper_body_exo">
+    <inertial>
+      <origin xyz="0.01222 -2.7815e-05 -0.028771" rpy="0.0 0.0 0.0"/>
+      <mass value="0.17266"/>
+      <inertia ixx="0.0021609" ixy="-1.4326e-08" ixz="-0.00016141" iyy="0.0021891" iyz="4.6315e-07" izz="5.7978e-05"/>
+    </inertial>
+    <visual name="visual_root_link_upper_body_exo">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/root_link_upper_body_exo.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_root_link_upper_body_exo">
+      <origin xyz="0.010300000198185444 0.0 -0.09995000436902046" rpy="3.141592653589793 -0.0 -1.5707963267948966"/>
+      <geometry>
+        <box size="0.029999999329447746 0.05260000191628933 0.400100015103817"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="upperbody_contact_ft" type="fixed">
+    <origin xyz="0.0366 0.0 0.047" rpy="-1.5708 -1.4835 0.0"/>
+    <axis xyz="0.0 0.0 0.0"/>
+    <parent link="root_link_upper_body_exo"/>
+    <child link="upperbody_exo_contact_ft"/>
+  </joint>
+  <link name="upperbody_exo_adjustment_1">
+    <inertial>
+      <origin xyz="-0.012287 2.2741e-06 0.045973" rpy="0.0 0.0 0.0"/>
+      <mass value="0.30652"/>
+      <inertia ixx="0.0015078" ixy="2.838e-08" ixz="-0.00014313" iyy="0.0004769" iyz="1.8865e-08" izz="0.0015165"/>
+    </inertial>
+    <visual name="visual_upperbody_exo_adjustment_1">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/upperbody_exo_adjustment_1.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_upperbody_exo_adjustment_1">
+      <origin xyz="-0.014125000685453415 8.649068438697348e-19 0.049061430618166924" rpy="1.5707963267948966 -0.0 3.141592653589793"/>
+      <geometry>
+        <box size="0.09425000101327896 0.114877138286829 0.4002000093460083"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="upperbody_exo_adjustment_1_joint" type="fixed">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="root_link_upper_body_exo"/>
+    <child link="upperbody_exo_adjustment_1"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="upperbody_exo_adjustment_2_left">
+    <inertial>
+      <origin xyz="0.025243 -0.014573 0.054093" rpy="0.0 0.0 0.0"/>
+      <mass value="0.83363"/>
+      <inertia ixx="0.0013163" ixy="0.00018796" ixz="-0.00031352" iyy="0.0017663" iyz="-9.0552e-05" izz="0.0011643"/>
+    </inertial>
+    <visual name="visual_upperbody_exo_adjustment_2_left">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/upperbody_exo_adjustment_2_left.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_upperbody_exo_adjustment_2_left">
+      <origin xyz="0.015905123290188845 -0.003343525138742388 0.0450807948827195" rpy="2.1461373096447027 0.1432919812410756 -1.6566887312997058"/>
+      <geometry>
+        <box size="0.10044381406465855 0.14643706607677023 0.1545914526724368"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="upperbody_exo_adjustment_2_left_joint" type="fixed">
+    <origin xyz="-0.0375 0.1495 0.0275" rpy="0.0 0.0 1.5708"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="upperbody_exo_adjustment_1"/>
+    <child link="upperbody_exo_adjustment_2_left"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="upperbody_exo_adjustment_2_right">
+    <inertial>
+      <origin xyz="0.025164 0.014566 0.054109" rpy="0.0 0.0 0.0"/>
+      <mass value="0.83189"/>
+      <inertia ixx="0.0013112" ixy="-0.00019223" ixz="-0.00032117" iyy="0.0017628" iyz="9.1531e-05" izz="0.0011639"/>
+    </inertial>
+    <visual name="visual_upperbody_exo_adjustment_2_right">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/upperbody_exo_adjustment_2_right.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_upperbody_exo_adjustment_2_right">
+      <origin xyz="0.022089173514824676 0.007591434849137011 0.03745617339365776" rpy="2.8859524188109793 0.024728167893105123 1.6181156058526047"/>
+      <geometry>
+        <box size="0.10047373753246058 0.13387108760369276 0.14904937407071933"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="upperbody_exo_adjustment_2_right_joint" type="fixed">
+    <origin xyz="-0.0375 -0.1495 0.0275" rpy="0.0 0.0 -1.5708"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="upperbody_exo_adjustment_1"/>
+    <child link="upperbody_exo_adjustment_2_right"/>
+    <limit effort="0.0" lower="0.0" upper="0.0" velocity="0.0"/>
+  </joint>
+  <link name="upperbody_exo_contact_ft">
+    <inertial>
+      <origin xyz="0.00017964 0.0019429 -4.6702e-15" rpy="0.0 0.0 0.0"/>
+      <mass value="0.20346"/>
+      <inertia ixx="0.00067622" ixy="2.2748e-05" ixz="2.6905e-17" iyy="0.00093423" iyz="-1.5491e-18" izz="0.00026484"/>
+    </inertial>
+    <visual name="visual_upperbody_exo_contact_ft">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/obj/upperbody_exo_contact_ft.obj"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.75294 0.75294 0.75294 1.0"/>
+      </material>
+    </visual>
+    <collision name="collision_upperbody_exo_contact_ft">
+      <origin xyz="0.0010022908546776421 0.011456238603292571 0.0" rpy="3.141592653589793 -0.0 -1.6580627893952382"/>
+      <geometry>
+        <box size="0.022999999726488776 0.12500000307827144 0.20000000298023224"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>
