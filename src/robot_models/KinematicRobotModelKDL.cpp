@@ -56,11 +56,6 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
 
     clear();
 
-    // If no joint names are given, take them from KDL Tree
-    this->actuated_joint_names = joint_names;
-    if(this->actuated_joint_names.empty())
-        this->actuated_joint_names = jointNamesFromTree(full_tree);
-
     for(const RobotModelConfig& cfg : model_config){
 
         KDL::Tree tree;
@@ -72,6 +67,12 @@ bool KinematicRobotModelKDL::configure(const std::vector<RobotModelConfig>& mode
         if(!addTree(tree, cfg.hook, cfg.initial_pose))
             return false;
     }
+
+    // If no joint names are given, take them from KDL Tree
+    this->actuated_joint_names = joint_names;
+    if(this->actuated_joint_names.empty())
+        this->actuated_joint_names = jointNamesFromTree(full_tree);
+
     this->all_joint_names = this->actuated_joint_names;
     for(auto name : virtual_joint_state.names)
         this->all_joint_names.push_back(name);
