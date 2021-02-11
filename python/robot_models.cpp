@@ -42,14 +42,6 @@ BOOST_PYTHON_MODULE(robot_models){
 
     np::initialize();
 
-    pygen::convertMatrix<Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::DontAlign>>();
-    pygen::convertVector<Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::DontAlign>>();
-    pygen::convertStdVector<std::vector<std::string>>();
-    pygen::convertStdVector<std::vector<base::JointState>>();
-    pygen::convertVector<Eigen::Matrix<double, 3, 1, Eigen::DontAlign>>();
-    pygen::convertTransform<Eigen::Transform<double, 3, Eigen::DontAlign>>();
-    pygen::convertQuaternion<Eigen::Quaternion<double, Eigen::DontAlign>>();
-
     py::class_<wbc_py::RobotModelHyrodyn>("RobotModelHyrodyn")
             .def("configure",               &wbc_py::RobotModelHyrodyn::configure)
             .def("update",                  &wbc_py::RobotModelHyrodyn::update)
