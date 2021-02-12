@@ -30,7 +30,7 @@ pkg_search_module(base-types REQUIRED base-types)
 pkg_search_module(hyrodyn REQUIRED hyrodyn)
 pkg_search_module(orocos-kdl REQUIRED orocos-kdl)
 pkg_search_module(kdl_parser REQUIRED kdl_parser)
-include_directories(${base-types_INCLUDE_DIRS} ${hyrodyn_INCLUDE_DIRS} ${orocos-kdl_INCLUDE_DIRS} ${kdl_parser_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src ${base-types_INCLUDE_DIRS} ${hyrodyn_INCLUDE_DIRS} ${orocos-kdl_INCLUDE_DIRS} ${kdl_parser_INCLUDE_DIRS})
 link_directories(${base-types_LIBRARY_DIRS} ${hyrodyn_LIBRARY_DIRS} ${orocos-kd_LIBRARY_DIRS} ${kdl_parser_LIBRARY_DIRS})
 
 # Add a shared module - modules are intended to be imported at runtime.

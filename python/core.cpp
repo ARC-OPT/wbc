@@ -1,7 +1,7 @@
 #include "eigen_conversion.h"
 #include "base_types_conversion.h"
 #include "std_vector_conversion.h"
-#include <wbc/core/RobotModelConfig.hpp>
+#include "core/RobotModelConfig.hpp"
 #include <base/samples/Joints.hpp>
 
 BOOST_PYTHON_MODULE(core){
