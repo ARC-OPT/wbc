@@ -121,17 +121,17 @@ bool RobotModel::configure(const RobotModelConfig& cfg){
 }
 
 void RobotModel::update(const base::samples::Joints& joint_state, const base::samples::RigidBodyStateSE3& _floating_base_state){
-    for(size_t i = 0; i < joint_state.size(); i++){
-        const std::string& name = joint_state.names[i];
+    for(size_t i = 0; i < noOfActuatedJoints(); i++){
+        const std::string& name = actuated_joint_names[i];
         std::size_t idx;
         try{
-            idx = current_joint_state.mapNameToIndex(name);
+            idx = joint_state.mapNameToIndex(name);
         }
         catch(base::samples::Joints::InvalidName e){
             LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint state vector"<<std::endl;
             throw e;
         }
-        current_joint_state[idx] = joint_state[i];
+        current_joint_state[name] = joint_state[idx];
     }
     current_joint_state.time = joint_state.time;
     if(has_floating_base)
