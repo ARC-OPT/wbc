@@ -27,13 +27,13 @@ public:
                      const std::vector<std::string> &contact_points = std::vector<std::string>(),
                      const std::string& submechanism_file = "") :
         file(file),
+        submechanism_file(submechanism_file),
         joint_names(joint_names),
         actuated_joint_names(actuated_joint_names),
         floating_base(floating_base),
         world_frame_id(world_frame_id),
         floating_base_state(floating_base_state),
-        contact_points(contact_points),
-        submechanism_file(submechanism_file){
+        contact_points(contact_points){
 
     }
 
