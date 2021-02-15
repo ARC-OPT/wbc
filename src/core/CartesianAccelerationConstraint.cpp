@@ -4,6 +4,18 @@
 
 namespace wbc{
 
+base::Vector6d operator+(base::Vector6d a, base::Acceleration b){
+    a.segment(0,3) += b.linear;
+    a.segment(3,3) += b.angular;
+    return a;
+}
+
+base::Vector6d operator-(base::Vector6d a, base::Acceleration b){
+    a.segment(0,3) -= b.linear;
+    a.segment(3,3) -= b.angular;
+    return a;
+}
+
 CartesianAccelerationConstraint::CartesianAccelerationConstraint(ConstraintConfig config, uint n_robot_joints)
     : CartesianConstraint(config, n_robot_joints){
 }

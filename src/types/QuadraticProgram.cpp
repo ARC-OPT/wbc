@@ -2,7 +2,9 @@
 
 namespace wbc {
 
-void QuadraticProgram::resize(const uint nc, const uint nq){
+void QuadraticProgram::resize(const uint _nc, const uint _nq){
+    nc = _nc;
+    nq = _nq;
     A.resize(nc, nq);
     A.setConstant(std::numeric_limits<double>::quiet_NaN());
 

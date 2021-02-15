@@ -3,16 +3,23 @@
 
 #include <base/Eigen.hpp>
 #include <base/Time.hpp>
+#include <base/samples/Joints.hpp>
 
 namespace wbc{
 
+class JointWeights : public base::NamedVector<double>{
+};
+
 /**
  * @brief Describes a quadratic program of the form
- *
- *       minimize       x^T * H * x + x^T * g
- *           x
- *       subject to    lower_x  <=  x <= upper_x
- *                     lower_y  <= Ax <= upper_y
+ *  \f[
+ *        \begin{array}{ccc}
+ *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{H}\mathbf{x}+\mathbf{x}^T\mathbf{g}& \\
+ *             & & \\
+ *        s.t. & lb(\mathbf{Ax}) \leq \mathbf{Ax} \leq ub(\mathbf{Ax})& \\
+ *             & lb(\mathbf{x}) \leq \mathbf{x} \leq ub(\mathbf{x})& \\
+ *        \end{array}
+ *  \f]
  */
 class QuadraticProgram{
 public:
@@ -24,34 +31,24 @@ public:
     base::VectorXd upper_y; /** Upper bound of the constraint vector (nc x 1) */
     base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
     base::VectorXd Wy;      /** Constraint weights (nc x 1). Default entry is 1. */
+    int nc;                 /** Number of constraints for this prio*/
+    int nq;                 /** Number of all joints (actuated + unactuated)*/
 
     /** Initialize all variables with NaN */
     void resize(const uint nc, const uint nq);
 
 };
 
+/**
+ * @brief Describes a hierarchy of quadratic programs
+ */
 struct HierarchicalQP{
     base::Time time;
-    std::vector<std::string> joint_names;          /** Vector of names of all joints*/
-    std::vector<std::string> actuated_joint_names; /** Vector of names of actuated joints*/
-    std::vector<QuadraticProgram> prios;           /** hierarchical organized QPs*/
+    std::vector<QuadraticProgram> prios;           /** Hierarchical organized QPs. The first entriy is the highest priority*/
     base::VectorXd Wq;                             /** Joint weights (all joints) */
-    base::VectorXd Wq_actuated;                    /** Joint weights (only actuated joints) */
 
-    int jointIdx(const std::string &joint_name){
-        uint idx = std::find(joint_names.begin(), joint_names.end(), joint_name) - joint_names.begin();
-        if(idx >= joint_names.size())
-            throw std::invalid_argument("Index of joint  " + joint_name + " was requested but this joint is not in robot model");
-        return idx;
-    }
     size_t size() const {
         return prios.size();
-    }
-    size_t nJoints() const {
-        return joint_names.size();
-    }
-    size_t nActuatedJoints() const {
-        return actuated_joint_names.size();
     }
     QuadraticProgram& operator[](int i) {
         return prios[i];

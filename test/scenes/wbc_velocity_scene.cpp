@@ -1,7 +1,8 @@
 #include <boost/test/unit_test.hpp>
-#include "robot_models/KinematicRobotModelKDL.hpp"
+#include "robot_models/RobotModelKDL.hpp"
 #include "core/RobotModelConfig.hpp"
-#include "scenes/WbcVelocityScene.hpp"
+#include "scenes/VelocityScene.hpp"
+#include "solvers/hls/HierarchicalLSSolver.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -28,12 +29,14 @@ BOOST_AUTO_TEST_CASE(test_configure){
     wbc_config.push_back(cart_constraint);
 
     // Configure Robot model
-    shared_ptr<KinematicRobotModelKDL> robot_model = make_shared<KinematicRobotModelKDL>();
-    vector<RobotModelConfig> config(1);
-    config[0].file = std::string(getenv("AUTOPROJ_CURRENT_ROOT")) + "/control/wbc/test/data/kuka_lbr.urdf";
-    BOOST_CHECK_EQUAL(robot_model->configure(config, joint_names, "kuka_lbr_base"), true);
+    shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
+    RobotModelConfig config;
+    config.file = "../../../models/urdf/kuka/kuka_lbr.urdf";
+    config.joint_names = joint_names;
+    BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     // Configure WBC Scene
-    WbcVelocityScene wbc_scene(robot_model);
+    QPSolverPtr solver;
+    VelocityScene wbc_scene(robot_model, solver);
     BOOST_CHECK_EQUAL(wbc_scene.configure(wbc_config), true);
 }

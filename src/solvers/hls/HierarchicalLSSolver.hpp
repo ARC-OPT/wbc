@@ -3,23 +3,31 @@
 
 #include <base/Eigen.hpp>
 #include <vector>
-#include "../qp_solver.hpp"
+#include "../../core/QPSolver.hpp"
 
-namespace wbc {
+namespace wbc{
+
 class HierarchicalQP;
-}
-
-namespace wbc_solvers{
 
 /**
- * @brief Implementation of a hierarchical weighted damped least squares solver. It solves a hierarchy of quadratic programs of the form
+ * @brief Implementation of the hierarchical weighted damped least squares solver (HWLS), similar to
+ * Schutter, J. et al. “Constraint-based Task Specification and Estimation for Sensor-Based Robot Systems in the Presence of Geometric Uncertainty.” The International Journal of Robotics Research 26 (2007): 433 - 455.
+ *  It solves the following optimization problem
+ *  \f[
+ *        \begin{array}{ccc}
+ *        min(\dot{\mathbf{q}}) & ||\dot{\mathbf{q}}||_2 \\
+ *             & & \\
+ *        s.t. &  \mathbf{A}_{w,1}  \dot{\mathbf{q}} = \dot{\mathbf{x}}_1 & \\
+ *             &  \mathbf{A}_{w,2}  \dot{\mathbf{q}} = \dot{\mathbf{x}}_2 & \\
+ *             &   ... & \\
+ *             &  \mathbf{A}_{w,N}  \mathbf{\dot{q}} = \dot{\mathbf{x}}_N & \\
+ *        \end{array}
+ *  \f]
  *
- *          min       ||x||
- *           x
- *       subject to A_w * x = y
- *
- *  It maintains a hierarchy between the quadratic programs using nullspace projections. That is, the eqn system with the highest priority will be solved fully if n_rows <= n_cols
- *        the eqn system of the next priority will be solved as good as possible and so on. The solver can include weights in solution (column) and input (row) space.
+ * where A is the weighted constraint matrix of priority level i, \f$\dot{\mathbf{q}}\f$ the robot joint velocities, \f$\dot{\mathbf{x}}_i\f$ the desired task space velocities
+ * of priority level i.
+ * The solver ensures a hierarchy between the different tasks using nullspace projections. That is, the equation system with the highest priority will be solved fully if (n_rows <= n_cols),
+ * the eqn. system of the next priority will be solved in the nullspace of the priovious priority, and so on. Additionally the solver can include weights in joint space and task space.
  */
 class HierarchicalLSSolver : public QPSolver{
 public:
@@ -63,7 +71,7 @@ public:
     };
 
     HierarchicalLSSolver();
-    ~HierarchicalLSSolver();
+    virtual ~HierarchicalLSSolver();
 
     /**
      * @brief configure Resizes member variables

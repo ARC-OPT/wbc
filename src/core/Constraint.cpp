@@ -46,7 +46,7 @@ void Constraint::reset(){
 }
 
 void Constraint::checkTimeout(){
-    timeout = (int)time.isNull(); // If there has never been a reference value, set the constraint should to timeout
+    timeout = (int)time.isNull(); // If there has never been a reference value, set the constraint to timeout
     if(config.timeout > 0)
         timeout = (int)(base::Time::now() - time).toSeconds() > config.timeout;
 }

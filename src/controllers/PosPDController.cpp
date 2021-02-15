@@ -12,6 +12,7 @@ PosPDController::PosPDController(size_t dim_controller) :
     vel.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
     p_gain.setConstant(dim_controller, 0);
     d_gain.setConstant(dim_controller, 0);
+    ff_gain.setConstant(dim_controller, 0);
     max_control_output.setConstant(dim_controller, std::numeric_limits<double>::max());
     dead_zone.setConstant(dim_controller, 0);
     pos_diff.setConstant(dim_controller, 0);
@@ -49,7 +50,7 @@ void PosPDController::update(){
 
     // Add acceleration Feed-forward, if it is not NaN
    if(base::isnotnan(ref_acc))
-       control_out_acc += ref_acc;
+       control_out_acc += ff_gain.cwiseProduct(ref_acc);
 
    // Apply Saturation / max. control output;
    applySaturation(control_out_vel, max_control_output, control_out_vel);
@@ -73,6 +74,16 @@ const void PosPDController::setDGain(const base::VectorXd &gain){
                                  + std::to_string(gain.size()) + " but should be " + std::to_string(dim_controller));
     d_gain = gain;
 }
+
+const void PosPDController::setFFGain(const base::VectorXd &gain){
+    if(!base::isnotnan(gain))
+        throw std::runtime_error("PosPDController::setFFGain: Invalid FF-Gain. Contains NaN values");
+    if(gain.size() != dim_controller)
+        throw std::runtime_error("PosPDController::setPGain: Invalid FF-Gain. Size is "
+                                 + std::to_string(gain.size()) + " but should be " + std::to_string(dim_controller));
+    ff_gain = gain;
+}
+
 
 const void PosPDController::setMaxCtrlOutput(const base::VectorXd &max_ctrl_out){
     if(!base::isnotnan(max_ctrl_out))

@@ -1,9 +1,9 @@
-#include <robot_models/KinematicRobotModelKDL.hpp>
+#include <robot_models/RobotModelKDL.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <scenes/WbcVelocityScene.hpp>
+#include <scenes/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
+#include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
-#include <controllers/ControllerTools.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -30,28 +30,34 @@ int main(int argc, char** argv){
     wbc_config.push_back(cart_constraint);
 
     // Configure Robot model
-    RobotModelPtr robot_model = make_shared<KinematicRobotModelKDL>();
-    vector<RobotModelConfig> config(1);
-    config[0].file = "../../../examples/kuka_iiwa/data/urdf/kuka_iiwa.urdf";
-    if(!robot_model->configure(config, joint_names, "kuka_lbr_base"))
-        return -1;
-
-    // Configure WBC Scene
-    WbcVelocityScene wbc_scene(robot_model);
-    if(!wbc_scene.configure(wbc_config))
+    RobotModelPtr robot_model = make_shared<RobotModelKDL>();
+    RobotModelConfig config;
+    config.file = "../../../examples/kuka_iiwa/data/urdf/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = joint_names;
+    if(!robot_model->configure(config))
         return -1;
 
     // Create solver
-    wbc_solvers::HierarchicalLSSolver solver;
-    solver.setMaxSolverOutputNorm(10);
+    QPSolverPtr solver = std::make_shared<HierarchicalLSSolver>();
+    std::dynamic_pointer_cast<HierarchicalLSSolver>(solver)->setMaxSolverOutputNorm(10);
+
+    // Configure WBC Scene
+    VelocityScene wbc_scene(robot_model, solver);
+    if(!wbc_scene.configure(wbc_config))
+        return -1;
+
+    // Create controller
+    ctrl_lib::CartesianPosPDController controller;
+    controller.setPGain(base::Vector6d::Constant(1));
 
     // Set reference
-    base::samples::RigidBodyStateSE3 target, ref, act;
-    target.time = base::Time::now();
-    target.pose.position = base::Vector3d(0.0, 0.0, 0.8);
-    target.pose.orientation.setIdentity();
-    act.pose.position.setZero();
-    act.pose.orientation.setIdentity();
+    base::samples::RigidBodyStateSE3 setpoint, ctrl_output, feedback;
+    setpoint.time = base::Time::now();
+    setpoint.pose.position = base::Vector3d(0.0, 0.0, 0.8);
+    setpoint.pose.orientation.setIdentity();
+    feedback.pose.position.setZero();
+    feedback.pose.orientation.setIdentity();
 
     // Run control loop
     base::samples::Joints joint_state;
@@ -64,36 +70,35 @@ int main(int argc, char** argv){
     base::VectorXd solver_output;
 
     double loop_time = 0.1; // seconds
-    while((target.pose.position - act.pose.position).norm() > 1e-4){
+    while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
 
         // Update robot model
         robot_model->update(joint_state);
 
-        act = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
-        base::Twist diff;
-        diff = target.pose - act.pose;
-        ref.twist.linear = diff.linear;
-        ref.twist.angular = diff.angular;
-        ref.time = base::Time::now();
+        // Update controllers
+        feedback = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
+        ctrl_output = controller.update(setpoint, feedback);
+
+        // Update constraints
         shared_ptr<CartesianVelocityConstraint> constraint = static_pointer_cast<CartesianVelocityConstraint>(wbc_scene.getConstraint("cart_pos_ctrl_left"));
-        constraint->setReference(ref);
+        constraint->setReference(ctrl_output);
 
-        // Compute ctrl solution
+        // Update WBC scene and solve
         wbc_scene.update();
-        HierarchicalQP qp;
-        wbc_scene.getHierarchicalQP(qp);
-        solver.solve(qp, solver_output);
 
+        HierarchicalQP hqp;
+        wbc_scene.getHierarchicalQP(hqp);
+        solver->solve(hqp, solver_output);
+
+        // Update joint state
         for(size_t i = 0; i < joint_state.size(); i++)
             joint_state[i].position += solver_output(i) * loop_time;
+        joint_state.time = base::Time::now();
 
-        cout<<"Target: x: "<<target.pose.position(0)<<" y: "<<target.pose.position(1)<<" z: "<<target.pose.position(2)<<endl;
-        cout<<"Target: qx: "<<target.pose.orientation.x()<<" qy: "<<target.pose.orientation.y()<<" qz: "<<target.pose.orientation.z()<<" qw: "<<target.pose.orientation.w()<<endl<<endl;
-
-        cout<<"Actual x: "<<act.pose.position(0)<<" y: "<<act.pose.position(1)<<" z: "<<act.pose.position(2)<<endl;
-        cout<<"Actual qx: "<<act.pose.orientation.x()<<" qy: "<<act.pose.orientation.y()<<" qz: "<<act.pose.orientation.z()<<" qw: "<<act.pose.orientation.w()<<endl<<endl;
-
-
+        cout<<"setpoint: x: "<<setpoint.pose.position(0)<<" y: "<<setpoint.pose.position(1)<<" z: "<<setpoint.pose.position(2)<<endl;
+        cout<<"setpoint: qx: "<<setpoint.pose.orientation.x()<<" qy: "<<setpoint.pose.orientation.y()<<" qz: "<<setpoint.pose.orientation.z()<<" qw: "<<setpoint.pose.orientation.w()<<endl<<endl;
+        cout<<"feedback x: "<<feedback.pose.position(0)<<" y: "<<feedback.pose.position(1)<<" z: "<<feedback.pose.position(2)<<endl;
+        cout<<"feedback qx: "<<feedback.pose.orientation.x()<<" qy: "<<feedback.pose.orientation.y()<<" qz: "<<feedback.pose.orientation.z()<<" qw: "<<feedback.pose.orientation.w()<<endl<<endl;
         cout<<"Solver output: "; for(int i = 0; i < 7; i++) cout<<solver_output(i)<<" "; cout<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 

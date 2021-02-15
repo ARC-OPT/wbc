@@ -4,18 +4,22 @@ file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models "*.cpp")
 file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models "*.hpp")
 
 pkg_search_module(kdl_parser REQUIRED kdl_parser)
+pkg_search_module(hyrodyn REQUIRED hyrodyn)
 
 list(APPEND PKGCONFIG_REQUIRES kdl_parser)
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
+list(APPEND PKGCONFIG_REQUIRES hyrodyn)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
-include_directories(${kdl_parser_INCLUDE_DIRS})
+include_directories(${kdl_parser_INCLUDE_DIRS} ${hyrodyn_INCLUDE_DIRS})
 link_directories(${kdl_parser_LIBRARY_DIRS})
+link_directories(${hyrodyn_LIBRARY_DIRS})
 
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME}
                       wbc-core
-                      ${kdl_parser_LIBRARIES})
+                      ${kdl_parser_LIBRARIES}
+                      ${hyrodyn_LIBRARIES})
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}

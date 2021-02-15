@@ -1,0 +1,98 @@
+digraph G {
+node [shape=box];
+"world" [label="world"];
+"Root_Link_x" [label="Root_Link_x"];
+"Root_Link_y" [label="Root_Link_y"];
+"Root_Link_z" [label="Root_Link_z"];
+"Root_Link_rx" [label="Root_Link_rx"];
+"Root_Link_ry" [label="Root_Link_ry"];
+"RH5_Root_Link" [label="RH5_Root_Link"];
+"IMU_Link" [label="IMU_Link"];
+"LLHip1_Link" [label="LLHip1_Link"];
+"LLHip2_Link" [label="LLHip2_Link"];
+"LLHip3_Link" [label="LLHip3_Link"];
+"LLKnee_Link" [label="LLKnee_Link"];
+"LLAnkleRoll_Link" [label="LLAnkleRoll_Link"];
+"LLAnklePitch_Link" [label="LLAnklePitch_Link"];
+"LLAnkle_FT" [label="LLAnkle_FT"];
+"FLC_FrontLeft_Link" [label="FLC_FrontLeft_Link"];
+"FLC_FrontRight_Link" [label="FLC_FrontRight_Link"];
+"FLC_RearLeft_Link" [label="FLC_RearLeft_Link"];
+"FLC_RearRight_Link" [label="FLC_RearRight_Link"];
+"FL_SupportCenter" [label="FL_SupportCenter"];
+"LRHip1_Link" [label="LRHip1_Link"];
+"LRHip2_Link" [label="LRHip2_Link"];
+"LRHip3_Link" [label="LRHip3_Link"];
+"LRKnee_Link" [label="LRKnee_Link"];
+"LRAnkleRoll_Link" [label="LRAnkleRoll_Link"];
+"LRAnklePitch_Link" [label="LRAnklePitch_Link"];
+"LRAnkle_FT" [label="LRAnkle_FT"];
+"FRC_FrontLeft_Link" [label="FRC_FrontLeft_Link"];
+"FRC_FrontRight_Link" [label="FRC_FrontRight_Link"];
+"FRC_RearLeft_Link" [label="FRC_RearLeft_Link"];
+"FRC_RearRight_Link" [label="FRC_RearRight_Link"];
+"FR_SupportCenter" [label="FR_SupportCenter"];
+node [shape=ellipse, color=blue, fontcolor=blue];
+"world" -> "floating_base_trans_x" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"floating_base_trans_x" -> "Root_Link_x"
+"Root_Link_x" -> "floating_base_trans_y" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"floating_base_trans_y" -> "Root_Link_y"
+"Root_Link_y" -> "floating_base_trans_z" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"floating_base_trans_z" -> "Root_Link_z"
+"Root_Link_z" -> "floating_base_rot_x" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"floating_base_rot_x" -> "Root_Link_rx"
+"Root_Link_rx" -> "floating_base_rot_y" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"floating_base_rot_y" -> "Root_Link_ry"
+"Root_Link_ry" -> "floating_base_rot_z" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"floating_base_rot_z" -> "RH5_Root_Link"
+"RH5_Root_Link" -> "IMU" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"IMU" -> "IMU_Link"
+"RH5_Root_Link" -> "LLHip1" [label="xyz: 0.0735 0.11044 0.014269 \nrpy: 8.04571e-16 0.2618 -1.5708"]
+"LLHip1" -> "LLHip1_Link"
+"LLHip1_Link" -> "LLHip2" [label="xyz: 0 0 0 \nrpy: 9.8608e-32 2.7756e-17 -4.9304e-32"]
+"LLHip2" -> "LLHip2_Link"
+"LLHip2_Link" -> "LLHip3" [label="xyz: 0 0 0 \nrpy: 9.8608e-32 2.7756e-17 -4.9304e-32"]
+"LLHip3" -> "LLHip3_Link"
+"LLHip3_Link" -> "LLKnee" [label="xyz: 0.10788 -0.0005 -0.39684 \nrpy: -3.14159 1.309 -2.9949e-15"]
+"LLKnee" -> "LLKnee_Link"
+"LLKnee_Link" -> "LLAnkleRoll" [label="xyz: 0.42 0 0.0015 \nrpy: 1.5708 -0 -1.5708"]
+"LLAnkleRoll" -> "LLAnkleRoll_Link"
+"LLAnkleRoll_Link" -> "LLAnklePitch" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"LLAnklePitch" -> "LLAnklePitch_Link"
+"LLAnklePitch_Link" -> "LLAnkle_FT" [label="xyz: 0 0 -0.058972 \nrpy: 3.14159 -0 -1.2151e-16"]
+"LLAnkle_FT" -> "LLAnkle_FT"
+"LLAnkle_FT" -> "FLC_FrontLeft" [label="xyz: 0.13 -0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FLC_FrontLeft" -> "FLC_FrontLeft_Link"
+"LLAnkle_FT" -> "FLC_FrontRight" [label="xyz: 0.13 0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FLC_FrontRight" -> "FLC_FrontRight_Link"
+"LLAnkle_FT" -> "FLC_RearLeft" [label="xyz: -0.07 -0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FLC_RearLeft" -> "FLC_RearLeft_Link"
+"LLAnkle_FT" -> "FLC_RearRight" [label="xyz: -0.07 0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FLC_RearRight" -> "FLC_RearRight_Link"
+"LLAnkle_FT" -> "FL_SupportCenter" [label="xyz: 0.03 0 0.0444 \nrpy: -3.14159 -0 0"]
+"FL_SupportCenter" -> "FL_SupportCenter"
+"RH5_Root_Link" -> "LRHip1" [label="xyz: 0.0735 -0.11044 0.014269 \nrpy: 2.87347e-17 -0.2618 -1.5708"]
+"LRHip1" -> "LRHip1_Link"
+"LRHip1_Link" -> "LRHip2" [label="xyz: 0 0 0 \nrpy: -4.0161e-17 0.5236 -2.0081e-17"]
+"LRHip2" -> "LRHip2_Link"
+"LRHip2_Link" -> "LRHip3" [label="xyz: 0 0 0 \nrpy: 9.8608e-32 2.7756e-17 -4.9304e-32"]
+"LRHip3" -> "LRHip3_Link"
+"LRHip3_Link" -> "LRKnee" [label="xyz: 0.10788 -0.0005 -0.39684 \nrpy: -3.14159 1.309 -2.9949e-15"]
+"LRKnee" -> "LRKnee_Link"
+"LRKnee_Link" -> "LRAnkleRoll" [label="xyz: 0.42 0 0.0015 \nrpy: 1.5708 -0 -1.5708"]
+"LRAnkleRoll" -> "LRAnkleRoll_Link"
+"LRAnkleRoll_Link" -> "LRAnklePitch" [label="xyz: 0 0 0 \nrpy: 0 -0 0"]
+"LRAnklePitch" -> "LRAnklePitch_Link"
+"LRAnklePitch_Link" -> "LRAnkle_FT" [label="xyz: 0 0 -0.058972 \nrpy: 3.14159 -0 -1.2151e-16"]
+"LRAnkle_FT" -> "LRAnkle_FT"
+"LRAnkle_FT" -> "FRC_FrontLeft" [label="xyz: 0.13 -0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FRC_FrontLeft" -> "FRC_FrontLeft_Link"
+"LRAnkle_FT" -> "FRC_FrontRight" [label="xyz: 0.13 0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FRC_FrontRight" -> "FRC_FrontRight_Link"
+"LRAnkle_FT" -> "FRC_RearLeft" [label="xyz: -0.07 -0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FRC_RearLeft" -> "FRC_RearLeft_Link"
+"LRAnkle_FT" -> "FRC_RearRight" [label="xyz: -0.07 0.04 0.0274 \nrpy: -3.14159 -0 0"]
+"FRC_RearRight" -> "FRC_RearRight_Link"
+"LRAnkle_FT" -> "FR_SupportCenter" [label="xyz: 0.03 0 0.0444 \nrpy: -3.14159 -0 0"]
+"FR_SupportCenter" -> "FR_SupportCenter"
+}

@@ -26,6 +26,7 @@ protected:
     size_t dim_controller;
     base::VectorXd p_gain;
     base::VectorXd d_gain;
+    base::VectorXd ff_gain;
     base::VectorXd dead_zone;
     base::VectorXd max_control_output;
     base::VectorXd ref_pos, ref_vel, ref_acc;
@@ -47,6 +48,10 @@ public:
     const void setDGain(const base::VectorXd &gain);
     /** Get derivative/velocity gain*/
     const base::VectorXd& dGain(){return d_gain;}
+    /** Set feedforward gain. Size has to be the same dimension of the controller*/
+    const void setFFGain(const base::VectorXd &gain);
+    /** Get feedforward gain*/
+    const base::VectorXd& ffGain(){return ff_gain;}
     /** Set controller saturation. Size has to be the same dimension of the controller*/
     const void setMaxCtrlOutput(const base::VectorXd &max_ctrl_out);
     /** Get controller saturation*/
