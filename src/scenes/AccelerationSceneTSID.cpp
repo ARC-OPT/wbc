@@ -151,6 +151,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
         constraints_prio[prio].upper_x(i+nj) = robot_model->jointLimits()[name].max.effort;
     }
+
+    constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     return constraints_prio;
 }
 

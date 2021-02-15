@@ -120,7 +120,7 @@ const HierarchicalQP& AccelerationScene::update(){
     constraints_prio[prio].upper_x.setConstant(1000);
 
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
-
+    constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     return constraints_prio;
 }
 

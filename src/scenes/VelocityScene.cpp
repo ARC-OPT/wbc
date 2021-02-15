@@ -150,6 +150,7 @@ const ConstraintsStatus& VelocityScene::updateConstraintsStatus(){
         }
     }
 
+    constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     return constraints_status;
 }
 

@@ -7,6 +7,9 @@
 
 namespace wbc{
 
+class JointWeights : public base::NamedVector<double>{
+};
+
 /**
  * @brief Describes a quadratic program of the form
  *  \f[

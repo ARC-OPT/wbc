@@ -22,6 +22,7 @@ protected:
     std::vector<int> n_constraint_variables_per_prio;
     bool configured;
     base::commands::Joints solver_output_joints;
+    JointWeights joint_weights, actuated_joint_weights;
 
     /**
      * brief Create a constraint and add it to the WBC scene
@@ -99,6 +100,21 @@ public:
      * @brief Get current solver output
      */
     const base::commands::Joints& getSolverOutput(){return solver_output_joints;}
+
+    /**
+     * @brief set Joint weights by given name
+     */
+    void setJointWeights(JointWeights weights);
+
+    /**
+     * @brief Get Joint weights as Named vector
+     */
+    JointWeights getJointWeights(){return joint_weights;}
+
+    /**
+     * @brief Get Joint weights as Named vector
+     */
+    JointWeights getActuatedJointWeights(){return actuated_joint_weights;}
 };
 
 } // namespace wbc

@@ -48,6 +48,17 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
         constraints_prio[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
     configured = true;
 
+    // Set actuated joint weights to 1 and unactuated joint weight to 0 by default
+    joint_weights.resize(robot_model->noOfJoints());
+    joint_weights.names = robot_model->jointNames();
+    std::fill(joint_weights.elements.begin(), joint_weights.elements.end(), 0);
+    for(auto n : robot_model->actuatedJointNames())
+        joint_weights[n] = 1;
+
+    actuated_joint_weights.resize(robot_model->noOfActuatedJoints());
+    actuated_joint_weights.names = robot_model->actuatedJointNames();
+    std::fill(actuated_joint_weights.elements.begin(), actuated_joint_weights.elements.end(), 1);
+
     return true;
 }
 
@@ -108,6 +119,22 @@ std::vector<int> WbcScene::getNConstraintVariablesPerPrio(const std::vector<Cons
             nn_pp[i] += sorted_config[i][j].nVariables();
     }
     return nn_pp;
+}
+
+void WbcScene::setJointWeights(JointWeights weights){
+    for(auto n : weights.names){
+        try{
+            joint_weights[n] = weights[n];
+        }
+        catch(base::NamedVector<double>::InvalidName e){
+            LOG_ERROR_S<<"Joint name "<<n<<" is given in joint weight vector, but this joint is not in robot model"<<std::endl;
+            std::cout<<"Joint names are "<<std::endl;
+            for(auto n : joint_weights.names)
+                std::cout<<n<<std::endl;
+
+            throw e;
+        }
+    }
 }
 
 } // namespace wbc
