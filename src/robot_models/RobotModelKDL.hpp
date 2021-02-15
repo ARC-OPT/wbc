@@ -51,6 +51,16 @@ protected:
     /** ID of kinematic chain given root and tip*/
     const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
+    /**
+     * Recursively loops through all the tree segments and compute the
+     * COG of the complete tree.
+     * @param currentSegement Current Segement in the recursive loop
+     * @param status Current joint state
+     */
+    void recursiveCOM( const KDL::SegmentMap::const_iterator& currentSegment,
+                       const base::samples::Joints& status, const KDL::Frame& frame,
+                       double& mass, KDL::Vector& cog);
+
 
 public:
     RobotModelKDL();
@@ -124,6 +134,12 @@ public:
 
     /** Return full tree (KDL model)*/
     KDL::Tree getTree(){return full_tree;}
+
+    /**
+     * Computes the cog for the current pose of the robot.
+     * \param status is the current joint state
+     */
+    void computeCOM( const base::samples::Joints& status );
 
 };
 

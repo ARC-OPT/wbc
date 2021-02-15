@@ -94,6 +94,8 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state,
             qdotdot(idx) = current_joint_state[name].acceleration;
         }
     }
+
+    computeCOM(current_joint_state);
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
@@ -109,7 +111,6 @@ const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std:
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chainID(root_frame, tip_frame)];
-
     return kdl_chain->rigidBodyState();
 }
 
@@ -237,5 +238,70 @@ const base::MatrixXd& RobotModelKDL::jointSpaceInertiaMatrix(){
     }
     return joint_space_inertia_mat;
 }
+
+
+void RobotModelKDL::recursiveCOM( const KDL::SegmentMap::const_iterator& currentSegment,
+                                  const base::samples::Joints& status, const KDL::Frame& frame,
+                                  double& mass, KDL::Vector& cog)
+{
+    double jointPosition = 0.0; // Joint position of the current joint
+#ifdef KDL_USE_NEW_TREE_INTERFACE
+    KDL::Segment segment = currentSegment->second->segment;
+#else
+    KDL::Segment segment = currentSegment->second.segment;
+#endif
+    // If the segment has a real joint, get the joint position
+    if( segment.getJoint().getType() != KDL::Joint::None ) {
+        try {
+            jointPosition = status[segment.getJoint().getName() ].position;
+        } catch (const std::runtime_error& error)
+        {
+            LOG_WARN("There is not information for this joint: ", segment.getJoint().getName().c_str());
+        }
+    }
+
+    // Transform to the frame of the current segment
+    KDL::Frame currentFrame = frame * segment.pose( jointPosition );
+    // Get the COG of the current segemnt in the KDL tree
+    KDL::Vector currentCOG = segment.getInertia().getCOG();
+    // Gets the current mass
+    double currentMass = segment.getInertia().getMass();
+
+    // Computes the cog
+    cog += currentMass * ( currentFrame * currentCOG );
+    // Appends to the total mass
+    mass += currentMass;
+
+    // Iterates through all the child segments
+    std::vector< KDL::SegmentMap::const_iterator >::const_iterator childSegment;
+#ifdef KDL_USE_NEW_TREE_INTERFACE
+    for( childSegment = currentSegment->second->children.begin();
+            childSegment != currentSegment->second->children.end();
+#else
+    for( childSegment = currentSegment->second.children.begin();
+            childSegment != currentSegment->second.children.end();
+#endif
+            ++childSegment)
+    {
+        // Calls this functiion again with the child segment
+        recursiveCOM( *childSegment, status, currentFrame, mass, cog );
+    }
+}
+
+void RobotModelKDL::computeCOM(const base::samples::Joints& status){
+    double mass = 0.0; // to get the total mass
+    KDL::Frame frame = KDL::Frame::Identity(); // Transformation of the last frame
+
+    // Computes the COG of the complete robot
+    KDL::Vector cog_pos;
+    recursiveCOM( full_tree.getRootSegment(), status, frame, mass, cog_pos );
+
+    // Returns the COG
+    com_rbs.frame_id = base_frame;
+    com_rbs.pose.position = base::Vector3d( cog_pos.x(), cog_pos.y(), cog_pos.z() ) / mass;
+    com_rbs.pose.orientation.setIdentity();
+    com_rbs.time = status.time;
+}
+
 
 }

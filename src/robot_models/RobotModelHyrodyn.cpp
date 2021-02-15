@@ -48,6 +48,16 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state,
         ydd[i] = current_joint_state.getElementByName(name).acceleration;
         Tau_independentjointspace[i] = current_joint_state.getElementByName(name).effort;
     }
+
+    calculate_com_properties();
+    com_rbs.frame_id = base_frame;
+    com_rbs.pose.position = com;
+    com_rbs.pose.orientation.setIdentity();
+    com_rbs.twist.linear = com_vel;
+    com_rbs.twist.angular.setZero();
+    com_rbs.acceleration.linear = com_acc;
+    com_rbs.acceleration.angular.setZero();
+    com_rbs.time = current_joint_state.time;
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){

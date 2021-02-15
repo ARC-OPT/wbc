@@ -33,6 +33,7 @@ protected:
     std::vector<std::string> contact_points;
     std::vector<std::string> active_contacts;
     urdf::ModelInterfaceSharedPtr robot_urdf;
+    base::samples::RigidBodyStateSE3 com_rbs;
 
     void clear();
     void updateFloatingBase(const base::RigidBodyStateSE3& rbs, base::samples::Joints& joint_state);
@@ -152,6 +153,9 @@ public:
 
     /** @brief Return True if given joint name is available in robot model, false otherwise*/
     bool hasJoint(const std::string& joint_name);
+
+    /** @brief Return Current center of gravity in expressed base frame*/
+    const base::samples::RigidBodyStateSE3& getCOM(){return com_rbs;}
 };
 
 typedef std::shared_ptr<RobotModel> RobotModelPtr;
