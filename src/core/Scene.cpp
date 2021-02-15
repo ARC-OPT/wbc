@@ -1,6 +1,18 @@
 #include "Scene.hpp"
+#include <base-logging/Logging.hpp>
+#include "JointConstraint.hpp"
+#include "CartesianConstraint.hpp"
 
 namespace wbc{
+
+WbcScene::WbcScene(RobotModelPtr robot_model, QPSolverPtr solver) :
+    robot_model(robot_model),
+    solver(solver),
+    configured(false){
+}
+
+WbcScene::~WbcScene(){
+}
 
 void WbcScene::clearConstraints(){
 
@@ -60,6 +72,22 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
     std::fill(actuated_joint_weights.elements.begin(), actuated_joint_weights.elements.end(), 1);
 
     return true;
+}
+
+void WbcScene::setReference(const std::string& constraint_name, const base::samples::Joints& ref){
+    std::static_pointer_cast<JointConstraint>(getConstraint(constraint_name))->setReference(ref);
+}
+
+void WbcScene::setReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
+    std::static_pointer_cast<CartesianConstraint>(getConstraint(constraint_name))->setReference(ref);
+}
+
+void WbcScene::setTaskWeights(const std::string& constraint_name, const base::VectorXd &weights){
+    getConstraint(constraint_name)->setWeights(weights);
+}
+
+void WbcScene::setTaskActivation(const std::string& constraint_name, const double activation){
+    getConstraint(constraint_name)->setActivation(activation);
 }
 
 ConstraintPtr WbcScene::getConstraint(const std::string& name){

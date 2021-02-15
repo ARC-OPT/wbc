@@ -35,14 +35,8 @@ protected:
     void clearConstraints();
 
 public:
-    WbcScene(RobotModelPtr robot_model, QPSolverPtr solver) :
-        robot_model(robot_model),
-        solver(solver),
-        configured(false){}
-
-    virtual ~WbcScene(){
-    }
-
+    WbcScene(RobotModelPtr robot_model, QPSolverPtr solver);
+    ~WbcScene();
     /**
      * @brief Configure the WBC scene. Create constraints and sort them by priority
      * @param Constraint configuration. Size has to be > 0. All constraints have to be valid. See ConstraintConfig.hpp for more details.
@@ -61,6 +55,32 @@ public:
      */
     virtual const base::commands::Joints& solve(const HierarchicalQP& hqp) = 0;
 
+    /**
+     * @brief Set reference input for a joint space constraint
+     * @param constraint_name Name of the constraint
+     * @param constraint_name Joint space reference values
+     */
+    void setReference(const std::string& constraint_name, const base::samples::Joints& ref);
+
+    /**
+     * @brief Set reference input for a cartesian space constraint
+     * @param constraint_name Name of the constraint
+     * @param constraint_name Cartesian space reference values
+     */
+    void setReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref);
+
+    /**
+     * @brief Set Task weights input for a  constraint
+     * @param constraint_name Name of the constraint
+     * @param weights Weight vector. Size has to be same as number of constraint variables
+     */
+    void setTaskWeights(const std::string& constraint_name, const base::VectorXd &weights);
+    /**
+     * @brief Set Task activation for a  constraint
+     * @param constraint_name Name of the constraint
+     * @param activation Activation value. Has to be in interval [0.0,1.0]
+     */
+    void setTaskActivation(const std::string& constraint_name, const double activation);
     /**
      * @brief Return a Particular constraint. Throw if the constraint does not exist
      */
@@ -116,6 +136,8 @@ public:
      */
     JointWeights getActuatedJointWeights(){return actuated_joint_weights;}
 };
+
+typedef std::shared_ptr<WbcScene> WbcScenePtr;
 
 } // namespace wbc
 
