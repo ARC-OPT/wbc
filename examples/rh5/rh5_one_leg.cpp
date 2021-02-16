@@ -3,7 +3,7 @@
 #include <types/QuadraticProgram.hpp>
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <Eigen/QR>
-#include <wbc/scenes/AccelerationScene.hpp>
+#include "scenes/AccelerationScene.hpp"
 
 using namespace wbc;
 using namespace std;
