@@ -9,6 +9,9 @@ void JointIntegrator::integrate(const base::samples::Joints& joint_state, base::
         case RECTANGULAR:
             integrateRectangular(cmd,cycle_time);
             break;
+        case TRAPEZOIDAL:
+            integrateTrapezoidal(cmd,cycle_time);
+            break;
         default:
             throw std::runtime_error("Invalid integration Method: " + std::to_string(method));
         }
@@ -36,14 +39,45 @@ void JointIntegrator::integrate(const base::samples::Joints& joint_state, base::
 void JointIntegrator::integrateRectangular(base::commands::Joints &cmd, double cycle_time){
     for(uint i = 0; i < cmd.size(); i++)
     {
+        double h = cycle_time;
+        double q_prev = prev_cmd[i].position;
+        double q_dot_prev = prev_cmd[i].speed;
+        double q_dot = cmd[i].speed;
+        double q_dotdot = cmd[i].acceleration;
+
         switch(cmdMode(cmd[i]))
         {
         case base::JointState::SPEED:
-            cmd[i].position = prev_cmd[i].position + cmd[i].speed*cycle_time;
+            cmd[i].position = q_prev + q_dot*h;
             break;
         case base::JointState::ACCELERATION:
-            cmd[i].speed = prev_cmd[i].speed + cmd[i].acceleration*cycle_time;
-            cmd[i].position = prev_cmd[i].position + cmd[i].speed*cycle_time;
+            cmd[i].speed = q_dot_prev + q_dotdot*h;
+            cmd[i].position = q_prev + q_dot*h;
+            break;
+        default:
+            throw std::runtime_error("Invalid control mode");
+        }
+    }
+}
+
+void JointIntegrator::integrateTrapezoidal(base::commands::Joints &cmd, double cycle_time){
+    for(uint i = 0; i < cmd.size(); i++)
+    {
+        double h = cycle_time/2;
+        double q_prev = prev_cmd[i].position;
+        double qd_prev = prev_cmd[i].speed;
+        double qd = cmd[i].speed;
+        double qdd = cmd[i].acceleration;
+        double qdd_pref = cmd[i].acceleration;
+
+        switch(cmdMode(cmd[i]))
+        {
+        case base::JointState::SPEED:
+            cmd[i].position = q_prev + (qd+qd_prev)*h;
+            break;
+        case base::JointState::ACCELERATION:
+            cmd[i].speed = qd_prev + (qdd_pref+qdd)*h;
+            cmd[i].position = q_prev + (qd+qd_prev)*h;
             break;
         default:
             throw std::runtime_error("Invalid control mode");

@@ -4,9 +4,9 @@
 #include <base/commands/Joints.hpp>
 
 enum IntegrationMethod{
+    NONE = -1,
     RECTANGULAR = 0,
-    TRAPEZOIDAL = 1, // TODO: Implement me!
-    POLYNOMIAL = 2   // TODO: Implement me!
+    TRAPEZOIDAL = 1
 };
 
 namespace wbc {
@@ -24,13 +24,19 @@ public:
      * @param cmd Input joint command, wil be modified by the method
      * @param cycle_time Period between two consecutive calls in seconds
      */
-    void integrate(const base::samples::Joints& joint_state, base::commands::Joints &cmd, double cycle_time, IntegrationMethod method = RECTANGULAR);
+    void integrate(const base::samples::Joints& joint_state, base::commands::Joints &cmd, double cycle_time, IntegrationMethod method = TRAPEZOIDAL);
     /**
      * @brief Performs numerical from acceleration/velocity to positions using rectangular method
      * @param cmd Input joint command, wil be modified by the method
      * @param cycle_time Period between two consecutive calls in seconds
      */
     void integrateRectangular(base::commands::Joints &cmd, double cycle_time);
+    /**
+     * @brief Trapezoidal method for numerical integration
+     * @param cmd Input joint command, wil be modified by the method
+     * @param cycle_time Period between two consecutive calls in seconds
+     */
+    void integrateTrapezoidal(base::commands::Joints &cmd, double cycle_time);
     /**
      * @brief cmdType Return the control model type POSITION/VELOCITY/ACCELERATION depending on the valid fields
      */
