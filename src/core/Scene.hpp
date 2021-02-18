@@ -124,17 +124,17 @@ public:
     /**
      * @brief set Joint weights by given name
      */
-    void setJointWeights(JointWeights weights);
+    void setJointWeights(const JointWeights &weights);
 
     /**
      * @brief Get Joint weights as Named vector
      */
-    JointWeights getJointWeights(){return joint_weights;}
+    const JointWeights &getJointWeights(){return joint_weights;}
 
     /**
      * @brief Get Joint weights as Named vector
      */
-    JointWeights getActuatedJointWeights(){return actuated_joint_weights;}
+    const JointWeights &getActuatedJointWeights(){return actuated_joint_weights;}
 };
 
 typedef std::shared_ptr<WbcScene> WbcScenePtr;

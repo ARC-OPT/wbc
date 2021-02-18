@@ -157,7 +157,7 @@ std::vector<int> WbcScene::getNConstraintVariablesPerPrio(const std::vector<Cons
     return nn_pp;
 }
 
-void WbcScene::setJointWeights(JointWeights weights){
+void WbcScene::setJointWeights(const JointWeights &weights){
     for(auto n : weights.names){
         try{
             joint_weights[n] = weights[n];
