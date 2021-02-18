@@ -60,7 +60,7 @@ void PosPDController::update(){
    applySaturation(control_out_acc, max_control_output, control_out_acc);
 }
 
-const void PosPDController::setPGain(const base::VectorXd &gain){
+void PosPDController::setPGain(const base::VectorXd &gain){
     if(!base::isnotnan(gain))
         throw std::runtime_error("PosPDController::setPGain: Invalid P-Gain. Contains NaN values");
     if(gain.size() != dim_controller)
@@ -69,7 +69,7 @@ const void PosPDController::setPGain(const base::VectorXd &gain){
     p_gain = gain;
 }
 
-const void PosPDController::setDGain(const base::VectorXd &gain){
+void PosPDController::setDGain(const base::VectorXd &gain){
     if(!base::isnotnan(gain))
         throw std::runtime_error("PosPDController::setDGain: Invalid D-Gain. Contains NaN values");
     if(gain.size() != dim_controller)
@@ -78,7 +78,7 @@ const void PosPDController::setDGain(const base::VectorXd &gain){
     d_gain = gain;
 }
 
-const void PosPDController::setFFGain(const base::VectorXd &gain){
+void PosPDController::setFFGain(const base::VectorXd &gain){
     if(!base::isnotnan(gain))
         throw std::runtime_error("PosPDController::setFFGain: Invalid FF-Gain. Contains NaN values");
     if(gain.size() != dim_controller)
@@ -88,7 +88,7 @@ const void PosPDController::setFFGain(const base::VectorXd &gain){
 }
 
 
-const void PosPDController::setMaxCtrlOutput(const base::VectorXd &max_ctrl_out){
+void PosPDController::setMaxCtrlOutput(const base::VectorXd &max_ctrl_out){
     if(!base::isnotnan(max_ctrl_out))
         throw std::runtime_error("PosPDController::setMaxCtrlOutput: Invalid max. control output. Contains NaN values");
     if(max_ctrl_out.size() != dim_controller)
@@ -97,7 +97,7 @@ const void PosPDController::setMaxCtrlOutput(const base::VectorXd &max_ctrl_out)
     max_control_output = max_ctrl_out;
 }
 
-const void PosPDController::setDeadZone(const base::VectorXd &dz){
+void PosPDController::setDeadZone(const base::VectorXd &dz){
     if(!base::isnotnan(dead_zone))
         throw std::runtime_error("PosPDController::setDeadZone: Invalid dead zone. Contains NaN values");
     if(dead_zone.size() != dim_controller)

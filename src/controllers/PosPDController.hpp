@@ -41,23 +41,23 @@ public:
      *  entries is NaN. Ignores NaN ref or actual velocity (disables velocity control) and NaN ref acceleration (disables acceleration feed forward)*/
     void update();
     /** Set proportional/position gain. Size has to be the same dimension of the controller*/
-    const void setPGain(const base::VectorXd &gain);
+    void setPGain(const base::VectorXd &gain);
     /** Get proportional/position gain*/
     const base::VectorXd& pGain(){return p_gain;}
     /** Set derivative/velocity gain. Size has to be the same dimension of the controller*/
-    const void setDGain(const base::VectorXd &gain);
+    void setDGain(const base::VectorXd &gain);
     /** Get derivative/velocity gain*/
     const base::VectorXd& dGain(){return d_gain;}
     /** Set feedforward gain. Size has to be the same dimension of the controller*/
-    const void setFFGain(const base::VectorXd &gain);
+    void setFFGain(const base::VectorXd &gain);
     /** Get feedforward gain*/
     const base::VectorXd& ffGain(){return ff_gain;}
     /** Set controller saturation. Size has to be the same dimension of the controller*/
-    const void setMaxCtrlOutput(const base::VectorXd &max_ctrl_out);
+    void setMaxCtrlOutput(const base::VectorXd &max_ctrl_out);
     /** Get controller saturation*/
     const base::VectorXd& maxCtrlOutput(){return max_control_output;}
     /** Set dead zone for the position controller. Size has to be the same dimension of the controller*/
-    const void setDeadZone(const base::VectorXd &dz);
+    void setDeadZone(const base::VectorXd &dz);
     /** Get dead zone for the position controller*/
     const base::VectorXd& deadZone(){return dead_zone;}
     /** Return position control error*/
