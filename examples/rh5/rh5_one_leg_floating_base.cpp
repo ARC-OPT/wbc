@@ -1,7 +1,7 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <robot_models/RobotModelKDL.hpp>
 #include <robot_models/RobotModelHyrodyn.hpp>
-#include <types/QuadraticProgram.hpp>
+#include <core/QuadraticProgram.hpp>
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <Eigen/QR>
 #include <scenes/AccelerationSceneTSID.hpp>
@@ -76,7 +76,7 @@ int main(){
     robot_model_hyrodyn.load_robotmodel("../../../models/urdf/rh5/rh5_one_leg_floating_base.urdf", "../../../models/hyrodyn/rh5/rh5_one_leg_floating_base.yml");
 
     HierarchicalQP hqp;
-    for(int n = 0; n < 1; n++){
+    for(int n = 0; n < 100; n++){
         cout<<"------------------- Iteration "<<n<<" ---------------------"<<endl;
 
         q << 0,0,-0.2,0.4,-0.2,0;

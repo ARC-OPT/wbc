@@ -1,5 +1,5 @@
 #include "QPOasesSolver.hpp"
-#include "../../types/QuadraticProgram.hpp"
+#include "../../core/QuadraticProgram.hpp"
 #include <base/Eigen.hpp>
 #include <Eigen/Core>
 #include <iostream>

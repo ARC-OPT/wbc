@@ -8,7 +8,6 @@ set(HEADERS QPOasesSolver.hpp)
 
 list(APPEND PKGCONFIG_REQUIRES qpOASES)
 list(APPEND PKGCONFIG_REQUIRES base-types)
-list(APPEND PKGCONFIG_REQUIRES wbc-types)
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
@@ -20,7 +19,6 @@ link_directories(${base-types_LIBRARY_DIRS}
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME}
                       wbc-core
-                      wbc-types
                       ${base-types_LIBRARIES}
                       ${qpOASES_LIBRARIES})
 

@@ -1,7 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 #include <sys/time.h>
-#include "types/QuadraticProgram.hpp"
+#include "core/QuadraticProgram.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
 
 using namespace wbc;

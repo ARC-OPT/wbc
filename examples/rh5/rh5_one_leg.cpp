@@ -1,6 +1,6 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <robot_models/RobotModelKDL.hpp>
-#include <types/QuadraticProgram.hpp>
+#include <robot_models/RobotModelHyrodyn.hpp>
+#include <core/QuadraticProgram.hpp>
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <Eigen/QR>
 #include "scenes/AccelerationScene.hpp"
@@ -23,8 +23,9 @@ int main(){
     RobotModelConfig config("../../../models/urdf/rh5/rh5_one_leg.urdf",
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
+    config.submechanism_file = "../../../models/hyrodyn/rh5/rh5_one_leg.yml";
 
-    RobotModelPtr robot_model = std::make_shared<RobotModelKDL>();
+    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
     if(!robot_model->configure(config))
         return -1;
 

@@ -12,7 +12,6 @@ link_directories(${base-types_LIBRARY_DIRS}
 add_executable(hls_solver hls_solver.cpp ../suite.cpp)
 target_link_libraries(hls_solver
                       wbc-solvers-hls
-                      wbc-types
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
 

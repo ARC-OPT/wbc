@@ -2,7 +2,7 @@
 #define WBCSCENE_HPP
 
 #include "ConstraintStatus.hpp"
-#include "../types/QuadraticProgram.hpp"
+#include "QuadraticProgram.hpp"
 #include <base/commands/Joints.hpp>
 #include "RobotModel.hpp"
 #include "QPSolver.hpp"

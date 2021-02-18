@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "solvers/hls/HierarchicalLSSolver.hpp"
-#include "types/QuadraticProgram.hpp"
+#include "core/QuadraticProgram.hpp"
 #include <iostream>
 #include <sys/time.h>
 

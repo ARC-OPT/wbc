@@ -1,7 +1,7 @@
 #include "HierarchicalLSSolver.hpp"
 #include <stdexcept>
 #include <tools/SVD.hpp>
-#include "../../types/QuadraticProgram.hpp"
+#include "../../core/QuadraticProgram.hpp"
 
 using namespace std;
 

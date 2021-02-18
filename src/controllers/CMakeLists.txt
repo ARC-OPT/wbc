@@ -6,7 +6,6 @@ file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/controllers "*.hpp")
 pkg_search_module(base-types REQUIRED base-types)
 
 list(APPEND PKGCONFIG_REQUIRES base-types)
-list(APPEND PKGCONFIG_REQUIRES wbc-types)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
 include_directories(${base-types_INCLUDE_DIRS})
