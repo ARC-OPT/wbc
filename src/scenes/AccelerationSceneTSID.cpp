@@ -109,6 +109,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     // Multiply task weights
     y = wy.cwiseProduct(y);
+    for(int i = 0; i < A.rows(); i++)
+        A.row(i) = wy(i)*A.row(i);
 
     // Cost Function: Find joint accelerations that minimize the given task constraints (task space gradient points along desired task space accelerations)
     // Only minimize acceleration, not torques
