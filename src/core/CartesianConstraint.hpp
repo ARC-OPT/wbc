@@ -18,7 +18,7 @@ public:
     /**
      * @brief Update the Cartesian reference input for this constraint.
      */
-    virtual void setReference(const base::samples::RigidBodyStateSE3& ref);
+    virtual void setReference(const base::samples::RigidBodyStateSE3& ref) = 0;
 };
 
 } //namespace wbc

@@ -13,14 +13,15 @@ CartesianVelocityConstraint::~CartesianVelocityConstraint(){
 
 void CartesianVelocityConstraint::setReference(const base::samples::RigidBodyStateSE3& ref){
 
-    CartesianConstraint::setReference(ref);
-
     if(!ref.hasValidTwist()){
         LOG_ERROR("Constraint %s has invalid velocity and/or angular velocity", config.name.c_str())
         throw std::invalid_argument("Invalid constraint reference value");
     }
 
-    this->time = ref.time;
+    if(ref.time.isNull())
+        this->time = base::Time::now();
+    else
+        this->time = ref.time;
     this->y_ref.segment(0,3) = ref.twist.linear;
     this->y_ref.segment(3,3) = ref.twist.angular;
 }

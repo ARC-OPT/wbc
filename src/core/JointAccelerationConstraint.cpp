@@ -19,8 +19,10 @@ void JointAccelerationConstraint::setReference(const base::commands::Joints& ref
         throw std::invalid_argument("Invalid constraint reference input");
     }
 
-    // This value will also be used for checking the constraint timeout!
-    this->time = ref.time;
+    if(ref.time.isNull())
+        this->time = base::Time::now();
+    else
+        this->time = ref.time;
 
     for(size_t i = 0; i < ref.size(); i++){
         uint idx;
