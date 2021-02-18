@@ -28,11 +28,13 @@ void WbcScene::clearConstraints(){
 
 bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
 
-    clearConstraints();
 
+    clearConstraints();
     if(config.empty())
         throw std::runtime_error("Constraint Config is empty");
 
+    for(auto c : config)
+        c.validate();
     std::vector< std::vector<ConstraintConfig> > sorted_config;
     sortConstraintConfig(config, sorted_config);
 
@@ -75,10 +77,16 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
 }
 
 void WbcScene::setReference(const std::string& constraint_name, const base::samples::Joints& ref){
-    std::static_pointer_cast<JointConstraint>(getConstraint(constraint_name))->setReference(ref);
+    ConstraintPtr c = getConstraint(constraint_name);
+    if(c->config.type == cart)
+        throw std::runtime_error("Constraint '" + c->config.name + "' has type cart, but you are trying to set a joint space reference");
+    std::static_pointer_cast<JointConstraint>(c)->setReference(ref);
 }
 
 void WbcScene::setReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
+    ConstraintPtr c = getConstraint(constraint_name);
+    if(c->config.type == jnt)
+        throw std::runtime_error("Constraint '" + c->config.name + "' has type jnt, but you are trying to set a cartesian reference");
     std::static_pointer_cast<CartesianConstraint>(getConstraint(constraint_name))->setReference(ref);
 }
 

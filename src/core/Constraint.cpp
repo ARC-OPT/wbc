@@ -19,8 +19,6 @@ Constraint::Constraint(const ConstraintConfig& _config, uint n_robot_joints) :
     weights_root.resize(no_variables);
 
     A.resize(no_variables, n_robot_joints);
-    _config.validate();
-
     reset();
 }
 

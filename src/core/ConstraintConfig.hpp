@@ -14,7 +14,9 @@ namespace wbc{
  *  - Joint constraints: The motion for the given joints will be constrained. This can be used for joint space
  *                       control, e.g. avoiding the joint limits, maintaining a certain elbow position, joint position control, ...
  */
-enum constraint_type{jnt, cart};
+enum ConstraintType{unset = -1,
+                    jnt = 0,
+                    cart = 1};
 
 /**
  * @brief Defines a constraint in the whole body control problem. Valid Configurations are e.g.
@@ -43,7 +45,7 @@ public:
     std::string name;
 
     /** Constraint type, can be one of 'jnt' (joint space) or 'cart' (Cartesian) */
-    constraint_type type;
+    ConstraintType type;
 
     /** Priority of this constraint. Must be >= 0! 0 corresponds to the highest priority. */
     int priority;

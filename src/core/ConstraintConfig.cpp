@@ -5,7 +5,9 @@ namespace wbc{
 
 ConstraintConfig::ConstraintConfig() :
     activation(0),
-    timeout(0){
+    timeout(0),
+    priority(-1),
+    type(unset){
 
 }
 
