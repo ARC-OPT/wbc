@@ -21,6 +21,7 @@ void JointPosPDController::extractFeedback(const base::samples::Joints& feedback
             }
             pos(i) = joint_state.position;
             vel(i) = joint_state.speed;
+            acc(i) = joint_state.acceleration;
         }
 }
 

@@ -14,6 +14,8 @@ void CartesianPosPDController::extractFeedback(const base::samples::RigidBodySta
     pos.setZero();
     vel.segment(0,3) = feedback.twist.linear;
     vel.segment(3,3) = feedback.twist.angular;
+    acc.segment(0,3) = feedback.acceleration.linear;
+    acc.segment(3,3) = feedback.acceleration.angular;
 }
 
 void CartesianPosPDController::extractSetpoint(const base::samples::RigidBodyStateSE3& setpoint, const base::samples::RigidBodyStateSE3& feedback){

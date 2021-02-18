@@ -10,6 +10,7 @@ PosPDController::PosPDController(size_t dim_controller) :
     ref_acc.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
     pos.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
     vel.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
+    acc.setConstant(dim_controller, std::numeric_limits<double>::quiet_NaN());
     p_gain.setConstant(dim_controller, 0);
     d_gain.setConstant(dim_controller, 0);
     ff_gain.setConstant(dim_controller, 0);
@@ -49,7 +50,9 @@ void PosPDController::update(){
     control_out_acc = p_gain.cwiseProduct(pos_diff) + d_gain.cwiseProduct(vel_diff);
 
     // Add acceleration Feed-forward, if it is not NaN
-   if(base::isnotnan(ref_acc))
+   if(base::isnotnan(ref_acc) && base::isnotnan(acc))
+       control_out_acc += ff_gain.cwiseProduct(ref_acc-acc);
+   else if(base::isnotnan(ref_acc))
        control_out_acc += ff_gain.cwiseProduct(ref_acc);
 
    // Apply Saturation / max. control output;

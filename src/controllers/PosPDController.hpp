@@ -30,7 +30,7 @@ protected:
     base::VectorXd dead_zone;
     base::VectorXd max_control_output;
     base::VectorXd ref_pos, ref_vel, ref_acc;
-    base::VectorXd pos, vel;
+    base::VectorXd pos, vel, acc;
     base::VectorXd pos_diff, vel_diff;
     base::VectorXd control_out_vel, control_out_acc;
 
