@@ -1,40 +1,22 @@
 #include "eigen_conversion.h"
 #include "base_types_conversion.h"
 #include "std_vector_conversion.h"
-#include "robot_models/RobotModelKDL.hpp"
-#include "robot_models/RobotModelHyrodyn.hpp"
+#include "robot_models.hpp"
 
 namespace wbc_py {
 
-base::samples::Joints tobaseSamplesJoints(const base::NamedVector<base::JointState> &joint_state){
-    base::samples::Joints joints;
-    joints.elements = joint_state.elements;
-    joints.names = joint_state.names;
-    joints.time = base::Time::now();
-    return joints;
+void RobotModelHyrodyn::update(const base::NamedVector<base::JointState> &joint_state){
+    wbc::RobotModelHyrodyn::update(tobaseSamplesJoints(joint_state));
 }
-
-/** Wrapper for wbc::RobotModelHyrodyn. Unfortunately we have to do this, since base::samples::Joints cannot be easily exposed to python*/
-class RobotModelHyrodyn : public wbc::RobotModelHyrodyn{
-public:
-    void update(const base::NamedVector<base::JointState> &joint_state){
-        wbc::RobotModelHyrodyn::update(tobaseSamplesJoints(joint_state));
-    }
-    void update2(const base::NamedVector<base::JointState> &joint_state, const base::samples::RigidBodyStateSE3 &floating_base_state){
-        wbc::RobotModelHyrodyn::update(tobaseSamplesJoints(joint_state), floating_base_state);
-    }
-};
-
-/** Wrapper for wbc::RobotModelKDL. Unfortunately we have to do this, since base::samples::Joints cannot be easily exposed to python*/
-class RobotModelKDL : public wbc::RobotModelKDL{
-public:
-    void update(const base::NamedVector<base::JointState> &joint_state){
-        wbc::RobotModelKDL::update(tobaseSamplesJoints(joint_state));
-    }
-    void update2(const base::NamedVector<base::JointState> &joint_state, const base::samples::RigidBodyStateSE3 &floating_base_state){
-        wbc::RobotModelKDL::update(tobaseSamplesJoints(joint_state), floating_base_state);
-    }
-};
+void RobotModelHyrodyn::update2(const base::NamedVector<base::JointState> &joint_state, const base::samples::RigidBodyStateSE3 &floating_base_state){
+    wbc::RobotModelHyrodyn::update(tobaseSamplesJoints(joint_state), floating_base_state);
+}
+void RobotModelKDL::update(const base::NamedVector<base::JointState> &joint_state){
+    wbc::RobotModelKDL::update(tobaseSamplesJoints(joint_state));
+}
+void RobotModelKDL::update2(const base::NamedVector<base::JointState> &joint_state, const base::samples::RigidBodyStateSE3 &floating_base_state){
+    wbc::RobotModelKDL::update(tobaseSamplesJoints(joint_state), floating_base_state);
+}
 
 }
 

@@ -33,19 +33,25 @@ pkg_search_module(kdl_parser REQUIRED kdl_parser)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src ${base-types_INCLUDE_DIRS} ${hyrodyn_INCLUDE_DIRS} ${orocos-kdl_INCLUDE_DIRS} ${kdl_parser_INCLUDE_DIRS})
 link_directories(${base-types_LIBRARY_DIRS} ${hyrodyn_LIBRARY_DIRS} ${orocos-kd_LIBRARY_DIRS} ${kdl_parser_LIBRARY_DIRS})
 
-# Add a shared module - modules are intended to be imported at runtime.
-# - This is where you add the source files
 PYTHON_ADD_MODULE(core core.cpp)
 PYTHON_ADD_MODULE(robot_models robot_models.cpp)
+PYTHON_ADD_MODULE(scenes scenes.cpp)
+PYTHON_ADD_MODULE(solvers solvers.cpp)
+PYTHON_ADD_MODULE(controllers controllers.cpp)
 
 # Set up the libraries and header search paths for this target
 target_link_libraries(core ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} wbc-core)
 target_include_directories(core PRIVATE ${PYTHON_INCLUDE_DIRS})
 target_link_libraries(robot_models ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} wbc-robot_models)
 target_include_directories(robot_models PRIVATE ${PYTHON_INCLUDE_DIRS} )
-install(TARGETS core
-        DESTINATION ${PYTHON_INSTALL_PATH}/wbc)
-install(TARGETS robot_models
+target_link_libraries(scenes ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} wbc-scenes wbc-robot_models wbc-core wbc-solvers-hls wbc-solvers-qpoases)
+target_include_directories(scenes PRIVATE ${PYTHON_INCLUDE_DIRS} )
+target_link_libraries(solvers ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} wbc-solvers-hls wbc-solvers-qpoases)
+target_include_directories(solvers PRIVATE ${PYTHON_INCLUDE_DIRS} )
+target_link_libraries(controllers ${Boost_LIBRARIES} ${PYTHON_LIBRARIES} wbc-controllers)
+target_include_directories(controllers PRIVATE ${PYTHON_INCLUDE_DIRS} )
+
+install(TARGETS core robot_models scenes solvers controllers
         DESTINATION ${PYTHON_INSTALL_PATH}/wbc)
 install(FILES __init__.py
         DESTINATION ${PYTHON_INSTALL_PATH}/wbc)

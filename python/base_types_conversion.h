@@ -5,9 +5,29 @@
 #include <boost/python/module.hpp>
 #include <boost/python/numpy.hpp>
 #include <base/JointState.hpp>
+#include <base/samples/Joints.hpp>
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
+
+namespace wbc_py{
+
+base::samples::Joints tobaseSamplesJoints(const base::NamedVector<base::JointState> &joints_in){
+    base::samples::Joints joints_out;
+    joints_out.elements = joints_in.elements;
+    joints_out.names = joints_in.names;
+    joints_out.time = base::Time::now();
+    return joints_out;
+}
+
+base::NamedVector<base::JointState> toNamedVector(const base::samples::Joints &joints_in){
+    base::NamedVector<base::JointState> joints_out;
+    joints_out.elements = joints_in.elements;
+    joints_out.names = joints_in.names;
+    return joints_out;
+}
+
+}
 
 namespace pygen {
 
