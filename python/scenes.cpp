@@ -50,6 +50,28 @@ base::NamedVector<base::JointState> VelocityScene::solve2(const wbc::Hierarchica
 base::NamedVector<wbc::ConstraintStatus> VelocityScene::updateConstraintsStatus2(){
     return toNamedVector(wbc::VelocityScene::updateConstraintsStatus());
 }
+
+AccelerationSceneTSID::AccelerationSceneTSID(RobotModelHyrodyn robot_model, QPOASESSolver solver) :
+    wbc::AccelerationSceneTSID(std::make_shared<wbc::RobotModelHyrodyn>(robot_model), std::make_shared<wbc::QPOASESSolver>(solver)){
+}
+void AccelerationSceneTSID::setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref){
+    wbc::AccelerationSceneTSID::setReference(constraint_name, tobaseSamplesJoints(ref));
+}
+void AccelerationSceneTSID::setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
+    wbc::AccelerationSceneTSID::setReference(constraint_name, ref);
+}
+void AccelerationSceneTSID::setJointWeights(const base::NamedVector<double> &weights){
+    wbc::AccelerationSceneTSID::setJointWeights(toJointWeights(weights));
+}
+base::NamedVector<double> AccelerationSceneTSID::getJointWeights2(){
+    return toNamedVector(wbc::AccelerationSceneTSID::getJointWeights());
+}
+base::NamedVector<base::JointState> AccelerationSceneTSID::solve2(const wbc::HierarchicalQP &hqp){
+    return toNamedVector(wbc::AccelerationSceneTSID::solve(hqp));
+}
+base::NamedVector<wbc::ConstraintStatus> AccelerationSceneTSID::updateConstraintsStatus2(){
+    return toNamedVector(wbc::AccelerationSceneTSID::updateConstraintsStatus());
+}
 }
 
 BOOST_PYTHON_MODULE(scenes){
@@ -74,6 +96,25 @@ BOOST_PYTHON_MODULE(scenes){
             .def("setJointWeights",   &wbc_py::VelocityScene::setJointWeights)
             .def("getJointWeights",   &wbc_py::VelocityScene::getJointWeights2)
             .def("getActuatedJointWeights",   &wbc_py::VelocityScene::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>());
+
+
+    py::class_<wbc_py::AccelerationSceneTSID>("AccelerationSceneTSID", py::init<wbc_py::RobotModelHyrodyn, wbc_py::QPOASESSolver>())
+            .def("configure",    &wbc_py::AccelerationSceneTSID::configure)
+            .def("update",       &wbc_py::AccelerationSceneTSID::update, py::return_value_policy<py::copy_const_reference>())
+            .def("solve",        &wbc_py::AccelerationSceneTSID::solve2)
+            .def("setReference", &wbc_py::AccelerationSceneTSID::setJointReference)
+            .def("setReference", &wbc_py::AccelerationSceneTSID::setCartReference)
+            .def("setTaskWeights",   &wbc_py::AccelerationSceneTSID::setTaskWeights)
+            .def("setTaskActivation",   &wbc_py::AccelerationSceneTSID::setTaskActivation)
+            .def("getConstraintsStatus",   &wbc_py::AccelerationSceneTSID::getConstraintsStatus,  py::return_value_policy<py::copy_const_reference>())
+            .def("getNConstraintVariablesPerPrio",   &wbc_py::AccelerationSceneTSID::getNConstraintVariablesPerPrio)
+            .def("hasConstraint",   &wbc_py::AccelerationSceneTSID::hasConstraint)
+            .def("updateConstraintsStatus",   &wbc_py::AccelerationSceneTSID::updateConstraintsStatus2)
+            .def("getHierarchicalQP",   &wbc_py::AccelerationSceneTSID::getHierarchicalQP,  py::return_value_policy<py::copy_const_reference>())
+            .def("getSolverOutput",   &wbc_py::AccelerationSceneTSID::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
+            .def("setJointWeights",   &wbc_py::AccelerationSceneTSID::setJointWeights)
+            .def("getJointWeights",   &wbc_py::AccelerationSceneTSID::getJointWeights2)
+            .def("getActuatedJointWeights",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>());
 
 }
 
