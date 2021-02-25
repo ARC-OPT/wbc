@@ -154,6 +154,10 @@ public:
     /** @brief Return True if given joint name is available in robot model, false otherwise*/
     bool hasJoint(const std::string& joint_name);
 
+    /** @brief Return True if given joint name is an actuated joint in robot model, false otherwise*/
+    bool hasActuatedJoint(const std::string& joint_name);
+
+
     /** @brief Return Current center of gravity in expressed base frame*/
     const base::samples::RigidBodyStateSE3& getCOM(){return com_rbs;}
 };

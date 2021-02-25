@@ -16,6 +16,9 @@ public:
     /** Return all non-fixed joints from the given URDF file*/
     static std::vector<std::string> jointNamesFromURDF(const std::string &filename);
 
+    /** Return all non-fixed joints from the given URDF file*/
+    static std::vector<std::string> jointNamesFromURDF(const urdf::ModelInterfaceSharedPtr& urdf_model);
+
     /** Return limits for all non-fixed joints from the given URDF file*/
     static void jointLimitsFromURDF(const std::string& filename, base::JointLimits& limits);
 

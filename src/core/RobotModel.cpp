@@ -71,13 +71,31 @@ bool RobotModel::configure(const RobotModelConfig& cfg){
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
-    for(size_t i = 0; i < cfg.joint_names.size(); i++){
-        current_joint_state.elements.push_back(base::JointState());
-        current_joint_state.names.push_back(cfg.joint_names[i]);
-    }
-    for(size_t i = 0; i < cfg.actuated_joint_names.size(); i++)
-        actuated_joint_names.push_back(cfg.actuated_joint_names[i]);
+    current_joint_state.elements.resize(cfg.joint_names.size());
+    current_joint_state.names = cfg.joint_names;
+    actuated_joint_names = cfg.actuated_joint_names;
 
+    // Check if configured joint names and joint names in URDF are consistent
+    for(auto n : URDFTools::jointNamesFromURDF(cfg.file))
+        if(!hasActuatedJoint(n)){
+            LOG_ERROR_S << "Joint " << n << " is a non-fixed joint in the URDF model, but it has not been configured in actuated_joint_names" << std::endl;
+            return false;
+        }
+    for(auto n : floating_base_names)
+        if(!hasJoint(n)){
+            LOG_ERROR_S << "If you set 'floating_base' to 'true', you have to add the following virtual joints to joint_names: "<<std::endl;
+            LOG_ERROR_S << "   floating_base_trans_x, floating_base_trans_y, floating_base_trans_z" << std::endl;
+            LOG_ERROR_S << "   floating_base_rot_x,   floating_base_rot_y,   floating_base_rot_z  " << std::endl;
+            return false;
+        }
+    const std::vector<std::string> joint_names_urdf = URDFTools::jointNamesFromURDF(robot_urdf);
+    for(auto n : joint_names_urdf)
+        if(!hasJoint(n)){
+            LOG_ERROR_S << "Joint " << n << " is a non-fixed joint in the URDF model, but it has not been configured in joint_names" << std::endl;
+            return false;
+        }
+
+    // Set initial floating base state
     if(has_floating_base){
         if(cfg.floating_base_state.hasValidPose() &&
            cfg.floating_base_state.hasValidTwist() &&
@@ -121,6 +139,12 @@ bool RobotModel::configure(const RobotModelConfig& cfg){
 }
 
 void RobotModel::update(const base::samples::Joints& joint_state, const base::samples::RigidBodyStateSE3& _floating_base_state){
+
+    if(joint_state.elements.size() != joint_state.names.size()){
+        LOG_ERROR_S << "Size of names and size of elements in joint state do not match"<<std::endl;
+        throw std::runtime_error("Invalid joint state");
+    }
+
     for(size_t i = 0; i < noOfActuatedJoints(); i++){
         const std::string& name = actuated_joint_names[i];
         std::size_t idx;
@@ -178,6 +202,10 @@ bool RobotModel::hasLink(const std::string &link_name){
 
 bool RobotModel::hasJoint(const std::string &joint_name){
     return std::find(current_joint_state.names.begin(), current_joint_state.names.end(), joint_name) != current_joint_state.names.end();
+}
+
+bool RobotModel::hasActuatedJoint(const std::string &joint_name){
+    return std::find(actuated_joint_names.begin(), actuated_joint_names.end(), joint_name) != actuated_joint_names.end();
 }
 
 } // namespace wbc

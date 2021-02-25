@@ -158,6 +158,12 @@ std::vector<int> WbcScene::getNConstraintVariablesPerPrio(const std::vector<Cons
 }
 
 void WbcScene::setJointWeights(const JointWeights &weights){
+
+    if(weights.elements.size() != weights.names.size()){
+        LOG_ERROR_S << "Size of names and size of elements in joint weight vector do not match"<<std::endl;
+        throw std::runtime_error("Invalid joint weights");
+    }
+
     for(auto n : weights.names){
         try{
             joint_weights[n] = weights[n];

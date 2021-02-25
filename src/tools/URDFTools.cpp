@@ -9,6 +9,10 @@ std::vector<std::string> URDFTools::jointNamesFromURDF(const std::string &filena
     if (!urdf_model)
         throw urdf::ParseError("Cannot load URDF from file " + filename);
 
+    return jointNamesFromURDF(urdf_model);
+}
+
+std::vector<std::string> URDFTools::jointNamesFromURDF(const urdf::ModelInterfaceSharedPtr& urdf_model){
     std::vector<std::string> joint_names;
     std::map<std::string, urdf::JointSharedPtr>::const_iterator it;
     for(it=urdf_model->joints_.begin(); it!=urdf_model->joints_.end(); ++it){

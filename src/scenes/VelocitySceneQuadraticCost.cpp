@@ -19,6 +19,11 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     if(!configured)
         throw std::runtime_error("VelocitySceneQuadraticCost has not been configured!. PLease call configure() before calling update() for the first time!");
 
+    if(constraints.size() != 1){
+        LOG_ERROR("Number of priorities in VelocitySceneQuadraticCost should be 1, but is %i", constraints.size());
+        throw std::runtime_error("Invalid constraint configuration");
+    }
+
     VelocityScene::update();
 
     int nj = robot_model->noOfJoints();
