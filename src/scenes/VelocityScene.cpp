@@ -30,6 +30,8 @@ const HierarchicalQP& VelocityScene::update(){
     //    W - Vector of constraint weights. One vector for each priority
     for(uint prio = 0; prio < constraints.size(); prio++){
 
+        constraints_prio[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
+
         // Walk through all tasks of current priority
         uint row_index = 0;
         for(uint i = 0; i < constraints[prio].size(); i++){
