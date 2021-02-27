@@ -36,6 +36,8 @@ public:
 
     /** Initialize all variables with NaN */
     void resize(const uint nc, const uint nq);
+    /** Print content to console*/
+    void print() const;
 
 };
 

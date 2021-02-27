@@ -90,21 +90,19 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     }
 
     actual_n_wsr = n_wsr;
-//    base::VectorXd x_opt(qp.nq);
-//    base::VectorXd y_opt(qp.nc);
-//    x_opt << 1.33613e-07, 3.79854e-08, 3.55299e-08, 6.23341e-06, -1.30251e-05, 2.21976e-06, -2.25882e-06, -6.30469e-06, 1.31302e-05, -1.03773e-06, 3.50779e-07, 7.90079e-08,
-//             -0.0016937263217112032, -0.0031835690480501865, -75.94681724308107, -0.07960479827699948, 2.7142051814597408, -0.00011199983616109183,
-//             0.0442808, -0.101488,-0.123159, -2.243, 2.51808, -0.0788359;
-//    y_opt << 0, 0, 0, 0, 0, 0, -0.0399277,  0.0987355,   0.106366,    2.22985,   -2.52088,  0.0791769;
     if(!sq_problem.isInitialised()){
-        ret_val = sq_problem.init(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);//, (real_t*)x_opt.data());
-        if(ret_val != SUCCESSFUL_RETURN)
+        ret_val = sq_problem.init(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
+        if(ret_val != SUCCESSFUL_RETURN){
+            qp.print();
             throw std::runtime_error("SQ Problem initialization failed with error " + std::to_string(ret_val));
+        }
     }
     else{
         ret_val = sq_problem.hotstart(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
-        if(ret_val != SUCCESSFUL_RETURN)
+        if(ret_val != SUCCESSFUL_RETURN){
+            qp.print();
             throw std::runtime_error("SQ Problem hotstart failed with error " + std::to_string(ret_val));
+        }
     }
 
     solver_output.resize(qp.nq);
