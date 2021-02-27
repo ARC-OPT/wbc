@@ -65,9 +65,7 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
     // Set actuated joint weights to 1 and unactuated joint weight to 0 by default
     joint_weights.resize(robot_model->noOfJoints());
     joint_weights.names = robot_model->jointNames();
-    std::fill(joint_weights.elements.begin(), joint_weights.elements.end(), 0);
-    for(auto n : robot_model->actuatedJointNames())
-        joint_weights[n] = 1;
+    std::fill(joint_weights.elements.begin(), joint_weights.elements.end(), 1);
 
     actuated_joint_weights.resize(robot_model->noOfActuatedJoints());
     actuated_joint_weights.names = robot_model->actuatedJointNames();
