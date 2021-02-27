@@ -1,6 +1,8 @@
 #include "VelocityScene.hpp"
 #include "../core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
+#include "../core/JointVelocityConstraint.hpp"
+#include "../core/CartesianVelocityConstraint.hpp"
 
 namespace wbc{
 

@@ -1,7 +1,7 @@
 #ifndef VELOCITYSCENEQUADRATICCOST_HPP
 #define VELOCITYSCENEQUADRATICCOST_HPP
 
-#include "../scenes/VelocityScene.hpp"
+#include "../core/Scene.hpp"
 
 namespace wbc{
 
@@ -28,11 +28,12 @@ namespace wbc{
  *
  * Compared to the VelocityScene class, the tasks are here modeled within the cost function instead of constraints.
  */
-class VelocitySceneQuadraticCost : public VelocityScene{
+class VelocitySceneQuadraticCost : public WbcScene{
 protected:
-    double min_eval_damping_thresh, damping_factor;
     base::VectorXd s_vals, tmp;
     base::MatrixXd sing_vect_r, U;
+    base::MatrixXd A,A_weighted;
+    base::VectorXd y,Wy;
 
 public:
     /**
@@ -47,9 +48,6 @@ public:
      * @brief Update the wbc scene
      */
     virtual const HierarchicalQP& update();
-
-    void setDampingThreshold(double thresh){min_eval_damping_thresh = thresh;}
-    double getCurrentDampingFactor(){return damping_factor;}
 };
 
 } // namespace wbc

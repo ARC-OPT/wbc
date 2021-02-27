@@ -20,6 +20,8 @@ public:
     virtual void setReference(const base::samples::RigidBodyStateSE3& ref);
 };
 
+typedef std::shared_ptr<CartesianVelocityConstraint> CartesianVelocityConstraintPtr;
+
 } // namespace wbc
 
 #endif

@@ -3,6 +3,7 @@
 #include <scenes/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
+#include <core/CartesianVelocityConstraint.hpp>
 #include <unistd.h>
 
 using namespace std;

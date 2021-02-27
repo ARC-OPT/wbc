@@ -2,13 +2,8 @@
 #define VELOCITYSCENE_HPP
 
 #include "../core/Scene.hpp"
-#include "../core/JointVelocityConstraint.hpp"
-#include "../core/CartesianVelocityConstraint.hpp"
 
 namespace wbc{
-
-typedef std::shared_ptr<CartesianVelocityConstraint> CartesianVelocityConstraintPtr;
-typedef std::shared_ptr<JointVelocityConstraint> JointVelocityConstraintPtr;
 
 /**
  * @brief Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:
