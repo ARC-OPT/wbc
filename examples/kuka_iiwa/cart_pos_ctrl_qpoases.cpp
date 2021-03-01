@@ -33,7 +33,7 @@ int main(int argc, char** argv){
     // Configure Robot model
     RobotModelPtr robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
-    config.file = "../../../examples/kuka_iiwa/data/urdf/kuka_iiwa.urdf";
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
     config.joint_names = joint_names;
     config.actuated_joint_names = joint_names;
     if(!robot_model->configure(config))
@@ -113,4 +113,5 @@ int main(int argc, char** argv){
     }
 
     return 0;
+
 }
