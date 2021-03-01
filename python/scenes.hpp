@@ -12,8 +12,8 @@ wbc::JointWeights toJointWeights(const base::NamedVector<double> &weights);
 
 class VelocityScene : public wbc::VelocityScene{
 public:
-    VelocityScene(RobotModelKDL robot_model, HierarchicalLSSolver solver);
-    VelocityScene(RobotModelKDL robot_model, QPOASESSolver solver);
+    VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<HierarchicalLSSolver> solver);
+    VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver);
     void setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref);
     void setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref);
     void setJointWeights(const base::NamedVector<double> &weights);
@@ -24,7 +24,7 @@ public:
 
 class AccelerationSceneTSID : public wbc::AccelerationSceneTSID{
 public:
-    AccelerationSceneTSID(RobotModelHyrodyn robot_model, QPOASESSolver solver);
+    AccelerationSceneTSID(std::shared_ptr<RobotModelHyrodyn> robot_model, std::shared_ptr<QPOASESSolver> solver);
     void setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref);
     void setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref);
     void setJointWeights(const base::NamedVector<double> &weights);
