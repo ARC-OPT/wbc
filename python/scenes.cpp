@@ -114,7 +114,8 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getSolverOutput",   &wbc_py::AccelerationSceneTSID::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
             .def("setJointWeights",   &wbc_py::AccelerationSceneTSID::setJointWeights)
             .def("getJointWeights",   &wbc_py::AccelerationSceneTSID::getJointWeights2)
-            .def("getActuatedJointWeights",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>());
+            .def("getActuatedJointWeights",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>())
+            .def("getContactWrenches",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>());
 
 }
 
