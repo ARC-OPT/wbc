@@ -101,7 +101,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
            constraint->y_ref_root.setZero();
         }
 
-        wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation * (!constraint->timeout);
+        wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation;// * (!constraint->timeout);
         A.block(row_index, 0, n_vars, nj) = constraint->A;
         y.segment(row_index, n_vars) = constraint->y_ref_root;
         row_index += n_vars;
