@@ -56,7 +56,7 @@ control_output = RigidBodyStateSE3()
 joint_state = Joints()
 js = JointState()
 js.position = 0.1
-joint_state.elements = [js]*7
+joint_state.elements = [js]*robot_model.noOfJoints()
 joint_state.names = robot_model.jointNames()
 
 start = time.time()
