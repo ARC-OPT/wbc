@@ -43,7 +43,7 @@ int main(){
     if(!robot_model->configure(config))
         return -1;
 
-    std::vector<ConstraintConfig> wbc_config(2);
+    std::vector<ConstraintConfig> wbc_config(1);
     wbc_config[0].name = "zero_com_acceleration";
     wbc_config[0].type = cart;
     wbc_config[0].root = "world";
@@ -52,16 +52,6 @@ int main(){
     wbc_config[0].priority = 0;
     wbc_config[0].weights = {1,1,1,1,1,1};
     wbc_config[0].activation = 1;
-
-    wbc_config[1].name = "left_leg_pose";
-    wbc_config[1].type = cart;
-    wbc_config[1].root = "world";
-    wbc_config[1].tip = "LLAnkle_FT";
-    wbc_config[1].ref_frame = "world";
-    wbc_config[1].priority = 0;
-    wbc_config[1].weights = {1,1,1,1,1,1};
-    wbc_config[1].activation = 1;
-
 
 
     QPSolverPtr solver = std::make_shared<QPOASESSolver>();
@@ -76,7 +66,6 @@ int main(){
 
     AccelerationSceneTSID scene(robot_model, solver);
     if(!scene.configure(wbc_config))
-
         return -1;
     uint nj = robot_model->noOfJoints();
     uint na = robot_model->noOfActuatedJoints();
@@ -89,7 +78,7 @@ int main(){
     robot_model_hyrodyn.load_robotmodel("../../../models/urdf/rh5/rh5_legs_floating_base.urdf", "../../../models/hyrodyn/rh5/rh5_legs_floating_base.yml");
 
     HierarchicalQP hqp;
-    for(int n = 0; n < 10; n++){
+    for(int n = 0; n < 1; n++){
         cout<<"------------------- Iteration "<<n<<" ---------------------"<<endl;
 
         q << 0,0,-0.2,0.4,0,-0.2,
@@ -112,7 +101,6 @@ int main(){
         joint_state.time = base::Time::now();
         robot_model->update(joint_state, floating_base_state);
         scene.getConstraint("zero_com_acceleration")->y_ref.setZero();
-        scene.getConstraint("left_leg_pose")->y_ref.setZero();
         hqp=scene.update();
 
         solver->solve(hqp,solver_output);
