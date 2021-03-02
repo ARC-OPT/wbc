@@ -1,11 +1,10 @@
 #include "eigen_conversion.h"
-#include "base_types_conversion.h"
+//#include "base_types_conversion.h"
 #include "std_vector_conversion.h"
 #include "core/RobotModelConfig.hpp"
 #include "core/ConstraintConfig.hpp"
 #include "core/ConstraintStatus.hpp"
 #include "core/QuadraticProgram.hpp"
-#include <base/samples/Joints.hpp>
 #include <boost/python/enum.hpp>
 
 BOOST_PYTHON_MODULE(core){
@@ -18,6 +17,7 @@ BOOST_PYTHON_MODULE(core){
     pygen::convertStdVector<std::vector<double>>();
     pygen::convertStdVector<std::vector<wbc::QuadraticProgram>>();
     pygen::convertStdVector<std::vector<base::JointState>>();
+    pygen::convertStdVector<std::vector<base::Wrench>>();
     pygen::convertStdVector<std::vector<wbc::ConstraintConfig>>();
     pygen::convertVector<Eigen::Matrix<double, 3, 1, Eigen::DontAlign>>();
     pygen::convertVector<Eigen::Matrix<double, 6, 1, Eigen::DontAlign>>();
@@ -60,6 +60,20 @@ BOOST_PYTHON_MODULE(core){
                 py::make_getter(&base::Wrench::torque, py::return_value_policy<py::copy_non_const_reference>()),
                 py::make_setter(&base::Wrench::torque));
 
+    py::class_<base::NamedVector<base::Wrench>>("Wrenches")
+            .add_property("names",
+                py::make_getter(&base::NamedVector<base::Wrench>::names,py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&base::NamedVector<base::Wrench>::names))
+            .add_property("elements",
+                py::make_getter(&base::NamedVector<base::Wrench>::elements, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&base::NamedVector<base::Wrench>::elements));
+
+    py::class_<base::RigidBodyStateSE3>("baseRigidBodyStateSE3")
+            .def_readwrite("pose", &base::RigidBodyStateSE3::pose)
+            .def_readwrite("twist", &base::RigidBodyStateSE3::twist)
+            .def_readwrite("acceleration", &base::RigidBodyStateSE3::acceleration)
+            .def_readwrite("wrench", &base::RigidBodyStateSE3::wrench);
+
     py::class_<base::samples::RigidBodyStateSE3>("RigidBodyStateSE3")
             .def_readwrite("pose", &base::RigidBodyStateSE3::pose)
             .def_readwrite("twist", &base::RigidBodyStateSE3::twist)
@@ -70,7 +84,7 @@ BOOST_PYTHON_MODULE(core){
             .def_readwrite("position", &base::JointState::position)
             .def_readwrite("speed", &base::JointState::speed)
             .def_readwrite("acceleration", &base::JointState::acceleration)
-            .def_readwrite("effort", &base::JointState::speed)
+            .def_readwrite("effort", &base::JointState::effort)
             .def_readwrite("raw", &base::JointState::raw);
 
    py::class_<base::NamedVector<base::JointState>>("Joints")
