@@ -26,6 +26,13 @@ base::NamedVector<wbc::ConstraintStatus> toNamedVector(const wbc::ConstraintsSta
     return status_out;
 }
 
+base::NamedVector<base::Wrench> toNamedVector(const base::samples::Wrenches& wrenches_in){
+    base::NamedVector<base::Wrench> wrenches_out;
+    wrenches_out.elements = wrenches_in.elements;
+    wrenches_out.names = wrenches_in.names;
+    return wrenches_out;
+}
+
 VelocityScene::VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<HierarchicalLSSolver> solver) :
     wbc::VelocityScene(robot_model, solver){
 }
@@ -43,6 +50,9 @@ void VelocityScene::setJointWeights(const base::NamedVector<double> &weights){
 }
 base::NamedVector<double> VelocityScene::getJointWeights2(){
     return toNamedVector(wbc::VelocityScene::getJointWeights());
+}
+base::NamedVector<double> VelocityScene::getActuatedJointWeights2(){
+    return toNamedVector(wbc::VelocityScene::getActuatedJointWeights());
 }
 base::NamedVector<base::JointState> VelocityScene::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::VelocityScene::solve(hqp));
@@ -66,11 +76,17 @@ void AccelerationSceneTSID::setJointWeights(const base::NamedVector<double> &wei
 base::NamedVector<double> AccelerationSceneTSID::getJointWeights2(){
     return toNamedVector(wbc::AccelerationSceneTSID::getJointWeights());
 }
+base::NamedVector<double> AccelerationSceneTSID::getActuatedJointWeights2(){
+    return toNamedVector(wbc::AccelerationSceneTSID::getActuatedJointWeights());
+}
 base::NamedVector<base::JointState> AccelerationSceneTSID::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::AccelerationSceneTSID::solve(hqp));
 }
 base::NamedVector<wbc::ConstraintStatus> AccelerationSceneTSID::updateConstraintsStatus2(){
     return toNamedVector(wbc::AccelerationSceneTSID::updateConstraintsStatus());
+}
+base::NamedVector<base::Wrench> AccelerationSceneTSID::getContactWrenches(){
+    return toNamedVector(wbc::AccelerationSceneTSID::getContactWrenches());
 }
 }
 
@@ -95,7 +111,7 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getSolverOutput",   &wbc_py::VelocityScene::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
             .def("setJointWeights",   &wbc_py::VelocityScene::setJointWeights)
             .def("getJointWeights",   &wbc_py::VelocityScene::getJointWeights2)
-            .def("getActuatedJointWeights",   &wbc_py::VelocityScene::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>());
+            .def("getActuatedJointWeights",   &wbc_py::VelocityScene::getActuatedJointWeights2);
 
 
     py::class_<wbc_py::AccelerationSceneTSID>("AccelerationSceneTSID", py::init<std::shared_ptr<wbc_py::RobotModelHyrodyn>, std::shared_ptr<wbc_py::QPOASESSolver>>())
@@ -114,8 +130,8 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getSolverOutput",   &wbc_py::AccelerationSceneTSID::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
             .def("setJointWeights",   &wbc_py::AccelerationSceneTSID::setJointWeights)
             .def("getJointWeights",   &wbc_py::AccelerationSceneTSID::getJointWeights2)
-            .def("getActuatedJointWeights",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>())
-            .def("getContactWrenches",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights,  py::return_value_policy<py::copy_const_reference>());
+            .def("getActuatedJointWeights",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights2)
+            .def("getContactWrenches",   &wbc_py::AccelerationSceneTSID::getContactWrenches);
 
 }
 
