@@ -8,7 +8,7 @@
 namespace ctrl_lib {
 
 /**
- * @brief The JointPosPDController class implements the PosPDController in joint space
+ * @brief CartesianForcePIDController implements a PID Controller on a Wrench data type
  */
 class CartesianForcePIDController : public PIDController{
 protected:
