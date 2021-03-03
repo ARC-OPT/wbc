@@ -94,12 +94,12 @@ control_output = ctrl.update(setpoint,feedback)
 scene.setReference(cfg.name,control_output)
 qp = scene.update()
 solver_output   = scene.solve(qp)
-#wrenches_output = scene.getContactWrenches()
+wrenches_output = scene.getContactWrenches()
 
 print("----- Solver output -----")
 print("Names: " + str(robot_model.actuatedJointNames()))
 print("Acc:   " + str([e.acceleration for e in solver_output.elements]))
 print("Tau:   " + str([e.effort for e in solver_output.elements]))
-# print("Contact Wrenches")
-# for name,elem in zip(wrenches_output.names, wrenches_output.elements):
-#     print(name + ": " + str(elem.force.transpose()) + " " + str(elem.torque.transpose()))
+print("Contact Wrenches")
+for name,elem in zip(wrenches_output.names, wrenches_output.elements):
+    print(name + ": Force " + str(elem.force.transpose()) + ", Torque " + str(elem.torque.transpose()))

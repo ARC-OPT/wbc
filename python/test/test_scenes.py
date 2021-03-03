@@ -6,6 +6,7 @@ import numpy as np
 import nose
 
 def test_velocity_scene():
+    # Test General Functionality
     robot_model=RobotModelKDL()
     r=RobotModelConfig()
     r.file="../../models/urdf/kuka/kuka_iiwa.urdf"
@@ -13,8 +14,7 @@ def test_velocity_scene():
     r.joint_names = r.actuated_joint_names
     assert robot_model.configure(r) == True
 
-    solver = QPOASESSolver()
-    solver.setMaxNoWSR(100)
+    solver = HierarchicalLSSolver()
 
     joint_state = Joints()
     js = JointState()
@@ -56,6 +56,30 @@ def test_velocity_scene():
     assert np.all(np.isclose(x_dot[0:3] - ref.twist.linear,np.zeros(3)))
     assert np.all(np.isclose(x_dot[3:6] - ref.twist.angular,np.zeros(3)))
 
+    # Test Joint Weights
+    joint_weights = JointWeights()
+    joint_weights.elements = [1,1,1,0,1,1,1]
+    joint_weights.names = robot_model.jointNames()
+
+    scene.setJointWeights(joint_weights)
+    assert np.all(scene.getJointWeights().elements == joint_weights.elements)
+    assert np.all(scene.getJointWeights().names == joint_weights.names)
+    assert np.all(scene.getActuatedJointWeights().elements == joint_weights.elements)
+    assert np.all(scene.getActuatedJointWeights().names == joint_weights.names)
+
+    hqp = scene.update()
+    solver_output = scene.solve(hqp)
+    assert np.all(solver_output.elements[3].speed == 0)
+    assert np.all(hqp.Wq[3] == 0)
+
+    # Test Task Weights
+    scene.setTaskWeights(cfg.name,[1,1,0,1,1,1])
+    hqp = scene.update()
+    solver_output = scene.solve(hqp)
+    q_dot = np.array([s.speed for s in solver_output.elements])
+    x_dot = J.dot(q_dot)
+    assert np.all(hqp.prios[0].Wy[2] == 0)
+    assert np.all(x_dot[2] == 0)
 
 if __name__ == '__main__':
     nose.run()
