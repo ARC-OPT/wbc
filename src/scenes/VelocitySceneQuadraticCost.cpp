@@ -7,7 +7,7 @@
 namespace wbc{
 
 VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver) :
-    WbcScene(robot_model, solver){
+    VelocityScene(robot_model, solver){
 
 }
 

@@ -1,7 +1,7 @@
 #ifndef VELOCITYSCENEQUADRATICCOST_HPP
 #define VELOCITYSCENEQUADRATICCOST_HPP
 
-#include "../core/Scene.hpp"
+#include "../scenes/VelocityScene.hpp"
 
 namespace wbc{
 
@@ -28,7 +28,7 @@ namespace wbc{
  *
  * Compared to the VelocityScene class, the tasks are here modeled within the cost function instead of constraints.
  */
-class VelocitySceneQuadraticCost : public WbcScene{
+class VelocitySceneQuadraticCost : public VelocityScene{
 protected:
     base::VectorXd s_vals, tmp;
     base::MatrixXd sing_vect_r, U;
