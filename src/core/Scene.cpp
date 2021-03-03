@@ -175,6 +175,9 @@ void WbcScene::setJointWeights(const JointWeights &weights){
             throw e;
         }
     }
+
+    for(auto n : actuated_joint_weights.names)
+        actuated_joint_weights[n] = joint_weights[n];
 }
 
 } // namespace wbc
