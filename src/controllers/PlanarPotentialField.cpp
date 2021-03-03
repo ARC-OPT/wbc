@@ -1,5 +1,4 @@
 #include "PlanarPotentialField.hpp"
-#include <iostream>
 
 using namespace ctrl_lib;
 

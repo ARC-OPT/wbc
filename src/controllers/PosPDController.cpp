@@ -1,5 +1,5 @@
 #include "PosPDController.hpp"
-#include <iostream>
+
 namespace ctrl_lib {
 
 PosPDController::PosPDController(size_t dim_controller) :
