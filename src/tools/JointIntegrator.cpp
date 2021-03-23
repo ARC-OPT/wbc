@@ -68,7 +68,7 @@ void JointIntegrator::integrateTrapezoidal(base::commands::Joints &cmd, double c
         double qd_prev = prev_cmd[i].speed;
         double qd = cmd[i].speed;
         double qdd = cmd[i].acceleration;
-        double qdd_pref = cmd[i].acceleration;
+        double qdd_prev = cmd[i].acceleration;
 
         switch(cmdMode(cmd[i]))
         {
