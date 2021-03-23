@@ -52,7 +52,7 @@ void JointIntegrator::integrateRectangular(base::commands::Joints &cmd, double c
             break;
         case base::JointState::ACCELERATION:
             cmd[i].speed = q_dot_prev + q_dotdot*h;
-            cmd[i].position = q_prev + q_dot*h;
+            cmd[i].position = q_prev + cmd[i].speed*h;
             break;
         default:
             throw std::runtime_error("Invalid control mode");
@@ -76,8 +76,8 @@ void JointIntegrator::integrateTrapezoidal(base::commands::Joints &cmd, double c
             cmd[i].position = q_prev + (qd+qd_prev)*h;
             break;
         case base::JointState::ACCELERATION:
-            cmd[i].speed = qd_prev + (qdd_pref+qdd)*h;
-            cmd[i].position = q_prev + (qd+qd_prev)*h;
+            cmd[i].speed = qd_prev + (qdd_prev+qdd)*h;
+            cmd[i].position = q_prev + (cmd[i].speed+qd_prev)*h;
             break;
         default:
             throw std::runtime_error("Invalid control mode");
