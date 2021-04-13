@@ -65,22 +65,27 @@ bool RobotModel::configure(const RobotModelConfig& cfg){
         return false;
     }
 
+    // Blacklist not required joints
+    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
+
+    // Check if actuated joint names and joint names in URDF are consistent
+    actuated_joint_names = cfg.actuated_joint_names;
+    for(auto n : URDFTools::jointNamesFromURDF(robot_urdf))
+        if(!hasActuatedJoint(n)){
+            LOG_ERROR_S << "Joint " << n << " is a non-fixed joint in the URDF model, but it has not been configured in actuated_joint_names" << std::endl;
+            return false;
+        }
+
+    // Add floating base
     has_floating_base = cfg.floating_base;
     if(has_floating_base)
         floating_base_names = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
+    // Check if joint names and joint names in URDF are consistent
     current_joint_state.elements.resize(cfg.joint_names.size());
     current_joint_state.names = cfg.joint_names;
-    actuated_joint_names = cfg.actuated_joint_names;
-
-    // Check if configured joint names and joint names in URDF are consistent
-    for(auto n : URDFTools::jointNamesFromURDF(cfg.file))
-        if(!hasActuatedJoint(n)){
-            LOG_ERROR_S << "Joint " << n << " is a non-fixed joint in the URDF model, but it has not been configured in actuated_joint_names" << std::endl;
-            return false;
-        }
     for(auto n : floating_base_names)
         if(!hasJoint(n)){
             LOG_ERROR_S << "If you set 'floating_base' to 'true', you have to add the following virtual joints to joint_names: "<<std::endl;

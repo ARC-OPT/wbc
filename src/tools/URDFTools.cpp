@@ -177,4 +177,15 @@ std::vector<std::string> URDFTools::addFloatingBaseToURDF(urdf::ModelInterfaceSh
     return floating_base_names;
 }
 
+void URDFTools::applyJointBlacklist(urdf::ModelInterfaceSharedPtr& robot_urdf, const std::vector<std::string> &blacklist){
+
+    for(auto name : blacklist){
+        if(robot_urdf->joints_.count(name) == 0){
+            LOG_ERROR_S << "Joint Blacklist contains joint " << name << " but this name is not in robot model " << std::endl;
+            throw std::runtime_error("Invalid joint blacklist configuration");
+        }
+        robot_urdf->joints_[name]->type = urdf::Joint::FIXED;
+    }
+}
+
 }
