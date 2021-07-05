@@ -4,6 +4,7 @@
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <Eigen/QR>
 #include "scenes/AccelerationScene.hpp"
+#include <core/RobotModelConfig.hpp>
 
 using namespace wbc;
 using namespace std;

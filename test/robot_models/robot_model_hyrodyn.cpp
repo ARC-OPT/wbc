@@ -17,6 +17,10 @@ double whiteNoise(const double std_dev)
 
 BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
 
+    /**
+     * Compare kinematics and dynamics of KDL-based robot model with Hyrodyn-based robot model
+     */
+
     const string base_link = "RH5_Root_Link";
     const string ee_link = "LLAnkle_FT";
     RobotModelConfig config("../../../models/urdf/rh5/rh5_one_leg.urdf",
@@ -128,6 +132,11 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
 
 
 BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
+
+    /**
+     * Compare kinematics and dynamics of KDL-based robot model with Hyrodyn-based robot model when using a floating base
+     */
+
     const string base_link = "world";
     const string ee_link = "LLAnkle_FT";
 

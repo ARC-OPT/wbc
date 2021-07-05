@@ -220,7 +220,8 @@
   </joint>
   <joint name="LLHip1" type="revolute">
     <!--origin xyz="0.0735 0.11044 0.014269" rpy="8.0247e-16 0.2618 -1.5708"/-->
-    <origin xyz="0.0 0.0 0.0" rpy="8.0247e-16 0.2618 -1.5708"/>
+    <!--origin xyz="0.0 0.0 0.0" rpy="8.0247e-16 0.2618 -1.5708"/-->
+    <origin xyz="-0.11044 0.0735 0.01427" rpy="0 0.2618 0"/>
     <axis xyz="0.0 0.0 1.0"/>
     <parent link="RH5_Root_Link"/>
     <child link="LLHip1_Link"/>

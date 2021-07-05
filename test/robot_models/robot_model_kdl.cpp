@@ -13,72 +13,11 @@ using namespace std;
 using namespace wbc;
 using namespace RigidBodyDynamics;
 
-BOOST_AUTO_TEST_CASE(forward_kinematics_wbc_vs_kdl){
+BOOST_AUTO_TEST_CASE(verify_jacobian_and_forward_kinematics){
 
-    string urdf_model_file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
-
-    base::samples::Joints joint_state;
-    vector<string> joint_names = URDFTools::jointNamesFromURDF(urdf_model_file);
-    joint_state.resize(joint_names.size());
-    joint_state.names = joint_names;
-    for(base::JointState& j : joint_state.elements)
-        j.position = j.speed = 0;
-
-    RobotModelKDL robot_model;
-    BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_model_file, joint_names, joint_names, false)) == true);
-
-    KDL::Chain chain;
-    BOOST_CHECK_NO_THROW(robot_model.getTree().getChain("kuka_lbr_l_link_0", "kuka_lbr_l_tcp", chain));
-
-    KDL::ChainFkSolverVel_recursive vel_solver(chain);
-    KDL::JntArrayVel q_and_q_dot(joint_names.size());
-
-    double t = 0;
-    while(t < 1){
-        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_1")].position     = M_PI/2;
-        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].position     = sin(t);
-        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].speed        = cos(t);
-        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].acceleration = -sin(t);
-        joint_state.time = base::Time::now();
-        robot_model.update(joint_state);
-
-        for(size_t i = 0; i < joint_state.size(); i++){
-            q_and_q_dot.q(i)    = joint_state[i].position;
-            q_and_q_dot.qdot(i) = joint_state[i].speed;
-        }
-
-        KDL::FrameVel frame_vel;
-        vel_solver.JntToCart(q_and_q_dot, frame_vel);
-
-        base::samples::RigidBodyStateSE3 cstate;
-        BOOST_CHECK_NO_THROW( cstate = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_tcp"));
-        base::Vector3d euler = base::getEuler(cstate.pose.orientation);
-        /*printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
-        printf("Orientation: %.4f %.4f %.4f\n",   euler(0),                euler(1),                euler(2));
-        printf("Linear Vel:  %.4f %.4f %.4f\n",   cstate.twist.linear(0),  cstate.twist.linear(1),  cstate.twist.linear(2));
-        printf("Angular Vel: %.4f %.4f %.4f\n",   cstate.twist.angular(0), cstate.twist.angular(1), cstate.twist.angular(2));
-        printf("Linear Acc:  %.4f %.4f %.4f\n",   cstate.acceleration.linear(0),  cstate.acceleration.linear(1),  cstate.acceleration.linear(2));
-        printf("Angular Acc: %.4f %.4f %.4f\n\n", cstate.acceleration.angular(0), cstate.acceleration.angular(1), cstate.acceleration.angular(2));*/
-
-        for(int i = 0; i < 3; i++){
-            BOOST_CHECK(cstate.pose.position(i) == frame_vel.GetFrame().p(i));
-            BOOST_CHECK(cstate.twist.linear(i) == frame_vel.deriv().vel(i));
-            BOOST_CHECK(cstate.twist.angular(i) == frame_vel.deriv().rot(i));
-        }
-        double qx, qy, qz, qw;
-        frame_vel.GetFrame().M.GetQuaternion(qx, qy, qz, qw);
-
-        BOOST_CHECK(cstate.pose.orientation.x() == qx);
-        BOOST_CHECK(cstate.pose.orientation.y() == qy);
-        BOOST_CHECK(cstate.pose.orientation.z() == qz);
-        BOOST_CHECK(cstate.pose.orientation.w() == qw);
-
-        usleep(0.01*1000*1000);
-        t+=0.01;
-    }
-}
-
-BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
+    /**
+     * Verify WBC Forward Kinematics and Jacobian for a single joint system
+     */
 
     vector<string> joint_names;
     joint_names.push_back("base_to_rot");
@@ -169,11 +108,88 @@ BOOST_AUTO_TEST_CASE(jacobian_and_forward_kinematics_wbc_vs_kdl){
     }
 }
 
+BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
+
+    /**
+     * Compare forward kinematics for KDL-based robot model in WBC with pure KDL solution
+     */
+
+    string urdf_model_file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    string root = "kuka_lbr_l_link_0";
+    string tip  = "kuka_lbr_l_tcp";
+
+    base::samples::Joints joint_state;
+    vector<string> joint_names = URDFTools::jointNamesFromURDF(urdf_model_file);
+    joint_state.resize(joint_names.size());
+    joint_state.names = joint_names;
+    for(base::JointState& j : joint_state.elements)
+        j.position = j.speed = 0;
+
+    RobotModelKDL robot_model;
+    BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_model_file, joint_names, joint_names, false)) == true);
+
+    KDL::Chain chain;
+    BOOST_CHECK_NO_THROW(robot_model.getTree().getChain(root, tip, chain));
+
+    KDL::ChainFkSolverVel_recursive vel_solver(chain);
+    KDL::JntArrayVel q_and_q_dot(joint_names.size());
+
+    double t = 0;
+    while(t < 1){
+        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_1")].position     = M_PI/2;
+        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].position     = sin(t);
+        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].speed        = cos(t);
+        joint_state[joint_state.mapNameToIndex("kuka_lbr_l_joint_4")].acceleration = -sin(t);
+        joint_state.time = base::Time::now();
+        robot_model.update(joint_state);
+
+        for(size_t i = 0; i < joint_state.size(); i++){
+            q_and_q_dot.q(i)    = joint_state[i].position;
+            q_and_q_dot.qdot(i) = joint_state[i].speed;
+        }
+
+        KDL::FrameVel frame_vel;
+        vel_solver.JntToCart(q_and_q_dot, frame_vel);
+
+        base::samples::RigidBodyStateSE3 cstate;
+        BOOST_CHECK_NO_THROW( cstate = robot_model.rigidBodyState(root, "kuka_lbr_l_tcp"));
+        base::Vector3d euler = base::getEuler(cstate.pose.orientation);
+        /*printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
+        printf("Orientation: %.4f %.4f %.4f\n",   euler(0),                euler(1),                euler(2));
+        printf("Linear Vel:  %.4f %.4f %.4f\n",   cstate.twist.linear(0),  cstate.twist.linear(1),  cstate.twist.linear(2));
+        printf("Angular Vel: %.4f %.4f %.4f\n",   cstate.twist.angular(0), cstate.twist.angular(1), cstate.twist.angular(2));
+        printf("Linear Acc:  %.4f %.4f %.4f\n",   cstate.acceleration.linear(0),  cstate.acceleration.linear(1),  cstate.acceleration.linear(2));
+        printf("Angular Acc: %.4f %.4f %.4f\n\n", cstate.acceleration.angular(0), cstate.acceleration.angular(1), cstate.acceleration.angular(2));*/
+
+        for(int i = 0; i < 3; i++){
+            BOOST_CHECK(cstate.pose.position(i) == frame_vel.GetFrame().p(i));
+            BOOST_CHECK(cstate.twist.linear(i) == frame_vel.deriv().vel(i));
+            BOOST_CHECK(cstate.twist.angular(i) == frame_vel.deriv().rot(i));
+        }
+        double qx, qy, qz, qw;
+        frame_vel.GetFrame().M.GetQuaternion(qx, qy, qz, qw);
+
+        BOOST_CHECK(cstate.pose.orientation.x() == qx);
+        BOOST_CHECK(cstate.pose.orientation.y() == qy);
+        BOOST_CHECK(cstate.pose.orientation.z() == qz);
+        BOOST_CHECK(cstate.pose.orientation.w() == qw);
+
+        usleep(0.01*1000*1000);
+        t+=0.01;
+    }
+}
+
 BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
+
+    /**
+     * Compare kinematics and dynamics of the KDL-based robot model in WBC with the rigid body dynamics library (RBDL)
+     */
 
     srand(time(NULL));
 
-    std::string urdf_filename = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    string urdf_filename = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    string root = "kuka_lbr_l_link_0";
+    string tip  = "kuka_lbr_l_link_7";
 
     // RBDL Robot model
     Model rbdl_model;
@@ -189,16 +205,16 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
 
     // WBC (KDL) Robot Model
     wbc::RobotModelKDL robot_model;
-    std::vector<std::string> joint_names;
+    vector<string> joint_names;
     for(int i = 0; i < rbdl_model.dof_count; i++)
-        joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
+        joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
 
     BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_filename, joint_names, joint_names)) == true);
     base::samples::Joints joint_state;
     joint_state.resize(robot_model.noOfJoints());
     joint_state.names = robot_model.jointNames();
 
-    for(int n = 0; n < 100; n++){
+    for(int n = 0; n < 10; n++){
 
         for(int i = 0; i < rbdl_model.dof_count; i++){
             q(i) = double(rand())/RAND_MAX;
@@ -221,14 +237,12 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         end=base::Time::now();
         double time_rbdl_bias_torques = (end-start).toSeconds();
 
-        int body_id = rbdl_model.GetBodyId("kuka_lbr_l_link_7");
+        int body_id = rbdl_model.GetBodyId(tip.c_str());
         base::Vector3d position_rbdl = CalcBodyToBaseCoordinates(rbdl_model,q,body_id,base::Vector3d(0,0,0));
         base::Matrix3d orientation_rbdl = CalcBodyWorldOrientation(rbdl_model,q,body_id).inverse();
 
-        body_id = rbdl_model.GetBodyId("kuka_lbr_l_link_7");
         Math::SpatialVector twist_rbdl = CalcPointVelocity6D(rbdl_model, q, qdot, body_id, base::Vector3d(0,0,0));
 
-        body_id = rbdl_model.GetBodyId("kuka_lbr_l_link_7");
         Math::MatrixNd jac_rbdl(6,rbdl_model.dof_count);
         CalcPointJacobian6D(rbdl_model, q, body_id, base::Vector3d(0,0,0), jac_rbdl);
 
@@ -246,10 +260,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         end=base::Time::now();
         double time_wbc_bias_torques = (end-start).toSeconds();
 
-        base::Vector3d position_wbc = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_link_7").pose.position;
-        base::Matrix3d orientation_wbc = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_link_7").pose.orientation.toRotationMatrix();
-        base::Twist twist_wbc = robot_model.rigidBodyState("kuka_lbr_l_link_0", "kuka_lbr_l_link_7").twist;
-        base::MatrixXd jac_wbc = robot_model.spaceJacobian("kuka_lbr_l_link_0", "kuka_lbr_l_link_7");
+        base::Vector3d position_wbc = robot_model.rigidBodyState(root, tip).pose.position;
+        base::Matrix3d orientation_wbc = robot_model.rigidBodyState(root, tip).pose.orientation.toRotationMatrix();
+        base::Twist twist_wbc = robot_model.rigidBodyState(root, tip).twist;
+        base::MatrixXd jac_wbc = robot_model.spaceJacobian(root, tip);
 
         // Check joint space inertia matrix
         for(int i = 0; i < rbdl_model.dof_count; i++)
@@ -318,13 +332,20 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
     }
 }
 
-BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
+BOOST_AUTO_TEST_CASE(compare_wbc_vs_rbdl_floating_base){
 
+    /**
+     * Compare kinematics and dynamics of WBC for a floating base robot with the rigid body dynamics library (RBDL)
+     */
+
+    string urdf_filename = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    string world = "world";
+    string root = "kuka_lbr_l_link_0";
+    string tip  = "kuka_lbr_l_tcp";
     srand(time(NULL));
 
     // RBDL Robot model
 
-    std::string urdf_filename = "../../../models/urdf/kuka/kuka_iiwa.urdf";
     Model rbdl_model;
     BOOST_CHECK(Addons::URDFReadFromFile(urdf_filename.c_str(), &rbdl_model, true) == true);
 
@@ -341,12 +362,12 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
     // WBC (KDL) Robot Model
 
     wbc::RobotModelKDL robot_model;
-    std::vector<std::string> actuated_joint_names;
-    std::vector<std::string> joint_names ={"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
-                                           "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
+    vector<string> actuated_joint_names;
+    vector<string> joint_names ={"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
+                                 "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
     for(int i = 0; i < 7; i++){
-        actuated_joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
-        joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
+        actuated_joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
+        joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
     }
 
     BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_filename, joint_names, actuated_joint_names, true)) == true);
@@ -354,7 +375,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
     joint_state.resize(robot_model.noOfActuatedJoints());
     joint_state.names = robot_model.actuatedJointNames();
 
-    for(int n = 0; n < 1; n++){
+    for(int n = 0; n < 10; n++){
         for(int i = 0; i < rbdl_model.q_size; i++)
             q(i) = double(rand())/RAND_MAX;
         for(int i = 0; i < rbdl_model.qdot_size; i++)
@@ -366,7 +387,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
         }
         joint_state.time = base::Time::now();
 
-        int floating_body_id = rbdl_model.GetBodyId("kuka_lbr_l_link_0");
+        int floating_body_id = rbdl_model.GetBodyId(root.c_str());
         base::Quaterniond init_orientation = base::AngleAxisd(double(rand())/RAND_MAX, base::Vector3d::UnitX()) *
                                              base::AngleAxisd(double(rand())/RAND_MAX, base::Vector3d::UnitY()) *
                                              base::AngleAxisd(double(rand())/RAND_MAX, base::Vector3d::UnitZ());
@@ -391,14 +412,12 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
         end=base::Time::now();
         double time_rbdl_bias_torques = (end-start).toSeconds();
 
-        int body_id = rbdl_model.GetBodyId("kuka_lbr_l_link_7");
+        int body_id = rbdl_model.GetBodyId(tip.c_str());
         base::Vector3d position_rbdl = CalcBodyToBaseCoordinates(rbdl_model,q,body_id,base::Vector3d(0,0,0));
         base::Matrix3d orientation_rbdl = CalcBodyWorldOrientation(rbdl_model,q,body_id).inverse();
 
-        body_id = rbdl_model.GetBodyId("kuka_lbr_l_link_7");
         Math::SpatialVector twist_rbdl = CalcPointVelocity6D(rbdl_model, q, qdot, body_id, base::Vector3d(0,0,0));
 
-        body_id = rbdl_model.GetBodyId("kuka_lbr_l_link_7");
         Math::MatrixNd jac_rbdl(6,rbdl_model.dof_count);
         CalcPointJacobian6D(rbdl_model, q, body_id, base::Vector3d(0,0,0), jac_rbdl);
 
@@ -412,11 +431,11 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
         floating_rbs.acceleration.setZero();
         BOOST_CHECK_NO_THROW(robot_model.update(joint_state, floating_rbs));
 
-        base::samples::RigidBodyStateSE3 rbs = robot_model.rigidBodyState("world", "kuka_lbr_l_link_7");
+        base::samples::RigidBodyStateSE3 rbs = robot_model.rigidBodyState(world, tip);
         base::Vector3d position_wbc = rbs.pose.position;
         base::Matrix3d orientation_wbc = rbs.pose.orientation.toRotationMatrix();
         base::Twist twist_wbc = rbs.twist;
-        base::MatrixXd jac_wbc = robot_model.spaceJacobian("world", "kuka_lbr_l_link_7");
+        base::MatrixXd jac_wbc = robot_model.spaceJacobian(world, tip);
 
         start = base::Time::now();
         base::MatrixXd jnt_space_inertia_mat_wbc = robot_model.jointSpaceInertiaMatrix();
@@ -495,26 +514,30 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl_floating_base){
 
 BOOST_AUTO_TEST_CASE(floating_base_test)
 {
+    /**
+     * Check whether the automatic configuration of a floating base in WBC works as intended. Compare FK with a URDF model
+     * where the floating base is already integrated as virtual 6 DoF linkage.
+     */
+
     srand(time(NULL));
 
-    std::string urdf_filename = "../../../models/urdf/kuka/kuka_iiwa.urdf";
-    std::string urdf_filename_floating_base = "../../../models/urdf/kuka/kuka_iiwa_with_floating_base.urdf";
+    string urdf_filename = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    string urdf_filename_floating_base = "../../../models/urdf/kuka/kuka_iiwa_with_floating_base.urdf";
 
     wbc::RobotModelKDL robot_model;
     vector<RobotModelConfig> configs;
-    std::vector<std::string> actuated_joint_names;
-    std::vector<std::string> joint_names ={"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
+    vector<string> actuated_joint_names;
+    vector<string> joint_names ={"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
     for(int i = 0; i < 7; i++){
-        actuated_joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
-        joint_names.push_back("kuka_lbr_l_joint_" + std::to_string(i+1));
+        actuated_joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
+        joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
     }
     RobotModelConfig config(urdf_filename, joint_names, actuated_joint_names, true);
     BOOST_CHECK(robot_model.configure(config) == true);
 
     wbc::RobotModelKDL robot_model_floating_base;
-    config.file = urdf_filename_floating_base;
-    config.floating_base = false;
-    BOOST_CHECK(robot_model_floating_base.configure(config) == true);
+    RobotModelConfig config_floating_base(urdf_filename_floating_base, joint_names, joint_names, false);
+    BOOST_CHECK(robot_model_floating_base.configure(config_floating_base) == true);
 
     base::samples::Joints joint_state;
     joint_state.resize(robot_model.noOfActuatedJoints());
@@ -551,9 +574,9 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
     base::samples::RigidBodyStateSE3 rbs_floating_base = robot_model_floating_base.rigidBodyState("world", "kuka_lbr_l_tcp");
 
     for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(rbs.pose.position(i) - rbs_floating_base.pose.position(i)) < 1e-3);
+        BOOST_CHECK(fabs(rbs.pose.position(i) - rbs_floating_base.pose.position(i)) < 1e-2);
     for(int i = 0; i < 4; i++)
-        BOOST_CHECK(fabs(rbs.pose.orientation.coeffs()(i) - rbs_floating_base.pose.orientation.coeffs()(i)) < 1e-3);
+        BOOST_CHECK(fabs(rbs.pose.orientation.coeffs()(i) - rbs_floating_base.pose.orientation.coeffs()(i)) < 1e-2);
 
 }
 
