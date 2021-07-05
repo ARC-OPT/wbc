@@ -5,9 +5,10 @@
 
 #include <kdl/tree.hpp>
 #include <kdl/jacobian.hpp>
-#include <base/samples/Joints.hpp>
-#include <memory>
 #include <kdl/jntarray.hpp>
+#include <core/RobotModelConfig.hpp>
+#include <urdf_world/types.h>
+#include <map>
 
 namespace wbc{
 
@@ -19,9 +20,21 @@ class KinematicChainKDL;
  */
 class RobotModelKDL : public RobotModel{
 
+    std::vector<std::string> actuated_joint_names;
+    std::string base_frame;
+    base::JointLimits joint_limits;
+    base::samples::Joints current_joint_state;
+    base::MatrixXd joint_space_inertia_mat;
+    base::VectorXd bias_forces;
+    base::Acceleration spatial_acc_bias;
+    base::MatrixXd selection_matrix;
+    base::samples::Joints joint_state_out;
+    std::vector<std::string> floating_base_names;
+    bool has_floating_base;
+    urdf::ModelInterfaceSharedPtr robot_urdf;
+    base::samples::RigidBodyStateSE3 com_rbs;
     typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
-    // Helper variables
     KDL::JntArray q,qdot,qdotdot,tau,zero;
     typedef std::map<std::string, base::MatrixXd > JacobianMap;
     JacobianMap space_jac_map;
@@ -88,6 +101,9 @@ public:
     virtual void update(const base::samples::Joints& joint_state,
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
 
+    /** Returns the current status of the given joint names */
+    virtual const base::samples::Joints& jointState(const std::vector<std::string> &joint_names);
+
     /**
      * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
      *  This will create a kinematic chain between root and tip frame, if called for the first time with the given arguments.
@@ -131,6 +147,38 @@ public:
 
     /** Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system*/
     virtual const base::VectorXd &biasForces();
+
+    /** @brief Return all joint names*/
+    virtual const std::vector<std::string>& jointNames(){return current_joint_state.names;}
+
+    /** @brief Return only actuated joint names*/
+   virtual  const std::vector<std::string>& actuatedJointNames(){return actuated_joint_names;}
+
+    /** @brief Get index of joint name*/
+    virtual uint jointIndex(const std::string &joint_name);
+
+    /** @brief Get the base frame of the robot*/
+    virtual const std::string& baseFrame(){return base_frame;}
+
+    /** @brief Return current joint limits*/
+    virtual const base::JointLimits& jointLimits(){return joint_limits;}
+
+    /** @brief Return current selection matrix S that maps complete joint vector to actuated joint vector: q_a = S * q. The matrix
+      * consists of only zeros and ones. Size is na x nq, where na is the number of actuated joints and
+      * nq the total number of joints. */
+    virtual const base::MatrixXd& selectionMatrix(){return selection_matrix;}
+
+    /** @brief Return True if given link name is available in robot model, false otherwise*/
+    virtual bool hasLink(const std::string& link_name);
+
+    /** @brief Return True if given joint name is available in robot model, false otherwise*/
+    virtual bool hasJoint(const std::string& joint_name);
+
+    /** @brief Return True if given joint name is an actuated joint in robot model, false otherwise*/
+    virtual bool hasActuatedJoint(const std::string& joint_name);
+
+    /** @brief Return Current center of gravity in expressed base frame*/
+    virtual const base::samples::RigidBodyStateSE3& getCOM(){return com_rbs;}
 
     /** Return full tree (KDL model)*/
     KDL::Tree getTree(){return full_tree;}

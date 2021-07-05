@@ -1,34 +1,22 @@
 #include "RobotModel.hpp"
 #include <base-logging/Logging.hpp>
-#include "tools/URDFTools.hpp"
-#include <urdf_parser/urdf_parser.h>
+#include <base/samples/RigidBodyStateSE3.hpp>
+#include <base/samples/Joints.hpp>
 
 namespace wbc{
 
 RobotModel::RobotModel() :
     gravity(base::Vector3d(0,0,-9.81)){
-
 }
 
-RobotModel::~RobotModel(){
+void RobotModel::updateFloatingBase(const base::RigidBodyStateSE3& rbs,
+                                    const std::vector<std::string> &floating_base_virtual_joint_names,
+                                    base::samples::Joints& joint_state){
 
-}
-
-void RobotModel::clear(){
-    actuated_joint_names.clear();
-    base_frame = "";
-    gravity = base::Vector3d(0,0,-9.81);
-    has_floating_base = false;
-    joint_limits.clear();
-    current_joint_state.clear();
-    joint_state_out.clear();
-    floating_base_names.clear();
-    contact_points.clear();
-    active_contacts.clear();
-    robot_urdf.reset();
-}
-
-void RobotModel::updateFloatingBase(const base::RigidBodyStateSE3& rbs, base::samples::Joints& joint_state){
+    if(floating_base_virtual_joint_names.size() != 6){
+        LOG_ERROR("Size of floating base virtual joint names has to be 6 but is %i", floating_base_virtual_joint_names.size());
+        throw std::runtime_error("Invalid floating base virtual joint names");
+    }
 
     if(!rbs.hasValidPose() ||
        !rbs.hasValidTwist() ||
@@ -36,27 +24,21 @@ void RobotModel::updateFloatingBase(const base::RigidBodyStateSE3& rbs, base::sa
        LOG_ERROR("Invalid status of floating base given! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion)");
        throw std::runtime_error("Invalid floating base status");
     }
-    floating_base_state.pose = rbs.pose;
-    floating_base_state.twist = rbs.twist;
-    floating_base_state.acceleration = rbs.acceleration;
-    if(floating_base_state.time > current_joint_state.time)
-        current_joint_state.time = floating_base_state.time;
-
     base::JointState js;
     base::Vector3d euler = rbs.pose.toTransform().rotation().eulerAngles(0,1,2); // TODO: Use Rotation Vector instead?
     for(int j = 0; j < 3; j++){
         js.position = rbs.pose.position(j);
         js.speed = rbs.twist.linear(j);
         js.acceleration = rbs.acceleration.linear(j);
-        joint_state[floating_base_names[j]] = js;
+        joint_state[floating_base_virtual_joint_names[j]] = js;
 
         js.position = euler(j);
         js.speed = rbs.twist.angular(j);
         js.acceleration = rbs.acceleration.angular(j);
-        joint_state[floating_base_names[j+3]] = js;
+        joint_state[floating_base_virtual_joint_names[j+3]] = js;
     }
 }
-
+/*
 bool RobotModel::configure(const RobotModelConfig& cfg){
 
     robot_urdf = urdf::parseURDFFile(cfg.file);
@@ -68,13 +50,7 @@ bool RobotModel::configure(const RobotModelConfig& cfg){
     // Blacklist not required joints
     URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
 
-    // Check if actuated joint names and joint names in URDF are consistent
     actuated_joint_names = cfg.actuated_joint_names;
-    for(auto n : URDFTools::jointNamesFromURDF(robot_urdf))
-        if(!hasActuatedJoint(n)){
-            LOG_ERROR_S << "Joint " << n << " is a non-fixed joint in the URDF model, but it has not been configured in actuated_joint_names" << std::endl;
-            return false;
-        }
 
     // Add floating base
     has_floating_base = cfg.floating_base;
@@ -143,31 +119,6 @@ bool RobotModel::configure(const RobotModelConfig& cfg){
     return true;
 }
 
-void RobotModel::update(const base::samples::Joints& joint_state, const base::samples::RigidBodyStateSE3& _floating_base_state){
-
-    if(joint_state.elements.size() != joint_state.names.size()){
-        LOG_ERROR_S << "Size of names and size of elements in joint state do not match"<<std::endl;
-        throw std::runtime_error("Invalid joint state");
-    }
-
-    for(size_t i = 0; i < noOfActuatedJoints(); i++){
-        const std::string& name = actuated_joint_names[i];
-        std::size_t idx;
-        try{
-            idx = joint_state.mapNameToIndex(name);
-        }
-        catch(base::samples::Joints::InvalidName e){
-            LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint state vector"<<std::endl;
-            throw e;
-        }
-        current_joint_state[name] = joint_state[idx];
-    }
-    current_joint_state.time = joint_state.time;
-    if(has_floating_base)
-        updateFloatingBase(_floating_base_state, current_joint_state);
-
-}
-
 const base::samples::Joints& RobotModel::jointState(const std::vector<std::string> &joint_names){
 
     if(current_joint_state.time.isNull()){
@@ -212,5 +163,5 @@ bool RobotModel::hasJoint(const std::string &joint_name){
 bool RobotModel::hasActuatedJoint(const std::string &joint_name){
     return std::find(actuated_joint_names.begin(), actuated_joint_names.end(), joint_name) != actuated_joint_names.end();
 }
-
+*/
 } // namespace wbc

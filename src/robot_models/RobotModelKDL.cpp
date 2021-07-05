@@ -6,6 +6,7 @@
 #include <kdl/treeidsolver_recursive_newton_euler.hpp>
 #include <kdl/treejnttojacsolver.hpp>
 #include <algorithm>
+#include <tools/URDFTools.hpp>
 
 namespace wbc{
 
@@ -16,20 +17,100 @@ RobotModelKDL::~RobotModelKDL(){
 }
 
 void RobotModelKDL::clear(){
-    RobotModel::clear();
     full_tree = KDL::Tree();
     kdl_chain_map.clear();
+    actuated_joint_names.clear();
+    current_joint_state.clear();
+    active_contacts.clear();
+    contact_points.clear();
+    base_frame="";
+    gravity = base::Vector3d(0,0,-9.81);
+    has_floating_base = false;
+    joint_limits.clear();
+    robot_urdf.reset();
+    floating_base_names.clear();
 }
 
 bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
-    if(!RobotModel::configure(cfg))
-        return false;
+    clear();
 
+    // 1. Load Robot Model
+
+    current_joint_state.elements.resize(cfg.joint_names.size());
+    current_joint_state.names = cfg.joint_names;
+
+    robot_urdf = urdf::parseURDFFile(cfg.file);
+    if(!robot_urdf){
+        LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
+        return false;
+    }
+
+    // Blacklist not required joints
+    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
+
+    actuated_joint_names = cfg.actuated_joint_names;
+
+    // Add floating base
+    has_floating_base = cfg.floating_base;
+    if(has_floating_base){
+        floating_base_names = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
+        if(cfg.floating_base_state.hasValidPose() ||
+           cfg.floating_base_state.hasValidTwist() ||
+           cfg.floating_base_state.hasValidAcceleration())
+            updateFloatingBase(cfg.floating_base_state, floating_base_names, current_joint_state);
+    }
+
+    // Read Joint Limits
+    URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
+
+    // Parse KDL Tree
     if(!kdl_parser::treeFromUrdfModel(*robot_urdf, full_tree)){
         LOG_ERROR("Unable to load KDL Tree from file %s", cfg.file.c_str());
         return false;
     }
+
+    // 2. Verify consistency of URDF and config
+
+    // Check correct floating base names first, if a floating base is avaiable
+    for(const std::string& n : floating_base_names){
+        if(!hasJoint(n)){
+            LOG_ERROR_S << "If you set 'floating_base' to 'true', you have to add the following virtual joints to joint_names: "<<std::endl;
+            LOG_ERROR_S << "   floating_base_trans_x, floating_base_trans_y, floating_base_trans_z" << std::endl;
+            LOG_ERROR_S << "   floating_base_rot_x,   floating_base_rot_y,   floating_base_rot_z  " << std::endl;
+            return false;
+        }
+    }
+    // All non -fixed URDF joint names have to be configured in cfg.joint_names and vice versa
+    std::vector<std::string> joint_names_urdf = URDFTools::jointNamesFromURDF(robot_urdf);
+    for(const std::string& n : joint_names_urdf){
+        if(!hasJoint(n)){
+            LOG_ERROR_S << "Joint " << n << " is a non-fixed joint in the URDF model, but has not been configured in joint names"<<std::endl;
+            return false;
+        }
+    }
+    for(const std::string& n : jointNames()){
+        if(std::find(joint_names_urdf.begin(), joint_names_urdf.end(), n) == joint_names_urdf.end()){
+            LOG_ERROR_S << "Joint " << n << " has been configured in joint_names, but is not a non-fixed joint in the robot URDF"<<std::endl;
+            return false;
+        }
+    }
+    // All actuated joint names have to exists in robot model
+    for(const std::string& n : actuated_joint_names){
+        if(!hasJoint(n)){
+            LOG_ERROR_S << "Joint " << n << " has been configured in actuated_joint_names, but is not a non-fixed joint in the robot URDF"<<std::endl;
+            return false;
+        }
+    }
+    // All contact point have to be a valid link in the robot URDF
+    for(auto c : contact_points){
+        if(!hasLink(c)){
+            LOG_ERROR("Contact point %s is not a valid link in the robot model", c.c_str());
+            return false;
+        }
+    }
+
+    // 3. Create data structures
 
     q.resize(noOfJoints());
     qdot.resize(noOfJoints());
@@ -37,6 +118,14 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     tau.resize(noOfJoints());
     zero.resize(noOfJoints());
     zero.data.setZero();
+    base_frame =  robot_urdf->getRoot()->name;
+    contact_points = cfg.contact_points;
+    joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
+    bias_forces.resize(noOfJoints());
+    selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
+    selection_matrix.setZero();
+    for(int i = 0; i < actuated_joint_names.size(); i++)
+        selection_matrix(i, jointIndex(actuated_joint_names[i])) = 1.0;
 
     for(const auto &it : full_tree.getSegments()){
         KDL::Joint jnt = it.second.segment.getJoint();
@@ -66,12 +155,33 @@ void RobotModelKDL::createChain(const std::string &root_frame, const std::string
 void RobotModelKDL::update(const base::samples::Joints& joint_state,
                            const base::samples::RigidBodyStateSE3& _floating_base_state){
 
+    if(joint_state.elements.size() != joint_state.names.size()){
+        LOG_ERROR_S << "Size of names and size of elements in joint state do not match"<<std::endl;
+        throw std::runtime_error("Invalid joint state");
+    }
 
-    RobotModel::update(joint_state, _floating_base_state);
+    if(joint_state.time.isNull()){
+        LOG_ERROR_S << "Joint State does not have a valid timestamp. Or do we have 1970?"<<std::endl;
+        std::cout<<joint_state.time<<std::endl;
+        throw std::runtime_error("Invalid joint state");
+    }
 
+    for(size_t i = 0; i < noOfActuatedJoints(); i++){
+        const std::string& name = actuated_joint_names[i];
+        std::size_t idx;
+        try{
+            idx = joint_state.mapNameToIndex(name);
+        }
+        catch(base::samples::Joints::InvalidName e){
+            LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint state vector"<<std::endl;
+            throw e;
+        }
+        current_joint_state[name] = joint_state[idx];
+    }
+    current_joint_state.time = joint_state.time;
     // Convert floating base to joint state
     if(has_floating_base)
-        updateFloatingBase(floating_base_state, current_joint_state);
+        updateFloatingBase(_floating_base_state, floating_base_names, current_joint_state);
 
     for(auto c : kdl_chain_map)
         c.second->update(current_joint_state);
@@ -96,6 +206,29 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state,
     }
 
     computeCOM(current_joint_state);
+}
+
+const base::samples::Joints& RobotModelKDL::jointState(const std::vector<std::string> &joint_names){
+
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to jointState()");
+    }
+
+    joint_state_out.resize(joint_names.size());
+    joint_state_out.names = joint_names;
+    joint_state_out.time = current_joint_state.time;
+
+    for(size_t i = 0; i < joint_names.size(); i++){
+        try{
+            joint_state_out[i] = current_joint_state.getElementByName(joint_names[i]);
+        }
+        catch(std::exception e){
+            LOG_ERROR("RobotModelKDL: Requested state of joint %s but this joint does not exist in robot model", joint_names[i].c_str());
+            throw std::invalid_argument("Invalid call to jointState()");
+        }
+    }
+    return joint_state_out;
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
@@ -303,5 +436,26 @@ void RobotModelKDL::computeCOM(const base::samples::Joints& status){
     com_rbs.time = status.time;
 }
 
+uint RobotModelKDL::jointIndex(const std::string &joint_name){
+    uint idx = std::find(current_joint_state.names.begin(), current_joint_state.names.end(), joint_name) - current_joint_state.names.begin();
+    if(idx >= current_joint_state.names.size())
+        throw std::invalid_argument("Index of joint  " + joint_name + " was requested but this joint is not in robot model");
+    return idx;
+}
+
+bool RobotModelKDL::hasLink(const std::string &link_name){
+    for(auto l  : robot_urdf->links_)
+        if(l.second->name == link_name)
+            return true;
+    return false;
+}
+
+bool RobotModelKDL::hasJoint(const std::string &joint_name){
+    return std::find(current_joint_state.names.begin(), current_joint_state.names.end(), joint_name) != current_joint_state.names.end();
+}
+
+bool RobotModelKDL::hasActuatedJoint(const std::string &joint_name){
+    return std::find(actuated_joint_names.begin(), actuated_joint_names.end(), joint_name) != actuated_joint_names.end();
+}
 
 }
