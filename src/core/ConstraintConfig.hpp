@@ -39,6 +39,22 @@ class ConstraintConfig{
 
 public:
     ConstraintConfig();
+    /** Default constructor for Cartesian space constraints*/
+    ConstraintConfig(const std::string &name,
+                     const int priority,
+                     const std::string root,
+                     const std::string tip,
+                     const std::string ref_frame,
+                     const double activation = 0,
+                     const std::vector<double> weights = {1,1,1,1,1,1},
+                     const double timeout = 0);
+    /** Default constructor for Cartesian space constraints*/
+    ConstraintConfig(const std::string &name,
+                     const int priority,
+                     const std::vector<std::string> joint_names,
+                     const std::vector<double> weights,
+                     const double activation = 0,
+                     const double timeout = 0);
     ~ConstraintConfig();
 
     /** Unique identifier of the constraint. Must not be empty*/

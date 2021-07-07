@@ -11,6 +11,40 @@ ConstraintConfig::ConstraintConfig() :
 
 }
 
+ConstraintConfig::ConstraintConfig(const std::string &name,
+                                   const int priority,
+                                   const std::string root,
+                                   const std::string tip,
+                                   const std::string ref_frame,
+                                   const double activation,
+                                   const std::vector<double> weights,
+                                   const double timeout) :
+    name(name),
+    type(cart),
+    priority(priority),
+    weights(weights),
+    activation(activation),
+    timeout(timeout),
+    root(root),
+    tip(tip),
+    ref_frame(ref_frame){
+}
+
+ConstraintConfig::ConstraintConfig(const std::string &name,
+                                   const int priority,
+                                   const std::vector<std::string> joint_names,
+                                   const std::vector<double> weights,
+                                   const double activation,
+                                   const double timeout) :
+    name(name),
+    type(jnt),
+    priority(priority),
+    joint_names(joint_names),
+    weights(weights),
+    activation(activation),
+    timeout(timeout){
+}
+
 ConstraintConfig::~ConstraintConfig(){
 }
 
