@@ -1,4 +1,5 @@
 #include "JointIntegrator.hpp"
+#include <base-logging/Logging.hpp>
 
 namespace wbc {
 
@@ -18,17 +19,23 @@ void JointIntegrator::integrate(const base::samples::Joints& joint_state, base::
     }
     else{
          for(uint i = 0; i < cmd.size(); i++){
+             try{
              switch(cmdMode(cmd[i]))
              {
-             case base::JointState::SPEED:
-                 cmd[i].position = joint_state[cmd.names[i]].position;
-                 break;
-             case base::JointState::ACCELERATION:
-                 cmd[i].position = joint_state[cmd.names[i]].position;
-                 cmd[i].speed = joint_state[cmd.names[i]].speed;
-                 break;
-             default:
-                 throw std::runtime_error("Invalid control mode");
+                 case base::JointState::SPEED:
+                     cmd[i].position = joint_state[cmd.names[i]].position;
+                     break;
+                 case base::JointState::ACCELERATION:
+                     cmd[i].position = joint_state[cmd.names[i]].position;
+                     cmd[i].speed = joint_state[cmd.names[i]].speed;
+                     break;
+                 default:
+                     throw std::runtime_error("Invalid control mode");
+                 }
+             }
+             catch(base::samples::Joints::InvalidName e){
+                 LOG_ERROR_S << "Joint " << cmd.names[i] << " is in command vector, but not in joint state"<<std::endl;
+                 throw e;
              }
          }
          initialized = true;
