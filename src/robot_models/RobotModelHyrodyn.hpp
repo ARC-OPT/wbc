@@ -2,6 +2,8 @@
 #define ROBOTMODELHYRODYN_HPP
 
 #include "../core/RobotModel.hpp"
+#include "../core/RobotModelConfig.hpp"
+
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <urdf_world/types.h>
 
@@ -12,15 +14,15 @@ protected:
     base::samples::RigidBodyStateSE3 rbs;
     std::string base_frame;
     base::JointLimits joint_limits;
-    base::samples::Joints current_joint_state;
+    base::samples::Joints joint_state;
     base::MatrixXd joint_space_inertia_mat;
     base::VectorXd bias_forces;
     base::Acceleration spatial_acc_bias;
     base::MatrixXd selection_matrix;
     base::samples::Joints joint_state_out;
-    std::vector<std::string> floating_base_names;
+    std::vector<std::string> joint_names;
+    std::vector<std::string> joint_names_floating_base;
     base::samples::RigidBodyStateSE3 floating_base_state;
-    bool has_floating_base;
     urdf::ModelInterfaceSharedPtr robot_urdf;
     base::samples::RigidBodyStateSE3 com_rbs;
     base::MatrixXd jacobian;
@@ -100,7 +102,7 @@ public:
     virtual const base::VectorXd &biasForces();
 
     /** @brief Return all joint names*/
-    virtual const std::vector<std::string>& jointNames(){return current_joint_state.names;}
+    virtual const std::vector<std::string>& jointNames(){return joint_names;}
 
     /** @brief Return only actuated joint names*/
    virtual  const std::vector<std::string>& actuatedJointNames(){return jointnames_active;}

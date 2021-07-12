@@ -28,7 +28,7 @@ void RobotModelKDL::clear(){
     has_floating_base = false;
     joint_limits.clear();
     robot_urdf.reset();
-    floating_base_names.clear();
+    joint_names_floating_base.clear();
 }
 
 bool RobotModelKDL::configure(const RobotModelConfig& cfg){
@@ -54,11 +54,18 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     // Add floating base
     has_floating_base = cfg.floating_base;
     if(has_floating_base){
-        floating_base_names = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
+        joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
         if(cfg.floating_base_state.hasValidPose() ||
            cfg.floating_base_state.hasValidTwist() ||
-           cfg.floating_base_state.hasValidAcceleration())
-            updateFloatingBase(cfg.floating_base_state, floating_base_names, current_joint_state);
+           cfg.floating_base_state.hasValidAcceleration()){
+            base::samples::RigidBodyStateSE3 rbs;
+            rbs.pose = cfg.floating_base_state.pose;
+            rbs.twist = cfg.floating_base_state.twist;
+            rbs.acceleration = cfg.floating_base_state.acceleration;
+            rbs.time = base::Time::now();
+            rbs.frame_id = cfg.world_frame_id;
+            updateFloatingBase(rbs, joint_names_floating_base, current_joint_state);
+        }
     }
 
     // Read Joint Limits
@@ -73,7 +80,7 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     // 2. Verify consistency of URDF and config
 
     // Check correct floating base names first, if a floating base is avaiable
-    for(const std::string& n : floating_base_names){
+    for(const std::string& n : joint_names_floating_base){
         if(!hasJoint(n)){
             LOG_ERROR_S << "If you set 'floating_base' to 'true', you have to add the following virtual joints to joint_names: "<<std::endl;
             LOG_ERROR_S << "   floating_base_trans_x, floating_base_trans_y, floating_base_trans_z" << std::endl;
@@ -181,7 +188,7 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state,
     current_joint_state.time = joint_state.time;
     // Convert floating base to joint state
     if(has_floating_base)
-        updateFloatingBase(_floating_base_state, floating_base_names, current_joint_state);
+        updateFloatingBase(_floating_base_state, joint_names_floating_base, current_joint_state);
 
     for(auto c : kdl_chain_map)
         c.second->update(current_joint_state);

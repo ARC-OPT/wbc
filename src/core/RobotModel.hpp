@@ -12,18 +12,21 @@ namespace wbc{
 
 class RobotModelConfig;
 
+std::vector<std::string> operator+(std::vector<std::string> a, std::vector<std::string> b);
+
 /**
  * @brief Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC
  */
 class RobotModel{
 protected:
-    void updateFloatingBase(const base::RigidBodyStateSE3& rbs,
+    void updateFloatingBase(const base::samples::RigidBodyStateSE3& rbs,
                             const std::vector<std::string> &floating_base_virtual_joint_names,
                             base::samples::Joints& joint_state);
 
     std::vector<std::string> contact_points;
     std::vector<std::string> active_contacts;
     base::Vector3d gravity;
+    base::samples::RigidBodyStateSE3 floating_base_state;
 public:
     RobotModel();
     virtual ~RobotModel(){}
@@ -138,7 +141,10 @@ public:
     uint noOfActuatedJoints(){return actuatedJointNames().size();}
 
     /** @brief Set the current gravity vector*/
-    virtual void setGravityVector(const base::Vector3d& g){gravity=g;}
+    void setGravityVector(const base::Vector3d& g){gravity=g;}
+
+    /** @brief Get current status of floating base*/
+    const base::samples::RigidBodyStateSE3& floatingBaseState(){return floating_base_state;}
 };
 
 typedef std::shared_ptr<RobotModel> RobotModelPtr;

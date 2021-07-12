@@ -124,7 +124,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     // For all contacts: Js*qd = 0 (Rigid Contacts, contact points do not move!)
     constraints_prio[prio].A.setZero();
     for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(i*6, 0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points[i]);
+        constraints_prio[prio].A.block(i*6, 0, 6, nj) = robot_model->bodyJacobian(robot_model->baseFrame(), contact_points[i]);
     constraints_prio[prio].lower_y.setZero();
     constraints_prio[prio].upper_y.setZero();
     // No velocity limits. Using actual limits does not work well here. QP Solver sometimes fails due to infeasible QP

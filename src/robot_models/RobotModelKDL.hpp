@@ -2,11 +2,11 @@
 #define ROBOTMODELKDL_HPP
 
 #include "../core/RobotModel.hpp"
+#include "../core/RobotModelConfig.hpp"
 
 #include <kdl/tree.hpp>
 #include <kdl/jacobian.hpp>
 #include <kdl/jntarray.hpp>
-#include <core/RobotModelConfig.hpp>
 #include <urdf_world/types.h>
 #include <map>
 
@@ -29,7 +29,7 @@ class RobotModelKDL : public RobotModel{
     base::Acceleration spatial_acc_bias;
     base::MatrixXd selection_matrix;
     base::samples::Joints joint_state_out;
-    std::vector<std::string> floating_base_names;
+    std::vector<std::string> joint_names_floating_base;
     bool has_floating_base;
     urdf::ModelInterfaceSharedPtr robot_urdf;
     base::samples::RigidBodyStateSE3 com_rbs;
