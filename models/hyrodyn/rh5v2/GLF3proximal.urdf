@@ -1,0 +1,83 @@
+<robot name="GLF3proximal">
+  <link name="GLF3Base_Link">
+    <inertial>
+      <origin xyz="-0.013075 -0.015412 0.022007" rpy="0.0 0.0 0.0"/>
+      <mass value="0.19184"/>
+      <inertia ixx="3.9359e-05" ixy="-1.1994e-07" ixz="-1.876e-07" iyy="3.2122e-05" iyz="-2.0609e-07" izz="4.6536e-05"/>
+    </inertial>
+    <visual name="GLF3Base_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/Finger_Base_Frame.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.79216 0.81961 0.93333 1.0"/>
+      </material>
+    </visual>
+    <collision name="GLF3Base_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/Finger_Base_Frame_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="GLF3ProximalBar" type="revolute">
+    <origin xyz="-0.01305 0.020512 0.035979" rpy="-1.1138 0.0 0.0"/>
+    <axis xyz="-1.0 0.0 0.0"/>
+    <parent link="GLF3Base_Link"/>
+    <child link="GLF3ProximalBar_Link"/>
+    <limit effort="400.0" lower="-3.1415926" upper="3.1415926" velocity="3.1415926"/>
+    <mimic joint="GLF3ProximalSegment" multiplier="-1.0" offset="0.0"/>
+  </joint>
+  <link name="GLF3ProximalBar_Link">
+    <inertial>
+      <origin xyz="0.0021195 9.8516e-05 0.017626" rpy="0.0 0.0 0.0"/>
+      <mass value="0.013406"/>
+      <inertia ixx="1.3148561531334552e-05" ixy="-2.4433999999999384e-08" ixz="2.606700000000039e-07" iyy="1.3680961531334562e-05" iyz="7.3035999999996e-08" izz="1.0023111531334548e-05"/>
+    </inertial>
+    <visual name="GLF3ProximalBar_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.94118 0.67451 0.11765 1.0"/>
+      </material>
+    </visual>
+    <collision name="GLF3ProximalBar_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="GLF3ProximalSegment" type="revolute">
+    <origin xyz="-0.01305 0.01575 0.0145" rpy="-1.1257 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="GLF3Base_Link"/>
+    <child link="GLF3ProximalSegment_Link"/>
+    <limit effort="400.0" lower="-0.62" upper="0.75" velocity="3.1415926"/>
+  </joint>
+  <link name="GLF3ProximalSegment_Link">
+    <inertial>
+      <origin xyz="-0.0020803 0.000387 0.0216" rpy="0.0 0.0 0.0"/>
+      <mass value="0.054293"/>
+      <inertia ixx="2.0885480277942027e-05" ixy="-1.4302000000000018e-08" ixz="-2.6832000000000287e-07" iyy="2.3749480277942032e-05" iyz="6.182299999999969e-07" izz="1.0034380277942036e-05"/>
+    </inertial>
+    <visual name="GLF3ProximalSegment_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.94118 0.67451 0.11765 1.0"/>
+      </material>
+    </visual>
+    <collision name="GLF3ProximalSegment_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

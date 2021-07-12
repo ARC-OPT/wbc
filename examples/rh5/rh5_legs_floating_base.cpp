@@ -98,7 +98,7 @@ int main(){
             joint_state[i].speed = qd[i];
             joint_state[i].acceleration = qdd[i];
         }
-        joint_state.time = base::Time::now();
+        joint_state.time = floating_base_state.time = base::Time::now();
         robot_model->update(joint_state, floating_base_state);
         scene.getConstraint("zero_com_acceleration")->y_ref.setZero();
         hqp=scene.update();

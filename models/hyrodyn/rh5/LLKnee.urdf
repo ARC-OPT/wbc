@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<!-- created with Phobos 0.7 -->
+  <robot name="LLKnee">
+
+    <link name="LLHip3_Link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.0488"/>
+        <inertia ixx="0.02038" ixy="-4e-05" ixz="-0.00473" iyy="0.02263" iyz="0.00014" izz="0.00422"/>
+      </inertial>
+      <visual name="LLvisual_0_Hip3_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_Link.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="LLcollision_0_Hip3_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_Link.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="LLKnee_Act1_Link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="0.16503"/>
+        <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0" izz="0"/>
+      </inertial>
+      <visual name="LLvisual_0_Knee_Act1_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLKnee_Act1_Link.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="LLcollision_0_Knee_Act1_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLKnee_Act1_Link.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="LLKnee_B11_Link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.224"/>
+        <inertia ixx="0.00078" ixy="-5e-05" ixz="0" iyy="0.00594" iyz="0" izz="0.00596"/>
+      </inertial>
+      <visual name="LLvisual_0_Knee_B11_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLKnee_B11_Link.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="LLcollision_0_Knee_B11_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLKnee_B11_Link.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="LLKnee_Link">
+      <inertial>
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <mass value="1.224"/>
+        <inertia ixx="0.00078" ixy="-5e-05" ixz="0" iyy="0.00594" iyz="0" izz="0.00596"/>
+      </inertial>
+      <visual name="LLvisual_0_Knee_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLKnee_Link.stl" scale="1.0 1.0 1.0"/>
+        </geometry>
+      </visual>
+      <collision name="LLcollision_0_Knee_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <box size="0.49951 0.12789 0.1199"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="LLKnee" type="revolute">
+      <origin xyz="0.10788 -0.0005 -0.39684" rpy="-3.14159 1.309 0"/>
+      <parent link="LLHip3_Link"/>
+      <child link="LLKnee_Link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="0" upper="1.52716" effort="0" velocity="0"/>
+    </joint>
+
+    <joint name="LLKnee_Act1" type="prismatic">
+      <origin xyz="0.27341 0 0" rpy="0 0 0"/>
+      <parent link="LLKnee_B11_Link"/>
+      <child link="LLKnee_Act1_Link"/>
+      <axis xyz="1.0 0 0"/>
+      <limit lower="-3.13" upper="3.13" effort="0" velocity="0"/>
+    </joint>
+
+    <joint name="LLKnee_B11" type="revolute">
+      <origin xyz="0.02018 0.07074 -0.07529" rpy="-0.15081 1.3059 -0.15617"/>
+      <parent link="LLHip3_Link"/>
+      <child link="LLKnee_B11_Link"/>
+      <axis xyz="0 0 -1.0"/>
+      <limit lower="-3.13" upper="3.13" effort="0" velocity="0"/>
+    </joint>
+
+  </robot>

@@ -1,0 +1,83 @@
+<robot name="GRF2distal">
+  <joint name="GRF2Gear" type="revolute">
+    <origin xyz="0.0 0.0 0.053" rpy="1.2885 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="GRF2ProximalSegment_Link"/>
+    <child link="GRF2Gear_Link"/>
+    <limit effort="400.0" lower="-3.1415926" upper="3.1415926" velocity="3.1415926"/>
+    <mimic joint="GRF2ProximalSegment" multiplier="-1.0" offset="0.0"/>
+  </joint>
+  <link name="GRF2Gear_Link">
+    <inertial>
+      <origin xyz="0.00042134 0.00032509 0.0086803" rpy="0.0 0.0 0.0"/>
+      <mass value="0.024785"/>
+      <inertia ixx="1.1031768852531896e-05" ixy="-3.314199999999995e-09" ixz="-1.3220000000000009e-08" iyy="1.04518688525319e-05" iyz="-1.0513000000000047e-07" izz="1.0024648852531899e-05"/>
+    </inertial>
+    <visual name="GRF2Gear_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_Gear_Frame.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.94118 0.67451 0.11765 1.0"/>
+      </material>
+    </visual>
+    <collision name="GRF2Gear_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_Gear_Frame_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="GRF2ProximalSegment_Link">
+    <inertial>
+      <origin xyz="-0.0020803 0.000387 0.0216" rpy="0.0 0.0 0.0"/>
+      <mass value="0.054293"/>
+      <inertia ixx="2.0885480277942027e-05" ixy="-1.4302000000000018e-08" ixz="-2.6832000000000287e-07" iyy="2.3749480277942032e-05" iyz="6.182299999999969e-07" izz="1.0034380277942036e-05"/>
+    </inertial>
+    <visual name="GRF2ProximalSegment_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.94118 0.67451 0.11765 1.0"/>
+      </material>
+    </visual>
+    <collision name="GRF2ProximalSegment_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="GRF2TopSegment" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="GRF2Gear_Link"/>
+    <child link="GRF2TopSegment_Link"/>
+    <limit effort="400.0" lower="0.0" upper="2.1" velocity="3.1415926"/>
+  </joint>
+  <link name="GRF2TopSegment_Link">
+    <inertial>
+      <origin xyz="0.00093543 0.026024 -0.013282" rpy="0.0 0.0 0.0"/>
+      <mass value="0.049549"/>
+      <inertia ixx="1.1651277429850969e-05" ixy="4.429600000000007e-07" ixz="-6.034000000000013e-08" iyy="1.0300577429850967e-05" iyz="7.458100000000004e-07" izz="1.319687742985097e-05"/>
+    </inertial>
+    <visual name="GRF2TopSegment_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.94118 0.67451 0.11765 1.0"/>
+      </material>
+    </visual>
+    <collision name="GRF2TopSegment_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

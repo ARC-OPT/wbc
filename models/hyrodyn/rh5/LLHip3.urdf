@@ -1,0 +1,109 @@
+<?xml version="1.0"?>
+<!-- created with Phobos 0.7 -->
+  <robot name="Hip3">
+
+    <link name="LLHip2_Link">
+      <inertial>
+        <origin xyz="0.0013954 0.0024309 -0.0053241" rpy="0 0 0"/>
+        <mass value="0.969"/>
+        <inertia ixx="0.001701" ixy="-7.9e-05" ixz="-4.6e-05" iyy="0.001158" iyz="0.000301" izz="0.001543"/>
+      </inertial>
+      <visual name="visual_0_Hip2_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip2_Link.stl" scale="0.9999998 1.0 0.9999999"/>
+        </geometry>
+      </visual>
+      <collision name="collision_0_Hip2_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip2_Link.stl" scale="0.9999998 1.0 0.9999999"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="LLHip3_Act1_Link">
+      <inertial>
+        <origin xyz="-0.16939 -0.0004685 4.46e-05" rpy="0 0 0"/>
+        <mass value="1.224"/>
+        <inertia ixx="0.000778" ixy="-5.4e-05" ixz="0" iyy="0.005945" iyz="0" izz="0.005957"/>
+      </inertial>
+      <visual name="visual_0_Hip3_Act1_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_Act1_Link.stl" scale="0.9999999 0.9999998 0.9999999"/>
+        </geometry>
+      </visual>
+      <collision name="collision_0_Hip3_Act1_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_Act1_Link.stl" scale="0.9999999 0.9999998 0.9999999"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="LLHip3_B11_Link">
+      <inertial>
+        <origin xyz="0.10645 0 0" rpy="0 0 0"/>
+        <mass value="0.165033"/>
+        <inertia ixx="3e-06" ixy="0" ixz="0" iyy="0.00082" iyz="0" izz="0.00082"/>
+      </inertial>
+      <visual name="visual_0_Hip3_B11_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_B11_Link.stl" scale="0.9999999 0.9999998 0.9999999"/>
+        </geometry>
+      </visual>
+      <collision name="collision_0_Hip3_B11_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_B11_Link.stl" scale="0.9999999 0.9999998 0.9999999"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <link name="LLHip3_Link">
+      <inertial>
+        <origin xyz="0.051263 0.007252 -0.19232" rpy="0 0 0"/>
+        <mass value="1.0488"/>
+        <inertia ixx="0.020384" ixy="-3.5e-05" ixz="-0.004728" iyy="0.022631" iyz="0.000142" izz="0.004219"/>
+      </inertial>
+      <visual name="visual_0_Hip3_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_Link.stl" scale="0.9999996 0.9999998 0.9999998"/>
+        </geometry>
+      </visual>
+      <collision name="collision_0_Hip3_Link">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+        <geometry>
+          <mesh filename="../meshes/stl/LLHip3_Link.stl" scale="0.9999996 0.9999998 0.9999998"/>
+        </geometry>
+      </collision>
+    </link>
+
+    <joint name="LLHip3" type="revolute">
+      <origin xyz="0 0 0" rpy="0 0 0"/>
+      <parent link="LLHip2_Link"/>
+      <child link="LLHip3_Link"/>
+      <axis xyz="-1.0 0.0 0.0"/>
+      <limit lower="-1.2601277" upper="0.286234" effort="0" velocity="0"/>
+    </joint>
+
+    <joint name="LLHip3_Act1" type="prismatic">
+      <origin xyz="0.2974 0 0" rpy="-3.1415854 0 0"/>
+      <parent link="LLHip3_B11_Link"/>
+      <child link="LLHip3_Act1_Link"/>
+      <axis xyz="1.0 0 0"/>
+      <limit lower="-3.1300001" upper="3.1300001" effort="0" velocity="0"/>
+    </joint>
+
+    <joint name="LLHip3_B11" type="revolute">
+      <origin xyz="0.018117 -0.09 -0.067615" rpy="-2.5686007 1.2577002 0.5958794"/>
+      <parent link="LLHip2_Link"/>
+      <child link="LLHip3_B11_Link"/>
+      <axis xyz="0 0 1.0"/>
+      <limit lower="-3.1300001" upper="3.1300001" effort="0" velocity="0"/>
+    </joint>
+
+  </robot>

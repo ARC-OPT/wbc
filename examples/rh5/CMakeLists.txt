@@ -35,3 +35,11 @@ target_link_libraries(rh5_legs_floating_base
                       wbc-robot_models
                       ${hyrodyn_LIBRARIES}
                       ${rbdl_LIBRARIES})
+add_executable(rh5_one_leg_hybrid rh5_one_leg_hybrid.cpp)
+target_link_libraries(rh5_one_leg_hybrid
+                      wbc-solvers-qpoases
+                      wbc-scenes
+                      wbc-tools
+                      wbc-robot_models
+                      ${hyrodyn_LIBRARIES}
+                      ${rbdl_LIBRARIES})

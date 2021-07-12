@@ -1,0 +1,485 @@
+submechanisms:
+- contextual_name: torso_joint
+  file_path: Body.urdf
+  jointnames:
+  - BodyRoot
+  - Connector_Body/Leg_left
+  - Connector_Body/Leg_right
+  - IMU_Body
+  - BodyPitch
+  - BodyRoll
+  - BodyBR1
+  - BodyBR2
+  - BodyActR
+  - BodyBL1
+  - BodyBL2
+  - BodyActL
+  jointnames_active:
+  - BodyActR
+  - BodyActL
+  jointnames_independent:
+  - BodyPitch
+  - BodyRoll
+  jointnames_spanningtree:
+  - BodyPitch
+  - BodyRoll
+  - BodyBR1
+  - BodyBR2
+  - BodyActR
+  - BodyBL1
+  - BodyBL2
+  - BodyActL
+  name: rh5_torso
+  type: 2SPU+1U
+- contextual_name: torso_yaw_joint
+  jointnames:
+  - BodyYaw
+  - Connector_Body/Torso
+  - Connector_Torso/Backpack
+  - IMU_Torso
+  - Structure_Sensor
+  jointnames_active:
+  - BodyYaw
+  jointnames_independent:
+  - BodyYaw
+  jointnames_spanningtree:
+  - BodyYaw
+  name: rh5_torso_yaw
+  type: R
+- contextual_name: left_shoulder_joint
+  jointnames:
+  - ALBase
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  jointnames_active:
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  jointnames_independent:
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  jointnames_spanningtree:
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  name: shoulder_mechanism
+  type: 3R
+- contextual_name: left_elbow_joint
+  file_path: ALElbow.urdf
+  jointnames:
+  - ALElbow
+  - ALElbowB11
+  - ALElbowAct
+  jointnames_active:
+  - ALElbowAct
+  jointnames_independent:
+  - ALElbow
+  jointnames_spanningtree:
+  - ALElbow
+  - ALElbowB11
+  - ALElbowAct
+  name: lambda_mechanism
+  type: rrPr
+- contextual_name: left_wrist_roll_joint
+  jointnames:
+  - ALWristRoll
+  - ALWristRoot
+  jointnames_active:
+  - ALWristRoll
+  jointnames_independent:
+  - ALWristRoll
+  jointnames_spanningtree:
+  - ALWristRoll
+  name: wrist_roll_mechanism
+  type: R
+- contextual_name: left_wrist_joint
+  file_path: left_wrist_mechanism.urdf
+  jointnames:
+  - ALWristPitch
+  - ALWristYaw
+  - ALWristFT
+  - ALWristBL4
+  - ALWristBL3
+  - ALWristBL0
+  - ALWristBL2
+  - ALWristBR4
+  - ALWristBR3
+  - ALWristBR0
+  - ALWristBR2
+  - ALWristAL1
+  - ALWristActL
+  - ALWristAR1
+  - ALWristActR
+  - ALWristBL1
+  - ALWristBR1
+  - ALWristBase
+  jointnames_active:
+  - ALWristActL
+  - ALWristActR
+  jointnames_independent:
+  - ALWristPitch
+  - ALWristYaw
+  jointnames_spanningtree:
+  - ALWristPitch
+  - ALWristYaw
+  - ALWristBL4
+  - ALWristBL3
+  - ALWristBL0
+  - ALWristBL2
+  - ALWristBR4
+  - ALWristBR3
+  - ALWristBR0
+  - ALWristBR2
+  - ALWristAL1
+  - ALWristActL
+  - ALWristAR1
+  - ALWristActR
+  - ALWristBL1
+  - ALWristBR1
+  name: rh5v2_wrist
+  type: 2SURRPR+1U
+- contextual_name: left_finger1_mimic
+  file_path: GLF1proximal.urdf
+  jointnames:
+  - GLBase
+  - GLF1Base
+  - GLF1ProximalSegment
+  - GLF1ProximalBar
+  jointnames_active:
+  - GLF1ProximalSegment
+  jointnames_independent:
+  - GLF1ProximalSegment
+  jointnames_spanningtree:
+  - GLF1ProximalSegment
+  - GLF1ProximalBar
+  name: finger_proximal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: left_finger1_distal
+  file_path: GLF1distal.urdf
+  jointnames:
+  - GLF1TouchSensor_FingerProximal
+  - GLF1Gear
+  - GLF1TopSegment
+  - GLF1DistanceSensorDistal1
+  - GLF1DistanceSensorDistal2
+  - GLF1TouchSensorDistal
+  - GLF1TouchSensorIntermedial
+  jointnames_active:
+  - GLF1TopSegment
+  jointnames_independent:
+  - GLF1TopSegment
+  jointnames_spanningtree:
+  - GLF1Gear
+  - GLF1TopSegment
+  name: finger_distal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: left_finger2_mimic
+  file_path: GLF2proximal.urdf
+  jointnames:
+  - GLF2Base
+  - GLF2ProximalSegment
+  - GLF2ProximalBar
+  jointnames_active:
+  - GLF2ProximalSegment
+  jointnames_independent:
+  - GLF2ProximalSegment
+  jointnames_spanningtree:
+  - GLF2ProximalSegment
+  - GLF2ProximalBar
+  name: finger_proximal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: left_finger2_distal
+  file_path: GLF2distal.urdf
+  jointnames:
+  - GLF2TouchSensor_FingerProximal
+  - GLF2Gear
+  - GLF2TopSegment
+  - GLF2DistanceSensorDistal1
+  - GLF2DistanceSensorDistal2
+  - GLF2TouchSensorDistal
+  - GLF2TouchSensorIntermedial
+  jointnames_active:
+  - GLF2TopSegment
+  jointnames_independent:
+  - GLF2TopSegment
+  jointnames_spanningtree:
+  - GLF2Gear
+  - GLF2TopSegment
+  name: finger_distal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: left_finger3_proximal
+  file_path: GLF3proximal.urdf
+  jointnames:
+  - GLF3Base
+  - GLF3ProximalSegment
+  - GLF3ProximalBar
+  jointnames_active:
+  - GLF3ProximalSegment
+  jointnames_independent:
+  - GLF3ProximalSegment
+  jointnames_spanningtree:
+  - GLF3ProximalSegment
+  - GLF3ProximalBar
+  name: finger_proximal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: left_finger3_distal
+  file_path: GLF3distal.urdf
+  jointnames:
+  - GLF3TouchSensor_FingerProximal
+  - GLF3Gear
+  - GLF3TopSegment
+  - GLF3DistanceSensorDistal1
+  - GLF3DistanceSensorDistal2
+  - GLF3TouchSensorDistal
+  - GLF3TouchSensorIntermedial
+  jointnames_active:
+  - GLF3TopSegment
+  jointnames_independent:
+  - GLF3TopSegment
+  jointnames_spanningtree:
+  - GLF3Gear
+  - GLF3TopSegment
+  name: finger_distal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: left_finger4_serial
+  jointnames:
+  - GLIMU
+  - GLDistanceSensor1
+  - GLDistanceSensor2
+  - GLThumb
+  jointnames_active:
+  - GLThumb
+  jointnames_independent:
+  - GLThumb
+  jointnames_spanningtree:
+  - GLThumb
+  name: finger_thumb
+  type: serial
+- contextual_name: left_finger4_proximal
+  file_path: GLF4proximal.urdf
+  jointnames:
+  - GLF4Base
+  - GLF4ProximalSegment
+  - GLF4ProximalBar
+  jointnames_active:
+  - GLF4ProximalSegment
+  jointnames_independent:
+  - GLF4ProximalSegment
+  jointnames_spanningtree:
+  - GLF4ProximalSegment
+  - GLF4ProximalBar
+  name: finger_proximal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: left_finger4_distal
+  file_path: GLF4distal.urdf
+  jointnames:
+  - GLF4TouchSensor_FingerProximal
+  - GLF4Gear
+  - GLF4TopSegment
+  - GLF4DistanceSensorDistal1
+  - GLF4DistanceSensorDistal2
+  - GLF4TouchSensorDistal
+  - GLF4TouchSensorIntermedial
+  jointnames_active:
+  - GLF4TopSegment
+  jointnames_independent:
+  - GLF4TopSegment
+  jointnames_spanningtree:
+  - GLF4Gear
+  - GLF4TopSegment
+  name: finger_distal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: right_shoulder_joint
+  jointnames:
+  - ARBase
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  jointnames_active:
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  jointnames_independent:
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  jointnames_spanningtree:
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  name: shoulder_mechanism
+  type: 3R
+- contextual_name: right_elbow_joint
+  file_path: ARElbow.urdf
+  jointnames:
+  - ARElbow
+  - ARElbowB11
+  - ARElbowAct
+  jointnames_active:
+  - ARElbowAct
+  jointnames_independent:
+  - ARElbow
+  jointnames_spanningtree:
+  - ARElbow
+  - ARElbowB11
+  - ARElbowAct
+  name: lambda_mechanism
+  type: rrPr
+- contextual_name: right_wrist_roll_joint
+  jointnames:
+  - ARWristRoll
+  - ARWristRoot
+  jointnames_active:
+  - ARWristRoll
+  jointnames_independent:
+  - ARWristRoll
+  jointnames_spanningtree:
+  - ARWristRoll
+  name: wrist_roll_mechanism
+  type: R
+- contextual_name: right_wrist_joint
+  file_path: right_wrist_mechanism.urdf
+  jointnames:
+  - ARWristPitch
+  - ARWristYaw
+  - ARWristFT
+  - ARWristBL4
+  - ARWristBL3
+  - ARWristBL0
+  - ARWristBL2
+  - ARWristBR4
+  - ARWristBR3
+  - ARWristBR0
+  - ARWristBR2
+  - ARWristAL1
+  - ARWristActL
+  - ARWristAR1
+  - ARWristActR
+  - ARWristBL1
+  - ARWristBR1
+  - ARWristBase
+  jointnames_active:
+  - ARWristActL
+  - ARWristActR
+  jointnames_independent:
+  - ARWristPitch
+  - ARWristYaw
+  jointnames_spanningtree:
+  - ARWristPitch
+  - ARWristYaw
+  - ARWristBL4
+  - ARWristBL3
+  - ARWristBL0
+  - ARWristBL2
+  - ARWristBR4
+  - ARWristBR3
+  - ARWristBR0
+  - ARWristBR2
+  - ARWristAL1
+  - ARWristActL
+  - ARWristAR1
+  - ARWristActR
+  - ARWristBL1
+  - ARWristBR1
+  name: rh5v2_wrist
+  type: 2SURRPR+1U
+- contextual_name: right_finger1_mimic
+  file_path: GRF1proximal.urdf
+  jointnames:
+  - GRBase
+  - GRIMU
+  - GRF1Base
+  - GRF1ProximalSegment
+  - GRF1ProximalBar
+  jointnames_active:
+  - GRF1ProximalSegment
+  jointnames_independent:
+  - GRF1ProximalSegment
+  jointnames_spanningtree:
+  - GRF1ProximalSegment
+  - GRF1ProximalBar
+  name: finger_proximal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: right_finger1_distal
+  file_path: GRF1distal.urdf
+  jointnames:
+  - GRF1TouchSensor_FingerProximal
+  - GRF1Gear
+  - GRF1TopSegment
+  - GRF1DistanceSensorDistal1
+  - GRF1DistanceSensorDistal2
+  - GRF1TouchSensorDistal
+  - GRF1TouchSensorIntermedial
+  jointnames_active:
+  - GRF1TopSegment
+  jointnames_independent:
+  - GRF1TopSegment
+  jointnames_spanningtree:
+  - GRF1Gear
+  - GRF1TopSegment
+  name: finger_distal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: right_finger2_mimic
+  file_path: GRF2proximal.urdf
+  jointnames:
+  - GRF2Base
+  - GRF2ProximalSegment
+  - GRF2ProximalBar
+  jointnames_active:
+  - GRF2ProximalSegment
+  jointnames_independent:
+  - GRF2ProximalSegment
+  jointnames_spanningtree:
+  - GRF2ProximalSegment
+  - GRF2ProximalBar
+  name: finger_proximal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: right_finger2_distal
+  file_path: GRF2distal.urdf
+  jointnames:
+  - GRF2TouchSensor_FingerProximal
+  - GRF2Gear
+  - GRF2TopSegment
+  - GRF2DistanceSensorDistal1
+  - GRF2DistanceSensorDistal2
+  - GRF2TouchSensorDistal
+  - GRF2TouchSensorIntermedial
+  jointnames_active:
+  - GRF2TopSegment
+  jointnames_independent:
+  - GRF2TopSegment
+  jointnames_spanningtree:
+  - GRF2Gear
+  - GRF2TopSegment
+  name: finger_distal
+  type: PARALLELOGRAMCHAIN
+- contextual_name: head_joints
+  file_path: Head.urdf
+  jointnames:
+  - HeadBase
+  - HeadActC
+  - HeadActL
+  - HeadActR
+  - HeadPitch
+  - HeadRoll
+  - HeadYaw
+  - Stereo_Camera_Head
+  jointnames_active:
+  - HeadActL
+  - HeadActR
+  - HeadActC
+  jointnames_independent:
+  - HeadPitch
+  - HeadRoll
+  - HeadYaw
+  jointnames_spanningtree:
+  - HeadActC
+  - HeadActL
+  - HeadActR
+  - HeadPitch
+  - HeadRoll
+  - HeadYaw
+  name: three_revolute_joints
+  type: TRANSMISSION

@@ -1,0 +1,458 @@
+<robot name="left_wrist_mechanism">
+  <joint name="ALWristAL1" type="revolute">
+    <origin xyz="0.0155 -0.034 -0.178" rpy="1.5885 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristRoot_Link"/>
+    <child link="ALWristAL1_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristAL1_Link">
+    <inertial>
+      <origin xyz="4.69848839836778e-06 0.0605130022183077 8.23954439692215e-05" rpy="0.0 0.0 0.0"/>
+      <mass value="0.110279568172128"/>
+      <inertia ixx="1.426060228931759e-05" ixy="-1.1829530729395678e-10" ixz="-1.5559842262297789e-09" iyy="1.0001497220685684e-05" iyz="-8.070848171024899e-08" izz="1.4350648635894694e-05"/>
+    </inertial>
+    <visual name="ALWristAL1_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_AL1_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristAL1_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_AL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristAR1" type="revolute">
+    <origin xyz="-0.0155 -0.034 -0.178" rpy="1.5885 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristRoot_Link"/>
+    <child link="ALWristAR1_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristAR1_Link">
+    <inertial>
+      <origin xyz="1.0632e-07 0.058479 9.3561e-05" rpy="0.0 0.0 0.0"/>
+      <mass value="0.10113"/>
+      <inertia ixx="1.4212213742562422e-05" ixy="-1.1886000000000004e-10" ixz="-1.4829999999999594e-10" iyy="1.000151374256242e-05" iyz="-8.070899999999586e-08" izz="1.4303213742562425e-05"/>
+    </inertial>
+    <visual name="ALWristAR1_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_AR1_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.89804 0.91765 0.92941 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristAR1_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_AR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristActL" type="prismatic">
+    <origin xyz="0.0 0.13346 0.0" rpy="-1.5708 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="ALWristAL1_Link"/>
+    <child link="ALWristActL_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristActL_Link">
+    <inertial>
+      <origin xyz="1.6961e-10 -3.3309e-11 -0.049176" rpy="0.0 0.0 0.0"/>
+      <mass value="0.022415"/>
+      <inertia ixx="2.2515570000000003e-05" ixy="-8.666700000001066e-16" ixz="7.960299999999999e-17" iyy="2.2496570000000005e-05" iyz="2.9215000273952845e-15" izz="1e-05"/>
+    </inertial>
+    <visual name="ALWristActL_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_ActL_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.77647 0.75686 0.73725 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristActL_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_ActL_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristActR" type="prismatic">
+    <origin xyz="0.0 0.13346 0.0" rpy="-1.5708 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="ALWristAR1_Link"/>
+    <child link="ALWristActR_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristActR_Link">
+    <inertial>
+      <origin xyz="-2.50423902101171e-10 -5.99230387532401e-12 -0.0491763872735069" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0224154782060298"/>
+      <inertia ixx="2.251577391703877e-05" ixy="-8.666685437716609e-16" ixz="7.959775514672119e-17" iyy="2.249645939989927e-05" iyz="2.9215994791528672e-15" izz="1e-05"/>
+    </inertial>
+    <visual name="ALWristActR_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_ActR_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.776470588235294 0.756862745098039 0.737254901960784 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristActR_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_ActR_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBL0" type="revolute">
+    <origin xyz="0.0 0.0 0.045018" rpy="0.0 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristBL3_Link"/>
+    <child link="ALWristBL0_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBL0_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1e-05"/>
+      <inertia ixx="1e-05" ixy="0.0" ixz="0.0" iyy="1e-05" iyz="0.0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <joint name="ALWristBL1" type="revolute">
+    <origin xyz="0.0155 0.011 -0.032" rpy="-2.8824 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristRoot_Link"/>
+    <child link="ALWristBL1_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBL1_Link">
+    <inertial>
+      <origin xyz="0.0019151 0.02635 0.0010414" rpy="0.0 0.0 0.0"/>
+      <mass value="0.024008"/>
+      <inertia ixx="1.3690309326298155e-05" ixy="-2.58529999998267e-13" ixz="-8.119499999914014e-14" iyy="1.0041289326298152e-05" iyz="3.8667999999999843e-07" izz="1.3621309326298154e-05"/>
+    </inertial>
+    <visual name="ALWristBL1_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL1_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.89804 0.91765 0.92941 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBL1_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBL2" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="ALWristBL0_Link"/>
+    <child link="ALWristBL2_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBL2_Link">
+    <inertial>
+      <origin xyz="-0.00285895892979633 1.59419756701196e-08 4.93600032917541e-05" rpy="0.0 0.0 0.0"/>
+      <mass value="0.00373058333172257"/>
+      <inertia ixx="1.0000022086306678e-05" ixy="-2.1170777449156144e-13" ixz="1.2800661535321242e-09" iyy="1.0074214747460805e-05" iyz="-3.1071812995088624e-13" izz="1.0074189380048775e-05"/>
+    </inertial>
+    <visual name="ALWristBL2_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL2_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBL2_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBL3" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.017255 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="ALWristBL4_Link"/>
+    <child link="ALWristBL3_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBL3_Link">
+    <inertial>
+      <origin xyz="2.38502552360881e-05 4.66313256272666e-08 0.0283017467527962" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0163436688111198"/>
+      <inertia ixx="1.0588437589385662e-05" ixy="2.6491888917750254e-12" ixz="3.971418402991697e-10" iyy="1.0442298027473029e-05" iyz="-1.0478564692762442e-11" izz="1.0000000268282943e-05"/>
+    </inertial>
+    <visual name="ALWristBL3_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL3_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBL3_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBL4" type="revolute">
+    <origin xyz="0.027 -0.03 0.0" rpy="2.9998 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristYaw_Link"/>
+    <child link="ALWristBL4_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBL4_Link">
+    <inertial>
+      <origin xyz="-0.00221364330903131 4.35096403350599e-12 -8.57685450439405e-13" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0116530368127355"/>
+      <inertia ixx="1e-05" ixy="1.5953378838595036e-20" ixz="3.4058691933577745e-19" iyy="1.027752247888744e-05" iyz="-9.076929593055545e-16" izz="1.0188830976875939e-05"/>
+    </inertial>
+    <visual name="ALWristBL4_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL4_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.776470588235294 0.756862745098039 0.737254901960784 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBL4_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BL4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBR0" type="revolute">
+    <origin xyz="0.0 0.0 0.045018" rpy="0.0 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristBR3_Link"/>
+    <child link="ALWristBR0_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBR0_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="1e-05"/>
+      <inertia ixx="1e-05" ixy="0.0" ixz="0.0" iyy="1e-05" iyz="0.0" izz="1e-05"/>
+    </inertial>
+  </link>
+  <joint name="ALWristBR1" type="revolute">
+    <origin xyz="-0.0155 0.011 -0.032" rpy="-2.8824 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristRoot_Link"/>
+    <child link="ALWristBR1_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBR1_Link">
+    <inertial>
+      <origin xyz="-0.0019151 0.02635 0.0010414" rpy="0.0 0.0 0.0"/>
+      <mass value="0.024008"/>
+      <inertia ixx="1.3690545308238603e-05" ixy="-1.148899999986299e-13" ixz="3.822099999976209e-14" iyy="1.0041345308238603e-05" iyz="3.8696e-07" izz="1.3621645308238606e-05"/>
+    </inertial>
+    <visual name="ALWristBR1_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR1_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.89804 0.91765 0.92941 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBR1_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBR2" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="ALWristBR0_Link"/>
+    <child link="ALWristBR2_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBR2_Link">
+    <inertial>
+      <origin xyz="-0.00285890746146323 2.16333476826813e-09 4.93604190743499e-05" rpy="0.0 0.0 0.0"/>
+      <mass value="0.00373054475630146"/>
+      <inertia ixx="1.000002209364975e-05" ixy="-1.3816128592343518e-13" ixz="1.2803063868888173e-09" iyy="1.0074212979026388e-05" iyz="-1.0109428273552697e-12" izz="1.0074192561095311e-05"/>
+    </inertial>
+    <visual name="ALWristBR2_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR2_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBR2_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBR3" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.017255 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="ALWristBR4_Link"/>
+    <child link="ALWristBR3_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBR3_Link">
+    <inertial>
+      <origin xyz="2.38500712359466e-05 4.68942149695062e-08 0.0283017446065629" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0163436663117003"/>
+      <inertia ixx="1.058843751107658e-05" ixy="3.883356249554021e-12" ixz="3.9714539909530543e-10" iyy="1.0442298557724912e-05" iyz="-9.93761778002401e-12" izz="1.0000000268262852e-05"/>
+    </inertial>
+    <visual name="ALWristBR3_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR3_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.529411764705882 0.549019607843137 0.549019607843137 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBR3_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristBR4" type="revolute">
+    <origin xyz="-0.027 -0.03 0.0" rpy="-2.9998 0.0 -3.1416"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristYaw_Link"/>
+    <child link="ALWristBR4_Link"/>
+    <limit effort="400.0" lower="-1.57" upper="1.57" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristBR4_Link">
+    <inertial>
+      <origin xyz="-0.00221364330907749 -4.11274486689095e-12 8.10143618856785e-13" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0116530368127689"/>
+      <inertia ixx="1e-05" ixy="-7.714431638365371e-20" ixz="-3.728723958847608e-19" iyy="1.027752247888592e-05" iyz="-9.04953782288128e-16" izz="1.018883097687764e-05"/>
+    </inertial>
+    <visual name="ALWristBR4_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR4_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristBR4_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_BR4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristPitch" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="ALWristRoot_Link"/>
+    <child link="ALWristPitch_Link"/>
+    <limit effort="400.0" lower="-0.741" upper="1.75" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristPitch_Link">
+    <inertial>
+      <origin xyz="7.46248686255566e-19 -1.12543960307545e-16 -1.73472347597681e-18" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0303458029555441"/>
+      <inertia ixx="1.0000000011242503e-05" ixy="-1.991593733750814e-21" ixz="1.3686128944734017e-10" iyy="1.0143779057796202e-05" iyz="1.3756897885334319e-10" izz="1.1666089364158581e-05"/>
+    </inertial>
+    <visual name="ALWristPitch_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWristPitch_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristPitch_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWristPitch_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="ALWristRoot_Link">
+    <inertial>
+      <origin xyz="-0.00087527 0.015651 -0.10982" rpy="0.0 0.0 0.0"/>
+      <mass value="0.12307"/>
+      <inertia ixx="1.6915e-05" ixy="-1.069e-08" ixz="-1.5838e-08" iyy="2.9632e-05" iyz="5.8916e-07" izz="1.3864e-05"/>
+    </inertial>
+    <visual name="ALWristRoot_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_Root_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.64706 0.61961 0.58824 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristRoot_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWrist_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ALWristYaw" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="ALWristPitch_Link"/>
+    <child link="ALWristYaw_Link"/>
+    <limit effort="400.0" lower="-0.558" upper="0.593" velocity="3.1415926"/>
+  </joint>
+  <link name="ALWristYaw_Link">
+    <inertial>
+      <origin xyz="-5.96363888886987e-05 -0.0112217565403197 0.0117774710310118" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0440266507004541"/>
+      <inertia ixx="1.452337454289961e-05" ixy="3.52232240231331e-09" ixz="1.8324292440025615e-08" iyy="1.0332756954026827e-05" iyz="-1.4768212974215518e-06" izz="1.655459170101281e-05"/>
+    </inertial>
+    <visual name="ALWristYaw_Link_Visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWristYaw_Link.stl"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
+      </material>
+    </visual>
+    <collision name="ALWristYaw_Link_Collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/lfs-stl/ALWristYaw_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>
