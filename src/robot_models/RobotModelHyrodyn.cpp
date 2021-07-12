@@ -65,7 +65,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     joint_state.names = jointnames_spanningtree;
     joint_state.elements.resize(jointnames_spanningtree.size());
 
-    joint_names = jointnames_active + joint_names_floating_base;
+    joint_names = joint_names_floating_base + jointnames_active;
 
     if(floating_base_robot){
         base::samples::RigidBodyStateSE3 rbs;
@@ -230,12 +230,12 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
     }
 
     if(floating_base_robot){
-        calculate_space_jacobian(tip_frame);
+        calculate_space_jacobian_actuation_space_including_floatingbase(tip_frame);
         uint n_cols = Jsufb.cols();
         jacobian.block(0,0,3,n_cols) = Jsufb.block(3,0,3,n_cols);
         jacobian.block(3,0,3,n_cols) = Jsufb.block(0,0,3,n_cols);
     }else{
-        calculate_space_jacobian(tip_frame);
+        calculate_space_jacobian_actuation_space(tip_frame);
         uint n_cols = Jsu.cols();
         jacobian.block(0,0,3,n_cols) = Jsu.block(3,0,3,n_cols);
         jacobian.block(3,0,3,n_cols) = Jsu.block(0,0,3,n_cols);
@@ -268,13 +268,13 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
     }
 
     if(floating_base_robot){
-        calculate_body_jacobian(tip_frame);
+        calculate_body_jacobian_actuation_space_including_floatingbase(tip_frame);
         uint n_cols = Jbufb.cols();
         jacobian.block(0,0,3,n_cols) = Jbufb.block(3,0,3,n_cols);
         jacobian.block(3,0,3,n_cols) = Jbufb.block(0,0,3,n_cols);
     }
     else{
-        calculate_body_jacobian(tip_frame);
+        calculate_body_jacobian_actuation_space(tip_frame);
         uint n_cols = Jbu.cols();
         jacobian.block(0,0,3,n_cols) = Jbu.block(3,0,3,n_cols);
         jacobian.block(3,0,3,n_cols) = Jbu.block(0,0,3,n_cols);
