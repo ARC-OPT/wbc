@@ -566,7 +566,7 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
         joint_state_floating_base.elements.push_back(js);
     }
 
-    joint_state.time = joint_state_floating_base.time = base::Time::now();
+    joint_state.time = joint_state_floating_base.time = floating_base_pose.time = base::Time::now();
     robot_model.update(joint_state, floating_base_pose);
     robot_model_floating_base.update(joint_state_floating_base);
 
