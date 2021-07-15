@@ -33,6 +33,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     uint ncp = robot_model->getContactPoints().size();
 
     A.resize(nc, nj); // Task Jacobian
+    A_weighted.resize(nc,nj); // Weighted Task Jacobian
     y.resize(nc); // Desired task space acceleration
     wy.resize(nc); // Task weights
 
@@ -107,27 +108,39 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         row_index += n_vars;
     }
 
+    ///////// Tasks
+
     // Multiply task weights
-    y = wy.cwiseProduct(y);
     for(int i = 0; i < A.rows(); i++)
-        A.row(i) = wy(i)*A.row(i);
+        A_weighted.row(i) = wy(i) * A.row(i);
+    // Mutiply joint weights
+    for(int i = 0; i < A.cols(); i++)
+        A_weighted.col(i) = joint_weights[i] * A_weighted.col(i);
 
     // Cost Function: Find joint accelerations that minimize the given task constraints (task space gradient points along desired task space accelerations)
     // Only minimize acceleration, not torques
     // min_x 0.5*x^T*H*x - 2x^T*g
     // --> H = J^T * J
     // --> g = -(J^T*xdot)^T
-    constraints_prio[prio].H.setZero();
-    constraints_prio[prio].H.block(0,0,nj,nj) = A.transpose()*A;
-    constraints_prio[prio].g.setZero();
-    constraints_prio[prio].g.segment(0,nj) = -(A.transpose()*y).transpose();
 
-    // Task Space Constraints (for each contact point)
+    // Compute Hessian: H = A^T*A
+    constraints_prio[prio].H.setZero();
+    constraints_prio[prio].H.block(0,0,nj,nj) = A_weighted.transpose()*A_weighted;
+    // Add regularization term
+    constraints_prio[prio].H.block(0,0,nj,nj) = constraints_prio[prio].H.block(0,0,nj,nj) + 1e-9*base::MatrixXd::Identity(nj,nj);
+    // gradient vector: -(A^T*y)^T
+    constraints_prio[prio].g.setZero();
+    constraints_prio[prio].g.segment(0,nj) = -(A_weighted.transpose()*y).transpose();
+
+    ///////// Constraints
+
     constraints_prio[prio].A.setZero();
     constraints_prio[prio].lower_y.setZero();
     constraints_prio[prio].upper_y.setZero();
 
+
     // 1. M*qdd - S^T*tau - Jb_1^T*f_ext_1 - Jb_2^T*f_ext_2 - ... = -h (Rigid Body Dynamic Equation)
+
     std::vector<std::string> contact_points = robot_model->getContactPoints();
     constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
     constraints_prio[prio].A.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
@@ -136,6 +149,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();// + robot_model->bodyJacobian(world_link, contact_link).transpose() * f_ext;
 
     // 2. For all contacts: Js*qdd = -Jsdot*qd (Rigid Contacts, contact points do not move!)
+
     for(int i = 0; i < contact_points.size(); i++){
         constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points[i]);
         base::Vector6d acc;
@@ -145,7 +159,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
     }
 
-    // Torque Limits
+    // 3. Torque Limits
     constraints_prio[prio].lower_x.setConstant(-10000);
     constraints_prio[prio].upper_x.setConstant(10000);
     for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
