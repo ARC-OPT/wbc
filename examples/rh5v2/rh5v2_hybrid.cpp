@@ -51,8 +51,8 @@ int main(){
 
     RobotModelHyrodyn robot_model;
     RobotModelConfig config;
-    config.file = "../../../models/urdf/rh5v2/rh5v2_hybrid.urdf";
-    config.submechanism_file = "../../../models/hyrodyn/rh5v2/rh5v2_hybrid.yml";
+    config.file = "../../../models/rh5v2/urdf/rh5v2_hybrid.urdf";
+    config.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2_hybrid.yml";
     if(!robot_model.configure(config))
         abort();
 

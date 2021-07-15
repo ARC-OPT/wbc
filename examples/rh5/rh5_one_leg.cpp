@@ -21,10 +21,10 @@ double whiteNoise(const double std_dev)
 }
 
 int main(){
-    RobotModelConfig config("../../../models/urdf/rh5/rh5_one_leg.urdf",
+    RobotModelConfig config("../../../models/rh5/urdf/rh5_one_leg.urdf",
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
-    config.submechanism_file = "../../../models/hyrodyn/rh5/rh5_one_leg.yml";
+    config.submechanism_file = "../../../models/rh5/hyrodyn/rh5_one_leg.yml";
 
     RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
     if(!robot_model->configure(config))

@@ -31,7 +31,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     // Configure Robot model
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
-    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     config.joint_names = joint_names;
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 

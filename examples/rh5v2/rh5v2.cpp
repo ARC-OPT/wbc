@@ -9,7 +9,7 @@ using namespace wbc;
 int main()
 {
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
-    RobotModelConfig config("../../../models/urdf/rh5v2/rh5v2.urdf");
+    RobotModelConfig config("../../../models/rh5v2/urdf/rh5v2.urdf");
     config.joint_blacklist = {"HeadPitch", "HeadRoll", "HeadYaw",
                               "GLF1Gear", "GLF1ProximalSegment", "GLF1TopSegment",
                               "GLF2Gear", "GLF2ProximalSegment", "GLF2TopSegment",
@@ -17,7 +17,7 @@ int main()
                               "GLF4Gear", "GLF4ProximalSegment", "GLF4TopSegment", "GLThumb",
                               "GRF1Gear", "GRF1ProximalSegment", "GRF1TopSegment",
                               "GRF2Gear", "GRF2ProximalSegment", "GRF2TopSegment"};
-    config.submechanism_file = "../../../models/hyrodyn/rh5v2/rh5v2.yml";
+    config.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
     if(!robot_model->configure(config))
         return -1;
 

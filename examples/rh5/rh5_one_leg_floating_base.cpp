@@ -28,7 +28,7 @@ int main(){
     floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
     floating_base_state.twist.setZero();
     floating_base_state.acceleration.setZero();
-    RobotModelConfig config("../../../models/urdf/rh5/rh5_one_leg.urdf",
+    RobotModelConfig config("../../../models/rh5/urdf/rh5_one_leg.urdf",
                            {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
                            "floating_base_rot_x",   "floating_base_rot_y",   "floating_base_rot_z",
                            "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
@@ -73,7 +73,7 @@ int main(){
     base::samples::Joints joint_state;
 
     hyrodyn::RobotModel_HyRoDyn robot_model_hyrodyn;
-    robot_model_hyrodyn.load_robotmodel("../../../models/urdf/rh5/rh5_one_leg_floating_base.urdf", "../../../models/hyrodyn/rh5/rh5_one_leg_floating_base.yml");
+    robot_model_hyrodyn.load_robotmodel("../../../models/rh5/urdf/rh5_one_leg_floating_base.urdf", "../../../models/rh5/hyrodyn/rh5_one_leg_floating_base.yml");
 
     HierarchicalQP hqp;
     for(int n = 0; n < 100; n++){
