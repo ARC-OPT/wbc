@@ -48,7 +48,7 @@ public:
                      const double activation = 0,
                      const std::vector<double> weights = {1,1,1,1,1,1},
                      const double timeout = 0);
-    /** Default constructor for Cartesian space constraints*/
+    /** Default constructor for joint space constraints*/
     ConstraintConfig(const std::string &name,
                      const int priority,
                      const std::vector<std::string> joint_names,

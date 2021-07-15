@@ -15,6 +15,77 @@ double whiteNoise(const double std_dev)
     return std_dev * sqrt( -2.0 * log( rand_no ) ) * tmp;
 }
 
+BOOST_AUTO_TEST_CASE(configuration_test){
+
+    RobotModelConfig config;
+    RobotModelHyrodyn robot_model;
+
+    std::vector<std::string> joint_names = {"kuka_lbr_l_joint_1",
+                                            "kuka_lbr_l_joint_2",
+                                            "kuka_lbr_l_joint_3",
+                                            "kuka_lbr_l_joint_4",
+                                            "kuka_lbr_l_joint_5",
+                                            "kuka_lbr_l_joint_6",
+                                            "kuka_lbr_l_joint_7"};
+    std::vector<std::string> floating_base_names = {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
+                                                    "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
+
+    // Valid config
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa.yml";
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Invalid filename
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urd";
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Invalid submechanism file
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa.ym";
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Valid config with floating base
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa_floating_base.yml";
+    config.floating_base = true;
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Config with invalid floating base state
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa_floating_base.yml";
+    config.floating_base = true;
+    config.floating_base_state.pose.orientation = base::Vector4d(1,1,1,1);
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Config with blacklisted joints
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa_blacklist.yml";
+    config.joint_blacklist.push_back(joint_names[6]);
+    config.floating_base = false;
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+
+    // Config with invalid joints in blacklist
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa_blacklist.yml";
+    config.joint_blacklist.push_back("kuka_lbr_l_joint_X");
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Config with contact points
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa.yml";
+    config.contact_points.push_back("kuka_lbr_l_tcp");
+    config.joint_blacklist.clear();
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Config with invalid contact points
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../models/hyrodyn/kuka/kuka_iiwa.yml";
+    config.contact_points.push_back("XYZ");
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+}
+
 BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
 
     /**
@@ -283,8 +354,8 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
         abort();
 
     base::samples::Joints joint_state;
-    joint_state.names = robot_model_hybrid.jointnames_independent;
-    for(auto n : robot_model_hybrid.jointnames_independent){
+    joint_state.names = robot_model_hybrid.hyrodynHandle()->jointnames_independent;
+    for(auto n : robot_model_hybrid.hyrodynHandle()->jointnames_independent){
         base::JointState js;
         js.position = js.speed = js.acceleration = 0;
         joint_state.elements.push_back(js);
@@ -302,14 +373,14 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     v.setZero();
     v[2] = -0.1;
     base::VectorXd u = jac.completeOrthogonalDecomposition().pseudoInverse()*v;
-    robot_model_hybrid.ud = u;
-    robot_model_hybrid.calculate_forward_system_state();
+    robot_model_hybrid.hyrodynHandle()->ud = u;
+    robot_model_hybrid.hyrodynHandle()->calculate_forward_system_state();
 
     cout<< "Solution actuation space" << endl;
-    std::cout<<robot_model_hybrid.yd.transpose()<<endl;
+    std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;
 
     cout<< "Solution projected to independent joint space" << endl;
-    std::cout<<robot_model_hybrid.yd.transpose()<<endl;
+    std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;
 
 
     cout<<"******************** SERIAL MODEL *****************"<<endl;

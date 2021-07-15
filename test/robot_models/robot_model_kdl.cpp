@@ -13,6 +13,159 @@ using namespace std;
 using namespace wbc;
 using namespace RigidBodyDynamics;
 
+BOOST_AUTO_TEST_CASE(configuration_test){
+
+    RobotModelConfig config;
+    RobotModelKDL robot_model;
+
+    std::vector<std::string> joint_names = {"kuka_lbr_l_joint_1",
+                                            "kuka_lbr_l_joint_2",
+                                            "kuka_lbr_l_joint_3",
+                                            "kuka_lbr_l_joint_4",
+                                            "kuka_lbr_l_joint_5",
+                                            "kuka_lbr_l_joint_6",
+                                            "kuka_lbr_l_joint_7"};
+    std::vector<std::string> floating_base_names = {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
+                                                    "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
+
+    // Valid config
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Invalid filename
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urd";
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Empty filename
+    config.file = "";
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Valid config with joint names
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Valid config with joint names and actuated joint names
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = config.joint_names;
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Valid config with actuated joint names only
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.actuated_joint_names = joint_names;
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Missing joint name
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = {"kuka_lbr_l_joint_1",
+                          "kuka_lbr_l_joint_2",
+                          "kuka_lbr_l_joint_3",
+                          "kuka_lbr_l_joint_4",
+                          "kuka_lbr_l_joint_5",
+                          "kuka_lbr_l_joint_6"};
+    config.actuated_joint_names = config.joint_names;
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Invalid joint name
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = {"kuka_lbr_l_joint_1",
+                          "kuka_lbr_l_joint_2",
+                          "kuka_lbr_l_joint_3",
+                          "kuka_lbr_l_joint_4",
+                          "kuka_lbr_l_joint_5",
+                          "kuka_lbr_l_joint_6",
+                          "kuka_lbr_l_joint_X"};
+    config.actuated_joint_names = config.joint_names;
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Less actuated joint names than joints
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = config.joint_names;
+    config.actuated_joint_names.pop_back();
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Invalid actuated joint name
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = config.joint_names;
+    config.actuated_joint_names[6] = "kuka_lbr_l_joint_X";
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Valid config with floating base
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = floating_base_names + joint_names;
+    config.actuated_joint_names = joint_names;
+    config.floating_base = true;
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Config with invalid floating base name
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = floating_base_names + joint_names;
+    config.joint_names[0] = "floating_base_trans_";
+    config.actuated_joint_names = joint_names;
+    config.floating_base = true;
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Config with missing floating base name
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = floating_base_names + joint_names;
+    config.joint_names.erase(config.joint_names.begin());
+    config.actuated_joint_names = joint_names;
+    config.floating_base = true;
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Config with invalid floating base state
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = floating_base_names + joint_names;
+    config.actuated_joint_names = joint_names;
+    config.floating_base = true;
+    config.floating_base_state.pose.orientation = base::Vector4d(1,1,1,1);
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Config with blacklisted joints
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.joint_names.pop_back();
+    config.actuated_joint_names = config.joint_names;
+    config.joint_blacklist.push_back(joint_names[6]);
+    config.floating_base = false;
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Config with blacklisted joints and missing joint name
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.joint_names.pop_back();
+    config.joint_names.pop_back();
+    config.actuated_joint_names = config.joint_names;
+    config.joint_blacklist.push_back(joint_names[6]);
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Config with invalid joints in blacklist
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = joint_names;
+    config.joint_blacklist.push_back("kuka_lbr_l_joint_X");
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+    // Config with contact points
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = joint_names;
+    config.contact_points.push_back("kuka_lbr_l_tcp");
+    config.joint_blacklist.clear();
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    // Config with invalid contact points
+    config.file = "../../../models/urdf/kuka/kuka_iiwa.urdf";
+    config.joint_names = joint_names;
+    config.actuated_joint_names = joint_names;
+    config.contact_points.push_back("XYZ");
+    BOOST_CHECK(robot_model.configure(config) == false);
+
+}
+
 BOOST_AUTO_TEST_CASE(verify_jacobian_and_forward_kinematics){
 
     /**

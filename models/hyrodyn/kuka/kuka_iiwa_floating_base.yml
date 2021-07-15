@@ -1,0 +1,22 @@
+submechanisms:
+
+- name: "free_flyer_joint"
+  type: "3T+3R"
+  contextual_name: "floating_root_joint"
+  jointnames_independent: ["floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"]
+  jointnames_spanningtree: ["floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"]
+  jointnames_active: []
+
+- name: "six_revolute_joints"
+  type: "6R"
+  contextual_name: "iiwa_arm"
+  jointnames_independent: ["kuka_lbr_l_joint_1","kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3","kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5","kuka_lbr_l_joint_6"]
+  jointnames_spanningtree: ["kuka_lbr_l_joint_1","kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3","kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5","kuka_lbr_l_joint_6"]
+  jointnames_active: ["kuka_lbr_l_joint_1","kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3","kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5","kuka_lbr_l_joint_6"]
+
+- name: "last_joint"
+  type: "R"
+  contextual_name: "iiwa_last_joint"
+  jointnames_independent: ["kuka_lbr_l_joint_7"]
+  jointnames_spanningtree: ["kuka_lbr_l_joint_7"]
+  jointnames_active: ["kuka_lbr_l_joint_7"]

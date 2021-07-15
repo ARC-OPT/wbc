@@ -9,7 +9,7 @@
 
 namespace wbc{
 
-class RobotModelHyrodyn : public RobotModel, public hyrodyn::RobotModel_HyRoDyn{
+class RobotModelHyrodyn : public RobotModel{
 protected:
     base::samples::RigidBodyStateSE3 rbs;
     std::string base_frame;
@@ -26,6 +26,7 @@ protected:
     urdf::ModelInterfaceSharedPtr robot_urdf;
     base::samples::RigidBodyStateSE3 com_rbs;
     base::MatrixXd jacobian;
+    hyrodyn::RobotModel_HyRoDyn hyrodyn;
 
     void clear();
 public:
@@ -105,7 +106,7 @@ public:
     virtual const std::vector<std::string>& jointNames(){return joint_names;}
 
     /** @brief Return only actuated joint names*/
-   virtual  const std::vector<std::string>& actuatedJointNames(){return jointnames_active;}
+   virtual  const std::vector<std::string>& actuatedJointNames(){return hyrodyn.jointnames_active;}
 
     /** @brief Get index of joint name*/
     virtual uint jointIndex(const std::string &joint_name);
@@ -132,6 +133,9 @@ public:
 
     /** @brief Return Current center of gravity in expressed base frame*/
     virtual const base::samples::RigidBodyStateSE3& getCOM(){return com_rbs;}
+
+    /** @brief Return pointer to the internal hyrodyn model*/
+    hyrodyn::RobotModel_HyRoDyn *hyrodynHandle(){return &hyrodyn;}
 };
 }
 

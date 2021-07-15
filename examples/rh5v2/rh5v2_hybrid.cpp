@@ -16,8 +16,8 @@ base::commands::Joints evaluateRobotModel(RobotModelPtr robot_model){
     string root = "RH5_Root_Link";
     string tip  = "LLAnklePitch_Link";
     base::samples::Joints joint_state;
-    joint_state.names = std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->jointnames_independent;
-    for(auto n : std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->jointnames_independent){
+    joint_state.names = std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->hyrodynHandle()->jointnames_independent;
+    for(auto n : std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->hyrodynHandle()->jointnames_independent){
         base::JointState js;
         js.position = js.speed = js.acceleration = 0;
         joint_state.elements.push_back(js);
@@ -33,9 +33,9 @@ base::commands::Joints evaluateRobotModel(RobotModelPtr robot_model){
     VelocitySceneQuadraticCost scene(robot_model, solver);
     std::vector<ConstraintConfig> wbc_config;
     wbc_config.push_back(ConstraintConfig("cart_pos_ctrl", 0,
-                                          "RH5_Root_Link",
-                                          "LLAnklePitch_Link",
-                                          "RH5_Root_Link", 1));
+                                          root,
+                                          tip,
+                                          root, 1));
     if(!scene.configure(wbc_config))
         abort();
     base::samples::RigidBodyStateSE3 ref;
@@ -57,8 +57,8 @@ int main(){
         abort();
 
     base::samples::Joints joint_state;
-    joint_state.names = robot_model.jointnames_independent;
-    for(auto n : robot_model.jointnames_independent){
+    joint_state.names = robot_model.hyrodynHandle()->jointnames_independent;
+    for(auto n : robot_model.hyrodynHandle()->jointnames_independent){
         base::JointState js;
         js.position = js.speed = js.acceleration = 0;
         joint_state.elements.push_back(js);
@@ -74,7 +74,7 @@ int main(){
     robot_model.update(joint_state);
 
     base::samples::Joints full_joint_state = robot_model.jointState(robot_model.jointNames());
-    for(int i = 0; i < robot_model.jointnames_spanningtree.size(); i++)
-        cout<<robot_model.jointnames_spanningtree[i]<<": "<<robot_model.Q[i]<<endl;
+    for(int i = 0; i < robot_model.hyrodynHandle()->jointnames_spanningtree.size(); i++)
+        cout<<robot_model.hyrodynHandle()->jointnames_spanningtree[i]<<": "<<robot_model.hyrodynHandle()->Q[i]<<endl;
     return 0;
 }

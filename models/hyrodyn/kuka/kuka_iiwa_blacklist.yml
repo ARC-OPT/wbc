@@ -1,0 +1,8 @@
+submechanisms:
+- contextual_name: RH5v2
+  jointnames: ["kuka_lbr_l_joint_1","kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3","kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5","kuka_lbr_l_joint_6"]
+  jointnames_active: ["kuka_lbr_l_joint_1","kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3","kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5","kuka_lbr_l_joint_6"]
+  jointnames_independent: ["kuka_lbr_l_joint_1","kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3","kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5","kuka_lbr_l_joint_6"]
+  jointnames_spanningtree: ["kuka_lbr_l_joint_1","kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3","kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5","kuka_lbr_l_joint_6"]
+  name: kuka_iiwa
+  type: serial

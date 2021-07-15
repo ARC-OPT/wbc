@@ -19,8 +19,8 @@ public:
         floating_base_state.acceleration.setZero();
     }
     RobotModelConfig(const std::string& file,
-                     const std::vector<std::string> joint_names,
-                     const std::vector<std::string> actuated_joint_names,
+                     const std::vector<std::string> joint_names = {},
+                     const std::vector<std::string> actuated_joint_names = {},
                      const bool floating_base = false,
                      const std::string &world_frame_id = "world",
                      const base::RigidBodyStateSE3& floating_base_state = base::RigidBodyStateSE3(),

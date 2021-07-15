@@ -21,6 +21,7 @@ void RobotModelHyrodyn::clear(){
     robot_urdf.reset();
     joint_names_floating_base.clear();
     joint_names.clear();
+    hyrodyn = hyrodyn::RobotModel_HyRoDyn();
 }
 
 bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
@@ -42,7 +43,8 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     }
 
     // Blacklist not required joints
-    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
+    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
+        return false;
 
     // Add floating base
     if(cfg.floating_base)
@@ -54,35 +56,53 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     std::string robot_urdf_file = "/tmp/floating_base_model.urdf";
     doc->SaveFile(robot_urdf_file);
     try{
-        load_robotmodel(robot_urdf_file, cfg.submechanism_file);
+        hyrodyn.load_robotmodel(robot_urdf_file, cfg.submechanism_file);
     }
     catch(std::exception e){
         LOG_ERROR_S << "Failed to load hyrodyn model from URDF " << robot_urdf_file <<
                        " and submechanism file " << cfg.submechanism_file << std::endl;
-        throw e;
+        return false;
     }
 
-    joint_state.names = jointnames_spanningtree;
-    joint_state.elements.resize(jointnames_spanningtree.size());
+    joint_state.names =hyrodyn.jointnames_spanningtree;
+    joint_state.elements.resize(hyrodyn.jointnames_spanningtree.size());
 
-    joint_names = joint_names_floating_base + jointnames_active;
-
-    if(floating_base_robot){
-        base::samples::RigidBodyStateSE3 rbs;
-        rbs.pose = cfg.floating_base_state.pose;
-        rbs.twist = cfg.floating_base_state.twist;
-        rbs.acceleration = cfg.floating_base_state.acceleration;
-        rbs.time = base::Time::now();
-        rbs.frame_id = cfg.world_frame_id;
-        updateFloatingBase(rbs, joint_names_floating_base, joint_state);
-
-    }
+    joint_names = joint_names_floating_base + hyrodyn.jointnames_active;
 
     // 2. Verify consistency of URDF and config
 
-    // TODO
+    // This is mostly being done internally in hyrodyn
 
-    // 3. Create data structures
+    // All contact point have to be a valid link in the robot URDF
+    for(auto c : cfg.contact_points){
+        if(!hasLink(c)){
+            LOG_ERROR("Contact point %s is not a valid link in the robot model", c.c_str());
+            return false;
+        }
+    }
+
+    // 3. Set initial floating base state
+
+    if(hyrodyn.floating_base_robot){
+        if(cfg.floating_base_state.hasValidPose() ||
+           cfg.floating_base_state.hasValidTwist() ||
+           cfg.floating_base_state.hasValidAcceleration()){
+            base::samples::RigidBodyStateSE3 rbs;
+            rbs.pose = cfg.floating_base_state.pose;
+            rbs.twist = cfg.floating_base_state.twist;
+            rbs.acceleration = cfg.floating_base_state.acceleration;
+            rbs.time = base::Time::now();
+            rbs.frame_id = cfg.world_frame_id;
+            try{
+                updateFloatingBase(rbs, joint_names_floating_base, joint_state);
+            }
+            catch(std::runtime_error e){
+                return false;
+            }
+        }
+    }
+
+    // 4. Create data structures
 
     jacobian.resize(6,noOfJoints());
     jacobian.setConstant(std::numeric_limits<double>::quiet_NaN());
@@ -92,8 +112,8 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     bias_forces.resize(noOfJoints());
     selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
     selection_matrix.setZero();
-    for(int i = 0; i < jointnames_active.size(); i++)
-        selection_matrix(i, jointIndex(jointnames_active[i])) = 1.0;
+    for(int i = 0; i < hyrodyn.jointnames_active.size(); i++)
+        selection_matrix(i, jointIndex(hyrodyn.jointnames_active[i])) = 1.0;
 
     return true;
 }
@@ -113,24 +133,24 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
 
     uint start_idx = 0;
     // Update floating base if available
-    if(floating_base_robot){
+    if(hyrodyn.floating_base_robot){
         updateFloatingBase(_floating_base_state, joint_names_floating_base, joint_state);
         start_idx = 6;
         for(int i = 0; i < 6; i++){
-            y(i)   = joint_state[i].position;
-            yd(i)   = joint_state[i].speed;
-            ydd(i)   = joint_state[i].acceleration;
+            hyrodyn.y(i)   = joint_state[i].position;
+            hyrodyn.yd(i)   = joint_state[i].speed;
+            hyrodyn.ydd(i)   = joint_state[i].acceleration;
         }
     }
 
     // Update independent joints. This assumes that joints 0..5 are the floating base joints
-    for( unsigned int i = start_idx; i < jointnames_independent.size(); ++i){
-        const std::string& name =  jointnames_independent[i];
+    for( unsigned int i = start_idx; i < hyrodyn.jointnames_independent.size(); ++i){
+        const std::string& name =  hyrodyn.jointnames_independent[i];
         try{
-            y[i] = joint_state_in[name].position;
-            yd[i] = joint_state_in[name].speed;
-            ydd[i] = joint_state_in[name].acceleration;
-            Tau_independentjointspace[i] = joint_state_in[name].effort;
+            hyrodyn.y[i] = joint_state_in[name].position;
+            hyrodyn.yd[i] = joint_state_in[name].speed;
+            hyrodyn.ydd[i] = joint_state_in[name].acceleration;
+            hyrodyn.Tau_independentjointspace[i] = joint_state_in[name].effort;
         }
         catch(base::samples::Joints::InvalidName e){
             LOG_ERROR_S << "Joint " << name << " is in independent joints of Hyrodyn model, but it is not given in joint state vector" << std::endl;
@@ -139,23 +159,23 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
     }
 
     // Compute full spanning tree
-    calculate_system_state();
+    hyrodyn.calculate_system_state();
 
-    for(size_t i = 0; i < jointnames_spanningtree.size(); i++){
-        const std::string &name = jointnames_spanningtree[i];
-        joint_state[name].position = Q[i];
-        joint_state[name].speed = QDot[i];
-        joint_state[name].acceleration = QDDot[i];
+    for(size_t i = 0; i < hyrodyn.jointnames_spanningtree.size(); i++){
+        const std::string &name = hyrodyn.jointnames_spanningtree[i];
+        joint_state[name].position = hyrodyn.Q[i];
+        joint_state[name].speed = hyrodyn.QDot[i];
+        joint_state[name].acceleration = hyrodyn.QDDot[i];
     }
     joint_state.time = joint_state_in.time;
 
-    calculate_com_properties();
+    hyrodyn.calculate_com_properties();
     com_rbs.frame_id = base_frame;
-    com_rbs.pose.position = com;
+    com_rbs.pose.position = hyrodyn.com;
     com_rbs.pose.orientation.setIdentity();
-    com_rbs.twist.linear = com_vel;
+    com_rbs.twist.linear = hyrodyn.com_vel;
     com_rbs.twist.angular.setZero();
-    com_rbs.acceleration.linear = com_acc;
+    com_rbs.acceleration.linear = hyrodyn.com_acc;
     com_rbs.acceleration.angular.setZero();
     com_rbs.time = joint_state.time;
 }
@@ -195,13 +215,13 @@ const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const 
         throw std::runtime_error("Invalid root frame");
     }
 
-    calculate_forward_kinematics(tip_frame);
-    rbs.pose.position        = pose.segment(0,3);
-    rbs.pose.orientation     = base::Quaterniond(pose[6],pose[3],pose[4],pose[5]);
-    rbs.twist.linear         = twist.segment(3,3);
-    rbs.twist.angular        = twist.segment(0,3);
-    rbs.acceleration.linear  = spatial_acceleration.segment(3,3);
-    rbs.acceleration.angular = spatial_acceleration.segment(0,3);//
+    hyrodyn.calculate_forward_kinematics(tip_frame);
+    rbs.pose.position        = hyrodyn.pose.segment(0,3);
+    rbs.pose.orientation     = base::Quaterniond(hyrodyn.pose[6],hyrodyn.pose[3],hyrodyn.pose[4],hyrodyn.pose[5]);
+    rbs.twist.linear         = hyrodyn.twist.segment(3,3);
+    rbs.twist.angular        = hyrodyn.twist.segment(0,3);
+    rbs.acceleration.linear  = hyrodyn.spatial_acceleration.segment(3,3);
+    rbs.acceleration.angular = hyrodyn.spatial_acceleration.segment(0,3);//
     rbs.time                 = joint_state.time;
     rbs.frame_id             = tip_frame;
     return rbs;
@@ -229,16 +249,16 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
         throw std::runtime_error("Invalid root frame");
     }
 
-    if(floating_base_robot){
-        calculate_space_jacobian_actuation_space_including_floatingbase(tip_frame);
-        uint n_cols = Jsufb.cols();
-        jacobian.block(0,0,3,n_cols) = Jsufb.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = Jsufb.block(0,0,3,n_cols);
+    if(hyrodyn.floating_base_robot){
+        hyrodyn.calculate_space_jacobian_actuation_space_including_floatingbase(tip_frame);
+        uint n_cols = hyrodyn.Jsufb.cols();
+        jacobian.block(0,0,3,n_cols) = hyrodyn.Jsufb.block(3,0,3,n_cols);
+        jacobian.block(3,0,3,n_cols) = hyrodyn.Jsufb.block(0,0,3,n_cols);
     }else{
-        calculate_space_jacobian_actuation_space(tip_frame);
-        uint n_cols = Jsu.cols();
-        jacobian.block(0,0,3,n_cols) = Jsu.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = Jsu.block(0,0,3,n_cols);
+        hyrodyn.calculate_space_jacobian_actuation_space(tip_frame);
+        uint n_cols = hyrodyn.Jsu.cols();
+        jacobian.block(0,0,3,n_cols) = hyrodyn.Jsu.block(3,0,3,n_cols);
+        jacobian.block(3,0,3,n_cols) = hyrodyn.Jsu.block(0,0,3,n_cols);
     }
 
     return jacobian;
@@ -267,17 +287,17 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
         throw std::runtime_error("Invalid root frame");
     }
 
-    if(floating_base_robot){
-        calculate_body_jacobian_actuation_space_including_floatingbase(tip_frame);
-        uint n_cols = Jbufb.cols();
-        jacobian.block(0,0,3,n_cols) = Jbufb.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = Jbufb.block(0,0,3,n_cols);
+    if(hyrodyn.floating_base_robot){
+        hyrodyn.calculate_body_jacobian_actuation_space_including_floatingbase(tip_frame);
+        uint n_cols = hyrodyn.Jbufb.cols();
+        jacobian.block(0,0,3,n_cols) = hyrodyn.Jbufb.block(3,0,3,n_cols);
+        jacobian.block(3,0,3,n_cols) = hyrodyn.Jbufb.block(0,0,3,n_cols);
     }
     else{
-        calculate_body_jacobian_actuation_space(tip_frame);
-        uint n_cols = Jbu.cols();
-        jacobian.block(0,0,3,n_cols) = Jbu.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = Jbu.block(0,0,3,n_cols);
+        hyrodyn.calculate_body_jacobian_actuation_space(tip_frame);
+        uint n_cols = hyrodyn.Jbu.cols();
+        jacobian.block(0,0,3,n_cols) = hyrodyn.Jbu.block(3,0,3,n_cols);
+        jacobian.block(3,0,3,n_cols) = hyrodyn.Jbu.block(0,0,3,n_cols);
     }
 
     return jacobian;
@@ -289,8 +309,8 @@ const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_fra
 }
 
 const base::Acceleration &RobotModelHyrodyn::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
-    calculate_spatial_acceleration_bias(tip_frame);
-    spatial_acc_bias = base::Acceleration(spatial_acceleration_bias.segment(3,3), spatial_acceleration_bias.segment(0,3));
+    hyrodyn.calculate_spatial_acceleration_bias(tip_frame);
+    spatial_acc_bias = base::Acceleration(hyrodyn.spatial_acceleration_bias.segment(3,3), hyrodyn.spatial_acceleration_bias.segment(0,3));
     return spatial_acc_bias;
 }
 
@@ -300,8 +320,8 @@ const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
-    calculate_mass_interia_matrix();
-    joint_space_inertia_mat = H;
+    hyrodyn.calculate_mass_interia_matrix();
+    joint_space_inertia_mat = hyrodyn.H;
     return joint_space_inertia_mat;
 }
 
@@ -311,9 +331,9 @@ const base::VectorXd &RobotModelHyrodyn::biasForces(){
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
-    ydd.setZero(); // TODO: Should be restored after the ID computation
-    calculate_inverse_dynamics_independentjointspace();
-    bias_forces = Tau_independentjointspace;
+    hyrodyn.ydd.setZero(); // TODO: Should be restored after the ID computation
+    hyrodyn.calculate_inverse_dynamics_independentjointspace();
+    bias_forces = hyrodyn.Tau_independentjointspace;
     return bias_forces;
 }
 
@@ -337,7 +357,7 @@ bool RobotModelHyrodyn::hasJoint(const std::string &joint_name){
 }
 
 bool RobotModelHyrodyn::hasActuatedJoint(const std::string &joint_name){
-    return std::find(jointnames_active.begin(), jointnames_active.end(), joint_name) != jointnames_active.end();
+    return std::find(hyrodyn.jointnames_active.begin(), hyrodyn.jointnames_active.end(), joint_name) != hyrodyn.jointnames_active.end();
 }
 
 }

@@ -16,8 +16,8 @@ base::commands::Joints evaluateRobotModel(RobotModelPtr robot_model){
     string root = "RH5_Root_Link";
     string tip  = "LLAnklePitch_Link";
     base::samples::Joints joint_state;
-    joint_state.names = std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->jointnames_independent;
-    for(auto n : std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->jointnames_independent){
+    joint_state.names = std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->hyrodynHandle()->jointnames_independent;
+    for(auto n : std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->hyrodynHandle()->jointnames_independent){
         base::JointState js;
         js.position = js.speed = js.acceleration = 0;
         joint_state.elements.push_back(js);
@@ -74,11 +74,11 @@ int main(){
     for(auto n : solver_output.names)
         cout << n << ": " << solver_output[n].speed << endl;
     for(int i = 0; i < solver_output.size(); i++)
-        std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->ud[i] = solver_output[i].speed;
-    std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->calculate_forward_system_state();
+        std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->hyrodynHandle()->ud[i] = solver_output[i].speed;
+    std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->hyrodynHandle()->calculate_forward_system_state();
 
     cout<< "Solver output projected to independent joint space" << endl;
-    std::cout<<std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->yd.transpose()<<endl;
+    std::cout<<std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->hyrodynHandle()->yd.transpose()<<endl;
 
     cout<<"******************** SERIAL MODEL *****************"<<endl;
     solver_output = evaluateRobotModel(robot_model_serial);

@@ -21,3 +21,11 @@ target_link_libraries(rh5v2_hybrid
                       wbc-robot_models
                       ${hyrodyn_LIBRARIES}
                       ${rbdl_LIBRARIES})
+add_executable(rh5v2 rh5v2.cpp)
+target_link_libraries(rh5v2
+                      wbc-solvers-qpoases
+                      wbc-scenes
+                      wbc-tools
+                      wbc-robot_models
+                      ${hyrodyn_LIBRARIES}
+                      ${rbdl_LIBRARIES})
