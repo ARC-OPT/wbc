@@ -19,6 +19,7 @@ Constraint::Constraint(const ConstraintConfig& _config, uint n_robot_joints) :
     weights_root.resize(no_variables);
 
     A.resize(no_variables, n_robot_joints);
+    Aw.resize(no_variables, n_robot_joints);
     reset();
 }
 
@@ -33,6 +34,7 @@ void Constraint::reset(){
     y_ref_root.setConstant(no_variables, base::NaN<double>());
     y_ref.setZero(no_variables);
     A.setZero();
+    Aw.setZero();
     activation = config.activation;
     for(uint i = 0; i < no_variables; i++){
         weights(i) = config.weights[i];

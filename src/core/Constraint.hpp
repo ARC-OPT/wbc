@@ -78,6 +78,9 @@ public:
 
     /** Constraint matrix */
     base::MatrixXd A;
+
+    /** Weighted constraint matrix */
+    base::MatrixXd Aw;
 };
 typedef std::shared_ptr<Constraint> ConstraintPtr;
 
