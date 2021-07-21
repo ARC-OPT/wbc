@@ -4,6 +4,12 @@
 
 namespace wbc {
 
+AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver) :
+    WbcScene(robot_model,solver),
+    hessian_regularizer(1e-8){
+
+}
+
 ConstraintPtr AccelerationSceneTSID::createConstraint(const ConstraintConfig &config){
 
     if(config.type == cart)
@@ -32,22 +38,19 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     uint nc = n_constraint_variables_per_prio[prio]; // total number of task constraints
     uint ncp = robot_model->getContactPoints().size();
 
-    A.resize(nc, nj); // Task Jacobian
-    A_weighted.resize(nc,nj); // Weighted Task Jacobian
-    y.resize(nc); // Desired task space acceleration
-    wy.resize(nc); // Task weights
-
     // QP Size: (NJoints+NContacts*2*6 x NJoints+NActuatedJoints+NContacts*6)
     // Variable order: (acc,torque,f_ext)
     constraints_prio[prio].resize(nj+ncp*6,nj+na+ncp*6);
+    constraints_prio[prio].H.setZero();
+    constraints_prio[prio].g.setZero();
 
-    // Walk through all task constraints
-    uint row_index = 0;
+    ///////// Tasks
+
+    // Walk through all tasks
     for(uint i = 0; i < constraints[prio].size(); i++){
 
         int type = constraints[prio][i]->config.type;
         constraints[prio][i]->checkTimeout();
-        uint n_vars = constraints[prio][i]->config.nVariables(); // Variable for this task constraint
         ConstraintPtr constraint;
 
         if(type == cart){
@@ -102,35 +105,17 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
            constraint->y_ref_root.setZero();
         }
 
-        wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation;// * (!constraint->timeout);
-        A.block(row_index, 0, n_vars, nj) = constraint->A;
-        y.segment(row_index, n_vars) = constraint->y_ref_root;
-        row_index += n_vars;
+        for(int i = 0; i < constraint->A.rows(); i++)
+            constraint->Aw.row(i) = constraint->weights_root(i) * constraint->A.row(i);
+        for(int i = 0; i < constraint->A.cols(); i++)
+            constraint->Aw.col(i) = joint_weights[i] * constraint->Aw.col(i);
+
+        constraints_prio[prio].H.block(0,0,nj,nj) += constraint->Aw.transpose()*constraint->Aw;
+        constraints_prio[prio].g.segment(0,nj) -= constraint->Aw.transpose()*constraint->y_ref_root;
     }
 
-    ///////// Tasks
+    constraints_prio[prio].H.block(0,0,nj,nj).diagonal().array() += hessian_regularizer;
 
-    // Multiply task weights
-    for(int i = 0; i < A.rows(); i++)
-        A_weighted.row(i) = wy(i) * A.row(i);
-    // Mutiply joint weights
-    for(int i = 0; i < A.cols(); i++)
-        A_weighted.col(i) = joint_weights[i] * A_weighted.col(i);
-
-    // Cost Function: Find joint accelerations that minimize the given task constraints (task space gradient points along desired task space accelerations)
-    // Only minimize acceleration, not torques
-    // min_x 0.5*x^T*H*x - 2x^T*g
-    // --> H = J^T * J
-    // --> g = -(J^T*xdot)^T
-
-    // Compute Hessian: H = A^T*A
-    constraints_prio[prio].H.setZero();
-    constraints_prio[prio].H.block(0,0,nj,nj) = A_weighted.transpose()*A_weighted;
-    // Add regularization term
-    constraints_prio[prio].H.block(0,0,nj,nj) = constraints_prio[prio].H.block(0,0,nj,nj) + 1e-9*base::MatrixXd::Identity(nj,nj);
-    // gradient vector: -(A^T*y)^T
-    constraints_prio[prio].g.setZero();
-    constraints_prio[prio].g.segment(0,nj) = -(A_weighted.transpose()*y).transpose();
 
     ///////// Constraints
 
@@ -159,14 +144,15 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
     }
 
-    // 3. Torque Limits
-    constraints_prio[prio].lower_x.setConstant(-10000);
-    constraints_prio[prio].upper_x.setConstant(10000);
-    for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
+    // 3. Torque and acceleration limits
+
+    constraints_prio[prio].upper_x.resize(0);
+    constraints_prio[prio].lower_x.resize(0);
+    /*for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
         constraints_prio[prio].upper_x(i+nj) = robot_model->jointLimits()[name].max.effort;
-    }
+    }*/
 
     constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     return constraints_prio;

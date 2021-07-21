@@ -46,8 +46,7 @@ protected:
     base::VectorXd q_dot;
     base::VectorXd solver_output, robot_acc, solver_output_acc;
     base::samples::Wrenches contact_wrenches;
-    base::MatrixXd A, A_weighted;
-    base::VectorXd y, wy;
+    double hessian_regularizer;
 
     /**
      * brief Create a constraint and add it to the WBC scene
@@ -57,8 +56,7 @@ protected:
     base::Time stamp;
 
 public:
-    AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver) :
-        WbcScene(robot_model, solver){}
+    AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver);
     virtual ~AccelerationSceneTSID(){
     }
     /**
@@ -82,6 +80,17 @@ public:
      * @brief Get estimated contact wrenches
      */
     const base::samples::Wrenches& getContactWrenches(){return contact_wrenches;}
+
+    /**
+     * @brief setHessianRegularizer
+     * @param reg This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8
+     */
+    void setHessianRegularizer(const double reg){hessian_regularizer=reg;}
+
+    /**
+     * @brief Return the current value of hessian regularizer
+     */
+    double getHessianRegularizer(){return hessian_regularizer;}
 };
 
 } // namespace wbc

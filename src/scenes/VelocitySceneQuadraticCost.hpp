@@ -32,8 +32,7 @@ class VelocitySceneQuadraticCost : public VelocityScene{
 protected:
     base::VectorXd s_vals, tmp;
     base::MatrixXd sing_vect_r, U;
-    base::MatrixXd A,A_weighted;
-    base::VectorXd y,Wy;
+    double hessian_regularizer;
 
 public:
     /**
@@ -48,6 +47,17 @@ public:
      * @brief Update the wbc scene
      */
     virtual const HierarchicalQP& update();
+
+    /**
+     * @brief setHessianRegularizer
+     * @param reg This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8
+     */
+    void setHessianRegularizer(const double reg){hessian_regularizer=reg;}
+
+    /**
+     * @brief Return the current value of hessian regularizer
+     */
+    double getHessianRegularizer(){return hessian_regularizer;}
 };
 
 } // namespace wbc

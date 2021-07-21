@@ -7,7 +7,8 @@
 namespace wbc{
 
 VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver) :
-    VelocityScene(robot_model, solver){
+    VelocityScene(robot_model, solver),
+    hessian_regularizer(1e-8){
 
 }
 
@@ -29,21 +30,17 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     uint ncp = contact_points.size();
     uint prio = 0;
 
+    // QP Size: (NContacts*6 X NJoints)
     constraints_prio[prio].resize(ncp*6,nj);
+    constraints_prio[prio].H.setZero();
+    constraints_prio[prio].g.setZero();
 
-    A.resize(n_constraint_variables_per_prio[prio],nj);
-    A.setZero();
-    A_weighted.resize(n_constraint_variables_per_prio[prio],nj);
-    y.resize(n_constraint_variables_per_prio[prio]);
-    Wy.resize(n_constraint_variables_per_prio[prio]);
+    ///////// Tasks
 
-    // Walk through all tasks of current priority
-    uint row_index = 0;
     for(uint i = 0; i < constraints[prio].size(); i++){
 
         constraints[prio][i]->checkTimeout();
         int type = constraints[prio][i]->config.type;
-        uint n_vars = constraints[prio][i]->config.nVariables();
 
         if(type == cart){
 
@@ -91,32 +88,18 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
            constraint->y_ref_root.setZero();
         }
 
-        // Insert constraints into equation system of current priority at the correct position. Note: Weights will be zero if activations
-        // for this constraint is zero or if the constraint is in timeout
-        Wy.segment(row_index, n_vars) = constraint->weights_root * constraint->activation;// * (!constraint->timeout);
-        A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = constraint->A;
-        y.segment(row_index, n_vars) = constraint->y_ref_root;
+        for(int i = 0; i < constraint->A.rows(); i++)
+            constraint->Aw.row(i) = constraint->weights_root(i) * constraint->A.row(i);
+        for(int i = 0; i < constraint->A.cols(); i++)
+            constraint->Aw.col(i) = joint_weights[i] * constraint->Aw.col(i);
 
-        row_index += n_vars;
+        constraints_prio[prio].H.block(0,0,nj,nj) += constraint->Aw.transpose()*constraint->Aw;
+        constraints_prio[prio].g.segment(0,nj) -= constraint->Aw.transpose()*constraint->y_ref_root;
 
     } // constraints on prio
 
-
-    ///////// Tasks
-
-    // Mutiply Task weights
-    for(int i = 0; i < A.rows(); i++)
-        A_weighted.row(i) = Wy(i) * A.row(i);
-    // Mutiply joint weights
-    for(int i = 0; i < A.cols(); i++)
-        A_weighted.col(i) = joint_weights[i] * A_weighted.col(i);
-
-    // Compute Hessian: H = A^T*A
-    constraints_prio[prio].H = A_weighted.transpose()*A_weighted;
     // Add regularization term
-    constraints_prio[prio].H = constraints_prio[prio].H + 1e-9*base::MatrixXd::Identity(nj,nj);
-    // gradient vector: -(A^T*y)^T
-    constraints_prio[prio].g = -(A_weighted.transpose()*y);
+    constraints_prio[prio].H.block(0,0,nj,nj).diagonal().array() += hessian_regularizer;
 
 
     ///////// Constraints
@@ -127,7 +110,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
         constraints_prio[prio].A.block(i*6, 0, 6, nj) = robot_model->bodyJacobian(robot_model->baseFrame(), contact_points[i]);
     constraints_prio[prio].lower_y.setZero();
     constraints_prio[prio].upper_y.setZero();
-    // TODO: Using actual limits does not work well sometimes (QP Solver sometimes fails due to infeasible QP)
+    // TODO: Using actual limits does not work well (QP Solver sometimes fails due to infeasible QP)
     constraints_prio[prio].lower_x.setConstant(-1000);
     constraints_prio[prio].upper_x.setConstant(1000);
     /*for(auto n : robot_model->actuatedJointNames()){
