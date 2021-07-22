@@ -320,8 +320,8 @@ const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
-    hyrodyn.calculate_mass_interia_matrix();
-    joint_space_inertia_mat = hyrodyn.H;
+    hyrodyn.calculate_mass_interia_matrix_actuation_space();
+    joint_space_inertia_mat = hyrodyn.Hu;
     return joint_space_inertia_mat;
 }
 
@@ -332,8 +332,8 @@ const base::VectorXd &RobotModelHyrodyn::biasForces(){
     }
 
     hyrodyn.ydd.setZero(); // TODO: Should be restored after the ID computation
-    hyrodyn.calculate_inverse_dynamics_independentjointspace();
-    bias_forces = hyrodyn.Tau_independentjointspace;
+    hyrodyn.calculate_inverse_dynamics();
+    bias_forces = hyrodyn.Tau_actuated;
     return bias_forces;
 }
 
