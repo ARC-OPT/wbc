@@ -50,9 +50,7 @@ void PosPDController::update(){
     control_out_acc = p_gain.cwiseProduct(pos_diff) + d_gain.cwiseProduct(vel_diff);
 
     // Add acceleration Feed-forward, if it is not NaN
-   if(base::isnotnan(ref_acc) && base::isnotnan(acc))
-       control_out_acc += ff_gain.cwiseProduct(ref_acc-acc);
-   else if(base::isnotnan(ref_acc))
+   if(base::isnotnan(ref_acc))
        control_out_acc += ff_gain.cwiseProduct(ref_acc);
 
    // Apply Saturation / max. control output;
