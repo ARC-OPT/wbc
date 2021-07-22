@@ -35,7 +35,7 @@ void JointVelocityConstraint::setReference(const base::commands::Joints& ref){
         }
 
         if(!ref[idx].hasSpeed()){
-            LOG_ERROR("Constraint %s: Reference input for joint for joint %s has no valid speed value", config.name.c_str(), config.joint_names[i].c_str());
+            LOG_ERROR("Constraint %s: Reference input for joint %s has no valid speed value", config.name.c_str(), config.joint_names[i].c_str());
             throw std::invalid_argument("Invalid constraint reference input");
         }
 
