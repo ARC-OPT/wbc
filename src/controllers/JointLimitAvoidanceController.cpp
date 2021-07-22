@@ -63,7 +63,7 @@ const base::commands::Joints& JointLimitAvoidanceController::update(const base::
     // Convert to joints data types
     joints_control_output.time = base::Time::now();
     for(size_t i = 0; i < dimension; i++)
-        joints_control_output[i].speed = control_output(i);
+        joints_control_output[i].acceleration = joints_control_output[i].speed = control_output(i);
 
     return joints_control_output;
 }
