@@ -24,6 +24,8 @@ namespace wbc{
 class VelocityScene : public WbcScene{
 protected:
     base::VectorXd solver_output, robot_vel;
+    bool compute_id;
+
     /**
      * @brief Create a constraint and add it to the WBC scene
      */
@@ -31,7 +33,9 @@ protected:
 
 public:
     VelocityScene(RobotModelPtr robot_model, QPSolverPtr solver) :
-        WbcScene(robot_model, solver){}
+        WbcScene(robot_model, solver),
+        compute_id(false){
+    }
     virtual ~VelocityScene(){
     }
 
@@ -56,6 +60,9 @@ public:
      *  Both values can be used to evaluate the performance of WBC
      */
     virtual const ConstraintsStatus &updateConstraintsStatus();
+
+    /** @brief Toggle switch to compute Inverse dynamics based in the solver output*/
+    void computeID(bool compute){compute_id = compute;}
 };
 
 } // namespace wbc

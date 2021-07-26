@@ -136,6 +136,9 @@ public:
 
     /** @brief Return pointer to the internal hyrodyn model*/
     hyrodyn::RobotModel_HyRoDyn *hyrodynHandle(){return &hyrodyn;}
+
+    /** @brief Compute and return the inverse dynamics solution*/
+    virtual const base::VectorXd& computeInverseDynamics();
 };
 }
 

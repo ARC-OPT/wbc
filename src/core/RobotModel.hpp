@@ -7,6 +7,7 @@
 #include <base/samples/Joints.hpp>
 #include <base/Acceleration.hpp>
 #include <base/JointLimits.hpp>
+#include <base/samples/Wrenches.hpp>
 
 namespace wbc{
 
@@ -24,9 +25,11 @@ protected:
                             base::samples::Joints& joint_state);
 
     std::vector<std::string> contact_points;
-    std::vector<std::string> active_contacts;
     base::Vector3d gravity;
     base::samples::RigidBodyStateSE3 floating_base_state;
+    base::samples::Wrenches contact_wrenches;
+    base::VectorXd tau_computed;
+
 public:
     RobotModel();
     virtual ~RobotModel(){}
@@ -122,14 +125,8 @@ public:
     /** @brief Return Current center of gravity in expressed base frame*/
     virtual const base::samples::RigidBodyStateSE3& getCOM() = 0;
 
-    /** @brief Provide link names of active contacts*/
-    void setActiveContacts(const std::vector<std::string> contacts){active_contacts=contacts;}
-
     /** @brief Provide links names that are possibly in contact with the environment (typically the end effector links)*/
     void setContactPoints(const std::vector<std::string> contacts){contact_points=contacts;}
-
-    /** @brief Provide link names of active contacts*/
-    const std::vector<std::string>& getActiveContacts(){return active_contacts;}
 
     /** @brief Provide links names that are possibly in contact with the environment (typically the end effector links)*/
     const std::vector<std::string>& getContactPoints(){return contact_points;}
@@ -145,8 +142,14 @@ public:
 
     /** @brief Get current status of floating base*/
     const base::samples::RigidBodyStateSE3& floatingBaseState(){return floating_base_state;}
-};
 
+    /** @brief Set contact wrenches, names have to consistent with the configured contact points*/
+    void setContactWrenches(const base::samples::Wrenches& wrenches){contact_wrenches = wrenches;}
+
+    /** @brief Compute and return the inverse dynamics solution*/
+    virtual const base::VectorXd& computeInverseDynamics() = 0;
+
+};
 typedef std::shared_ptr<RobotModel> RobotModelPtr;
 
 }

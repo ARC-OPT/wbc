@@ -13,7 +13,6 @@ RobotModelHyrodyn::~RobotModelHyrodyn(){
 
 void RobotModelHyrodyn::clear(){
     joint_state.clear();
-    active_contacts.clear();
     contact_points.clear();
     base_frame="";
     gravity = base::Vector3d(0,0,-9.81);
@@ -162,10 +161,10 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
     hyrodyn.calculate_system_state();
     // Compute COM information
     hyrodyn.calculate_com_properties();
-    // Compute joint space inertia matrix
+    // Compute joint space inertia matrix, TODO: This should be replace by the mass inertia matrix in actuation space incl. floating base
     hyrodyn.calculate_mass_interia_matrix_actuation_space();
     joint_space_inertia_mat = hyrodyn.Hu;
-    // Compute bias forces
+    // Compute bias forces, TODO: This should be replace by the bias forces in actuation space incl. floating base
     hyrodyn.ydd.setZero();
     hyrodyn.calculate_inverse_dynamics();
     bias_forces = hyrodyn.Tau_actuated;
@@ -240,7 +239,7 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
 
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
+        throw std::runtime_error(" Invalid call to spaceJacobian()");
     }
 
     if(!hasLink(root_frame)){
@@ -277,7 +276,7 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
 
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
+        throw std::runtime_error(" Invalid call to bodyJacobian()");
     }
 
     if(!hasLink(root_frame)){
@@ -326,7 +325,7 @@ const base::Acceleration &RobotModelHyrodyn::spatialAccelerationBias(const std::
 const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
+        throw std::runtime_error(" Invalid call to jointSpaceInertiaMatrix()");
     }
     return joint_space_inertia_mat;
 }
@@ -334,7 +333,7 @@ const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){
 const base::VectorXd &RobotModelHyrodyn::biasForces(){
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
+        throw std::runtime_error(" Invalid call to biasForces()");
     }
     return bias_forces;
 }
@@ -360,6 +359,35 @@ bool RobotModelHyrodyn::hasJoint(const std::string &joint_name){
 
 bool RobotModelHyrodyn::hasActuatedJoint(const std::string &joint_name){
     return std::find(hyrodyn.jointnames_active.begin(), hyrodyn.jointnames_active.end(), joint_name) != hyrodyn.jointnames_active.end();
+}
+
+const base::VectorXd& RobotModelHyrodyn::computeInverseDynamics(){
+    if(joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to computeInverseDynamics()");
+    }
+    uint nc = contact_points.size();
+    hyrodyn.wrench_interaction.resize(nc);
+    hyrodyn.wrench_points = contact_points;
+    hyrodyn.wrench_resolution.resize(nc);
+    hyrodyn.f_ext.resize(nc);
+    for(uint i = 0; i < nc; i++){
+        const std::string &name = contact_points[i];
+        hyrodyn.wrench_interaction[i] = true; // Resistive
+        hyrodyn.wrench_resolution[i] = true; // body coordinates
+        try{
+            hyrodyn.f_ext[i].segment(0,3) = contact_wrenches[name].torque;
+            hyrodyn.f_ext[i].segment(3,3) = contact_wrenches[name].force;
+        }
+        catch(base::samples::Wrenches::InvalidName e){
+            LOG_ERROR_S << "Contact point " << name << " has been configured but this name is not in contact wrench vector" << std::endl;
+            throw e;
+        }
+    }
+    hyrodyn.calculate_inverse_dynamics();
+    hyrodyn.calculate_inverse_statics();
+    tau_computed = hyrodyn.Tau_actuated + hyrodyn.Tau_actuated_ext;
+    return tau_computed;
 }
 
 }

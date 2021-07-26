@@ -21,7 +21,6 @@ void RobotModelKDL::clear(){
     kdl_chain_map.clear();
     actuated_joint_names.clear();
     current_joint_state.clear();
-    active_contacts.clear();
     contact_points.clear();
     base_frame="";
     gravity = base::Vector3d(0,0,-9.81);
@@ -482,4 +481,27 @@ bool RobotModelKDL::hasActuatedJoint(const std::string &joint_name){
     return std::find(actuated_joint_names.begin(), actuated_joint_names.end(), joint_name) != actuated_joint_names.end();
 }
 
+const base::VectorXd& RobotModelKDL::computeInverseDynamics(){
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to jacobianDot()");
+    }
+
+    KDL::TreeIdSolver_RNE solver(full_tree, KDL::Vector(gravity[0], gravity[1], gravity[2]));
+    KDL::WrenchMap w_map;
+    for(auto n : contact_wrenches.names)
+        w_map[n] = KDL::Wrench(KDL::Vector(contact_wrenches[n].force[0],
+                                           contact_wrenches[n].force[1],
+                                           contact_wrenches[n].force[2]),
+                               KDL::Vector(contact_wrenches[n].torque[0],
+                                           contact_wrenches[n].torque[1],
+                                           contact_wrenches[n].torque[2]));
+    int ret = solver.CartToJnt(q, qdot, qdotdot, w_map, tau);
+    if(ret != 0)
+        throw(std::runtime_error("Unable to compute Tree Inverse Dynamics. Error Code is " + std::to_string(ret)));
+
+    tau_computed.resize(tau.rows());
+    tau_computed = tau.data;
+    return tau_computed;
+}
 }
