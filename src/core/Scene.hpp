@@ -3,7 +3,6 @@
 
 #include "ConstraintStatus.hpp"
 #include "QuadraticProgram.hpp"
-#include <base/commands/Joints.hpp>
 #include "RobotModel.hpp"
 #include "QPSolver.hpp"
 

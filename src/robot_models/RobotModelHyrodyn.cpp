@@ -361,11 +361,25 @@ bool RobotModelHyrodyn::hasActuatedJoint(const std::string &joint_name){
     return std::find(hyrodyn.jointnames_active.begin(), hyrodyn.jointnames_active.end(), joint_name) != hyrodyn.jointnames_active.end();
 }
 
-const base::VectorXd& RobotModelHyrodyn::computeInverseDynamics(){
+void RobotModelHyrodyn::computeInverseDynamics(base::commands::Joints &solver_output){
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to computeInverseDynamics()");
     }
+
+    for(uint i = 0; i < noOfActuatedJoints(); i++){
+        const std::string &name = hyrodyn.jointnames_active[i];
+        if(solver_output[name].hasPosition())
+            hyrodyn.ud[i] = solver_output[name].position;
+        if(solver_output[name].hasSpeed())
+            hyrodyn.ud[i] = solver_output[name].speed;
+        if(solver_output[name].hasAcceleration())
+            hyrodyn.udd[i] = solver_output[name].acceleration;
+        else
+            hyrodyn.udd[i] = 0;
+    }
+    hyrodyn.calculate_forward_system_state();
+
     uint nc = contact_points.size();
     hyrodyn.wrench_interaction.resize(nc);
     hyrodyn.wrench_points = contact_points;
@@ -386,8 +400,10 @@ const base::VectorXd& RobotModelHyrodyn::computeInverseDynamics(){
     }
     hyrodyn.calculate_inverse_dynamics();
     hyrodyn.calculate_inverse_statics();
-    tau_computed = hyrodyn.Tau_actuated + hyrodyn.Tau_actuated_ext;
-    return tau_computed;
+    for(uint i = 0; i < hyrodyn.jointnames_active.size(); i++){
+        const std::string &name = hyrodyn.jointnames_active[i];
+        solver_output[name].effort = hyrodyn.Tau_actuated[i] + hyrodyn.Tau_actuated_ext[i];
+    }
 }
 
 }

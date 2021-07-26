@@ -60,9 +60,6 @@ public:
      *  Both values can be used to evaluate the performance of WBC
      */
     virtual const ConstraintsStatus &updateConstraintsStatus();
-
-    /** @brief Toggle switch to compute Inverse dynamics based in the solver output*/
-    void computeID(bool compute){compute_id = compute;}
 };
 
 } // namespace wbc

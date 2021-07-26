@@ -481,7 +481,7 @@ bool RobotModelKDL::hasActuatedJoint(const std::string &joint_name){
     return std::find(actuated_joint_names.begin(), actuated_joint_names.end(), joint_name) != actuated_joint_names.end();
 }
 
-const base::VectorXd& RobotModelKDL::computeInverseDynamics(){
+void RobotModelKDL::computeInverseDynamics(base::commands::Joints &solver_output){
     if(current_joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobianDot()");
@@ -500,8 +500,9 @@ const base::VectorXd& RobotModelKDL::computeInverseDynamics(){
     if(ret != 0)
         throw(std::runtime_error("Unable to compute Tree Inverse Dynamics. Error Code is " + std::to_string(ret)));
 
-    tau_computed.resize(tau.rows());
-    tau_computed = tau.data;
-    return tau_computed;
+    for(uint i = 0; i < noOfActuatedJoints(); i++){
+        const std::string& name = actuated_joint_names[i];
+        solver_output[name].effort = tau(joint_idx_map_kdl[name]);
+    }
 }
 }

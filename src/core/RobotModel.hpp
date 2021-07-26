@@ -8,6 +8,7 @@
 #include <base/Acceleration.hpp>
 #include <base/JointLimits.hpp>
 #include <base/samples/Wrenches.hpp>
+#include <base/commands/Joints.hpp>
 
 namespace wbc{
 
@@ -28,7 +29,6 @@ protected:
     base::Vector3d gravity;
     base::samples::RigidBodyStateSE3 floating_base_state;
     base::samples::Wrenches contact_wrenches;
-    base::VectorXd tau_computed;
 
 public:
     RobotModel();
@@ -147,7 +147,7 @@ public:
     void setContactWrenches(const base::samples::Wrenches& wrenches){contact_wrenches = wrenches;}
 
     /** @brief Compute and return the inverse dynamics solution*/
-    virtual const base::VectorXd& computeInverseDynamics() = 0;
+    virtual void computeInverseDynamics(base::commands::Joints &solver_output) = 0;
 
 };
 typedef std::shared_ptr<RobotModel> RobotModelPtr;

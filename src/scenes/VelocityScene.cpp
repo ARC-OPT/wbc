@@ -128,13 +128,6 @@ const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
         uint idx = robot_model->jointIndex(name);
         solver_output_joints[name].speed = solver_output[idx];
     }
-    if(compute_id){
-        base::VectorXd tau_computed = robot_model->computeInverseDynamics();
-        for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
-            const std::string& name = robot_model->actuatedJointNames()[i];
-            solver_output_joints[name].effort = tau_computed[i];
-        }
-    }
 
     solver_output_joints.time = base::Time::now();
     return solver_output_joints;

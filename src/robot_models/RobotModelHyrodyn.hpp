@@ -6,6 +6,7 @@
 
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <urdf_world/types.h>
+#include <base/commands/Joints.hpp>
 
 namespace wbc{
 
@@ -138,7 +139,7 @@ public:
     hyrodyn::RobotModel_HyRoDyn *hyrodynHandle(){return &hyrodyn;}
 
     /** @brief Compute and return the inverse dynamics solution*/
-    virtual const base::VectorXd& computeInverseDynamics();
+    virtual void computeInverseDynamics(base::commands::Joints &solver_output);
 };
 }
 

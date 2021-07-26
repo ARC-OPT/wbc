@@ -41,7 +41,6 @@ class RobotModelKDL : public RobotModel{
     JacobianMap body_jac_map;
     JacobianMap jac_dot_map;
     base::VectorXd tmp_acc;
-    base::VectorXd tau_computed;
 
 protected:
     KDL::Tree full_tree;                          /** Overall kinematic tree*/
@@ -191,7 +190,7 @@ public:
     void computeCOM( const base::samples::Joints& status );
 
     /** @brief Compute and return the inverse dynamics solution*/
-    virtual const base::VectorXd& computeInverseDynamics();
+    virtual void computeInverseDynamics(base::commands::Joints &solver_output);
 
 };
 
