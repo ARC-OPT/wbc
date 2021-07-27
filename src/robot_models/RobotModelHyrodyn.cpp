@@ -114,6 +114,31 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     for(int i = 0; i < hyrodyn.jointnames_active.size(); i++)
         selection_matrix(i, jointIndex(hyrodyn.jointnames_active[i])) = 1.0;
 
+    // 5. Print some debug info
+
+    LOG_DEBUG("------------------- WBC RobotModelHyrodyn -----------------");
+    LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
+    LOG_DEBUG_S << "Floating base robot: " << hyrodyn.floating_base_robot << std::endl;
+    if(hyrodyn.floating_base_robot){
+        LOG_DEBUG_S << "Floating base pose: " << std::endl;
+        LOG_DEBUG_S << "Pos: " << cfg.floating_base_state.pose.position.transpose() << std::endl;
+        LOG_DEBUG_S << "Ori: " << cfg.floating_base_state.pose.orientation.coeffs().transpose() << std::endl;
+        LOG_DEBUG_S << "World frame: " << cfg.world_frame_id << std::endl;
+    }
+    LOG_DEBUG("Joint Names");
+    for(auto n : jointNames())
+        LOG_DEBUG_S << n << std::endl;
+    LOG_DEBUG("Actuated Joint Names");
+    for(auto n : actuatedJointNames())
+        LOG_DEBUG_S << n << std::endl;
+    LOG_DEBUG("Joint Limits");
+    for(auto n : joint_limits.names)
+        LOG_DEBUG_S << n << ": Max. Pos: " << joint_limits[n].max.position << ", "
+                         << "  Min. Pos: " << joint_limits[n].min.position << ", "
+                         << "  Max. Vel: " << joint_limits[n].max.speed    << ", "
+                         << "  Max. Eff: " << joint_limits[n].max.effort   << std::endl;
+    LOG_DEBUG("------------------------------------------------------------");
+
     return true;
 }
 
