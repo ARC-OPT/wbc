@@ -111,14 +111,12 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     constraints_prio[prio].lower_y.setZero();
     constraints_prio[prio].upper_y.setZero();
     // TODO: Using actual limits does not work well (QP Solver sometimes fails due to infeasible QP)
-    constraints_prio[prio].lower_x.setConstant(-1000);
-    constraints_prio[prio].upper_x.setConstant(1000);
-    /*for(auto n : robot_model->actuatedJointNames()){
+    for(auto n : robot_model->actuatedJointNames()){
         size_t idx = robot_model->jointIndex(n);
         const base::JointLimitRange &range = robot_model->jointLimits().getElementByName(n);
         constraints_prio[prio].lower_x(idx) = range.min.speed;
         constraints_prio[prio].upper_x(idx) = range.max.speed;
-    }*/
+    }
 
     return constraints_prio;
 }
