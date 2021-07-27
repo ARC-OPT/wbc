@@ -11,3 +11,7 @@ link_directories(${base-types_LIBRARY_DIRS} ${base-logging_LIBRARY_DIRS} ${urdfd
 add_executable(joint_limits_from_urdf joint_limits_from_urdf.cpp)
 target_link_libraries(joint_limits_from_urdf wbc-tools ${Boost_LIBRARIES})
 
+install(TARGETS joint_limits_from_urdf
+        LIBRARY RUNTIME DESTINATION bin)
+
+

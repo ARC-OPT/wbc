@@ -11,15 +11,10 @@ int main(int argc, char *argv[]){
     argc--;
     argv++;
 
-    if(argc < 1){
-        LOG_ERROR("Failed to parse command line args. Usage: joint_limits_from_urdf <filename.urdf>");
-        return -1;
-    }
-
     bool as_yaml = false;
 
     // Declare the supported options.
-    po::options_description desc("Allowed options");
+    po::options_description desc("Usage: joint_limits_from_urdf <urdf_file> <options>. Possible options are");
     desc.add_options()
         ("help", "produce help message")
         ("yml", "print in yaml format")
@@ -33,9 +28,13 @@ int main(int argc, char *argv[]){
         cout << desc << "\n";
         return 1;
     }
-
     if(vm.count("yml"))
         as_yaml = true;
+
+    if(argc < 1){
+        cout << desc << "\n";
+        return -1;
+    }
 
     std::string filename = argv[0];
     base::JointLimits joint_limits;
