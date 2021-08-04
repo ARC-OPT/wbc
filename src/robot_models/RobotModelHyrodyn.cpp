@@ -174,7 +174,6 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
             hyrodyn.y[i] = joint_state_in[name].position;
             hyrodyn.yd[i] = joint_state_in[name].speed;
             hyrodyn.ydd[i] = joint_state_in[name].acceleration;
-            hyrodyn.Tau_independentjointspace[i] = joint_state_in[name].effort;
         }
         catch(base::samples::Joints::InvalidName e){
             LOG_ERROR_S << "Joint " << name << " is in independent joints of Hyrodyn model, but it is not given in joint state vector" << std::endl;
