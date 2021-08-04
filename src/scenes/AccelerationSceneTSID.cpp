@@ -146,13 +146,13 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     // 3. Torque and acceleration limits
 
-    constraints_prio[prio].upper_x.resize(0);
-    constraints_prio[prio].lower_x.resize(0);
-    /*for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
+    constraints_prio[prio].upper_x.setConstant(100);
+    constraints_prio[prio].lower_x.setConstant(-100);
+    for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
         constraints_prio[prio].upper_x(i+nj) = robot_model->jointLimits()[name].max.effort;
-    }*/
+    }
 
     constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     return constraints_prio;
