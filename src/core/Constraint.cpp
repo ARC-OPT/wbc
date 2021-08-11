@@ -68,7 +68,7 @@ void Constraint::setWeights(const base::VectorXd& weights){
 
 void Constraint::setActivation(const double activation){
     if(activation < 0 || activation > 1){
-        LOG_ERROR("Constraint %s: Activation has to be between 0 and 1 but is ", config.name.c_str(), activation);
+        LOG_ERROR("Constraint %s: Activation has to be between 0 and 1 but is %f", config.name.c_str(), activation);
         throw std::invalid_argument("Invalid constraint activation");
     }
     this->activation = activation;
