@@ -9,7 +9,6 @@ using namespace qpOASES;
 namespace wbc{
 
 QPOASESSolver::QPOASESSolver(){
-    configured = false;
     n_wsr = 10;
     options.setToDefault();
 }

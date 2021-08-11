@@ -28,7 +28,7 @@ void WbcScene::clearConstraints(){
 
 bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
 
-
+    solver->reset();
     clearConstraints();
     if(config.empty())
         throw std::runtime_error("Constraint Config is empty");

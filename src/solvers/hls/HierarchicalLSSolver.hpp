@@ -150,7 +150,6 @@ protected:
     base::MatrixXd Wq_V_damped_s_vals_inv;   /** Wq_V * damped_s_vals_inv */
 
     unsigned int no_of_joints;             /** Number of joints */
-    bool configured;                       /** Has configure been called yet?*/
 
     //Properties
     double min_eigenvalue;    /** Precision for eigenvalue inversion. Inverse of an Eigenvalue smaller than this will be set to zero*/

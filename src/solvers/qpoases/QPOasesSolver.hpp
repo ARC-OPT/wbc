@@ -51,7 +51,6 @@ public:
 protected:
     qpOASES::Options options;
     qpOASES::SQProblem sq_problem;
-    bool configured;
     int n_wsr, actual_n_wsr;
     qpOASES::returnValue ret_val;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H;

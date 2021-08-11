@@ -9,7 +9,6 @@ namespace wbc{
 
 HierarchicalLSSolver::HierarchicalLSSolver() :
     no_of_joints(0),
-    configured(false),
     min_eigenvalue(1e-9),
     max_solver_output_norm(10){
 }

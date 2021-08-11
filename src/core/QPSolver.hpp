@@ -10,8 +10,10 @@ namespace wbc{
 class HierarchicalQP;
 
 class QPSolver{
+protected:
+    bool configured;
 public:
-    QPSolver(){}
+    QPSolver() : configured(false){}
     virtual ~QPSolver(){}
     /**
      * @brief solve Solve the given quadratic program
@@ -20,6 +22,9 @@ public:
      * @param solver_output solution of the quadratic program
      */
     virtual void solve(const HierarchicalQP& hierarchical_qp, base::VectorXd &solver_output) = 0;
+
+    /** @brief reset Enforces reconfiguration at next call to solve() */
+    void reset(){configured=false;}
 };
 
 typedef std::shared_ptr<QPSolver> QPSolverPtr;
