@@ -120,6 +120,8 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
         constraints_prio[prio].upper_x(idx) = range.max.speed;
     }
 
+    constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
+
     return constraints_prio;
 }
 

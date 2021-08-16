@@ -185,13 +185,14 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
     hyrodyn.calculate_system_state();
     // Compute COM information
     hyrodyn.calculate_com_properties();
-    // Compute joint space inertia matrix, TODO: This should be replace by the mass inertia matrix in actuation space incl. floating base
-    hyrodyn.calculate_mass_interia_matrix_actuation_space();
-    joint_space_inertia_mat = hyrodyn.Hu;
-    // Compute bias forces, TODO: This should be replace by the bias forces in actuation space incl. floating base
-    hyrodyn.ydd.setZero();
-    hyrodyn.calculate_inverse_dynamics();
-    bias_forces = hyrodyn.Tau_actuated;
+    com_rbs.frame_id = base_frame;
+    com_rbs.pose.position = hyrodyn.com;
+    com_rbs.pose.orientation.setIdentity();
+    com_rbs.twist.linear = hyrodyn.com_vel;
+    com_rbs.twist.angular.setZero();
+    com_rbs.acceleration.linear = hyrodyn.com_acc;
+    com_rbs.acceleration.angular.setZero();
+    com_rbs.time = joint_state.time;
 
     for(size_t i = 0; i < hyrodyn.jointnames_spanningtree.size(); i++){
         const std::string &name = hyrodyn.jointnames_spanningtree[i];
@@ -201,15 +202,6 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         //joint_state[name].effort = hyrodyn.Tau_spanningtree[i]; // It seems Tau_spanningtree is currently not being computed by hyrodyn
     }
     joint_state.time = joint_state_in.time;
-
-    com_rbs.frame_id = base_frame;
-    com_rbs.pose.position = hyrodyn.com;
-    com_rbs.pose.orientation.setIdentity();
-    com_rbs.twist.linear = hyrodyn.com_vel;
-    com_rbs.twist.angular.setZero();
-    com_rbs.acceleration.linear = hyrodyn.com_acc;
-    com_rbs.acceleration.angular.setZero();
-    com_rbs.time = joint_state.time;
 }
 
 const base::samples::Joints& RobotModelHyrodyn::jointState(const std::vector<std::string> &joint_names){
@@ -351,6 +343,17 @@ const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jointSpaceInertiaMatrix()");
     }
+
+    // Compute joint space inertia matrix
+    if(hyrodyn.floating_base_robot){
+        hyrodyn.calculate_mass_interia_matrix_actuation_space_including_floatingbase();
+        joint_space_inertia_mat = hyrodyn.Hufb;
+    }
+    else{
+        hyrodyn.calculate_mass_interia_matrix_actuation_space();
+        joint_space_inertia_mat = hyrodyn.Hu;
+    }
+
     return joint_space_inertia_mat;
 }
 
@@ -359,6 +362,18 @@ const base::VectorXd &RobotModelHyrodyn::biasForces(){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to biasForces()");
     }
+
+    // Compute bias forces
+    hyrodyn.ydd.setZero();
+    if(hyrodyn.floating_base_robot){
+        hyrodyn.calculate_inverse_dynamics_including_floatingbase();
+        bias_forces = hyrodyn.Tau_actuated_floatingbase;
+    }
+    else{
+        hyrodyn.calculate_inverse_dynamics();
+        bias_forces = hyrodyn.Tau_actuated;
+    }
+
     return bias_forces;
 }
 
