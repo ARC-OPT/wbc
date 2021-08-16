@@ -115,9 +115,13 @@ const HierarchicalQP& AccelerationScene::update(){
 
     // Cost Function: x^T*H*x + x^T * g
     constraints_prio[prio].H = A.transpose()*A;
-    constraints_prio[prio].g = -(A.transpose()*y).transpose();
-    constraints_prio[prio].lower_x.setConstant(-1000);
-    constraints_prio[prio].upper_x.setConstant(1000);
+    constraints_prio[prio].g.setZero() = -(A.transpose()*y).transpose();
+    constraints_prio[prio].upper_x.resize(0);
+    constraints_prio[prio].lower_x.resize(0);
+
+    constraints_prio[prio].A.setZero();
+    constraints_prio[prio].lower_y.setZero();
+    constraints_prio[prio].upper_y.setZero();
 
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
     constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
