@@ -106,7 +106,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         }
 
         for(int i = 0; i < constraint->A.rows(); i++)
-            constraint->Aw.row(i) = constraint->weights_root(i) * constraint->A.row(i);
+            constraint->Aw.row(i) = constraint->weights_root(i) * constraint->A.row(i) * constraint->activation * (!constraint->timeout);
         for(int i = 0; i < constraint->A.cols(); i++)
             constraint->Aw.col(i) = joint_weights[i] * constraint->Aw.col(i);
 
