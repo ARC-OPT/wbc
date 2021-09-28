@@ -109,7 +109,10 @@ BOOST_PYTHON_MODULE(core){
             .def_readwrite("floating_base_state",  &wbc::RobotModelConfig::floating_base_state)
             .add_property("contact_points",
                 py::make_getter(&wbc::RobotModelConfig::contact_points, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::RobotModelConfig::contact_points));
+                py::make_setter(&wbc::RobotModelConfig::contact_points))
+            .add_property("joint_blacklist",
+                py::make_getter(&wbc::RobotModelConfig::joint_blacklist, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::RobotModelConfig::joint_blacklist));
 
    py::enum_<wbc::ConstraintType>("ConstraintType")
        .value("unset", wbc::ConstraintType::unset)
