@@ -18,6 +18,10 @@ void RobotModelKDL::update2(const base::NamedVector<base::JointState> &joint_sta
     wbc::RobotModelKDL::update(tobaseSamplesJoints(joint_state), floating_base_state);
 }
 
+base::NamedVector<base::JointState> RobotModelKDL::jointState2(const std::vector<std::string> &names){
+    return toNamedVector(wbc::RobotModelKDL::jointState(names));
+}
+
 }
 
 BOOST_PYTHON_MODULE(robot_models){
@@ -53,7 +57,7 @@ BOOST_PYTHON_MODULE(robot_models){
             .def("update",                  &wbc_py::RobotModelKDL::update)
             .def("update",                  &wbc_py::RobotModelKDL::update2)
             .def("rigidBodyState",          &wbc_py::RobotModelKDL::rigidBodyState, py::return_value_policy<py::copy_const_reference>())
-            .def("jointState",              &wbc_py::RobotModelKDL::jointState, py::return_value_policy<py::copy_const_reference>())
+            .def("jointState",              &wbc_py::RobotModelKDL::jointState2)
             .def("spaceJacobian",           &wbc_py::RobotModelKDL::spaceJacobian, py::return_value_policy<py::copy_const_reference>())
             .def("bodyJacobian",            &wbc_py::RobotModelKDL::spaceJacobian, py::return_value_policy<py::copy_const_reference>())
             .def("jacobianDot",             &wbc_py::RobotModelKDL::jacobianDot, py::return_value_policy<py::copy_const_reference>())
