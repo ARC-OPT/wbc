@@ -148,8 +148,7 @@ BOOST_AUTO_TEST_CASE(jnt_pos_pd_controller){
         for(int i = 0; i < control_out.size(); i++)
             feedback[i].position += control_out[i].speed * dt;
 
-        double new_diff  = sqrt(pow(setpoint[0].position - feedback[0].position,2) +
-                                pow(setpoint[1].position - feedback[1].position,2));
+        double new_diff  = ctrl.getControlError().norm();
 
         BOOST_CHECK(new_diff <= diff);
 

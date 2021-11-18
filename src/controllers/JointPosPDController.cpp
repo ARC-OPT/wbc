@@ -29,18 +29,18 @@ void JointPosPDController::extractSetpoint(const base::commands::Joints& setpoin
     // If a setpoint value is not given, set setpoint == feedback
     ref_pos = pos;
     ref_vel = vel;
-    for(size_t i = 0; i < setpoint.size(); i++){
-        size_t idx;
+    for(size_t i = 0; i < joint_names.size(); i++){
+        base::JointState joint_state;
         try{
-            idx = control_output.mapNameToIndex(setpoint.names[i]);
+            joint_state = setpoint.getElementByName(joint_names[i]);
         }
         catch(std::exception e){
             throw std::runtime_error("JointPosPDController::update: Setpoint vector contains " + setpoint.names[i]
                                      + " but this element has not been configured in the controller");
         }
-        ref_pos(idx) = setpoint[idx].position;
-        ref_vel(idx) = setpoint[idx].speed;
-        ref_acc(idx) = setpoint[idx].acceleration;
+        ref_pos(i) = joint_state.position;
+        ref_vel(i) = joint_state.speed;
+        ref_acc(i) = joint_state.acceleration;
     }
 }
 
