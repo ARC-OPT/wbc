@@ -13,9 +13,11 @@ The online solution of this problem is the robot joint control signal that compl
 * [Full Documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home)
 
 
-### Installation Instructions (standalone)
+## Installation (standalone)
 
 See [here](https://git.hb.dfki.de/dfki-control/wbc/documentation/-/wikis/WBC%20installation%20outside%20Rock)
+
+## Installation (using Rock)
 
 * New Bootstrap: See [here](https://git.hb.dfki.de/wbc/buildconf)
 * Existing Rock Installation: Add the wbc package set to your autoproj/manifest file: 
@@ -25,9 +27,4 @@ See [here](https://git.hb.dfki.de/dfki-control/wbc/documentation/-/wikis/WBC%20i
     ```    
   followed by `aup control/wbc` and then `amake control/wbc`
  
-### Installation Without Rock
-* See [here](https://git.hb.dfki.de/wbc/documentation/-/wikis/WBC%20Install%20Instruction%20outside%20of%20ROCK)
-
-
-
 
