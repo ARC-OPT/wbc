@@ -335,13 +335,13 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     string tip  = "LLAnklePitch_Link";
 
     RobotModelHyrodyn robot_model_hybrid;
-    RobotModelConfig config_hybrid("../../../../../bundles/wbc_examples/config/models/rh5/urdf/rh5_single_leg_hybrid.urdf",
+    RobotModelConfig config_hybrid("../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf",
                                    {"LLHip1", "LLHip2",
                                     "LLHip3", "LLHip3_B11", "LLHip3_Act1",
                                     "LLKnee", "LLKnee_B11", "LLKnee_Act1",
                                     "LLAnkleRoll", "LLAnklePitch", "LLAnkle_E11", "LLAnkle_E21", "LLAnkle_B11", "LLAnkle_B12", "LLAnkle_Act1", "LLAnkle_B21", "LLAnkle_B22", "LLAnkle_Act2"},
                                    {"LLHip1", "LLHip2", "LLHip3_Act1","LLKnee_Act1", "LLAnkle_Act1", "LLAnkle_Act2"});
-    config_hybrid.submechanism_file = "../../../../../bundles/wbc_examples/config/models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
+    config_hybrid.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
     if(!robot_model_hybrid.configure(config_hybrid))
         abort();
 
