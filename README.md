@@ -23,7 +23,7 @@ See [here](https://git.hb.dfki.de/dfki-control/wbc/documentation/-/wikis/WBC%20i
 * Existing Rock Installation: Add the wbc package set to your autoproj/manifest file: 
     ```
     package_sets:
-    - dfkigit: wbc/wbc_package_set
+    - dfkigit: dfki-control/wbc/package_set
     ```    
   followed by `aup control/wbc` and then `amake control/wbc`
  
