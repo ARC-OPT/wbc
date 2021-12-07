@@ -1,7 +1,7 @@
-from wbc.robot_models import *
+from wbc.robot_models.robot_model_kdl import *
 from wbc.scenes import *
 from wbc.core import *
-from wbc.solvers import *
+from wbc.solvers.hls_solver import *
 import numpy as np
 import nose
 
@@ -9,7 +9,7 @@ def test_velocity_scene():
     # Test General Functionality
     robot_model=RobotModelKDL()
     r=RobotModelConfig()
-    r.file="../../models/urdf/kuka/kuka_iiwa.urdf"
+    r.file="../../models/kuka/urdf/kuka_iiwa.urdf"
     r.actuated_joint_names = ["kuka_lbr_l_joint_1", "kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3", "kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5", "kuka_lbr_l_joint_6", "kuka_lbr_l_joint_7"]
     r.joint_names = r.actuated_joint_names
     assert robot_model.configure(r) == True

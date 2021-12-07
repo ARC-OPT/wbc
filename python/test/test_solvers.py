@@ -1,4 +1,5 @@
-from wbc.solvers import *
+from wbc.solvers.hls_solver import *
+from wbc.solvers.qpoases_solver import *
 from wbc.core import *
 import nose
 import numpy as np

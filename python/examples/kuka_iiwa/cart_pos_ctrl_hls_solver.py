@@ -1,7 +1,7 @@
 from wbc.core import *
-from wbc.robot_models import RobotModelKDL
+from wbc.robot_models.robot_model_kdl import RobotModelKDL
 from wbc.scenes import VelocityScene
-from wbc.solvers import HierarchicalLSSolver
+from wbc.solvers.hls_solver import HierarchicalLSSolver
 from wbc.controllers import CartesianPosPDController
 import time
 import numpy as np
@@ -9,7 +9,7 @@ import numpy as np
 # Configure robot model
 robot_model=RobotModelKDL()
 r=RobotModelConfig()
-r.file="../../../models/urdf/kuka/kuka_iiwa.urdf"
+r.file="../../../models/kuka/urdf/kuka_iiwa.urdf"
 r.actuated_joint_names = ["kuka_lbr_l_joint_1", "kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3", "kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5", "kuka_lbr_l_joint_6", "kuka_lbr_l_joint_7"]
 r.joint_names = r.actuated_joint_names
 if robot_model.configure(r) == False:

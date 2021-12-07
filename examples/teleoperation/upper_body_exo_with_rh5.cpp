@@ -1,4 +1,4 @@
-#include <robot_models/RobotModelKDL.hpp>
+#include <robot_models/kdl/RobotModelKDL.hpp>
 #include <tools/URDFTools.hpp>
 #include <iostream>
 

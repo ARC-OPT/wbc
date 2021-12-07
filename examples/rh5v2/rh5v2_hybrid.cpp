@@ -1,4 +1,4 @@
-#include <robot_models/RobotModelHyrodyn.hpp>
+#include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>

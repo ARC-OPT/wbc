@@ -1,7 +1,7 @@
 from wbc.core import *
-from wbc.robot_models import RobotModelHyrodyn
+from wbc.robot_models.robot_model_hyrodyn import RobotModelHyrodyn
 from wbc.scenes import AccelerationSceneTSID
-from wbc.solvers import QPOASESSolver
+from wbc.solvers.qpoases_solver import QPOASESSolver
 from wbc.controllers import CartesianPosPDController
 import time
 import numpy as np
@@ -15,8 +15,8 @@ floating_base_state.acceleration.linear = floating_base_state.acceleration.angul
 
 robot_model=RobotModelHyrodyn()
 r=RobotModelConfig()
-r.file="../../../models/urdf/rh5/rh5_legs.urdf"
-r.submechanism_file="../../../models/hyrodyn/rh5/rh5_legs_floating_base.yml"
+r.file="../../../models/rh5/urdf/rh5_legs.urdf"
+r.submechanism_file="../../../models/rh5/hyrodyn/rh5_legs_floating_base.yml"
 r.joint_names = ["floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
                  "floating_base_rot_x",   "floating_base_rot_y",   "floating_base_rot_z",
                  "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch",
@@ -86,6 +86,7 @@ for i in init_pos:
 joint_state.elements = elements
 joint_state.names = robot_model.actuatedJointNames()
 
+floating_base_state.time.microseconds=round(time.time()*1e6)
 robot_model.update(joint_state,floating_base_state)
 
 feedback = robot_model.rigidBodyState(cfg.root, cfg.tip)

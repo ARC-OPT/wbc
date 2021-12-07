@@ -1,9 +1,9 @@
 #ifndef WBC_PY_CONTROLLERS_HPP
 #define WBC_PY_CONTROLLERS_HPP
 
-#include "eigen_conversion.h"
-#include "base_types_conversion.h"
-#include "std_vector_conversion.h"
+#include "../eigen_conversion.h"
+#include "../base_types_conversion.h"
+#include "../std_vector_conversion.h"
 #include "controllers/CartesianPosPDController.hpp"
 #include "controllers/JointPosPDController.hpp"
 

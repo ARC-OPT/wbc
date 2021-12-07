@@ -1,38 +1,83 @@
-#ifndef ROBOTMODELHYRODYN_HPP
-#define ROBOTMODELHYRODYN_HPP
+#ifndef ROBOTMODELKDL_HPP
+#define ROBOTMODELKDL_HPP
 
-#include "../core/RobotModel.hpp"
-#include "../core/RobotModelConfig.hpp"
+#include "../../core/RobotModel.hpp"
+#include "../../core/RobotModelConfig.hpp"
 
-#include <hyrodyn/robot_model_hyrodyn.hpp>
+#include <kdl/tree.hpp>
+#include <kdl/jacobian.hpp>
+#include <kdl/jntarray.hpp>
 #include <urdf_world/types.h>
-#include <base/commands/Joints.hpp>
+#include <map>
 
 namespace wbc{
 
-class RobotModelHyrodyn : public RobotModel{
-protected:
-    base::samples::RigidBodyStateSE3 rbs;
+class KinematicChainKDL;
+
+/**
+ *  @brief This model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added
+ *  and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios.
+ */
+class RobotModelKDL : public RobotModel{
+
+    std::vector<std::string> actuated_joint_names;
     std::string base_frame;
     base::JointLimits joint_limits;
-    base::samples::Joints joint_state;
+    base::samples::Joints current_joint_state;
     base::MatrixXd joint_space_inertia_mat;
     base::VectorXd bias_forces;
     base::Acceleration spatial_acc_bias;
     base::MatrixXd selection_matrix;
     base::samples::Joints joint_state_out;
-    std::vector<std::string> joint_names;
     std::vector<std::string> joint_names_floating_base;
-    base::samples::RigidBodyStateSE3 floating_base_state;
+    bool has_floating_base;
     urdf::ModelInterfaceSharedPtr robot_urdf;
     base::samples::RigidBodyStateSE3 com_rbs;
-    base::MatrixXd jacobian;
-    hyrodyn::RobotModel_HyRoDyn hyrodyn;
+    typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
+    typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
+    KDL::JntArray q,qdot,qdotdot,tau,zero;
+    typedef std::map<std::string, base::MatrixXd > JacobianMap;
+    JacobianMap space_jac_map;
+    JacobianMap body_jac_map;
+    JacobianMap jac_dot_map;
+    base::VectorXd tmp_acc;
 
+protected:
+    KDL::Tree full_tree;                          /** Overall kinematic tree*/
+    std::map<std::string,int> joint_idx_map_kdl;
+    KinematicChainKDLMap kdl_chain_map;           /** Map of KDL Chains*/
+    /**
+     * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree
+     * @param root_frame Root frame of the chain
+     * @param tip_frame Tip frame of the chain
+     */
+    void createChain(const std::string &root_frame, const std::string &tip_frame);
+
+    /** Add a KDL Tree to the model. If the model is empty, the overall KDL::Tree will be replaced by the given tree. If there
+     *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
+     *  of the trees can be updated online by calling update() with poses parameter appropriately set. This will also create the
+     *  joint index map*/
+
+    /** Free storage and clear data structures*/
     void clear();
+
+    /** ID of kinematic chain given root and tip*/
+    const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
+
+    /**
+     * Recursively loops through all the tree segments and compute the
+     * COG of the complete tree.
+     * @param currentSegement Current Segement in the recursive loop
+     * @param status Current joint state
+     */
+    void recursiveCOM( const KDL::SegmentMap::const_iterator& currentSegment,
+                       const base::samples::Joints& status, const KDL::Frame& frame,
+                       double& mass, KDL::Vector& cog);
+
+
 public:
-    RobotModelHyrodyn();
-    virtual ~RobotModelHyrodyn();
+    RobotModelKDL();
+    virtual ~RobotModelKDL();
 
     /**
      * @brief Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree.
@@ -104,10 +149,10 @@ public:
     virtual const base::VectorXd &biasForces();
 
     /** @brief Return all joint names*/
-    virtual const std::vector<std::string>& jointNames(){return joint_names;}
+    virtual const std::vector<std::string>& jointNames(){return current_joint_state.names;}
 
     /** @brief Return only actuated joint names*/
-   virtual  const std::vector<std::string>& actuatedJointNames(){return hyrodyn.jointnames_active;}
+   virtual  const std::vector<std::string>& actuatedJointNames(){return actuated_joint_names;}
 
     /** @brief Get index of joint name*/
     virtual uint jointIndex(const std::string &joint_name);
@@ -135,12 +180,20 @@ public:
     /** @brief Return Current center of gravity in expressed base frame*/
     virtual const base::samples::RigidBodyStateSE3& getCOM(){return com_rbs;}
 
-    /** @brief Return pointer to the internal hyrodyn model*/
-    hyrodyn::RobotModel_HyRoDyn *hyrodynHandle(){return &hyrodyn;}
+    /** Return full tree (KDL model)*/
+    KDL::Tree getTree(){return full_tree;}
+
+    /**
+     * Computes the cog for the current pose of the robot.
+     * \param status is the current joint state
+     */
+    void computeCOM( const base::samples::Joints& status );
 
     /** @brief Compute and return the inverse dynamics solution*/
     virtual void computeInverseDynamics(base::commands::Joints &solver_output);
+
 };
+
 }
 
-#endif
+#endif // KINEMATICMODEL_HPP

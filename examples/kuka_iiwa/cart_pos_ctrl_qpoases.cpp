@@ -1,4 +1,4 @@
-#include <robot_models/RobotModelKDL.hpp>
+#include <robot_models/kdl/RobotModelKDL.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/VelocityScene.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>

@@ -1,6 +1,6 @@
-#include "eigen_conversion.h"
-#include "base_types_conversion.h"
-#include "std_vector_conversion.h"
+#include "../eigen_conversion.h"
+#include "../base_types_conversion.h"
+#include "../std_vector_conversion.h"
 #include "scenes.hpp"
 
 namespace wbc_py {
@@ -113,6 +113,7 @@ base::NamedVector<wbc::ConstraintStatus> AccelerationSceneTSID::updateConstraint
 base::NamedVector<base::Wrench> AccelerationSceneTSID::getContactWrenches(){
     return toNamedVector(wbc::AccelerationSceneTSID::getContactWrenches());
 }
+
 }
 
 BOOST_PYTHON_MODULE(scenes){
@@ -174,7 +175,6 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getJointWeights",   &wbc_py::AccelerationSceneTSID::getJointWeights2)
             .def("getActuatedJointWeights",   &wbc_py::AccelerationSceneTSID::getActuatedJointWeights2)
             .def("getContactWrenches",   &wbc_py::AccelerationSceneTSID::getContactWrenches);
-
 }
 
 

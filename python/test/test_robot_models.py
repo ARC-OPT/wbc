@@ -1,5 +1,6 @@
 from wbc.core import *
-from wbc.robot_models import *
+from wbc.robot_models.robot_model_hyrodyn import *
+from wbc.robot_models.robot_model_kdl import *
 import numpy as np
 import nose
 
@@ -15,8 +16,8 @@ def run(robot_model):
     robot_model = RobotModelHyrodyn()
 
     r=RobotModelConfig()
-    r.file="../../models/urdf/rh5/rh5_one_leg.urdf"
-    r.submechanism_file="../../models/hyrodyn/rh5/rh5_one_leg.yml"
+    r.file="../../models/rh5/urdf/rh5_one_leg.urdf"
+    r.submechanism_file="../../models/rh5/hyrodyn/rh5_one_leg.yml"
     r.joint_names = joint_names
     r.actuated_joint_names = joint_names
     r.floating_base = False
@@ -54,16 +55,11 @@ def run(robot_model):
     eff_bias = robot_model.biasForces()
     assert len(eff_bias) == nj
 
-    robot_model.setGravityVector(gravity_vector)
-    assert np.all(robot_model.getGravityVector().transpose() == gravity_vector)
-
     sel_mat = robot_model.selectionMatrix()
     assert np.all(sel_mat == np.eye(nj))
 
     robot_model.setContactPoints(["RH5_Root_link", "LLAnkle_FT"])
     assert robot_model.getContactPoints() == contact_points
-    robot_model.setActiveContacts(active_contacts)
-    assert robot_model.getActiveContacts() == active_contacts
 
     assert robot_model.hasLink("LLAnkle_FT") == True
     assert robot_model.hasLink("LLAnkle_F") == False

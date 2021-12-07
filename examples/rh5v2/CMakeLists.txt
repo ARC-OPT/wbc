@@ -18,7 +18,8 @@ target_link_libraries(rh5v2_hybrid
                       wbc-solvers-qpoases
                       wbc-scenes
                       wbc-tools
-                      wbc-robot_models
+                      wbc-robot_models-hyrodyn
+                      wbc-robot_models-kdl
                       ${hyrodyn_LIBRARIES}
                       ${rbdl_LIBRARIES})
 add_executable(rh5v2 rh5v2.cpp)
@@ -26,6 +27,7 @@ target_link_libraries(rh5v2
                       wbc-solvers-qpoases
                       wbc-scenes
                       wbc-tools
-                      wbc-robot_models
+                      wbc-robot_models-hyrodyn
+                      wbc-robot_models-kdl
                       ${hyrodyn_LIBRARIES}
                       ${rbdl_LIBRARIES})

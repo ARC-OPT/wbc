@@ -4,8 +4,10 @@
 #include "scenes/VelocityScene.hpp"
 #include "scenes/VelocitySceneQuadraticCost.hpp"
 #include "scenes/AccelerationSceneTSID.hpp"
-#include "robot_models.hpp"
-#include "solvers.hpp"
+#include "../solvers/hls/HierarchicalLSSolver.hpp"
+#include "../solvers/qpoases/QPOasesSolver.hpp"
+#include "../robot_models/hyrodyn/robot_model_hyrodyn.hpp"
+#include "../robot_models/kdl/robot_model_kdl.hpp"
 
 namespace wbc_py {
 

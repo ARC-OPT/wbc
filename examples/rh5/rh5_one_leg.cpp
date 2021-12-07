@@ -1,5 +1,5 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <robot_models/RobotModelHyrodyn.hpp>
+#include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
 #include <core/QuadraticProgram.hpp>
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <Eigen/QR>

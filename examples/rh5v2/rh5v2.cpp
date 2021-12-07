@@ -1,4 +1,4 @@
-#include <robot_models/RobotModelHyrodyn.hpp>
+#include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <scenes/AccelerationSceneTSID.hpp>
 #include <tools/URDFTools.hpp>

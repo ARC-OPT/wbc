@@ -1,6 +1,5 @@
-#include "eigen_conversion.h"
-//#include "base_types_conversion.h"
-#include "std_vector_conversion.h"
+#include "../eigen_conversion.h"
+#include "../std_vector_conversion.h"
 #include "core/RobotModelConfig.hpp"
 #include "core/ConstraintConfig.hpp"
 #include "core/ConstraintStatus.hpp"
@@ -74,7 +73,11 @@ BOOST_PYTHON_MODULE(core){
             .def_readwrite("acceleration", &base::RigidBodyStateSE3::acceleration)
             .def_readwrite("wrench", &base::RigidBodyStateSE3::wrench);
 
+    py::class_<base::Time>("Time")
+            .def_readwrite("microseconds", &base::Time::microseconds);
+
     py::class_<base::samples::RigidBodyStateSE3>("RigidBodyStateSE3")
+            .def_readwrite("time", &base::samples::RigidBodyStateSE3::time)
             .def_readwrite("pose", &base::RigidBodyStateSE3::pose)
             .def_readwrite("twist", &base::RigidBodyStateSE3::twist)
             .def_readwrite("acceleration", &base::RigidBodyStateSE3::acceleration)
