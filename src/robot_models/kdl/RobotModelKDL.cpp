@@ -208,8 +208,6 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state,
         throw std::runtime_error("Invalid joint state");
     }
 
-
-    std::cout<<joint_state.time<<std::endl;
     if(joint_state.time.isNull()){
         LOG_ERROR_S << "Joint State does not have a valid timestamp. Or do we have 1970?"<<std::endl;
         throw std::runtime_error("Invalid joint state");
