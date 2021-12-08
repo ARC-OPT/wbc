@@ -8,7 +8,7 @@ pkg_search_module(hyrodyn REQUIRED hyrodyn)
 pkg_search_module(base-types REQUIRED base-types)
 
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
-list(APPEND PKGCONFIG_REQUIRES urdf_parser)
+list(APPEND PKGCONFIG_REQUIRES urdfdom)
 list(APPEND PKGCONFIG_REQUIRES base-types)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
