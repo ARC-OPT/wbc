@@ -1,21 +1,21 @@
-#include <robot_models/kdl/RobotModelKDL.hpp>
+#include <solvers/qpoases/QPOasesSolver.hpp>
+#include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>
-#include <solvers/qpoases/QPOasesSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
-#include <unistd.h>
 
-using namespace std;
 using namespace wbc;
+using namespace std;
+using namespace qpOASES;
+using namespace ctrl_lib;
 
 /**
- * Simple Velocity-based example, Cartesian position control on a kuka iiwa 7 dof arm. In contrast to the cart_pos_ctrl_hls example,
- * a QP solver (qpoases) is used to compute the solution. In the example the following problem is solved:
+ * Velocity-based example, Cartesian position control on 6 dof leg of the RH5 humanoid (fixed base/fully actuated, serial robot model). In the example the following problem is solved:
  *  \f[
  *        \begin{array}{ccc}
- *        minimize & \| \mathbf{J_w\dot{q}}-\mathbf{v}_{d} \|_2& \\
- *            \mathbf{\dot{q}} & & \\
- *           s.t. & \mathbf{\dot{q}}_m \leq \mathbf{\dot{q}} \leq  \mathbf{\dot{q}}_M
+ *        minimize &  \| \mathbf{J}_w\dot{\mathbf{q}} - \mathbf{v}_d\|_2\\
+ *        \mathbf{\dot{q}} & & \\
+ *           s.t.  & \dot{\mathbf{q}}_m \leq \dot{\mathbf{q}} \leq \dot{\mathbf{q}}_M& \\
  *        \end{array}
  *  \f]
  * where
@@ -27,67 +27,65 @@ using namespace wbc;
  * \f$\mathbf{J}_w=\mathbf{W}\mathbf{J}\f$ - Weighted task Jacobian <br>
  * \f$\mathbf{W}\f$ - Diagonal weight matrix<br>
  * \f$\mathbf{x}_r, \mathbf{x}\f$ - Reference pose, actual pose<br>
- * \f$\mathbf{K}_p\f$ - Proportional gain matrix<br>
+ * \f$\mathbf{K}_p\f$ - Proportional feed forward gain matrix<br>
  * \f$\mathbf{\dot{q}}_m,\mathbf{\dot{q}}_M\f$ - Joint velocity limits<br>
  *
- * The robot end effector is supposed to move to a fixed target pose. The QP is solved using the QPOases solver. In contrast to the cart_pos_ctrl_hls example,
- * the solver output will always be within the joint velocity limits, which are defined in the kuka iiwa URDF file.
+ * The robot ankle is supposed to move to a fixed target pose. The QP is solved using the QPOases solver. Note that the robot has a fixed base here and there are no rigid contacts that have to be considered.
+ * In the example, the Hyrodyn robot model is used, however, with a serial URDF model, i.e., the output velocities are in independent joint space.
  */
-int main(int argc, char** argv){
+int main(){
 
-    // Configure Robot model
-    RobotModelPtr robot_model = make_shared<RobotModelKDL>();
+    // Configure serial robot model
+    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
     RobotModelConfig config;
-    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
+    config.joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"};
+    config.actuated_joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"};
+    config.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
     if(!robot_model->configure(config))
         return -1;
 
-    // Configure solver
-    QPSolverPtr solver = std::make_shared<QPOASESSolver>();
-    qpOASES::Options options;
-    options.setToDefault();
-    options.printLevel = qpOASES::PL_NONE;
-    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
-    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(100);
+    vector<string> ind_joint_names = config.joint_names; // Independent joints are identical with the controlled joints in WBC
 
-    // Configure WBC Scene
-    ConstraintConfig cart_constraint;
-    cart_constraint.name       = "cart_pos_ctrl_left";
-    cart_constraint.type       = cart;
-    cart_constraint.priority   = 0;
-    cart_constraint.root       = "kuka_lbr_l_link_0";
-    cart_constraint.tip        = "kuka_lbr_l_tcp";
-    cart_constraint.ref_frame  = "kuka_lbr_l_link_0";
-    cart_constraint.activation = 1;
-    cart_constraint.weights    = vector<double>(6,1);
+    // Configure solver
+    QPSolverPtr solver = make_shared<QPOASESSolver>();
+    Options options = dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
+    options.printLevel = PL_NONE;
+    dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
+    dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
+
+    // Configure Scene
+    ConstraintConfig cart_constraint("left_leg_posture", 0, "RH5_Root_Link", "LLAnkle_FT", "RH5_Root_Link", 1);
     VelocitySceneQuadraticCost scene(robot_model, solver);
     if(!scene.configure({cart_constraint}))
         return -1;
 
-    // Configure controller
-    ctrl_lib::CartesianPosPDController controller;
+    // Configure Cartesian controller
+    CartesianPosPDController controller;
     controller.setPGain(base::Vector6d::Constant(1));
 
     // Initial joint state
+    uint nj = ind_joint_names.size();
     base::samples::Joints joint_state;
-    uint nj = robot_model->noOfJoints();
+    base::VectorXd init_q(nj);
+    init_q << 0,0,-0.2,0.4,0,-0.2;
     joint_state.resize(nj);
-    joint_state.names = robot_model->jointNames();
-    for(int i = 0; i < nj; i++)
-        joint_state[i].position = 0.1;
+    joint_state.names = ind_joint_names;
+    for(size_t i = 0; i < nj; i++)
+        joint_state[i].position = init_q[i];
     joint_state.time = base::Time::now();
 
-    // Reference pose
-    base::samples::RigidBodyStateSE3 setpoint, ctrl_output, feedback;
-    setpoint.pose.position = base::Vector3d(0.0, 0.0, 0.8);
-    setpoint.pose.orientation.setIdentity();
+    // Reference Pose
+    base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
+    setpoint.pose.position = base::Vector3d(0, 0, -0.6);
+    setpoint.pose.orientation = base::Quaterniond(0,-1,0,0);
     feedback.pose.position.setZero();
     feedback.pose.orientation.setIdentity();
 
     // Run control loop
-    double loop_time = 0.01; // seconds
+    double loop_time = 0.001; // seconds
     base::commands::Joints solver_output;
-    while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
+    while((setpoint.pose.position - feedback.pose.position).norm() > 1e-3){
 
         // Update robot model
         robot_model->update(joint_state);

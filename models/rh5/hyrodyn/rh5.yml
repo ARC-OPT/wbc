@@ -1,0 +1,119 @@
+submechanisms:
+- name: "rh5_torso"
+  type: "RRR"
+  contextual_name: "torso_joint"
+  jointnames_independent: ["BodyPitch", "BodyRoll"]
+  jointnames_spanningtree: ["BodyPitch", "BodyRoll"]
+  jointnames_active: ["BodyPitch", "BodyRoll"]
+
+- name: "rh5_torso_yaw"
+  type: "5R_overconstrained"
+  contextual_name: "torso_yaw_joint"
+  jointnames_independent: ["BodyYaw"]
+  jointnames_spanningtree: ["BodyYaw"]
+  jointnames_active: ["BodyYaw"]
+
+- name: "rh5_head"
+  type: "RRR"
+  contextual_name: "head_joint"
+  jointnames_independent: ["HeadPitch", "HeadRoll", "HeadYaw"]
+  jointnames_spanningtree: ["HeadPitch", "HeadRoll", "HeadYaw"]
+  jointnames_active: ["HeadPitch", "HeadRoll", "HeadYaw"]
+
+- name: "three_revolute_joints"
+  type: "RRR"
+  contextual_name: "left_shoulder_joints"
+  jointnames_independent: ["ALShoulder1", "ALShoulder2", "ALShoulder3"]
+  jointnames_spanningtree: ["ALShoulder1", "ALShoulder2", "ALShoulder3"]
+  jointnames_active: ["ALShoulder1", "ALShoulder2", "ALShoulder3"]
+
+- name: "two_revolute_joints"
+  type: "RR"
+  contextual_name: "left_elbow_forearm_joints"
+  jointnames_independent: ["ALElbow", "ALWristRoll"]
+  jointnames_spanningtree: ["ALElbow", "ALWristRoll"]
+  jointnames_active: ["ALElbow", "ALWristRoll"]
+
+- name: "rh5_wrist"
+  type: "RRR"
+  contextual_name: "left_wrist_joint"
+  jointnames_independent: ["ALWristYaw", "ALWristPitch"]
+  jointnames_spanningtree: ["ALWristYaw", "ALWristPitch"]
+  jointnames_active: ["ALWristYaw", "ALWristPitch"]
+
+- name: "three_revolute_joints"
+  type: "RRR"
+  contextual_name: "right_shoulder_joints"
+  jointnames_independent: ["ARShoulder1", "ARShoulder2", "ARShoulder3"]
+  jointnames_spanningtree: ["ARShoulder1", "ARShoulder2", "ARShoulder3"]
+  jointnames_active: ["ARShoulder1", "ARShoulder2", "ARShoulder3"]
+
+- name: "two_revolute_joints"
+  type: "RR"
+  contextual_name: "right_elbow_forearm_joints"
+  jointnames_independent: ["ARElbow", "ARWristRoll"]
+  jointnames_spanningtree: ["ARElbow", "ARWristRoll"]
+  jointnames_active: ["ARElbow", "ARWristRoll"]
+
+- name: "rh5_wrist"
+  type: "RRR"
+  contextual_name: "right_wrist_joint"
+  jointnames_independent: ["ARWristYaw", "ARWristPitch"]
+  jointnames_spanningtree: ["ARWristYaw", "ARWristPitch"]
+  jointnames_active: ["ARWristYaw", "ARWristPitch"]
+
+- name: "two_revolute_joints"
+  type: "RR"
+  contextual_name: "left_hip01_joint"
+  jointnames_independent: ["LLHip1", "LLHip2"]
+  jointnames_spanningtree: ["LLHip1", "LLHip2"]
+  jointnames_active: ["LLHip1", "LLHip2"]
+
+- name: "lambda_mechanism"
+  type: "RRR"
+  contextual_name: "left_hip2_joint"
+  jointnames_independent: ["LLHip3"]
+  jointnames_spanningtree: ["LLHip3"]
+  jointnames_active: ["LLHip3"]
+
+- name: "lambda_mechanism"
+  type: "RRR"
+  contextual_name: "left_knee_joint"
+  jointnames_independent: ["LLKnee"]
+  jointnames_spanningtree: ["LLKnee"]
+  jointnames_active: ["LLKnee"]
+
+- name: "rh5_ankle"
+  type: "RRR"
+  contextual_name: "left_ankle_joint"
+  jointnames_independent: ["LLAnkleRoll", "LLAnklePitch"]
+  jointnames_spanningtree: ["LLAnkleRoll", "LLAnklePitch"]
+  jointnames_active: ["LLAnkleRoll", "LLAnklePitch"]
+
+- name: "two_revolute_joints"
+  type: "RR"
+  contextual_name: "right_hip01_joint"
+  jointnames_independent: ["LRHip1", "LRHip2"]
+  jointnames_spanningtree: ["LRHip1", "LRHip2"]
+  jointnames_active: ["LRHip1", "LRHip2"]
+
+- name: "lambda_mechanism"
+  type: "RRR"
+  contextual_name: "right_hip2_joint"
+  jointnames_independent: ["LRHip3"]
+  jointnames_spanningtree: ["LRHip3"]
+  jointnames_active: ["LRHip3"]
+
+- name: "lambda_mechanism"
+  type: "RRR"
+  contextual_name: "right_knee_joint"
+  jointnames_independent: ["LRKnee"]
+  jointnames_spanningtree: ["LRKnee"]
+  jointnames_active: ["LRKnee"]
+
+- name: "rh5_ankle"
+  type: "RRR"
+  contextual_name: "right_ankle_joint"
+  jointnames_independent: ["LRAnkleRoll", "LRAnklePitch"]
+  jointnames_spanningtree: ["LRAnkleRoll", "LRAnklePitch"]
+  jointnames_active: ["LRAnkleRoll", "LRAnklePitch"]
