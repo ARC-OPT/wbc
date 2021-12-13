@@ -17,6 +17,10 @@ double whiteNoise(const double std_dev)
 
 BOOST_AUTO_TEST_CASE(configuration_test){
 
+    /**
+     * Verify that the robot model fails to configure with invalid configurations
+     */
+
     RobotModelConfig config;
     RobotModelHyrodyn robot_model;
 
@@ -330,6 +334,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
 
 
 BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
+
+    /**
+     * Check if the differential inverse kinematics solution of a serial robot and the equivalent a series-parallel hybrid robot model match
+     */
 
     string root = "RH5_Root_Link";
     string tip  = "LLAnklePitch_Link";

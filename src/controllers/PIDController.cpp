@@ -81,7 +81,7 @@ void PIDController::setMaxCtrlOutput(const base::VectorXd &max){
 void PIDController::setDeadZone(const base::VectorXd &dz){
     if(dz.size() != dimension)
         throw std::runtime_error("setDeadZone: Invalid dead zone. Size is "
-                                 + std::to_string(dead_zone.size()) + " but should be " + std::to_string(dimension));
+                                 + std::to_string(dz.size()) + " but should be " + std::to_string(dimension));
     dead_zone = dz;
 }
 

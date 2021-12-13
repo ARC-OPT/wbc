@@ -98,7 +98,7 @@ void PosPDController::setMaxCtrlOutput(const base::VectorXd &max_ctrl_out){
 void PosPDController::setDeadZone(const base::VectorXd &dz){
     if(!base::isnotnan(dead_zone))
         throw std::runtime_error("PosPDController::setDeadZone: Invalid dead zone. Contains NaN values");
-    if(dead_zone.size() != dim_controller)
+    if(dz.size() != dim_controller)
         throw std::runtime_error("PosPDController::setDeadZone: Invalid dead zone. Size is "
                                  + std::to_string(dead_zone.size()) + " but should be " + std::to_string(dim_controller));
     dead_zone = dz;
