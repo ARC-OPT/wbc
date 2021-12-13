@@ -1,6 +1,6 @@
 # WBC Documentation
 
-WBC is a standalone library for optimization-based feedback control for redundant robots. It is written in C++, with Python bindings for most functionalilities. The idea of optimization-based robot control is to formulate simultaneously running robot tasks as constraints or within the cost function of an instantaneous optimization problem. 
+WBC is a standalone library for optimization-based feedback control of redundant robots. It is written in C++, with Python bindings for most functionalilities. The idea of optimization-based robot control is to formulate simultaneously running robot tasks as constraints or within the cost function of an instantaneous optimization problem. 
 Now, in each control cycle ...
 
   * The constraints/cost functions are updated with the current robot state/control reference
