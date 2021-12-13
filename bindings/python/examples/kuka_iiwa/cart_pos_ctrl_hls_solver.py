@@ -9,7 +9,7 @@ import numpy as np
 # Configure robot model
 robot_model=RobotModelKDL()
 r=RobotModelConfig()
-r.file="../../../models/kuka/urdf/kuka_iiwa.urdf"
+r.file="../../../../models/kuka/urdf/kuka_iiwa.urdf"
 r.actuated_joint_names = ["kuka_lbr_l_joint_1", "kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3", "kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5", "kuka_lbr_l_joint_6", "kuka_lbr_l_joint_7"]
 r.joint_names = r.actuated_joint_names
 if robot_model.configure(r) == False:

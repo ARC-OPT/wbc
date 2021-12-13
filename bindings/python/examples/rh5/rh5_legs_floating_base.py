@@ -15,8 +15,8 @@ floating_base_state.acceleration.linear = floating_base_state.acceleration.angul
 
 robot_model=RobotModelHyrodyn()
 r=RobotModelConfig()
-r.file="../../../models/rh5/urdf/rh5_legs.urdf"
-r.submechanism_file="../../../models/rh5/hyrodyn/rh5_legs_floating_base.yml"
+r.file="../../../../models/rh5/urdf/rh5_legs.urdf"
+r.submechanism_file="../../../../models/rh5/hyrodyn/rh5_legs_floating_base.yml"
 r.joint_names = ["floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
                  "floating_base_rot_x",   "floating_base_rot_y",   "floating_base_rot_z",
                  "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch",
