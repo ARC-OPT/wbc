@@ -11,7 +11,7 @@ Now, in each control cycle ...
 
 The online solution of this problem is the robot joint control signal that complies with all tasks, while integrating physical constraints like actuator limits. An advantage of this approach is that complex tasks can be composed from low-dimensional descriptors, which are typically  easier to specify and control than the complete task are once. Also, the redundancy of the robot is nicely exploited utilizing  all the dof of the system (whole body).
 
-* [Code API](http://bob.dfki.uni-bremen.de/apis/wbc/wbc/) 
+* [Code API](http://bob.dfki.uni-bremen.de/apis/dfki-control/wbc/) 
 * [Full Documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home)
 
 
