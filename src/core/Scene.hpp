@@ -22,6 +22,7 @@ protected:
     bool configured;
     base::commands::Joints solver_output_joints;
     JointWeights joint_weights, actuated_joint_weights;
+    std::vector<ConstraintConfig> wbc_config;
 
     /**
      * brief Create a constraint and add it to the WBC scene
@@ -134,6 +135,18 @@ public:
      * @brief Get Joint weights as Named vector
      */
     const JointWeights &getActuatedJointWeights(){return actuated_joint_weights;}
+
+    /**
+     * @brief Return the current robot model
+     */
+    RobotModelPtr getRobotModel(){return robot_model;}
+
+    /**
+     * @brief Return the current solver
+     */
+    QPSolverPtr getSolver(){return solver;}
+
+    std::vector<ConstraintConfig> getWbcConfig(){return wbc_config;}
 };
 
 typedef std::shared_ptr<WbcScene> WbcScenePtr;

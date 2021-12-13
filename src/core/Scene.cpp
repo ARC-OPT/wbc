@@ -71,6 +71,8 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
     actuated_joint_weights.names = robot_model->actuatedJointNames();
     std::fill(actuated_joint_weights.elements.begin(), actuated_joint_weights.elements.end(), 1);
 
+    wbc_config = config;
+
     return true;
 }
 
