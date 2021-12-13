@@ -31,7 +31,7 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
     solver->reset();
     clearConstraints();
     if(config.empty())
-        throw std::runtime_error("Constraint Config is empty");
+        return false;
 
     for(auto c : config)
         c.validate();
@@ -72,6 +72,23 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
     std::fill(actuated_joint_weights.elements.begin(), actuated_joint_weights.elements.end(), 1);
 
     wbc_config = config;
+
+    // Check WBC config
+    for(auto cfg : wbc_config){
+        if(!robot_model->hasLink(cfg.root))
+            return false;
+        if(!robot_model->hasLink(cfg.tip))
+            return false;
+        if(!robot_model->hasLink(cfg.ref_frame))
+            return false;
+
+        try{
+            cfg.validate();
+        }
+        catch(std::invalid_argument e){
+            return false;
+        }
+    }
 
     return true;
 }

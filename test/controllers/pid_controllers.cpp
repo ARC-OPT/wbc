@@ -7,7 +7,25 @@
 using namespace std;
 using namespace ctrl_lib;
 
-BOOST_AUTO_TEST_CASE(joint_torque_pid_controller){
+
+BOOST_AUTO_TEST_CASE(configuration_test){
+    PIDController controller(2);
+
+    // Invalid dead zone
+    BOOST_CHECK_THROW(controller.setDeadZone(base::VectorXd(1)), runtime_error);
+    // Invalid saturation
+    BOOST_CHECK_THROW(controller.setMaxCtrlOutput(base::VectorXd(1)), runtime_error);
+
+    // Valid PID params
+    PIDCtrlParams params_valid(2);
+    BOOST_CHECK_NO_THROW(controller.setPID(params_valid));
+
+    // Invalid PID params
+    PIDCtrlParams params_invalid(1);
+    BOOST_CHECK_THROW(controller.setPID(params_invalid), runtime_error);
+}
+
+BOOST_AUTO_TEST_CASE(joint_torque_controller_test){
 
     std::vector<std::string> joint_names;
     joint_names.push_back("joint_a");
