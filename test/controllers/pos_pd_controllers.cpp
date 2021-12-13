@@ -10,6 +10,26 @@
 using namespace std;
 using namespace ctrl_lib;
 
+
+BOOST_AUTO_TEST_CASE(configuration_test){
+    PosPDController controller(2);
+
+    // Invalid P-Gain
+    BOOST_CHECK_THROW(controller.setPGain(base::VectorXd(1)), std::runtime_error);
+
+    // Invalid D-Gain
+    BOOST_CHECK_THROW(controller.setDGain(base::VectorXd(1)), std::runtime_error);
+
+    // Invalid FF-Gain
+    BOOST_CHECK_THROW(controller.setFFGain(base::VectorXd(1)), std::runtime_error);
+
+    // Invalid Dead zone
+    BOOST_CHECK_THROW(controller.setDeadZone(base::VectorXd(1)), std::runtime_error);
+
+    // Invalid Saturation
+    BOOST_CHECK_THROW(controller.setMaxCtrlOutput(base::VectorXd(1)), std::runtime_error);
+}
+
 BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
     srand(time(NULL));
     CartesianPosPDController ctrl;

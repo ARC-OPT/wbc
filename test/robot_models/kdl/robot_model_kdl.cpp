@@ -12,6 +12,10 @@ using namespace wbc;
 
 BOOST_AUTO_TEST_CASE(configuration_test){
 
+    /**
+     * Verify that the robot model fails to configure with invalid configurations
+     */
+
     RobotModelConfig config;
     RobotModelKDL robot_model;
 
@@ -352,6 +356,16 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
     RobotModelConfig config(urdf_filename, joint_names, actuated_joint_names, true);
     BOOST_CHECK(robot_model.configure(config) == true);
 
+    // Check independent joints
+    BOOST_CHECK(robot_model.noOfJoints() == joint_names.size());
+    for(uint i = 0; i < robot_model.noOfJoints(); i++)
+        BOOST_CHECK(robot_model.jointNames()[i] == joint_names[i]);
+
+    // Check actuated joints
+    BOOST_CHECK(robot_model.noOfActuatedJoints() == actuated_joint_names.size());
+    for(uint i = 0; i < robot_model.noOfActuatedJoints(); i++)
+        BOOST_CHECK(robot_model.actuatedJointNames()[i] == actuated_joint_names[i]);
+
     wbc::RobotModelKDL robot_model_floating_base;
     RobotModelConfig config_floating_base(urdf_filename_floating_base, joint_names, joint_names, false);
     BOOST_CHECK(robot_model_floating_base.configure(config_floating_base) == true);
@@ -376,7 +390,8 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
         js.position = floating_base_pose.pose.position[i];
         joint_state_floating_base.names.push_back(joint_names[i]);
         joint_state_floating_base.elements.push_back(js);
-    }for(int i = 0; i < 3; i++){
+    }
+    for(int i = 0; i < 3; i++){
         base::JointState js;
         js.position = 0;
         joint_state_floating_base.names.push_back(joint_names[i+3]);

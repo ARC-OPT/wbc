@@ -1,4 +1,5 @@
 add_subdirectory(controllers)
+add_subdirectory(core)
 add_subdirectory(robot_models)
 add_subdirectory(scenes)
 add_subdirectory(solvers)
