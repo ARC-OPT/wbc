@@ -11,23 +11,22 @@ typedef std::shared_ptr<CartesianAccelerationConstraint> CartesianAccelerationCo
 typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraintPtr;
 
 /**
- * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:
+ * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following optimization problem:
+ *
  *  \f[
  *        \begin{array}{ccc}
- *        minimize & \frac{1}{2} \mathbf{\ddot{q}}^T\mathbf{H}\mathbf{\ddot{q}}+\mathbf{\ddot{q}}^T\mathbf{g}& \\
- *            \mathbf{\ddot{q}} & & \\
+ *        minimize &  \| \mathbf{J}_w\ddot{\mathbf{q}} - \dot{\mathbf{v}}_d + \dot{\mathbf{J}}\dot{\mathbf{q}}\|_2\\
+ *        \mathbf{\ddot{q}} & & \\
  *        \end{array}
  *  \f]
- *  \f[
- *        \begin{array}{ccc}
- *         \mathbf{H} & = & \mathbf{J}^T \mathbf{J} \\
- *         \mathbf{g} & = & -(\mathbf{J}^T (\ddot{\mathbf{x}}_{des}-\dot{\mathbf{J}}\dot{\mathbf{q}}))^T \\
- *             & & \\
- *        \end{array}
- *  \f]
+ * The tasks are all formulated within the cost function, i.e., the problem is unconstrained. Soft prioritization can be achieved using task weights, as \f$\mathbf{J}_w=\mathbf{W}\mathbf{J}\f$.
+ *
  * \f$\ddot{\mathbf{q}}\f$ - Vector of robot joint accelerations<br>
- * \f$\ddot{\mathbf{x}}_{des}\f$ - desired task space accelerations of all tasks stacked in a vector<br>
- * \f$\mathbf{J}\f$ - task Jacobians of all tasks stacked in a single matrix<br>
+ * \f$\dot{\mathbf{v}}_{d}\f$ - Desired spatial accelerations of all tasks stacked in a vector<br>
+ * \f$\mathbf{J}\f$ - Task Jacobians of all tasks stacked in a single matrix<br>
+ * \f$\mathbf{J}_w\f$ - Weighted task Jacobians<br>
+ * \f$\mathbf{W}\f$ - Diagonal task weight matrix<br>
+ * \f$\dot{\mathbf{J}}\dot{\mathbf{q}}\f$ - Acceleration bias<br>
  */
 class AccelerationScene : public WbcScene{
 protected:

@@ -14,31 +14,31 @@ typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraint
  * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:
  *  \f[
  *        \begin{array}{ccc}
- *        minimize & \frac{1}{2} \mathbf{\ddot{q}}^T\mathbf{H}\mathbf{\ddot{q}}+\mathbf{\ddot{q}}^T\mathbf{g}& \\
- *             (\mathbf{\ddot{q}},\mathbf{\tau},\mathbf{f})    &  & \\
- *    &  & \\
- *           s.t.  & \mathbf{M}\mathbf{\ddot{q}} - \mathbf{S}^T\mathbf{\tau} - \mathbf{J}^T\mathbf{f} = -\mathbf{h} & \\
- *                 & \mathbf{J}\mathbf{\ddot{q}} = -\dot{\mathbf{J}}\dot{\mathbf{q}}& \\
- *        \end{array}
- *  \f]
- *  \f[
- *        \begin{array}{ccc}
- *         \mathbf{H} & = & \mathbf{J}^T \mathbf{J} \\
- *         \mathbf{g} & = & -(\mathbf{J}^T (\ddot{\mathbf{x}}_{des}-\dot{\mathbf{J}}\dot{\mathbf{q}}))^T \\
- *             & & \\
+ *        minimize &  \| \mathbf{J}_w\ddot{\mathbf{q}} - \dot{\mathbf{v}}_d + \dot{\mathbf{J}}\dot{\mathbf{q}}\|_2\\
+ *        \mathbf{\ddot{q}},\mathbf{\tau},\mathbf{f} & & \\
+ *           s.t.  & \mathbf{H}\mathbf{\ddot{q}} - \mathbf{S}^T\mathbf{\tau} - \mathbf{J}_c^T\mathbf{f} = -\mathbf{h} & \\
+ *                 & \mathbf{J}_{c,i}\mathbf{\ddot{q}} = -\dot{\mathbf{J}}_{c,i}\dot{\mathbf{q}}, \, \forall i& \\
+ *                 & \mathbf{\tau}_m \leq \mathbf{\tau} \leq \mathbf{\tau}_M& \\
  *        \end{array}
  *  \f]
  * \f$\ddot{\mathbf{q}}\f$ - Vector of robot joint accelerations<br>
- * \f$\ddot{\mathbf{x}}_{des}\f$ - desired task space accelerations of all tasks stacked in a vector<br>
- * \f$\mathbf{J}\f$ - task Jacobians of all tasks stacked in a single matrix<br>
- * \f$\mathbf{M}\f$ - Joint space inertia matrix<br>
+ * \f$\mathbf{v}_{d}\f$ - Desired spatial accelerations of all tasks stacked in a vector<br>
+ * \f$\mathbf{J}\f$ - Task Jacobians of all tasks stacked in a single matrix<br>
+ * \f$\mathbf{J}_w = \mathbf{W}\mathbf{J}\f$ - Weighted task Jacobians<br>
+ * \f$\mathbf{W}\f$ - Diagonal task weight matrix<br>
+ * \f$\mathbf{H}\f$ - Joint space inertia matrix<br>
  * \f$\mathbf{S}\f$ - Selection matrix<br>
  * \f$\mathbf{\tau}\f$ - actuation forces/torques<br>
  * \f$\mathbf{h}\f$ - bias forces/torques<br>
- * \f$\mathbf{f}\f$ - external forces
+ * \f$\mathbf{f}\f$ - external forces<br>
+ * \f$\mathbf{J}_{c,i}\f$ - Contact Jacobian of i-th contact point<br>
+ * \f$\dot{\mathbf{J}}\dot{\mathbf{q}}\f$ - Acceleration bias<br>
+ * \f$\mathbf{\tau}_m,\mathbf{\tau}_M\f$ - Joint force/torque limits<br>
  *
- * The implementation is close to the task-space-inverse dynamics framework (TSID): https://andreadelprete.github.io/teaching/tsid/1_tsid_theory.pdf
- *
+ * The implementation is close to the task-space-inverse dynamics (TSID) method: https://andreadelprete.github.io/teaching/tsid/1_tsid_theory.pdf.
+ * It computes the required joint space accelerations \f$\ddot{\mathbf{q}}\f$, torques \f$\mathbf{\tau}\f$ and contact wrenches \f$\mathbf{f}\f$, required to achieve the given task space
+ * accelerations \f$\mathbf{v}_{d}\f$ under consideration of the equations of motion (eom), rigid contacts and joint force/torque limits. Note that onyl a single hierarchy level is allowed here,
+ * prioritization can be achieved by assigning suitable task weights \f$\mathbf{W}\f$.
  */
 class AccelerationSceneTSID : public WbcScene{
 protected:

@@ -9,24 +9,26 @@ namespace wbc{
  * @brief Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:
  *  \f[
  *        \begin{array}{ccc}
- *        minimize & \frac{1}{2} \mathbf{\dot{q}}^T\mathbf{H}\mathbf{\dot{q}}+\mathbf{\dot{q}}^T\mathbf{g}& \\
+ *        minimize & \| \mathbf{J}_w\dot{\mathbf{q}} - \mathbf{v}_d\|_2& \\
  *            \mathbf{\dot{q}} & & \\
  *             & & \\
- *           s.t. & \dot{\mathbf{q}}_{min} \leq \dot{\mathbf{q}} \leq \dot{\mathbf{q}}_{max} & \\
+ *           s.t. & \mathbf{J}_{c,i}\dot{\mathbf{q}}=0, \, \forall i & \\
+ *                & \dot{\mathbf{q}}_{m} \leq \dot{\mathbf{q}} \leq \dot{\mathbf{q}}_{M} & \\
  *        \end{array}
  *  \f]
- *  \f[
- *        \begin{array}{ccc}
- *         \mathbf{H} & = & \mathbf{J}^T \mathbf{J} \\
- *         \mathbf{g} & = & -(\mathbf{J}^T (\dot{\mathbf{x}}_{des}))^T \\
- *             & & \\
- *        \end{array}
- *  \f]
- * \f$\dot{\mathbf{q}}\f$ - Vector of robot joint velocities<br>
- * \f$\dot{\mathbf{x}}_{des}\f$ - desired task space velocities of all tasks stacked in a vector<br>
- * \f$\mathbf{J}\f$ - task Jacobians of all tasks stacked in a single matrix<br>
  *
- * Compared to the VelocityScene class, the tasks are here modeled within the cost function instead of constraints.
+ * In contrast to the VelocityScene class, the tasks are formulated within the cost function instead of modeling them as constraints. The problem is
+ * solved with respect to a number of rigid contacts \f$\mathbf{J}_{c,i}\dot{\mathbf{q}}=0, \, \forall i \f$ and under consideration of the joint velocity limits of the robot.
+ *
+ * \f$\dot{\mathbf{q}}\f$ - Vector of robot joint velocities<br>
+ * \f$\mathbf{v}_{d}\f$ - Desired Spatial velocities of all tasks stacked in a vector<br>
+ * \f$\mathbf{J}\f$ - Task Jacobians of all tasks stacked in a single matrix<br>
+ * \f$\mathbf{J}_w = \mathbf{W}\mathbf{J}\f$ - Weighted task Jacobians<br>
+ * \f$\mathbf{W}\f$ - Diagonal task weight matrix<br>
+ * \f$\dot{\mathbf{q}}_{m},\dot{\mathbf{q}}_{M}\f$ - Joint velocity limits<br>
+ * \f$\mathbf{J}_{c,i}\f$ - Contact Jcaobian of i-th contact point<br>
+ *
+ *
  */
 class VelocitySceneQuadraticCost : public VelocityScene{
 protected:

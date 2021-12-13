@@ -15,5 +15,21 @@ add_subdirectory(test)
 add_subdirectory(examples)
 add_subdirectory(bin)
 if(USE_PYTHON)
-    add_subdirectory(python)
+    message("USING PYTHON.")
+    add_subdirectory(bindings/python)
 endif()
+
+find_package(Doxygen)
+if(DOXYGEN_FOUND)
+    set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile.in)
+    set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)
+    configure_file(${doxyfile_in} ${doxyfile} @ONLY)
+    message("Doxygen build started.")
+    add_custom_target(doc
+                      COMMAND ${DOXYGEN_EXECUTABLE} ${doxyfile_in}
+                      WORKING_DIRECTORY ${CMAKE_CURRENT_SOURCE_DIR}
+                      COMMENT "Generating API documentation with Doxygen"
+                      VERBATIM)
+else (DOXYGEN_FOUND)
+    message("Doxygen need to be installed to generate the doxygen documentation")
+endif (DOXYGEN_FOUND)

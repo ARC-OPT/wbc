@@ -11,15 +11,16 @@ namespace wbc{
  *        \begin{array}{ccc}
  *        minimize & \| \dot{\mathbf{q}} \|_2& \\
  *            \mathbf{\dot{q}} & & \\
- *             & & \\
- *           s.t. & \mathbf{J\dot{q}}=\dot{\mathbf{x}}_{des}
+ *           s.t. & \mathbf{J}_w\dot{\mathbf{q}}=\mathbf{v}_{d}
  *        \end{array}
  *  \f]
  * \f$\dot{\mathbf{q}}\f$ - Vector of robot joint velocities<br>
- * \f$\dot{\mathbf{x}}_{des}\f$ - desired task space velocities of all tasks stacked in a vector<br>
+ * \f$\mathbf{v}_{d}\f$ - desired task space velocities of all tasks stacked in a vector<br>
  * \f$\mathbf{J}\f$ - task Jacobians of all tasks stacked in a single matrix<br>
+ * \f$\mathbf{J}_w\f$ - Weighted task Jacobians<br>
+ * \f$\mathbf{W}\f$ - Diagonal task weight matrix<br>
  *
- * The tasks are modeled as equality constraints to the above optimization problem.
+ * The tasks are all modeled as linear equality constraints to the above optimization problem. The task hierarchies are kept, i.e., multiple priorities are possible, depending on the solver.
  */
 class VelocityScene : public WbcScene{
 protected:
@@ -40,16 +41,12 @@ public:
     }
 
     /**
-     * @brief Update the wbc scene
+     * @brief Update the wbc scene and setup the optimization problem
      */
     virtual const HierarchicalQP& update();
 
     /**
      * @brief Solve the given optimization problem
-     *  \f[
-     *     \left(\begin{array}{cc} \omega \\ v \end{array}\right)_B = \left(\begin{array}{cc} R & 0 \\ \left[p\right]R & R \end{array}\right) \left(\begin{array}{cc} \omega \\ v \end{array}\right)_A
-     *  \f]
-     *
      * @return Solver output as joint velocity command
      */
     virtual const base::commands::Joints& solve(const HierarchicalQP& hqp);

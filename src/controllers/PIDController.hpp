@@ -6,6 +6,27 @@
 
 namespace ctrl_lib{
 
+/**
+ * @brief The PIDController class implements an n-dimensional PID controller
+ *
+ *  \f[
+ *        u = k_p \cdot e + k_i\sum e \cdot dt + k_d\frac{d}{dt}e
+ *  \f]
+ * with integral windup
+ *  \f[
+ *      \sum e \cdot dt \leq w_i
+ *  \f]
+ * and dead zone
+ * \f[
+ *      e = \left \lbrace \begin{array}{ccc}x_r-x & if  & |x_r-x| > d_e \\ \\ 0 & else \end{array}\right.
+ * \f]
+ * \f$u\f$ - Control output<br>
+ * \f$k_p,k_i,k_d\f$ - Proportional, integral and derivative gain<br>
+ * \f$e\f$ - Control error<br>
+ * \f$w_i\f$ - Integral windup<br>
+ * \f$d_e\f$ - Dead zone<br>
+ * \f$x_r,x\f$ - Reference and actual controlled value<br>
+ */
 class PIDController{
 protected:
     PIDCtrlParams pid_params;
