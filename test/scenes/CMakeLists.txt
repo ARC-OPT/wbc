@@ -19,6 +19,7 @@ add_executable(velocity_scene velocity_scene.cpp ../suite.cpp)
 target_link_libraries(velocity_scene
                       wbc-scenes
                       wbc-robot_models-kdl
+                      wbc-tools
                       wbc-solvers-hls
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
@@ -33,6 +34,7 @@ add_executable(acceleration_scene acceleration_scene.cpp ../suite.cpp)
 target_link_libraries(acceleration_scene
                       wbc-scenes
                       wbc-robot_models-kdl
+                      wbc-tools
                       wbc-solvers-qpoases
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
