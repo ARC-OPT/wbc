@@ -7,6 +7,16 @@ include:
    - project: 'sw-backbone/continuous-integration/ric-backbone-buildconf'
      file: 'gitlab-ci-include.yml'
 
+run_tests:
+  image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:18.04
+  stage: test
+  script:
+  - aup --config
+  - aup
+  - sed -i '1s/^/set(ROCK_TEST_ENABLED ON)\n /' CMakeLists.txt 
+  - amake
+  - ./build/test/robot_models/kdl/test_robot_model_kdl
+
 software_catalogue_entry:
   image: d-reg.hb.dfki.de:5000/ubuntu:overview_generator
   stage: deploy
