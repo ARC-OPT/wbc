@@ -23,7 +23,7 @@ run_tests:
   - ./build/test/scenes/test_velocity_scene_quadratic_cost
   - ./build/test/scenes/test_acceleration_scene
   - ./build/test/solvers/hls/test_hls_solver
-  - ./build/test/solvers/hls/test_qpoases_solver
+  - ./build/test/solvers/qpoases/test_qpoases_solver
 
 software_catalogue_entry:
   image: d-reg.hb.dfki.de:5000/ubuntu:overview_generator
