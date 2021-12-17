@@ -13,7 +13,6 @@ run_tests:
   script:
   - aup --config
   - aup
-  - sed -i '1s/^/set(ROCK_TEST_ENABLED ON)\n /' CMakeLists.txt 
   - amake
   - ./build/test/robot_models/kdl/test_robot_model_kdl
 
