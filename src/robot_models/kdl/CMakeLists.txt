@@ -4,13 +4,14 @@ file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models/robot_model_kd
 file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models/robot_model_kdl "*.hpp")
 
 pkg_search_module(kdl_parser REQUIRED kdl_parser)
+pkg_search_module(eigen3 REQUIRED eigen3)
 
 list(APPEND PKGCONFIG_REQUIRES kdl_parser)
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
 list(APPEND PKGCONFIG_REQUIRES orocos-kdl)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
-include_directories(${kdl_parser_INCLUDE_DIRS} ${orocos-kdl_INCLUDE_DIRS})
+include_directories(${kdl_parser_INCLUDE_DIRS} ${orocos-kdl_INCLUDE_DIRS} ${eigen3_INCLUDE_DIRS})
 link_directories(${kdl_parser_LIBRARY_DIRS} ${orocos-kdl_LIBRARY_DIRS})
 
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
