@@ -15,7 +15,7 @@ link_directories(${base-types_LIBRARY_DIRS}
                  ${orocos-kdl_LIBRARY_DIRS}
                  ${kdl_parser_LIBRARY_DIRS})
 
-add_executable(test_robot_model_kdl robot_model_kdl.cpp ../../suite.cpp)
+add_executable(test_robot_model_kdl test_robot_model_kdl.cpp ../../suite.cpp)
 target_link_libraries(test_robot_model_kdl
                       wbc-robot_models-kdl
                       wbc-tools

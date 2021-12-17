@@ -21,7 +21,7 @@ link_directories(${base-types_LIBRARY_DIRS}
                  ${RBDL_LIBRARY_DIRS}
                  ${hyrodyn_LIBRARY_DIRS})
 
-add_executable(test_robot_model_kdl_vs_rbdl robot_model_kdl_vs_rbdl.cpp ../../suite.cpp)
+add_executable(test_robot_model_kdl_vs_rbdl test_robot_model_kdl_vs_rbdl.cpp ../../suite.cpp)
 target_link_libraries(test_robot_model_kdl_vs_rbdl
                       wbc-robot_models-kdl
                       wbc-tools
@@ -29,7 +29,7 @@ target_link_libraries(test_robot_model_kdl_vs_rbdl
                       ${RBDL_LIBRARY}
                       ${RBDL_URDFReader_LIBRARY})
 
-add_executable(test_robot_model_hyrodyn robot_model_hyrodyn.cpp ../../suite.cpp)
+add_executable(test_robot_model_hyrodyn test_robot_model_hyrodyn.cpp ../../suite.cpp)
 target_link_libraries(test_robot_model_hyrodyn
                       wbc-robot_models-hyrodyn
                       wbc-tools
