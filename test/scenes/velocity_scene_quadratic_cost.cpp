@@ -7,6 +7,13 @@
 using namespace std;
 using namespace wbc;
 
+string rootDir(){
+    std::string root_dir = string(__FILE__);
+    const size_t last_slash_idx = root_dir.rfind('/');
+    root_dir =  root_dir.substr(0, last_slash_idx) + "/../..";
+    return root_dir;
+}
+
 BOOST_AUTO_TEST_CASE(simple_test){
 
     /**
@@ -16,7 +23,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     // Configure Robot model
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
-    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     base::samples::Joints joint_state;
