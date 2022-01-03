@@ -8,7 +8,7 @@ include_directories(${base-types_INCLUDE_DIRS}
 link_directories(${base-types_LIBRARY_DIRS}
                  ${qpOASES_LIBRARY_DIRS})
 
-add_executable(test_qp_oases_solver test_qp_oases_solver.cpp ../../suite.cpp)
-target_link_libraries(test_qp_oases_solver
+add_executable(test_qpoases_solver test_qpoases_solver.cpp ../../suite.cpp)
+target_link_libraries(test_qpoases_solver
                       wbc-solvers-qpoases
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
