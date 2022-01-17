@@ -11,6 +11,11 @@ build_18.04:
   script:
     - /opt/hooks/build_with_gitlab_ci.bash
 
+build_20.04:
+  image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:20.04
+  stage: build
+  script:
+    - /opt/hooks/build_with_gitlab_ci.bash
 
 run_tests:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:18.04
