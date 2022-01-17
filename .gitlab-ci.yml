@@ -4,8 +4,13 @@
 include:
    - project: 'build_server/gitlab_ci_includes'
      file: 'api_publish.yml'
-   - project: 'sw-backbone/continuous-integration/ric-backbone-buildconf'
-     file: 'gitlab-ci-include.yml'
+
+build_18.04:
+  image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:18.04
+  stage: build
+  script:
+    - /opt/hooks/build_with_gitlab_ci.bash
+
 
 run_tests:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:18.04
