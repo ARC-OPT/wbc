@@ -86,7 +86,7 @@ for i in init_pos:
 joint_state.elements = elements
 joint_state.names = robot_model.actuatedJointNames()
 
-floating_base_state.time.microseconds=round(time.time()*1e6)
+floating_base_state.time.microseconds=int(round(time.time()*1e6))
 robot_model.update(joint_state,floating_base_state)
 
 feedback = robot_model.rigidBodyState(cfg.root, cfg.tip)

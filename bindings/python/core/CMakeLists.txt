@@ -4,12 +4,11 @@ find_package(PythonInterp REQUIRED)
 find_package(PythonLibs REQUIRED)
 
 set(PYTHON_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages)
-
 if (UNIX AND NOT APPLE)
     if (PYTHON_VERSION_MAJOR EQUAL 3)
         find_package(Boost COMPONENTS python${PYTHON_VERSION_MAJOR} numpy${PYTHON_VERSION_MAJOR})
     else()
-        find_package(Boost COMPONENTS python numpy${PYTHON_VERSION_MAJOR})
+        find_package(Boost COMPONENTS python numpy)
     endif()
 else()
     if (PYTHON_VERSION_MAJOR EQUAL 3)
