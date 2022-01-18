@@ -9,7 +9,7 @@ build_18.04:
   image: ubuntu:18.04
   stage: build
   script:
-    - git archive --remote=git@git.hb.dfki.de:dfki-control/wbc/wbc.git HEAD scripts/install.sh | tar -x
+    - wget https://git.hb.dfki.de/dfki-control/wbc/wbc/scripts/install.sh
     - sh scripts/install.sh
 
 build_rock_18.04:
