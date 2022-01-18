@@ -6,7 +6,7 @@ include:
      file: 'api_publish.yml'
 
 build_18.04:
-  image: d-reg.hb.dfki.de:5000/gitlab-ci/ubuntu:18.04
+  image: ubuntu:18.04
   stage: build
   script:
     - git archive --remote=git@git.hb.dfki.de:dfki-control/wbc/wbc.git HEAD scripts/install.sh | tar -x
