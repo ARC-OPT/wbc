@@ -35,14 +35,7 @@ run_tests:
   - ./build/test/solvers/hls/test_hls_solver
   - ./build/test/solvers/qpoases/test_qpoases_solver
 
-software_catalogue_entry:
-  image: d-reg.hb.dfki.de:5000/ubuntu:overview_generator
-  stage: deploy
-  script:
-  - apt update
-  - apt install -y wget
-  - wget http://bob.dfki.uni-bremen.de/software_overview/generate.sh
-  - sh generate.sh $CI_PROJECT_NAMESPACE $CI_PROJECT_NAME $CI_PROJECT_URL
-  only:
-  - master
+include:
+  - project: 'build_server/gitlab_ci_includes'
+    file: 'software_catalogue.yml'
 
