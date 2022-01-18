@@ -9,6 +9,7 @@ build_18.04:
   image: ubuntu:18.04
   stage: build
   script:
+    - sudo apt-get install wget
     - wget https://git.hb.dfki.de/dfki-control/wbc/wbc/scripts/install.sh
     - sh scripts/install.sh
 
