@@ -6,12 +6,19 @@ include:
      file: 'api_publish.yml'
 
 build_18.04:
+  image: d-reg.hb.dfki.de:5000/gitlab-ci/ubuntu:18.04
+  stage: build
+  script:
+    - git archive --remote=git@git.hb.dfki.de:dfki-control/wbc.git HEAD scripts/install.sh | tar -x
+    - sh scripts/install.sh
+
+build_rock_18.04:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:18.04
   stage: build
   script:
     - /opt/hooks/build_with_gitlab_ci.bash
 
-build_20.04:
+build_rock_20.04:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:20.04
   stage: build
   script:
