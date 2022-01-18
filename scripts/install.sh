@@ -1,10 +1,10 @@
 #!/bin/sh
-sudo apt-get install git cmake build-essential libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev pkg-config libeigen3-dev 
+sudo apt-get --assume-yes install git cmake build-essential libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev pkg-config libeigen3-dev 
 
 # cmake makros
 git clone https://github.com/rock-core/base-cmake.git   
 mkdir base-cmake/build && cd base-cmake/build
-cmake .. && sudo make -j8 install
+cmake .. && sudo make -j8 install && cd../..
 
 # Logging 
 git clone https://github.com/rock-core/base-logging.git
