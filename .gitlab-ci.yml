@@ -2,8 +2,10 @@
 # Full project: https://gitlab.com/pages/doxygen
 
 include:
-   - project: 'build_server/gitlab_ci_includes'
-     file: 'api_publish.yml'
+  - project: 'build_server/gitlab_ci_includes'
+    file: 'api_publish.yml'
+  - project: 'build_server/gitlab_ci_includes'
+    file: 'software_catalogue.yml'
 
 build_rock_18.04:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:18.04
@@ -35,7 +37,4 @@ run_tests:
   - ./build/test/solvers/hls/test_hls_solver
   - ./build/test/solvers/qpoases/test_qpoases_solver
 
-include:
-  - project: 'build_server/gitlab_ci_includes'
-    file: 'software_catalogue.yml'
 
