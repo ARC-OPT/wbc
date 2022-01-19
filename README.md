@@ -1,4 +1,4 @@
-# WBC - Whole- Body Control
+# WBC - Whole-Body Control
 
 [Code API](http://bob.dfki.uni-bremen.de/apis/dfki-control/wbc/wbc)  | [Full Documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home)
 
