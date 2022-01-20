@@ -61,9 +61,11 @@ See [here](https://git.hb.dfki.de/dfki-control/wbc/documentation/-/wikis/WBC%20i
 
 Please check the unit tests [here](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/test), as well the comprehensive [examples](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/examples)
 
-## Bug Reports
+## Contributing
 
 Please use the [issue tracker](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/issues) to submit bug reports and feature requests.
+
+Please use merge requests as described [here](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/CONTRIBUTING.md) to add/adapt functionality. 
 
 ## License
 
