@@ -19,4 +19,5 @@ add_executable(test_robot_model_kdl test_robot_model_kdl.cpp ../../suite.cpp)
 target_link_libraries(test_robot_model_kdl
                       wbc-robot_models-kdl
                       wbc-tools
+                      ${kdl_parser_LIBRARIES}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
