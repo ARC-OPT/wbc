@@ -47,6 +47,9 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     hqp << qp;
 
     QPOASESSolver solver;
+    Options options = solver.getOptions();
+    options.printLevel = PL_NONE;
+    solver.setOptions(options);
     solver.setMaxNoWSR(NO_WSR);
 
     BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
@@ -116,6 +119,9 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
     hqp << qp;
 
     QPOASESSolver solver;
+    Options options = solver.getOptions();
+    options.printLevel = PL_NONE;
+    solver.setOptions(options);
     solver.setMaxNoWSR(NO_WSR);
 
     BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
