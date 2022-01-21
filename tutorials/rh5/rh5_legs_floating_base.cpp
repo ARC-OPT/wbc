@@ -41,7 +41,13 @@ using namespace ctrl_lib;
  */
 int main(){
 
-    // Configure serial robot model with floating base and two contact points: {"LLAnkle_FT", "LRAnkle_FT"
+    // Create KDL based robot model
+    RobotModelPtr robot_model = std::make_shared<RobotModelKDL>();
+
+    // Configure a serial robot model with floating base and two contact points: {"LLAnkle_FT", "LRAnkle_FT"}.
+    // Note that the joint names have to contain {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
+    // "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"} in addition to the actuated joints.
+    // Also a valid initial state (pose/twist/acceleration) of the floating base should be passed
     base::samples::RigidBodyStateSE3 floating_base_state;
     floating_base_state.pose.position = base::Vector3d(-0.0, 0.0, 0.87);
     floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
@@ -60,11 +66,11 @@ int main(){
     config.world_frame_id = "world";
     config.floating_base_state = floating_base_state;
     config.contact_points = {"LLAnkle_FT", "LRAnkle_FT"};
-    RobotModelPtr robot_model = std::make_shared<RobotModelKDL>();
     if(!robot_model->configure(config))
         return -1;
 
-    // Configure solver
+    // Configure solver. We have to use QPOases in this case, as it can deal with hard constraints
+    // like rigid feet contact points
     QPSolverPtr solver = std::make_shared<QPOASESSolver>();
     Options options = std::dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
     options.enableRegularisation = BT_TRUE;
@@ -74,13 +80,31 @@ int main(){
     std::dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
     std::dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
-    // Configure Scene
-    ConstraintConfig cart_constraint("com_position", 0, "world", "RH5_Root_Link", "world", 1);
+    // Configure Scene, we have to use VelocitySceneQuadraticCost here, since it implements
+    // rigid contact constraints for the feet contacts. Create a task for controlling the root link in
+    // world coordinates
+    ConstraintConfig cart_constraint;
+    cart_constraint.name = "com_position";
+    cart_constraint.type = cart;
+    cart_constraint.priority = 0;
+    cart_constraint.root = "world";
+    cart_constraint.tip = "RH5_Root_Link";
+    cart_constraint.ref_frame = "world";
+    cart_constraint.activation = 1;
     VelocitySceneQuadraticCost scene(robot_model, solver);
     if(!scene.configure({cart_constraint}))
         return -1;
 
-    // Initial joint state
+    // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:
+    //
+    //    v_d = kd*v_r + kp(x_r - x).
+    //
+    // As we don't use feed forward velocity here, we can ignore the factor kd.
+    CartesianPosPDController controller;
+    controller.setPGain(base::Vector6d::Constant(3));
+
+    // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed.
+    // Note that you don't have to pass the floating base pose here.
     uint nj = robot_model->noOfActuatedJoints();
     base::VectorXd q(nj);
     q << 0,0,-0.35,0.64,0,-0.27, 0,0,-0.35,0.64,0,-0.27;
@@ -93,11 +117,8 @@ int main(){
     }
     joint_state.time = base::Time::now();
 
-    // Configure Cartesian controller
-    CartesianPosPDController controller;
-    controller.setPGain(base::Vector6d::Constant(3));
-
-    // Reference Pose
+    // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
+    // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
     setpoint.pose.position = base::Vector3d(-0.0,0,0.6);
     setpoint.pose.orientation = base::Quaterniond(1,0,0,0);
@@ -108,27 +129,33 @@ int main(){
     double loop_time = 0.001; // seconds
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
-        // Update robot model
+
+        // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
+        // Note that you have to pass the floating base state as well now!
         robot_model->update(joint_state, floating_base_state);
 
-        // Update controllers
+        // Update controller. The feedback is the pose of the tip link described in ref_frame link
         feedback = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
         ctrl_output = controller.update(setpoint, feedback);
 
-        // Update constraints
+        // Update constraints. Pass the control output of the controller to the corresponding constraint.
+        // The control output is the gradient of the task function that is to be minimized during execution.
         scene.setReference(cart_constraint.name, ctrl_output);
 
-        // Update WBC scene and solve
+        // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();
+
+        // Solve the QP. The output is the joint velocity that achieves the task space velocity demanded by the controller, i.e.,
+        // this joint velocity will drive the end effector to the reference x_r
         solver_output = scene.solve(hqp);
 
-        // Update joint state
+        // Update joint state by simple integration using the solver output
         for(size_t i = 0; i < joint_state.size(); i++){
             joint_state[i].position += solver_output[i].speed * loop_time;
             joint_state[i].speed = solver_output[i].speed;
         }
 
-        // Update floating base pose, use a simplistic estimation
+        // Update floating base pose, use an over-simplistic estimation
         floating_base_state.pose.position = robot_model->rigidBodyState("LLAnkle_FT", "RH5_Root_Link").pose.position;
         floating_base_state.pose.position*=-1;
         floating_base_state.pose.position[0]=floating_base_state.pose.position[1]=0;

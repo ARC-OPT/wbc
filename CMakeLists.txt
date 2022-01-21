@@ -12,7 +12,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 add_subdirectory(src)
 add_subdirectory(test)
-add_subdirectory(examples)
+add_subdirectory(tutorials)
 add_subdirectory(bin)
 if(USE_PYTHON)
     message("USING PYTHON.")

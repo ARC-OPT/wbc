@@ -35,8 +35,13 @@ using namespace ctrl_lib;
  */
 int main(){
 
-    // Configure serial robot model
+    // Create Hyrodyn based robot model.  In this case, we use the Hyrodyn-based model, which allows handling of parallel mechanisms.
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+
+    // Configure the model. We pass a serial model description to RobotModelHyrodyn, which means that the solution will be identical
+    // to the one obtained by  RobotModelKDL. RobotModelHyrodyn assumes that you specify correctly all joints (actuated and unactuated).
+    // Also, we have to pass a submechanism files, which describes the parallel structures inside the robot architecture
+    // In this case, there are not parallel structure, since we use the abstract model
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
     config.joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"};
@@ -45,26 +50,40 @@ int main(){
     if(!robot_model->configure(config))
         return -1;
 
-    vector<string> ind_joint_names = config.joint_names; // Independent joints are identical with the controlled joints in WBC
+    // Independent joint names. Since the model is serial and we don' t have a floating base:
+    // actuated joints == independend joints == all joints
+    vector<string> ind_joint_names = config.joint_names;
 
-    // Configure solver
+    // Configure solver, use QPOASES in this case
     QPSolverPtr solver = make_shared<QPOASESSolver>();
     Options options = dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
     options.printLevel = PL_NONE;
     dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
     dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
-    // Configure Scene
-    ConstraintConfig cart_constraint("left_leg_posture", 0, "RH5_Root_Link", "LLAnkle_FT", "RH5_Root_Link", 1);
+    // Configure Scene, use VelocitySceneQuadraticCost in this case
+    ConstraintConfig cart_constraint;
+    cart_constraint.name = "left_leg_posture";     // unique id
+    cart_constraint.type = cart;                   // Cartesian or joint space task?
+    cart_constraint.priority = 0;                  // Priority, 0 - highest prio
+    cart_constraint.root = "RH5_Root_Link";        // Root link of the kinematic chain to consider for this task
+    cart_constraint.tip = "LLAnkle_FT";            // Tip link of the kinematic chain to consider for this task
+    cart_constraint.ref_frame = "RH5_Root_Link";   // In what frame is the task specified?
+    cart_constraint.activation = 1;                // (0..1) initial task activation. 1 - Task should be active initially
+    cart_constraint.weights = vector<double>(6,1); // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
     VelocitySceneQuadraticCost scene(robot_model, solver);
     if(!scene.configure({cart_constraint}))
         return -1;
 
-    // Configure Cartesian controller
+    // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:
+    //
+    //    v_d = kd*v_r + kp(x_r - x).
+    //
+    // As we don't use feed forward velocity here, we can ignore the factor kd.
     CartesianPosPDController controller;
     controller.setPGain(base::Vector6d::Constant(1));
 
-    // Initial joint state
+    // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed
     uint nj = ind_joint_names.size();
     base::samples::Joints joint_state;
     base::VectorXd init_q(nj);
@@ -75,33 +94,39 @@ int main(){
         joint_state[i].position = init_q[i];
     joint_state.time = base::Time::now();
 
-    // Reference Pose
+    // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
+    // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
     setpoint.pose.position = base::Vector3d(0, 0, -0.6);
     setpoint.pose.orientation = base::Quaterniond(0,-1,0,0);
+    setpoint.frame_id = cart_constraint.ref_frame;
     feedback.pose.position.setZero();
     feedback.pose.orientation.setIdentity();
 
-    // Run control loop
     double loop_time = 0.001; // seconds
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-3){
 
-        // Update robot model
+        // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model
         robot_model->update(joint_state);
 
-        // Update controllers
+        // Update controller. The feedback is the pose of the tip link described in ref_frame link
         feedback = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
         ctrl_output = controller.update(setpoint, feedback);
 
-        // Update constraints
+        // Update constraints. Pass the control output of the solver to the corresponding constraint.
+        // The control output is the gradient of the task function that is to be minimized during execution.
         scene.setReference(cart_constraint.name, ctrl_output);
 
-        // Update WBC scene and solve
+        // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();
+
+        // Solve the QP. The output is the joint velocity that achieves the task space velocity demanded by the controller, i.e.,
+        // this joint velocity will drive the end effector to the reference x_r
         solver_output = scene.solve(hqp);
 
-        // Update joint state
+        // Update the current joint state. Simply integrate the current joint position using the joint velocity given by the solver.
+        // On a real robot, this would be replaced by a function that sends the solver output to the joints.
         for(size_t i = 0; i < joint_state.size(); i++)
             joint_state[i].position += solver_output[i].speed * loop_time;
         joint_state.time = base::Time::now();

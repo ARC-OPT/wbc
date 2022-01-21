@@ -20,36 +20,50 @@ using namespace ctrl_lib;
  */
 int main(){
 
-    // Configure hybrid robot model
+    // Create Hyrodyn based robot model.  In this case, we use the Hyrodyn-based model, which allows handling of parallel mechanisms.
+    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+
+    // Configure the full robot model, containing all linear actuators and parallel mechanisms.
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
-    config.joint_names = {"LLHip1", "LLHip2","LLHip3", "LLHip3_B11", "LLHip3_Act1","LLKnee", "LLKnee_B11", "LLKnee_Act1", "LLAnkleRoll", "LLAnklePitch", "LLAnkle_E11", "LLAnkle_E21", "LLAnkle_B11", "LLAnkle_B12", "LLAnkle_Act1", "LLAnkle_B21", "LLAnkle_B22", "LLAnkle_Act2"};
-    config.actuated_joint_names = {"LLHip1", "LLHip2", "LLHip3_Act1","LLKnee_Act1", "LLAnkle_Act1", "LLAnkle_Act2"};
     config.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
-    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
     if(!robot_model->configure(config))
         return -1;
 
-    vector<string> ind_joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"}; // Independent joints differ from controlled joints in WBC
+    // Independent joint names. This time they differ from the controlled joints in WBC
+    vector<string> ind_joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"};
 
-    // Configure solver
+    // Configure solver, use QPOASES in this case
     QPSolverPtr solver = make_shared<QPOASESSolver>();
     Options options = dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
     options.printLevel = PL_NONE;
     dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
     dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
-    // Configure Scene
-    ConstraintConfig cart_constraint("left_leg_posture", 0, "RH5_Root_Link", "LLAnkle_FT", "RH5_Root_Link", 1);
+    // Configure Scene, use VelocitySceneQuadraticCost in this case
+    ConstraintConfig cart_constraint;
+    cart_constraint.name = "left_leg_posture";     // unique id
+    cart_constraint.type = cart;                   // Cartesian or joint space task?
+    cart_constraint.priority = 0;                  // Priority, 0 - highest prio
+    cart_constraint.root = "RH5_Root_Link";        // Root link of the kinematic chain to consider for this task
+    cart_constraint.tip = "LLAnkle_FT";            // Tip link of the kinematic chain to consider for this task
+    cart_constraint.ref_frame = "RH5_Root_Link";   // In what frame is the task specified?
+    cart_constraint.activation = 1;                // (0..1) initial task activation. 1 - Task should be active initially
+    cart_constraint.weights = vector<double>(6,1); // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
     VelocitySceneQuadraticCost scene(robot_model, solver);
     if(!scene.configure({cart_constraint}))
         return -1;
 
-    // Configure Cartesian controller
+    // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:
+    //
+    //    v_d = kd*v_r + kp(x_r - x).
+    //
+    // As we don't use feed forward velocity here, we can ignore the factor kd.
     CartesianPosPDController controller;
-    controller.setPGain(base::Vector6d::Constant(1));
+    controller.setPGain(base::Vector6d::Constant(10));
 
-    // Initial joint state
+    // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed.
+    // Note that WBC takes as input ALWAYS the independent joints, no matter what robot model is used.
     uint nj = ind_joint_names.size();
     base::samples::Joints joint_state;
     base::VectorXd init_q(nj);
@@ -60,10 +74,12 @@ int main(){
         joint_state[i].position = init_q[i];
     joint_state.time = base::Time::now();
 
-    // Reference Pose
+    // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
+    // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
     setpoint.pose.position = base::Vector3d(0,0, -0.6);
     setpoint.pose.orientation = base::Quaterniond(0,-1,0,0);
+    setpoint.frame_id = cart_constraint.ref_frame;
     feedback.pose.position.setZero();
     feedback.pose.orientation.setIdentity();
 
@@ -72,27 +88,32 @@ int main(){
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-3){
 
-        // Update robot model
+        // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model
         robot_model->update(joint_state);
 
-        // Update controllers
+        // Update controller. The feedback is the pose of the tip link described in ref_frame link
         feedback = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
         ctrl_output = controller.update(setpoint, feedback);
 
-        // Update constraints
+        // Update constraints. Pass the control output of the solver to the corresponding constraint.
+        // The control output is the gradient of the task function that is to be minimized during execution.
         scene.setReference(cart_constraint.name, ctrl_output);
 
-        // Update WBC scene and solve
+        // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();
+
+        // Solve the QP. The output is the joint velocity that achieves the task space velocity demanded by the controller, i.e.,
+        // this joint velocity will drive the end effector to the reference x_r
         solver_output = scene.solve(hqp);
 
-        // Use Hyrodyn to compute the joint velocity in independent joint space from the solver output, which contains the actuated joints
+        // Use Hyrodyn to compute the joint velocity in independent joint space from the solver output, which contains only the actuated joints.
+        // Normally, we would send the solver output directly to the actuators of our robot
         hyrodyn::RobotModel_HyRoDyn* rm_hyrodyn = std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->hyrodynHandle();
         for(int i = 0; i < solver_output.size(); i++)
             rm_hyrodyn->ud[i] = solver_output[i].speed;
         rm_hyrodyn->calculate_forward_system_state();
 
-        // Update joint state
+        // Update independent joint state
         for(size_t i = 0; i < joint_state.size(); i++)
             joint_state[i].position += rm_hyrodyn->yd[i]*loop_time;
 

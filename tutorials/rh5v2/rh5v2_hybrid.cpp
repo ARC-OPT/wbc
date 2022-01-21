@@ -18,8 +18,11 @@ using namespace ctrl_lib;
  */
 int main()
 {
-    // Configure robot model
+
+    // Create robot model, use Hyrodyn based model
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+
+    // Configure robot model. Use the hybrid model this time.
     RobotModelConfig config("../../../models/rh5v2/urdf/rh5v2_hybrid.urdf");
     config.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2_hybrid.yml";
     if(!robot_model->configure(config))
@@ -27,7 +30,25 @@ int main()
 
     hyrodyn::RobotModel_HyRoDyn* rm_hyrodyn = std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model)->hyrodynHandle();
 
-    // Initial joint state
+    // Configure solver, use QPOases
+    QPSolverPtr solver = make_shared<QPOASESSolver>();
+    dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
+    qpOASES::Options options = dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
+    options.setToReliable();
+    options.printLevel = qpOASES::PL_NONE;
+    dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
+
+    // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
+    // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
+    AccelerationSceneTSID scene(robot_model, solver);
+    vector<ConstraintConfig> wbc_config;
+    wbc_config.push_back(ConstraintConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
+    wbc_config.push_back(ConstraintConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
+    if(!scene.configure(wbc_config))
+        return -1;
+
+    // Choose an initial joint state. Since we use acceleration-based WBC here, we have to pass the velocities and
+    // accelerations as well
     base::samples::Joints joint_state;
     joint_state.names = rm_hyrodyn->jointnames_independent;
     uint nj = joint_state.names.size();
@@ -42,23 +63,11 @@ int main()
     joint_state["ALElbow"].position     = joint_state["ARElbow"].position     = -1.0;
     robot_model->update(joint_state);
 
-    // Configure solver
-    QPSolverPtr solver = make_shared<QPOASESSolver>();
-    dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
-    qpOASES::Options options = dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
-    options.setToReliable();
-    options.printLevel = qpOASES::PL_NONE;
-    dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
-
-    // Configure scene
-    AccelerationSceneTSID scene(robot_model, solver);
-    vector<ConstraintConfig> wbc_config;
-    wbc_config.push_back(ConstraintConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
-    wbc_config.push_back(ConstraintConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
-    if(!scene.configure(wbc_config))
-        return -1;
-
-    // Configure Cartesian controllers
+    // Configure Cartesian controllers. The controllers implement the following control law:
+    //
+    //    a_d = kf*a_r +  kd*(v_r - v) + kp(x_r - x).
+    //
+    // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl_left, ctrl_right;
     base::VectorXd p_gain(6),d_gain(6);
     p_gain.setConstant(10); // Stiffness
@@ -80,8 +89,8 @@ int main()
     double loop_time = 0.01; // seconds
     base::commands::Joints solver_output;
     for(double t = 0; t < 5; t+=loop_time){
-        // Update robot model
-        joint_state.time = base::Time::now();
+
+        // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
         robot_model->update(joint_state);
 
         // Update controllers, left arm: Follow sinusoidal trajectory
@@ -89,16 +98,18 @@ int main()
         setpoint_left.twist.linear[0] = 0.1*cos(t);
         feedback_left = robot_model->rigidBodyState(wbc_config[0].root, wbc_config[0].tip);
         feedback_right = robot_model->rigidBodyState(wbc_config[1].root, wbc_config[1].tip);
-
         ctrl_output_left = ctrl_left.update(setpoint_left, feedback_left);
         ctrl_output_right = ctrl_right.update(setpoint_right, feedback_right);
 
-        // Update constraints
+        // Update constraints. Pass the control output of the controller to the corresponding constraint.
+        // The control output is the gradient of the task function that is to be minimized during execution.
         scene.setReference(wbc_config[0].name, ctrl_output_left);
         scene.setReference(wbc_config[1].name, ctrl_output_right);
 
-        // Update WBC scene and solve
+        // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();
+
+        // Solve the QP. The output is the joint acceleration/torque that achieves the task space acceleration demanded by the controllers
         solver_output = scene.solve(hqp);
 
         // Integrate once to get joint velocity from solver output
@@ -109,7 +120,7 @@ int main()
             rm_hyrodyn->ud[i] = solver_output[i].speed;
         rm_hyrodyn->calculate_forward_system_state();
 
-        // Update joint state
+        // Update joint state by integrating again
         for(size_t i = 0; i < joint_state.size(); i++){
             joint_state[i].position += rm_hyrodyn->yd[i] * loop_time;
             joint_state[i].speed = rm_hyrodyn->yd[i];
