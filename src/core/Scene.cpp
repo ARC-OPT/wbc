@@ -75,12 +75,14 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
 
     // Check WBC config
     for(auto cfg : wbc_config){
-        if(!robot_model->hasLink(cfg.root))
-            return false;
-        if(!robot_model->hasLink(cfg.tip))
-            return false;
-        if(!robot_model->hasLink(cfg.ref_frame))
-            return false;
+        if(cfg.type == cart){
+            if(!robot_model->hasLink(cfg.root))
+                return false;
+            if(!robot_model->hasLink(cfg.tip))
+                return false;
+            if(!robot_model->hasLink(cfg.ref_frame))
+                return false;
+        }
 
         try{
             cfg.validate();
