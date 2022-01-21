@@ -23,9 +23,7 @@ run_tests:
   image: d-reg.hb.dfki.de:5000/gitlab-ci/docker-ric-backbone_ubuntu:18.04
   stage: test
   script:
-  - aup --config
-  - aup
-  - amake
+  - /opt/hooks/build_with_gitlab_ci.bash
   - ./build/test/controllers/test_pid_controllers
   - ./build/test/controllers/test_pos_pd_controllers
   - ./build/test/controllers/test_pot_field_controllers
