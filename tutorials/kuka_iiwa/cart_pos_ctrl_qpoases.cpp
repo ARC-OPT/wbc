@@ -64,7 +64,7 @@ int main(int argc, char** argv){
     // of the QP and defines the maximum joint velocities (taken from the URDF) as hard inequality constraints. The solution will
     // behave similarly in task space. However, as you wil see, the joint velocities will not exceed the joint limits defined in the URDF file.
     ConstraintConfig cart_constraint;
-    cart_constraint.name       = "cart_pos_ctrl_left"; // Unique identifier
+    cart_constraint.name       = "cart_pos_ctrl";      // Unique identifier
     cart_constraint.type       = cart;                 // Cartesian or joint space task?
     cart_constraint.priority   = 0;                    // Priority, 0 - highest prio
     cart_constraint.root       = "kuka_lbr_l_link_0";  // Root link of the kinematic chain to consider for this task

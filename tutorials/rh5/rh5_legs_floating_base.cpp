@@ -91,6 +91,7 @@ int main(){
     cart_constraint.tip = "RH5_Root_Link";
     cart_constraint.ref_frame = "world";
     cart_constraint.activation = 1;
+    cart_constraint.weights = vector<double>(6,1);
     VelocitySceneQuadraticCost scene(robot_model, solver);
     if(!scene.configure({cart_constraint}))
         return -1;
