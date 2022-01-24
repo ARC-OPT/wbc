@@ -62,7 +62,7 @@ int main(int argc, char** argv){
     // a single Cartesian task. The most important entries here are root/tip and reference frame, any of which has to be a valid
     // link in the URDF model. For all configuration options, check core/ConstraintConfig.hpp
     ConstraintConfig cart_constraint;
-    cart_constraint.name       = "cart_pos_ctrl_left"; // Unique identifier
+    cart_constraint.name       = "cart_pos_ctrl";      // Unique identifier
     cart_constraint.type       = cart;                 // Cartesian or joint space task?
     cart_constraint.priority   = 0;                    // Priority, 0 - highest prio
     cart_constraint.root       = "kuka_lbr_l_link_0";  // Root link of the kinematic chain to consider for this task
