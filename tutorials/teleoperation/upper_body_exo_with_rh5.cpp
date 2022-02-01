@@ -8,7 +8,7 @@ using namespace std;
 int main(){
 
     RobotModelConfig model_config;
-    model_config.file = "../../../examples/teleoperation/urdf/recupera_exo_and_rh5.urdf";
+    model_config.file = "../../../models/recupera_exoskeleton/recupera_exo_and_rh5.urdf";
     model_config.joint_names = URDFTools::jointNamesFromURDF(model_config.file);
     model_config.actuated_joint_names = model_config.joint_names;
 

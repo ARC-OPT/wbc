@@ -1,0 +1,293 @@
+<robot name="LRAnkle">
+  <link name="LRAnkleBase_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+  </link>
+  <joint name="LRAnklePitch" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="LRAnkleRoll_Link"/>
+    <child link="LRAnklePitch_Link"/>
+    <limit effort="200.0" lower="-0.8988445648" upper="0.7853981634" velocity="6.0"/>
+  </joint>
+  <link name="LRAnklePitch_Link">
+    <inertial>
+      <origin xyz="2.8493e-18 -1.3878e-16 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="2.8252e-05"/>
+      <inertia ixx="4.5912e-11" ixy="1.8118e-28" ixz="-1.4548e-27" iyy="6.6802e-11" iyz="5.3633e-27" izz="3.9725e-11"/>
+    </inertial>
+    <visual name="LRAnklePitch_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/AnklePitch_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.79216 0.81961 0.93333 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="LRAnkleRoll" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="LRAnkleBase_Link"/>
+    <child link="LRAnkleRoll_Link"/>
+    <limit effort="200.0" lower="-0.9948376736" upper="0.9948376736" velocity="6.0"/>
+  </joint>
+  <link name="LRAnkleRoll_Link">
+    <inertial>
+      <origin xyz="-4.1608e-08 7.2923e-08 -5.2997e-09" rpy="0.0 0.0 0.0"/>
+      <mass value="0.02493"/>
+      <inertia ixx="2.9269e-06" ixy="-7.8377e-12" ixz="-1.0382e-12" iyy="1.1591e-06" iyz="1.5876e-12" izz="3.5758e-06"/>
+    </inertial>
+    <visual name="LRAnkleRoll_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/AnkleRoll_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.64706 0.61961 0.58824 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkleRoll_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/AnkleRoll_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_Act1" type="prismatic">
+    <origin xyz="0.0 0.0 0.26597" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="LRAnkle_B12_Link"/>
+    <child link="LRAnkle_Act1_Link"/>
+    <limit effort="571.0" lower="-0.0449" upper="0.0647" velocity="0.266"/>
+  </joint>
+  <link name="LRAnkle_Act1_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.07896134655058572"/>
+      <inertia ixx="0.0002465399999951976" ixy="2.2218334565684636e-09" ixz="-1.2305787261017842e-09" iyy="0.00024678" iyz="-6.276200589605272e-08" izz="1.0730000048024368e-06"/>
+    </inertial>
+    <visual name="LRAnkle_Act1_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 1.57079632679"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_Act1_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_Act1_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 1.57079632679"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_Act1_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_Act2" type="prismatic">
+    <origin xyz="0.0 0.0 0.26597" rpy="0.0 0.0 0.0"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="LRAnkle_B22_Link"/>
+    <child link="LRAnkle_Act2_Link"/>
+    <limit effort="571.0" lower="-0.0449" upper="0.0647" velocity="0.266"/>
+  </joint>
+  <link name="LRAnkle_Act2_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.07896134655058568"/>
+      <inertia ixx="0.00024653999999529885" ixy="-2.1503334660041774e-09" ixz="-1.2114887257947331e-09" iyy="0.00024678" iyz="6.275800570632389e-08" izz="1.0730000047011228e-06"/>
+    </inertial>
+    <visual name="LRAnkle_Act2_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_Act2_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_Act2_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_Act2_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_B11" type="revolute">
+    <origin xyz="-0.0223 0.025 0.29127" rpy="3.091 -0.174503 3.14159"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="LRAnkleBase_Link"/>
+    <child link="LRAnkle_B11_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRAnkle_B11_Link">
+    <inertial>
+      <origin xyz="-0.0026075 -1.6785e-12 0.0015126" rpy="0.0 0.0 0.0"/>
+      <mass value="0.00654"/>
+      <inertia ixx="1.5907e-06" ixy="3.9038e-14" ixz="8.7457e-09" iyy="1.8739e-06" iyz="8.1942e-15" izz="3.3241e-06"/>
+    </inertial>
+    <visual name="LRAnkle_B11_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B11_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_B11_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B11_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_B12" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0060102 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="LRAnkle_B11_Link"/>
+    <child link="LRAnkle_B12_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRAnkle_B12_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.626756605161674"/>
+      <inertia ixx="0.0024658002179549095" ixy="-7.781387113609205e-08" ixz="4.106487105614771e-05" iyy="0.0024841" iyz="4.2541020648759203e-07" izz="0.0001561197820450909"/>
+    </inertial>
+    <visual name="LRAnkle_B12_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B12_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_B12_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B12_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_B21" type="revolute">
+    <origin xyz="-0.0223 -0.025 0.29127" rpy="-3.09098 -0.174503 3.14159"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="LRAnkleBase_Link"/>
+    <child link="LRAnkle_B21_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRAnkle_B21_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.006540000004287366"/>
+      <inertia ixx="1.5907000464272066e-06" ixy="-3.904598539503503e-14" ixz="8.750299732424617e-09" iyy="1.8739e-06" iyz="5.503903612047694e-15" izz="3.324099953572794e-06"/>
+    </inertial>
+    <visual name="LRAnkle_B21_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B21_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_B21_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B21_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_B22" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0060102 0.0"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="LRAnkle_B21_Link"/>
+    <child link="LRAnkle_B22_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRAnkle_B22_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 -0.0 0.0"/>
+      <mass value="0.6267566051616451"/>
+      <inertia ixx="0.0024658002179549095" ixy="-7.617188419175961e-08" ixz="4.106487105614771e-05" iyy="0.0024841" iyz="4.204902021304149e-07" izz="0.0001561197820450909"/>
+    </inertial>
+    <visual name="LRAnkle_B22_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B22_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_B22_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 3.14159 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_B22_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_E11" type="revolute">
+    <origin xyz="-0.07 0.04 0.0" rpy="0.05066 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="LRAnklePitch_Link"/>
+    <child link="LRAnkle_E11_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRAnkle_E11_Link">
+    <inertial>
+      <origin xyz="-3.2627e-08 -0.00061479 0.011938" rpy="0.0 0.0 0.0"/>
+      <mass value="0.025"/>
+      <inertia ixx="5.6966e-06" ixy="2.0874e-13" ixz="-6.1394e-13" iyy="5.4356e-06" iyz="2.0391e-07" izz="1.4865e-06"/>
+    </inertial>
+    <visual name="LRAnkle_E11_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_E11_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_E11_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_E11_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRAnkle_E21" type="revolute">
+    <origin xyz="-0.07 -0.04 0.0" rpy="-0.05066 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="LRAnklePitch_Link"/>
+    <child link="LRAnkle_E21_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRAnkle_E21_Link">
+    <inertial>
+      <origin xyz="-3.2627e-08 0.00061479 0.011938" rpy="0.0 0.0 0.0"/>
+      <mass value="0.025"/>
+      <inertia ixx="5.6966e-06" ixy="-2.0874e-13" ixz="-6.1394e-13" iyy="5.4356e-06" iyz="-2.0391e-07" izz="1.4865e-06"/>
+    </inertial>
+    <visual name="LRAnkle_E21_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_E21_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRAnkle_E21_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Ankle_E21_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

@@ -1,0 +1,69 @@
+submechanisms:
+- name: "free_flyer_joint"
+  type: "3T+3R"
+  contextual_name: "floating_root_joint"
+  jointnames_independent: ["floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"]
+  jointnames_spanningtree: ["floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"]
+  jointnames_active: []
+  
+- name: "two_revolute_joints"
+  type: "RR"
+  contextual_name: "left_hip01_joint"
+  jointnames_independent: ["LLHip1", "LLHip2"]
+  jointnames_spanningtree: ["LLHip1", "LLHip2"]
+  jointnames_active: ["LLHip1", "LLHip2"]
+
+- name: "lambda_mechanism"
+  type: "rrPr"
+  contextual_name: "left_hip2_joint"
+  file_path: "LLHip3.urdf"
+  jointnames_independent: ["LLHip3"]
+  jointnames_spanningtree: ["LLHip3", "LLHip3_B11", "LLHip3_Act1"]
+  jointnames_active: ["LLHip3_Act1"]
+
+- name: "lambda_mechanism"
+  type: "rrPr"
+  contextual_name: "left_knee_joint"
+  file_path: "LLKnee.urdf"
+  jointnames_independent: ["LLKnee"]
+  jointnames_spanningtree: ["LLKnee", "LLKnee_B11", "LLKnee_Act1"]
+  jointnames_active: ["LLKnee_Act1"]
+
+- name: "rh5_ankle"
+  type: "2SPRR+1U"
+  contextual_name: "left_ankle_joint"
+  file_path: "LLAnkle.urdf"
+  jointnames_independent: ["LLAnkleRoll", "LLAnklePitch"]
+  jointnames_spanningtree: ["LLAnkleRoll", "LLAnklePitch", "LLAnkle_E11", "LLAnkle_E21", "LLAnkle_B11", "LLAnkle_B12", "LLAnkle_Act1", "LLAnkle_B21", "LLAnkle_B22", "LLAnkle_Act2"]
+  jointnames_active: ["LLAnkle_Act1", "LLAnkle_Act2"]
+
+- name: "two_revolute_joints"
+  type: "RR"
+  contextual_name: "right_hip01_joint"
+  jointnames_independent: ["LRHip1", "LRHip2"]
+  jointnames_spanningtree: ["LRHip1", "LRHip2"]
+  jointnames_active: ["LRHip1", "LRHip2"]
+
+- name: "lambda_mechanism"
+  type: "rrPr"
+  contextual_name: "right_hip2_joint"
+  file_path: "LRHip3.urdf"
+  jointnames_independent: ["LRHip3"]
+  jointnames_spanningtree: ["LRHip3", "LRHip3_B11", "LRHip3_Act1"]
+  jointnames_active: ["LRHip3_Act1"]
+
+- name: "lambda_mechanism"
+  type: "rrPr"
+  contextual_name: "right_knee_joint"
+  file_path: "LRKnee.urdf"
+  jointnames_independent: ["LRKnee"]
+  jointnames_spanningtree: ["LRKnee", "LRKnee_B11", "LRKnee_Act1"]
+  jointnames_active: ["LRKnee_Act1"]
+
+- name: "rh5_ankle"
+  type: "2SPRR+1U"
+  contextual_name: "right_ankle_joint"
+  file_path: "LRAnkle.urdf"
+  jointnames_independent: ["LRAnkleRoll", "LRAnklePitch"]
+  jointnames_spanningtree: ["LRAnkleRoll", "LRAnklePitch", "LRAnkle_E11", "LRAnkle_E21", "LRAnkle_B11", "LRAnkle_B12", "LRAnkle_Act1", "LRAnkle_B21", "LRAnkle_B22", "LRAnkle_Act2"]
+  jointnames_active: ["LRAnkle_Act1", "LRAnkle_Act2"]

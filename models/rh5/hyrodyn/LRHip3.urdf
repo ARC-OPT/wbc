@@ -1,0 +1,105 @@
+<robot name="LRHip3">
+  <link name="LRHip2_Link">
+    <inertial>
+      <origin xyz="0.0013954 0.0024309 -0.0053241" rpy="0.0 0.0 0.0"/>
+      <mass value="0.969"/>
+      <inertia ixx="0.0017014" ixy="7.9487e-05" ixz="4.6091e-05" iyy="0.0011578" iyz="-0.0003011" izz="0.0015428"/>
+    </inertial>
+    <visual name="LRHip2_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/LRHip2_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+  </link>
+  <joint name="LRHip3" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="9.8608e-32 2.7756e-17 -4.9304e-32"/>
+    <axis xyz="-0.96593 0.0 -0.25882"/>
+    <parent link="LRHip2_Link"/>
+    <child link="LRHip3_Link"/>
+    <limit effort="378.0" lower="-1.16" upper="0.28" velocity="2.321"/>
+  </joint>
+  <joint name="LRHip3_Act1" type="prismatic">
+    <origin xyz="0.2974 0.0 0.0" rpy="3.1416 -5.2385e-31 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="LRHip3_B11_Link"/>
+    <child link="LRHip3_Act1_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRHip3_Act1_Link">
+    <inertial>
+      <origin xyz="-0.16939 -0.00046849 4.4559e-05" rpy="0.0 0.0 0.0"/>
+      <mass value="1.224"/>
+      <inertia ixx="0.00077764" ixy="5.3759e-05" ixz="4.1291e-07" iyy="0.0059452" iyz="-2.966e-08" izz="0.0059569"/>
+    </inertial>
+    <visual name="LRHip3_Act1_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/LLHip3_Act1_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRHip3_Act1_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/LLHip3_Act1_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="LRHip3_B11" type="revolute">
+    <origin xyz="0.018117 -0.09 -0.067615" rpy="-2.5686 1.2577 0.59588"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="LRHip2_Link"/>
+    <child link="LRHip3_B11_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="LRHip3_B11_Link">
+    <inertial>
+      <origin xyz="0.10645 -2.4289e-13 1.9568e-15" rpy="0.0 0.0 0.0"/>
+      <mass value="0.16503"/>
+      <inertia ixx="3.4113e-06" ixy="3.8263e-12" ixz="-7.0537e-16" iyy="0.00081967" iyz="-1.7661e-15" izz="0.00081963"/>
+    </inertial>
+    <visual name="LRHip3_B11_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Hip3_B11_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRHip3_B11_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Hip3_B11_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <link name="LRHip3_Link">
+    <inertial>
+      <origin xyz="0.051263 0.0072511 -0.19232" rpy="0.0 0.0 0.0"/>
+      <mass value="1.0487"/>
+      <inertia ixx="0.020383" ixy="3.4682e-05" ixz="0.0047264" iyy="0.022629" iyz="-0.00014075" izz="0.0042174"/>
+    </inertial>
+    <visual name="LRHip3_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Hip3_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="LRHip3_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Hip3_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

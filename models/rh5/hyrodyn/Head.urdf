@@ -1,0 +1,167 @@
+<robot name="RH5">
+
+  <link name="BodyYaw_Link">
+    <inertial>
+      <origin xyz="-0.015999 0.00018406 0.27483" rpy="0 0 0" />
+      <mass value="27.291" />
+      <inertia ixx="1.1652" ixy="-5.1088E-05" ixz="-0.027697" iyy="0.98908" iyz="-0.00057966" izz="0.60666" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/BodyYaw_Link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="1 1 1 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/BodyYaw_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <!--Head-->
+  <link name="Head_Act1_Link" />
+  <link name="Head_Act2_Link" />
+  <link name="Head_Act3_Link" />
+  <joint name="Head_Act1" type="revolute">
+    <origin xyz="0.00395 0 0.66179" rpy="2.8216E-18 3.4225E-16 1.0489E-14" />
+    <parent link="BodyYaw_Link" />
+    <child link="Head_Act1_Link" />
+    <limit effort="9.8" lower="-0.3490658504" upper="0.2617993878" velocity="8.0553657784"/>
+  </joint>
+  <joint name="Head_Act2" type="revolute">
+    <origin xyz="0.00395 0 0.66179" rpy="2.8216E-18 3.4225E-16 1.0489E-14" />
+    <parent link="BodyYaw_Link" />
+    <child link="Head_Act2_Link" />
+    <limit effort="9.8" lower="-0.3490658504" upper="0.2617993878" velocity="8.0553657784"/>
+  </joint>
+  <joint name="Head_Act3" type="revolute">
+    <origin xyz="0.00395 0 0.66179" rpy="2.8216E-18 3.4225E-16 1.0489E-14" />
+    <parent link="BodyYaw_Link" />
+    <child link="Head_Act3_Link" />
+    <limit effort="9.8" lower="-0.3490658504" upper="0.2617993878" velocity="8.0553657784"/>
+  </joint>
+
+<transmission name="Head">
+  <type>MultiJointLinearTransmission</type>
+  <joint name="Head_Act1">
+    <depends_on joint="HeadRoll" multiplier="1.0" offset="0" />
+    <depends_on joint="HeadPitch" multiplier="1.0" offset="0" />
+  </joint>
+  <joint name="Head_Act2">
+    <depends_on joint="HeadRoll" multiplier="-1.0" offset="0" />
+    <depends_on joint="HeadPitch" multiplier="1.0" offset="0" />
+  </joint>
+  <joint name="Head_Act3">
+    <depends_on joint="HeadYaw" multiplier="1.0" offset="0" />
+  </joint>
+</transmission>
+
+  <link name="HeadPitch_Link">
+    <inertial>
+      <origin xyz="0.0029695 3.7352E-08 -4.1086E-09" rpy="0 0 0" />
+      <mass value="0.01353" />
+      <inertia ixx="1.2693E-06" ixy="2.9253E-12" ixz="-1.323E-13" iyy="2.1697E-06" iyz="-1.983E-12" izz="3.0472E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/HeadPitch_Link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/HeadPitch_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HeadPitch" type="revolute">
+    <origin xyz="0.00395 0 0.66179" rpy="2.8216E-18 3.4225E-16 1.0489E-14" />
+    <parent link="BodyYaw_Link" />
+    <child link="HeadPitch_Link" />
+    <axis xyz="0 1 0" />
+    <limit effort="9.8" lower="-0.3490658504" upper="0.2617993878" velocity="8.0553657784"/>
+  </joint>
+  <link name="HeadRoll_Link">
+    <inertial>
+      <origin xyz="-0.0040042 1.6567E-08 0.017195" rpy="0 0 0" />
+      <mass value="0.03223" />
+      <inertia ixx="1.2379E-05" ixy="7.9876E-12" ixz="-2.2191E-06" iyy="2.1298E-05" iyz="5.8926E-11" izz="1.355E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/HeadRoll_Link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/HeadRoll_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HeadRoll" type="revolute">
+    <origin xyz="0 0 0" rpy="1.6457E-37 0 0" />
+    <parent link="HeadPitch_Link" />
+    <child link="HeadRoll_Link" />
+    <axis xyz="1 0 0" />
+    <limit effort="9.8" lower="-0.436332313" upper="0.436332313" velocity="8.0553657784"/>
+  </joint>
+  <link name="HeadYaw_Link">
+    <inertial>
+      <origin xyz="0.029368 -0.00017537 0.06406" rpy="0 0 0" />
+      <mass value="1.7003" />
+      <inertia ixx="0.01193" ixy="-2.7459E-05" ixz="0.0010678" iyy="0.01151" iyz="-4.681E-05" izz="0.012306" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/HeadYaw_Link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes/stl/HeadYaw_Link.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="HeadYaw" type="revolute">
+    <origin xyz="0 0 0" rpy="1.6457E-37 0 0" />
+    <parent link="HeadRoll_Link" />
+    <child link="HeadYaw_Link" />
+    <axis xyz="0 0 1" />
+    <limit effort="4.9" lower="-1.5707963268" upper="1.5707963268" velocity="8.0553657784"/>
+  </joint>
+
+  <link name="Camera_Left_Link" />
+  <joint name="Camera_Left" type="fixed">
+    <origin xyz="0.12605 0.0402 0.089608" rpy="0 0 0" />
+    <parent link="HeadYaw_Link" />
+    <child link="Camera_Left_Link" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="Camera_Right_Link" />
+  <joint name="Camera_Right" type="fixed">
+    <origin xyz="0.12605 -0.0402 0.089608" rpy="0 0 0" />
+    <parent link="HeadYaw_Link" />
+    <child link="Camera_Right_Link" />
+    <axis xyz="0 0 0" />
+  </joint>
+
+</robot>
