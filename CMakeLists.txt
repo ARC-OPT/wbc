@@ -10,7 +10,10 @@ set(API_VERSION ${PROJECT_VERSION})
 include_directories(${PROJECT_SOURCE_DIR}/src)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
-add_subdirectory(benchmarks)
+
+if(USE_HYRODYN)
+    add_subdirectory(benchmarks)
+endif()
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(tutorials)
