@@ -22,6 +22,7 @@ protected:
     base::MatrixXd selection_matrix;
     base::samples::Joints joint_state_out;
     std::vector<std::string> joint_names;
+    std::vector<std::string> independent_joint_names;
     std::vector<std::string> joint_names_floating_base;
     base::samples::RigidBodyStateSE3 floating_base_state;
     urdf::ModelInterfaceSharedPtr robot_urdf;
@@ -109,6 +110,9 @@ public:
     /** @brief Return only actuated joint names*/
    virtual  const std::vector<std::string>& actuatedJointNames(){return hyrodyn.jointnames_active;}
 
+    /** @brief Return only independent joint names*/
+    virtual  const std::vector<std::string>& independentJointNames(){return independent_joint_names;}
+
     /** @brief Get index of joint name*/
     virtual uint jointIndex(const std::string &joint_name);
 
@@ -133,7 +137,7 @@ public:
     virtual bool hasActuatedJoint(const std::string& joint_name);
 
     /** @brief Return Current center of gravity in expressed base frame*/
-    virtual const base::samples::RigidBodyStateSE3& getCOM(){return com_rbs;}
+    virtual const base::samples::RigidBodyStateSE3& centerOfMass();
 
     /** @brief Return pointer to the internal hyrodyn model*/
     hyrodyn::RobotModel_HyRoDyn *hyrodynHandle(){return &hyrodyn;}

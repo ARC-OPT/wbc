@@ -30,6 +30,7 @@ class RobotModelKDL : public RobotModel{
     base::MatrixXd selection_matrix;
     base::samples::Joints joint_state_out;
     std::vector<std::string> joint_names_floating_base;
+    std::vector<std::string> independent_joint_names;
     bool has_floating_base;
     urdf::ModelInterfaceSharedPtr robot_urdf;
     base::samples::RigidBodyStateSE3 com_rbs;
@@ -154,6 +155,9 @@ public:
     /** @brief Return only actuated joint names*/
    virtual  const std::vector<std::string>& actuatedJointNames(){return actuated_joint_names;}
 
+    /** @brief Return only independent joint names*/
+    virtual  const std::vector<std::string>& independentJointNames(){return independent_joint_names;}
+
     /** @brief Get index of joint name*/
     virtual uint jointIndex(const std::string &joint_name);
 
@@ -183,11 +187,8 @@ public:
     /** Return full tree (KDL model)*/
     KDL::Tree getTree(){return full_tree;}
 
-    /**
-     * Computes the cog for the current pose of the robot.
-     * \param status is the current joint state
-     */
-    void computeCOM( const base::samples::Joints& status );
+    /** @brief Compute and return center of mass expressed in base frame*/
+    virtual const base::samples::RigidBodyStateSE3& centerOfMass();
 
     /** @brief Compute and return the inverse dynamics solution*/
     virtual void computeInverseDynamics(base::commands::Joints &solver_output);
