@@ -4,7 +4,7 @@ sudo apt-get install git cmake build-essential libboost-system-dev libboost-prog
 # cmake makros
 git clone https://github.com/rock-core/base-cmake.git   
 mkdir base-cmake/build && cd base-cmake/build
-cmake .. && sudo make -j8 install && cd../..
+cmake .. && sudo make -j8 install && cd ../..
 
 # Logging 
 git clone https://github.com/rock-core/base-logging.git
