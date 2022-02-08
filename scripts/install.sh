@@ -35,7 +35,7 @@ git archive --remote=git@git.hb.dfki.de:dfki-control/wbc/package_set.git HEAD pa
 git apply patches/kdl_parser.patch
 mkdir build && cd build 
 cmake .. 
-sudo make -j8 install && cd ../..
+sudo make -j8 install && cd ../../..
 
 # If not done yet, setup a ssh key pair using the command `ssh-keygen` and add the 
 # key from `~/.ssh/id_rsa.pub `to the keys in your Gitlab account.
