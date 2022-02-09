@@ -1,5 +1,5 @@
 #!/bin/sh
-sudo apt-get install git cmake build-essential libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev pkg-config libeigen3-dev libboost-filesystem-dev
+sudo apt-get -y install git cmake build-essential libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev pkg-config libeigen3-dev libboost-filesystem-dev
 
 # cmake makros
 git clone https://github.com/rock-core/base-cmake.git   
@@ -18,7 +18,7 @@ cmake .. -DUSE_SISL=OFF -DBINDINGS_RUBY=OFF -DROCK_VIZ_ENABLED=OFF
 sudo make -j8 install && cd ../..
 
 # URDF
-sudo apt-get install liburdfdom-headers-dev liburdfdom-dev 
+sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
 # KDL 
 git clone https://github.com/orocos/orocos_kinematics_dynamics.git -b v1.5.1
@@ -28,7 +28,7 @@ cmake ..
 sudo make -j8 install &&  cd ../../..
 
 # KDL parser
-sudo apt-get install libtinyxml2-dev
+sudo apt-get -y install libtinyxml2-dev
 git clone https://github.com/ros/kdl_parser.git -b 1.14.1
 cd kdl_parser/kdl_parser
 git archive --remote=git@git.hb.dfki.de:dfki-control/wbc/package_set.git HEAD patches/kdl_parser.patch | tar -x
