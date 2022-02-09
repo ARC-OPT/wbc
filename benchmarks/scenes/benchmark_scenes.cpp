@@ -122,13 +122,13 @@ void runKUKAIiwaBenchmarks(int n_samples){
     toCSV(results_kdl_acc, "results/kuka_iiwa_acc_kdl.csv");
     toCSV(results_hyrodyn_acc, "results/kuka_iiwa_acc_hyrodyn.csv");
 
-    cout << " ----------- Results RobotModelKDL (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_vel);
-    cout << " ----------- Results RobotModelHyrodyn (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_vel);
-    cout << " ----------- Results RobotModelKDL (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_acc);
-    cout << " ----------- Results RobotModelHyrodyn (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_acc);
 }
 
@@ -169,17 +169,17 @@ void runRH5SingleLegBenchmarks(int n_samples){
     toCSV(results_hyrodyn_acc, "results/rh5_single_leg_acc_hyrodyn.csv");
     toCSV(results_hyrodyn_hybrid_acc, "results/rh5_single_leg_acc_hyrodyn_hybrid.csv");
 
-    cout << " ----------- Results RobotModelKDL (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_vel);
-    cout << " ----------- Results RobotModelHyrodyn (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_vel);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results RobotModelKDL (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_acc);
-    cout << " ----------- Results RobotModelHyrodyn (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_acc);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_acc);
 }
 
@@ -231,17 +231,17 @@ void runRH5LegsBenchmarks(int n_samples){
     toCSV(results_hyrodyn_acc, "results/rh5_legs_acc_hyrodyn.csv");
     toCSV(results_hyrodyn_hybrid_acc, "results/rh5_legs_acc_hyrodyn_hybrid.csv");
 
-    cout << " ----------- Results RobotModelKDL (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_vel);
-    cout << " ----------- Results RobotModelHyrodyn (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_vel);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results RobotModelKDL (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_acc);
-    cout << " ----------- Results RobotModelHyrodyn (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_acc);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_acc);
 }
 
@@ -293,17 +293,17 @@ void runRH5Benchmarks(int n_samples){
     toCSV(results_hyrodyn_acc, "results/rh5_acc_hyrodyn.csv");
     toCSV(results_hyrodyn_hybrid_acc, "results/rh5_acc_hyrodyn_hybrid.csv");
 
-    cout << " ----------- Results RobotModelKDL (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_vel);
-    cout << " ----------- Results RobotModelHyrodyn (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_vel);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results RobotModelKDL (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_acc);
-    cout << " ----------- Results RobotModelHyrodyn (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_acc);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_acc);
 }
 
@@ -351,17 +351,17 @@ void runRH5v2Benchmarks(int n_samples){
     toCSV(results_hyrodyn_acc, "results/rh5v2_acc_hyrodyn.csv");
     toCSV(results_hyrodyn_hybrid_acc, "results/rh5v2_acc_hyrodyn_hybrid.csv");
 
-    cout << " ----------- Results RobotModelKDL (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_vel);
-    cout << " ----------- Results RobotModelHyrodyn (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_vel);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Velocity) -----------" << endl;
+    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results RobotModelKDL (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
     printResults(results_kdl_acc);
-    cout << " ----------- Results RobotModelHyrodyn (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
     printResults(results_hyrodyn_acc);
-    cout << " ----------- Results RobotModelHyrodyn Hybrid (Acceleration) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
     printResults(results_hyrodyn_hybrid_acc);
 }
 
