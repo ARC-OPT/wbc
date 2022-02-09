@@ -46,10 +46,10 @@ Optional:
 
 ### Standalone
 
-Use the [install script](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/scripts):
+Use the [install script](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/scripts/install.sh):
 
 ```
-wget https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/scripts
+wget https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/scripts/install.sh
 sh install.sh
 ```
 
