@@ -46,10 +46,9 @@ Optional:
 
 ### Standalone
 
-Use the [install script](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/scripts/install.sh):
+Download the [install script](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/scripts/install.sh) and type
 
 ```
-wget https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/scripts/install.sh
 sh install.sh
 ```
 
