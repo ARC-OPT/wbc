@@ -264,6 +264,7 @@ BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
      */
 
     string urdf_model_file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
+    cout << "Model File is " << urdf_model_file << endl;
     string root = "kuka_lbr_l_link_0";
     string tip  = "kuka_lbr_l_tcp";
 
