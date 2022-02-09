@@ -43,9 +43,15 @@ Optional:
 
 ## Installation
 
+
 ### Standalone
 
-See [here](https://git.hb.dfki.de/dfki-control/wbc/documentation/-/wikis/WBC%20installation%20outside%20Rock)
+Use the [install script](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/scripts):
+
+```
+wget https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/scripts
+sh install.sh
+```
 
 ### Inside Rock
 
