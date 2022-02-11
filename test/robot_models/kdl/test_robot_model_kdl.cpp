@@ -280,7 +280,14 @@ BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
     BOOST_CHECK(robot_model.configure(config) == true);
 
     KDL::Chain chain;
-    BOOST_CHECK_NO_THROW(robot_model.getTree().getChain(root, tip, chain));
+    try{
+        robot_model.getTree().getChain(root, tip, chain);
+    }
+    catch(exception e){
+        cout << "Exception " << e.what() << endl;
+        cout << "Root: "<<root<<" tip: "<<tip <<endl;
+        cout << "URDF: "<<config.file<<endl;
+    }
 
     KDL::ChainFkSolverVel_recursive vel_solver(chain);
     KDL::JntArrayVel q_and_q_dot(joint_names.size());
