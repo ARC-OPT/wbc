@@ -24,15 +24,16 @@ run_tests:
   stage: test
   script:
   - /opt/hooks/build_with_gitlab_ci.bash
-  - ./build/test/controllers/test_pid_controllers
-  - ./build/test/controllers/test_pos_pd_controllers
-  - ./build/test/controllers/test_pot_field_controllers
-  - ./build/test/core/test_core
-  - ./build/test/robot_models/kdl/test_robot_model_kdl
-  - ./build/test/scenes/test_velocity_scene
-  - ./build/test/scenes/test_velocity_scene_quadratic_cost
-  - ./build/test/scenes/test_acceleration_scene
-  - ./build/test/solvers/hls/test_hls_solver
-  - ./build/test/solvers/qpoases/test_qpoases_solver
+  - cd build/test
+  - cd controllers && ./test_pid_controllers && cd ..
+  - cd controllers && ./test_pos_pd_controllers && cd ..
+  - cd controllers && ./test_pot_field_controllers && cd ..
+  - cd core && ./test_core && cd ..
+  - cd robot_models/kdl && ./test_robot_model_kdl && cd ../..
+  - cd scenes && ./test_velocity_scene && cd ..
+  - cd scenes && ./test_velocity_scene_quadratic_cost && cd ..
+  - cd scenes && ./test_acceleration_scene && cd ..
+  - cd solvers/hls && ./test_hls_solver && cd ../..
+  - cd solvers/qpoases && ./test_qpoases_solver && cd ../..
 
 
