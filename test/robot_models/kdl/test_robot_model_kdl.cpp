@@ -262,9 +262,8 @@ BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
     /**
      * Compare forward kinematics for KDL-based robot model in WBC with pure KDL solution
      */
-    std::string root_dir = rootDir();
-    RobotModelConfig config;
-    config.file = root_dir + "/models/kuka/urdf/kuka_iiwa.urdf";
+    string urdf_filename = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
+    RobotModelConfig config(urdf_filename);
 
     string root = "kuka_lbr_l_link_0";
     string tip  = "kuka_lbr_l_tcp";
@@ -280,14 +279,9 @@ BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
     BOOST_CHECK(robot_model.configure(config) == true);
 
     KDL::Chain chain;
-    try{
-        robot_model.getTree().getChain(root, tip, chain);
-    }
-    catch(exception e){
-        cout << "Exception " << e.what() << endl;
-        cout << "Root: "<<root<<" tip: "<<tip <<endl;
-        cout << "URDF: "<<config.file<<endl;
-    }
+    KDL::Tree tree;
+    tree = robot_model.getTree();
+    tree.getChain(root, tip, chain);
 
     KDL::ChainFkSolverVel_recursive vel_solver(chain);
     KDL::JntArrayVel q_and_q_dot(joint_names.size());
