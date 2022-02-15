@@ -62,7 +62,7 @@ map<string, base::VectorXd> evaluateScene(WbcScenePtr scene, int n_samples){
 }
 
 void printResults(map<string,base::VectorXd> results){
-    cout << "Scene Update     " << results["scene_update"].mean()/1000 << " ms +/- " << stdDev(results["scene_solve"]/1000) << endl;
+    cout << "Scene Update     " << results["scene_update"].mean()/1000 << " ms +/- " << stdDev(results["scene_update"]/1000) << endl;
     cout << "Scene Solve      " << results["scene_solve"].mean()/1000 << " ms +/- " << stdDev(results["scene_solve"]/1000) << endl;
 }
 
