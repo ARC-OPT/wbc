@@ -492,6 +492,7 @@ const base::samples::RigidBodyStateSE3& RobotModelKDL::centerOfMass(){
     com_rbs.pose.position = base::Vector3d( cog_pos.x(), cog_pos.y(), cog_pos.z() ) / mass;
     com_rbs.pose.orientation.setIdentity();
     com_rbs.time = current_joint_state.time;
+    return com_rbs;
 }
 
 uint RobotModelKDL::jointIndex(const std::string &joint_name){
