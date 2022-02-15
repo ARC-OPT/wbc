@@ -8,7 +8,6 @@
 #include <algorithm>
 #include <tools/URDFTools.hpp>
 #include <kdl/chaindynparam.hpp>
-#include <iostream>
 
 namespace wbc{
 
@@ -66,16 +65,6 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     current_joint_state.elements.resize(joint_names.size());
     current_joint_state.names = joint_names;
     independent_joint_names = joint_names;
-
-    TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
-    TiXmlPrinter printer;
-    doc->Accept(&printer);
-    std::string robot_xml_string = printer.CStr();
-    std::cout<< robot_xml_string <<std::endl;
-
-    std::cout<<"Joint Names"<<std::endl;
-    for(auto n : joint_names)
-        std::cout<<n<<std::endl;
 
     // If actuated joint names is empty in config, assume that all joints are actuated
     actuated_joint_names = cfg.actuated_joint_names;
