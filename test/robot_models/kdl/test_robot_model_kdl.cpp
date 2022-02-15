@@ -7,6 +7,7 @@
 #include <kdl/chainjnttojacsolver.hpp>
 #include "tools/URDFTools.hpp"
 #include <regex>
+#include <kdl_parser/kdl_parser.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -280,7 +281,7 @@ BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
 
     KDL::Chain chain;
     KDL::Tree tree;
-    tree = robot_model.getTree();
+    BOOST_CHECK(kdl_parser::treeFromFile(urdf_filename,tree) == true);
     tree.getChain(root, tip, chain);
 
     KDL::ChainFkSolverVel_recursive vel_solver(chain);
