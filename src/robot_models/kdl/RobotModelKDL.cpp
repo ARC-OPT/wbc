@@ -37,6 +37,8 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     // 1. Load Robot Model
 
+    std::cout<<"test1"<<std::endl;
+
     robot_model_config = cfg;
 
     robot_urdf = urdf::parseURDFFile(cfg.file);
@@ -45,37 +47,53 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
         return false;
     }
 
+    std::cout<<"test2"<<std::endl;
+
     // Blacklist not required joints
     if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
         return false;
+
+    std::cout<<"test3"<<std::endl;
 
     // Add floating base
     has_floating_base = cfg.floating_base;
     if(has_floating_base)
         joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
 
+    std::cout<<"test4"<<std::endl;
+
     // Read Joint Limits
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
+
+    std::cout<<"test5"<<std::endl;
 
     // If joint names is empty in config, use all joints from URDF
     std::vector<std::string> joint_names = cfg.joint_names;
     if(joint_names.empty())
         joint_names = URDFTools::jointNamesFromURDF(robot_urdf);
 
+    std::cout<<"test6"<<std::endl;
+
     current_joint_state.elements.resize(joint_names.size());
     current_joint_state.names = joint_names;
     independent_joint_names = joint_names;
+
+    std::cout<<"test7"<<std::endl;
 
     // If actuated joint names is empty in config, assume that all joints are actuated
     actuated_joint_names = cfg.actuated_joint_names;
     if(actuated_joint_names.empty())
         actuated_joint_names = joint_names;
 
+    std::cout<<"test8"<<std::endl;
+
     // Parse KDL Tree
     if(!kdl_parser::treeFromUrdfModel(*robot_urdf, full_tree)){
         LOG_ERROR("Unable to load KDL Tree from file %s", cfg.file.c_str());
         return false;
     }
+
+    std::cout<<"test9"<<std::endl;
 
     // 2. Verify consistency of URDF and config
 
@@ -117,6 +135,8 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
         }
     }
 
+    std::cout<<"test10"<<std::endl;
+
     // 3. Set initial floating base state
     if(has_floating_base){
         if(cfg.floating_base_state.hasValidPose() ||
@@ -136,6 +156,8 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
             }
         }
     }
+
+    std::cout<<"test11"<<std::endl;
 
     // 4. Create data structures
 
@@ -159,6 +181,8 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
         if(jnt.getType() != KDL::Joint::None)
             joint_idx_map_kdl[jnt.getName()] = GetTreeElementQNr(it.second);
     }
+
+    std::cout<<"test12"<<std::endl;
 
     // 5. Print some debug info
 
@@ -184,6 +208,8 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
                          << "  Max. Vel: " << joint_limits[n].max.speed    << ", "
                          << "  Max. Eff: " << joint_limits[n].max.effort   << std::endl;
     LOG_ERROR("------------------------------------------------------------");
+
+    std::cout<<"test13"<<std::endl;
 
     return true;
 }
