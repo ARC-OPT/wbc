@@ -1,8 +1,0 @@
-submechanisms:
-
-- name: "six_revolute_joints"
-  type: "6R"
-  contextual_name: "RH5"
-  jointnames_independent: ["LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"]
-  jointnames_spanningtree: ["LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"]
-  jointnames_active: ["LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"]

@@ -34,6 +34,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     if(!cfg.actuated_joint_names.empty())
         LOG_WARN("Configured actuated joint names will be ignored! The Hyrodyn based model will get the actuated joint names from submechanism file");
 
+    robot_model_config = cfg;
 
     robot_urdf = urdf::parseURDFFile(cfg.file);
     if(!robot_urdf){
@@ -67,6 +68,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     joint_state.elements.resize(hyrodyn.jointnames_spanningtree.size());
 
     joint_names = joint_names_floating_base + hyrodyn.jointnames_active;
+    independent_joint_names = joint_names_floating_base + hyrodyn.jointnames_independent;
 
     // 2. Verify consistency of URDF and config
 
@@ -183,16 +185,6 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
 
     // Compute system state
     hyrodyn.calculate_system_state();
-    // Compute COM information
-    hyrodyn.calculate_com_properties();
-    com_rbs.frame_id = base_frame;
-    com_rbs.pose.position = hyrodyn.com;
-    com_rbs.pose.orientation.setIdentity();
-    com_rbs.twist.linear = hyrodyn.com_vel;
-    com_rbs.twist.angular.setZero();
-    com_rbs.acceleration.linear = hyrodyn.com_acc;
-    com_rbs.acceleration.angular.setZero();
-    com_rbs.time = joint_state.time;
 
     for(size_t i = 0; i < hyrodyn.jointnames_spanningtree.size(); i++){
         const std::string &name = hyrodyn.jointnames_spanningtree[i];
@@ -398,6 +390,20 @@ bool RobotModelHyrodyn::hasJoint(const std::string &joint_name){
 
 bool RobotModelHyrodyn::hasActuatedJoint(const std::string &joint_name){
     return std::find(hyrodyn.jointnames_active.begin(), hyrodyn.jointnames_active.end(), joint_name) != hyrodyn.jointnames_active.end();
+}
+
+const base::samples::RigidBodyStateSE3& RobotModelHyrodyn::centerOfMass(){
+    hyrodyn.calculate_com_properties();
+
+    com_rbs.frame_id = base_frame;
+    com_rbs.pose.position = hyrodyn.com;
+    com_rbs.pose.orientation.setIdentity();
+    com_rbs.twist.linear = hyrodyn.com_vel;
+    com_rbs.twist.angular.setZero();
+    com_rbs.acceleration.linear = hyrodyn.com_acc;
+    com_rbs.acceleration.angular.setZero();
+    com_rbs.time = joint_state.time;
+    return com_rbs;
 }
 
 void RobotModelHyrodyn::computeInverseDynamics(base::commands::Joints &solver_output){

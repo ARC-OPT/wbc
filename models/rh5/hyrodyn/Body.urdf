@@ -1,0 +1,241 @@
+<robot name="Body">
+  <link name="BodyBase_Link">
+    <inertial>
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="0.0"/>
+      <inertia ixx="0.0" ixy="0.0" ixz="0.0" iyy="0.0" iyz="0.0" izz="0.0"/>
+    </inertial>
+  </link>
+  <joint name="BodyPitch" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="3.14159 0.0 1.5708"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="BodyBase_Link"/>
+    <child link="BodyPitch_Link"/>
+    <limit effort="140.0" lower="-0.367" upper="0.489" velocity="2.321"/>
+  </joint>
+  <link name="BodyPitch_Link">
+    <inertial>
+      <origin xyz="-1.3464e-09 2.3289e-09 2.2552e-09" rpy="0.0 0.0 0.0"/>
+      <mass value="0.085152"/>
+      <inertia ixx="2.6756e-05" ixy="-2.1852e-12" ixz="-2.2958e-12" iyy="2.6756e-05" iyz="-2.6082e-13" izz="5.0206e-05"/>
+    </inertial>
+    <visual name="BodyPitch_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/BodyPitch_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.89804 0.91765 0.92941 1.0"/>
+      </material>
+    </visual>
+    <collision name="BodyPitch_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/BodyPitch_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="BodyRoll" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="9.4311e-35 0.0 0.0"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="BodyPitch_Link"/>
+    <child link="BodyRoll_Link"/>
+    <limit effort="140.0" lower="-0.402" upper="0.402" velocity="2.321"/>
+  </joint>
+  <link name="BodyRoll_Link">
+    <inertial>
+      <origin xyz="-0.018531 1.3194e-09 0.025426" rpy="0.0 0.0 0.0"/>
+      <mass value="0.31532"/>
+      <inertia ixx="0.00053663" ixy="-3.6063e-10" ixz="-2.5818e-05" iyy="0.00050964" iyz="-3.7361e-11" izz="0.00097717"/>
+    </inertial>
+    <visual name="BodyRoll_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/BodyRoll_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="BodyRoll_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/BodyRoll_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Body_Act1" type="prismatic">
+    <origin xyz="0.0 0.0 0.24008" rpy="5.9043e-18 0.0 -1.0277e-19"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="Body_B12_Link"/>
+    <child link="Body_Act1_Link"/>
+    <limit effort="874.0" lower="-0.01" upper="0.01" velocity="0.291"/>
+  </joint>
+  <link name="Body_Act1_Link">
+    <inertial>
+      <origin xyz="2.411e-13 -1.992e-13 -0.074113" rpy="0.0 0.0 0.0"/>
+      <mass value="0.16486"/>
+      <inertia ixx="0.00041758" ixy="-7.8776e-09" ixz="8.4801e-16" iyy="0.00041757" iyz="-7.0091e-16" izz="3.5325e-06"/>
+    </inertial>
+    <visual name="Body_Act1_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_Act1_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="Body_Act1_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_Act1_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Body_Act2" type="prismatic">
+    <origin xyz="0.0 0.0 0.24008" rpy="-3.8527e-17 0.0 1.2552e-18"/>
+    <axis xyz="0.0 0.0 1.0"/>
+    <parent link="Body_B22_Link"/>
+    <child link="Body_Act2_Link"/>
+    <limit effort="874.0" lower="-0.01" upper="0.01" velocity="0.291"/>
+  </joint>
+  <link name="Body_Act2_Link">
+    <inertial>
+      <origin xyz="2.4164e-13 1.9856e-13 -0.074113" rpy="0.0 0.0 0.0"/>
+      <mass value="0.16486"/>
+      <inertia ixx="0.00041758" ixy="7.8776e-09" ixz="8.4854e-16" iyy="0.00041757" iyz="7.0039e-16" izz="3.5325e-06"/>
+    </inertial>
+    <visual name="Body_Act2_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_Act2_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="Body_Act2_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_Act2_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Body_B11" type="revolute">
+    <origin xyz="-0.02 -0.08 0.21" rpy="-2.90242 0.0 1.57079632679"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="BodyBase_Link"/>
+    <child link="Body_B11_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="Body_B11_Link">
+    <inertial>
+      <origin xyz="0.024193 0.0 -1.3878e-17" rpy="0.0 0.0 0.0"/>
+      <mass value="0.041"/>
+      <inertia ixx="1.7814e-06" ixy="5.5829e-22" ixz="1.8238e-21" iyy="1.2712e-05" iyz="-6.3527e-22" izz="1.3807e-05"/>
+    </inertial>
+    <visual name="Body_B11_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B11_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="Body_B11_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B11_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Body_B12" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="-1.3337e-15 -0.04601 -2.9484e-18"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="Body_B11_Link"/>
+    <child link="Body_B12_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="Body_B12_Link">
+    <inertial>
+      <origin xyz="-2.3739e-06 1.801e-05 0.11892" rpy="0.0 0.0 0.0"/>
+      <mass value="0.525"/>
+      <inertia ixx="0.00091851" ixy="-2.4755e-08" ixz="5.5277e-07" iyy="0.00091807" iyz="1.2075e-06" izz="0.00039619"/>
+    </inertial>
+    <visual name="Body_B12_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B12_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="Body_B12_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B12_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Body_B21" type="revolute">
+    <origin xyz="0.02 -0.08 0.21" rpy="2.90242 0.0 1.57079632679"/>
+    <axis xyz="1.0 0.0 0.0"/>
+    <parent link="BodyBase_Link"/>
+    <child link="Body_B21_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="Body_B21_Link">
+    <inertial>
+      <origin xyz="0.024193 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <mass value="0.041"/>
+      <inertia ixx="1.7814e-06" ixy="-6.8803e-22" ixz="1.0426e-22" iyy="1.2712e-05" iyz="-1.4823e-21" izz="1.3807e-05"/>
+    </inertial>
+    <visual name="Body_B21_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B21_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="Body_B21_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B21_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+  <joint name="Body_B22" type="revolute">
+    <origin xyz="0.0 0.0 0.0" rpy="-3.612e-16 -0.04601 -1.0723e-18"/>
+    <axis xyz="0.0 1.0 0.0"/>
+    <parent link="Body_B21_Link"/>
+    <child link="Body_B22_Link"/>
+    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+  </joint>
+  <link name="Body_B22_Link">
+    <inertial>
+      <origin xyz="-2.375e-06 1.8011e-05 0.11892" rpy="0.0 0.0 0.0"/>
+      <mass value="0.525"/>
+      <inertia ixx="0.00091851" ixy="-2.4752e-08" ixz="5.5262e-07" iyy="0.00091807" iyz="1.2073e-06" izz="0.00039619"/>
+    </inertial>
+    <visual name="Body_B22_Link_visual">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B22_Link.STL"/>
+      </geometry>
+      <material name="">
+        <color rgba="0.69804 0.69804 0.69804 1.0"/>
+      </material>
+    </visual>
+    <collision name="Body_B22_Link_collision">
+      <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
+      <geometry>
+        <mesh filename="../meshes/stl/Body_B22_Link.STL"/>
+      </geometry>
+    </collision>
+  </link>
+</robot>

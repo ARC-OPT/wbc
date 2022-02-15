@@ -9,10 +9,9 @@
 #include <base/JointLimits.hpp>
 #include <base/samples/Wrenches.hpp>
 #include <base/commands/Joints.hpp>
+#include <core/RobotModelConfig.hpp>
 
 namespace wbc{
-
-class RobotModelConfig;
 
 std::vector<std::string> operator+(std::vector<std::string> a, std::vector<std::string> b);
 
@@ -29,6 +28,7 @@ protected:
     base::Vector3d gravity;
     base::samples::RigidBodyStateSE3 floating_base_state;
     base::samples::Wrenches contact_wrenches;
+    RobotModelConfig robot_model_config;
 
 public:
     RobotModel();
@@ -99,6 +99,9 @@ public:
     /** @brief Return only actuated joint names*/
     virtual  const std::vector<std::string>& actuatedJointNames() = 0;
 
+    /** @brief Return only independent joint names*/
+    virtual  const std::vector<std::string>& independentJointNames() = 0;
+
     /** @brief Get index of joint name*/
     virtual uint jointIndex(const std::string &joint_name) = 0;
 
@@ -122,8 +125,8 @@ public:
     /** @brief Return True if given joint name is an actuated joint in robot model, false otherwise*/
     virtual bool hasActuatedJoint(const std::string& joint_name) = 0;
 
-    /** @brief Return Current center of gravity in expressed base frame*/
-    virtual const base::samples::RigidBodyStateSE3& getCOM() = 0;
+    /** @brief Compute and return center of mass expressed in base frame*/
+    virtual const base::samples::RigidBodyStateSE3& centerOfMass() = 0;
 
     /** @brief Provide links names that are possibly in contact with the environment (typically the end effector links)*/
     void setContactPoints(const std::vector<std::string> contacts){contact_points=contacts;}
@@ -148,6 +151,9 @@ public:
 
     /** @brief Compute and return the inverse dynamics solution*/
     virtual void computeInverseDynamics(base::commands::Joints &solver_output) = 0;
+
+    /** @brief Get current robot model config*/
+    const RobotModelConfig& getRobotModelConfig(){return robot_model_config;}
 
 };
 typedef std::shared_ptr<RobotModel> RobotModelPtr;

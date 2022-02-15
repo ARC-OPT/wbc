@@ -7,6 +7,7 @@
 #include <kdl/treejnttojacsolver.hpp>
 #include <algorithm>
 #include <tools/URDFTools.hpp>
+#include <kdl/chaindynparam.hpp>
 
 namespace wbc{
 
@@ -36,6 +37,8 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     // 1. Load Robot Model
 
+    robot_model_config = cfg;
+
     robot_urdf = urdf::parseURDFFile(cfg.file);
     if(!robot_urdf){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
@@ -61,6 +64,7 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     current_joint_state.elements.resize(joint_names.size());
     current_joint_state.names = joint_names;
+    independent_joint_names = joint_names;
 
     // If actuated joint names is empty in config, assume that all joints are actuated
     actuated_joint_names = cfg.actuated_joint_names;
@@ -251,8 +255,6 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state,
             qdotdot(idx) = current_joint_state[name].acceleration;
         }
     }
-
-    computeCOM(current_joint_state);
 }
 
 const base::samples::Joints& RobotModelKDL::jointState(const std::vector<std::string> &joint_names){
@@ -291,6 +293,8 @@ const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std:
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chainID(root_frame, tip_frame)];
+    kdl_chain->calculateForwardKinematics();
+
     return kdl_chain->rigidBodyState();
 }
 
@@ -307,11 +311,14 @@ const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+    kdl_chain->calculateSpaceJacobian();
+
     space_jac_map[chain_id].resize(6,noOfJoints());
     space_jac_map[chain_id].setZero(6,noOfJoints());
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
         space_jac_map[chain_id].col(idx) = kdl_chain->space_jacobian.data.col(j);
+#include <kdl/chaindynparam.hpp>
     }
     return space_jac_map[chain_id];
 }
@@ -329,6 +336,8 @@ const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame,
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+    kdl_chain->calculateBodyJacobian();
+
     body_jac_map[chain_id].resize(6,noOfJoints());
     body_jac_map[chain_id].setZero(6,noOfJoints());
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
@@ -351,6 +360,8 @@ const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, 
         createChain(root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+    kdl_chain->calculateJacobianDot();
+
     jac_dot_map[chain_id].resize(6,noOfJoints());
     jac_dot_map[chain_id].setZero(6,noOfJoints());
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
@@ -468,19 +479,19 @@ void RobotModelKDL::recursiveCOM( const KDL::SegmentMap::const_iterator& current
     }
 }
 
-void RobotModelKDL::computeCOM(const base::samples::Joints& status){
+const base::samples::RigidBodyStateSE3& RobotModelKDL::centerOfMass(){
     double mass = 0.0; // to get the total mass
     KDL::Frame frame = KDL::Frame::Identity(); // Transformation of the last frame
 
     // Computes the COG of the complete robot
     KDL::Vector cog_pos;
-    recursiveCOM( full_tree.getRootSegment(), status, frame, mass, cog_pos );
+    recursiveCOM( full_tree.getRootSegment(), current_joint_state, frame, mass, cog_pos );
 
     // Returns the COG
     com_rbs.frame_id = base_frame;
     com_rbs.pose.position = base::Vector3d( cog_pos.x(), cog_pos.y(), cog_pos.z() ) / mass;
     com_rbs.pose.orientation.setIdentity();
-    com_rbs.time = status.time;
+    com_rbs.time = current_joint_state.time;
 }
 
 uint RobotModelKDL::jointIndex(const std::string &joint_name){

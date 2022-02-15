@@ -1,9 +1,6 @@
 #include "KinematicChainKDL.hpp"
 #include <base-logging/Logging.hpp>
 #include <base/samples/Joints.hpp>
-#include <kdl/chainfksolvervel_recursive.hpp>
-#include <kdl/chainjnttojacsolver.hpp>
-#include <kdl/chainjnttojacdotsolver.hpp>
 #include <kdl/chaindynparam.hpp>
 
 namespace wbc{
@@ -29,6 +26,12 @@ KinematicChainKDL::KinematicChainKDL(const KDL::Chain &_chain, const std::string
     }
 
     cartesian_state.frame_id = root_frame;
+
+    has_acceleration = space_jacobian_is_up_to_date = body_jacobian_is_up_to_date = jac_dot_is_up_to_date = false;
+
+    jac_solver = std::make_shared<KDL::ChainJntToJacSolver>(chain);
+    jac_dot_solver = std::make_shared<KDL::ChainJntToJacDotSolver>(chain);
+    fk_solver_vel = std::make_shared<KDL::ChainFkSolverVel_recursive>(chain);
 }
 
 const base::samples::RigidBodyStateSE3 &KinematicChainKDL::rigidBodyState(){
@@ -48,45 +51,55 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
 
     //// update Joints
     stamp = joint_state.time;
-    bool has_acceleration = true;
     for(size_t i = 0; i < joint_names.size(); i++)
         try{
-            jnt_array_vel.q(i)       = jnt_array_acc.q(i)    = joint_state.getElementByName(joint_names[i]).position;
-            jnt_array_vel.qdot(i)    = jnt_array_acc.qdot(i) = joint_state.getElementByName(joint_names[i]).speed;
-            jnt_array_acc.qdotdot(i) = joint_state.getElementByName(joint_names[i]).acceleration;
-
-            has_acceleration = has_acceleration && joint_state.getElementByName(joint_names[i]).hasAcceleration();
+            const base::JointState &js = joint_state.getElementByName(joint_names[i]);
+            jnt_array_vel.q(i)       = jnt_array_acc.q(i)    = js.position;
+            jnt_array_vel.qdot(i)    = jnt_array_acc.qdot(i) = js.speed;
+            jnt_array_acc.qdotdot(i) = js.acceleration;
         }
         catch(std::exception e){
             LOG_ERROR("Kinematic Chain %s to %s contains joint %s, but this joint is not in joint state vector",
                       chain.getSegment(0).getName().c_str(), chain.getSegment(chain.getNrOfSegments()-1).getName().c_str(), joint_names[i].c_str());
             throw std::invalid_argument("Invalid joint state");
         }
+    space_jacobian_is_up_to_date = body_jacobian_is_up_to_date = jac_dot_is_up_to_date = false;
+}
 
-    KDL::ChainFkSolverVel_recursive fk_solver_vel(chain);
-    KDL::ChainJntToJacSolver jac_solver(chain);
-    KDL::ChainJntToJacDotSolver jac_dot_solver(chain);
+void KinematicChainKDL::calculateForwardKinematics(){
+    fk_solver_vel->JntToCart(jnt_array_vel, frame_vel);
 
-    //// compute forward kinematics
-    fk_solver_vel.JntToCart(jnt_array_vel, frame_vel);
     twist_kdl = frame_vel.deriv();
     pose_kdl = frame_vel.value();
 
-    //// Compute Jacobians
-    if(jac_solver.JntToJac(jnt_array_vel.q, space_jacobian))
-        throw std::runtime_error("Failed to compute Jacobian for chain " + root_frame + " -> " + tip_frame);
-    body_jacobian = space_jacobian;
-    body_jacobian.changeBase(pose_kdl.M.Inverse());
+    // Update jacobians if necessary
+    if(!space_jacobian_is_up_to_date)
+        calculateSpaceJacobian();
+    if(!jac_dot_is_up_to_date)
+        calculateJacobianDot();
 
-    //// Compute Jacobian_dot
-    jac_dot_solver.setRepresentation(KDL::ChainJntToJacDotSolver::HYBRID); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
-    if(jac_dot_solver.JntToJacDot(jnt_array_vel, jacobian_dot))
-        throw std::runtime_error("Failed to compute JacobianDot for chain " + root_frame + " -> " + tip_frame);
-
-    //// Compute frame acceleration
-    if(has_acceleration)
-        acc = jacobian_dot.data*jnt_array_vel.qdot.data + space_jacobian.data*jnt_array_acc.qdotdot.data;
+    acc = jacobian_dot.data*jnt_array_vel.qdot.data + space_jacobian.data*jnt_array_acc.qdotdot.data;
 }
 
+void KinematicChainKDL::calculateSpaceJacobian(){
+    if(jac_solver->JntToJac(jnt_array_vel.q, space_jacobian))
+        throw std::runtime_error("Failed to compute Jacobian for chain " + root_frame + " -> " + tip_frame);
+    space_jacobian_is_up_to_date = true;
+}
+
+void KinematicChainKDL::calculateBodyJacobian(){
+    if(!space_jacobian_is_up_to_date)
+        calculateSpaceJacobian();
+    body_jacobian = space_jacobian;
+    body_jacobian.changeBase(pose_kdl.M.Inverse());
+    body_jacobian_is_up_to_date = true;
+}
+
+void KinematicChainKDL::calculateJacobianDot(){
+    jac_dot_solver->setRepresentation(KDL::ChainJntToJacDotSolver::HYBRID); // 0 - Hybrid represenation -> ref frame is root, ref point is tip
+    if(jac_dot_solver->JntToJacDot(jnt_array_vel, jacobian_dot))
+        throw std::runtime_error("Failed to compute JacobianDot for chain " + root_frame + " -> " + tip_frame);
+    jac_dot_is_up_to_date = true;
+}
 
 } // namespace wbc
