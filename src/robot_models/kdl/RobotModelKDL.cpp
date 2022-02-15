@@ -162,28 +162,28 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     // 5. Print some debug info
 
-    LOG_DEBUG("------------------- WBC RobotModelKDL -----------------");
-    LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
-    LOG_DEBUG_S << "Floating base robot: " << has_floating_base << std::endl;
+    LOG_ERROR("------------------- WBC RobotModelKDL -----------------");
+    LOG_ERROR_S << "Robot Name " << robot_urdf->getName() << std::endl;
+    LOG_ERROR_S << "Floating base robot: " << has_floating_base << std::endl;
     if(has_floating_base){
-        LOG_DEBUG_S << "Floating base pose: " << std::endl;
-        LOG_DEBUG_S << "Pos: " << cfg.floating_base_state.pose.position.transpose() << std::endl;
-        LOG_DEBUG_S << "Ori: " << cfg.floating_base_state.pose.orientation.coeffs().transpose() << std::endl;
-        LOG_DEBUG_S << "World frame: " << cfg.world_frame_id << std::endl;
+        LOG_ERROR_S << "Floating base pose: " << std::endl;
+        LOG_ERROR_S << "Pos: " << cfg.floating_base_state.pose.position.transpose() << std::endl;
+        LOG_ERROR_S << "Ori: " << cfg.floating_base_state.pose.orientation.coeffs().transpose() << std::endl;
+        LOG_ERROR_S << "World frame: " << cfg.world_frame_id << std::endl;
     }
-    LOG_DEBUG("Joint Names");
+    LOG_ERROR("Joint Names");
     for(auto n : jointNames())
-        LOG_DEBUG_S << n << std::endl;
-    LOG_DEBUG("Actuated Joint Names");
+        LOG_ERROR_S << n << std::endl;
+    LOG_ERROR("Actuated Joint Names");
     for(auto n : actuatedJointNames())
-        LOG_DEBUG_S << n << std::endl;
-    LOG_DEBUG("Joint Limits");
+        LOG_ERROR_S << n << std::endl;
+    LOG_ERROR("Joint Limits");
     for(auto n : joint_limits.names)
-        LOG_DEBUG_S << n << ": Max. Pos: " << joint_limits[n].max.position << ", "
+        LOG_ERROR_S << n << ": Max. Pos: " << joint_limits[n].max.position << ", "
                          << "  Min. Pos: " << joint_limits[n].min.position << ", "
                          << "  Max. Vel: " << joint_limits[n].max.speed    << ", "
                          << "  Max. Eff: " << joint_limits[n].max.effort   << std::endl;
-    LOG_DEBUG("------------------------------------------------------------");
+    LOG_ERROR("------------------------------------------------------------");
 
     return true;
 }
