@@ -307,12 +307,12 @@ BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
         base::samples::RigidBodyStateSE3 cstate;
         BOOST_CHECK_NO_THROW( cstate = robot_model.rigidBodyState(root, "kuka_lbr_l_tcp"));
         base::Vector3d euler = base::getEuler(cstate.pose.orientation);
-        printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
+        /*printf("Position:    %.4f %.4f %.4f\n",   cstate.pose.position(0), cstate.pose.position(1), cstate.pose.position(2));
         printf("Orientation: %.4f %.4f %.4f\n",   euler(0),                euler(1),                euler(2));
         printf("Linear Vel:  %.4f %.4f %.4f\n",   cstate.twist.linear(0),  cstate.twist.linear(1),  cstate.twist.linear(2));
         printf("Angular Vel: %.4f %.4f %.4f\n",   cstate.twist.angular(0), cstate.twist.angular(1), cstate.twist.angular(2));
         printf("Linear Acc:  %.4f %.4f %.4f\n",   cstate.acceleration.linear(0),  cstate.acceleration.linear(1),  cstate.acceleration.linear(2));
-        printf("Angular Acc: %.4f %.4f %.4f\n\n", cstate.acceleration.angular(0), cstate.acceleration.angular(1), cstate.acceleration.angular(2));
+        printf("Angular Acc: %.4f %.4f %.4f\n\n", cstate.acceleration.angular(0), cstate.acceleration.angular(1), cstate.acceleration.angular(2));*/
 
         for(int i = 0; i < 3; i++){
             BOOST_CHECK(cstate.pose.position(i) == frame_vel.GetFrame().p(i));
@@ -356,6 +356,10 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Check independent joints
+    cout <<  robot_model.noOfJoints() << endl;
+    cout <<  robot_model.noOfActuatedJoints() << endl;
+    cout <<  joint_names.size() << endl;
+    cout <<  actuated_joint_names.size() << endl;
     BOOST_CHECK(robot_model.noOfJoints() == joint_names.size());
     for(uint i = 0; i < robot_model.noOfJoints(); i++)
         BOOST_CHECK(robot_model.jointNames()[i] == joint_names[i]);
