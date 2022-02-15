@@ -3,6 +3,7 @@
 #include "core/RobotModelConfig.hpp"
 #include "scenes/VelocityScene.hpp"
 #include "solvers/hls/HierarchicalLSSolver.hpp"
+#include <tools/URDFTools.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -49,6 +50,9 @@ BOOST_AUTO_TEST_CASE(simple_test){
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
     config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+
+    vector<string> joint_names = URDFTools::jointNamesFromURDF(config.file);
+    config.joint_names = config.actuated_joint_names = joint_names;
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     base::samples::Joints joint_state;
