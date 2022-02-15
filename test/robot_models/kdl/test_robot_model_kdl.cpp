@@ -354,8 +354,7 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
         joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
     }
     RobotModelConfig config(urdf_filename, joint_names, actuated_joint_names, true);
-    if(!robot_model.configure(config))
-        exit(0);
+    cout << robot_model.configure(config) << endl;
 
     // Check independent joints
     urdf::ModelInterfaceSharedPtr model = urdf::parseURDFFile(urdf_filename);
