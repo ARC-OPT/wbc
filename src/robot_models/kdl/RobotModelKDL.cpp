@@ -40,7 +40,7 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     robot_model_config = cfg;
 
     robot_urdf = urdf::parseURDFFile(cfg.file);
-    if(!robot_urdf){
+    if(!robot_urdf->joints_.size() == 0){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
         return false;
     }
