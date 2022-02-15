@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
      */
 
     // Configure Robot model
-    string urdf_filename = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    string urdf_filename = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     RobotModelConfig config(urdf_filename);
 
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
