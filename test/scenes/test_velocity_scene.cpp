@@ -53,7 +53,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     vector<string> joint_names = URDFTools::jointNamesFromURDF(config.file);
     config.joint_names = config.actuated_joint_names = joint_names;
-    BOOST_CHECK_EQUAL(robot_model->configure(config), true);
+    if(!robot_model->configure(config))
+        throw std::runtime_error("Failed to configure robot model");
 
     base::samples::Joints joint_state;
     joint_state.names = robot_model->jointNames();
