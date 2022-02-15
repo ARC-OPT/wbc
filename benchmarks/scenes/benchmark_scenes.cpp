@@ -377,6 +377,6 @@ void runBenchmarks(int n_samples){
 
 int main(){
     srand(time(NULL));
-    int n_samples = 10;
+    int n_samples = 100;
     runBenchmarks(n_samples);
 }

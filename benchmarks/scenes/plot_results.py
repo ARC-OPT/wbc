@@ -63,6 +63,38 @@ def plotBoxWhysker(data1, data2, data3, labels, title):
     plt.xlabel("Robots", fontsize=30, labelpad=20)
     plt.ylabel("Time [ms]", fontsize=30, labelpad=20)
 
+def compareSerialVsHybrid(data1, data2, labels, title):
+    fig = plt.figure()
+    plt.title(title, fontsize = 20)
+    ax = fig.add_subplot(111)
+    width = 0.2
+
+    positions_group1 = np.array(range(len(data1)))-width/2
+    positions_group2 = np.array(range(len(data2)))+width/2
+
+    bplot1 = plt.boxplot(data1,
+                         positions=positions_group1,
+                         widths=width,
+                         showfliers=False,
+                         patch_artist=True)
+    bplot2 = plt.boxplot(data2,
+                         positions=positions_group2,
+                         widths=width,
+                         showfliers=False,
+                         patch_artist=True)
+
+    plt.xticks(list(range(len(labels))) , labels, fontsize=20)
+    plt.grid(True)
+    for box in bplot1['boxes']:
+        box.set_facecolor(color='blue')
+    for box in bplot2['boxes']:
+        box.set_facecolor(color='orange')
+    for m in bplot1['medians']:
+        m.set_color(color='black')
+    ax.legend([bplot1["boxes"][0], bplot2["boxes"][0]], ['Serial Model', 'Hybrid Model'], loc='upper left', fontsize=20)
+    plt.xlabel("Robot Model / WBC Type", fontsize=30, labelpad=20)
+    plt.ylabel("Time per Cycle [ms]", fontsize=30, labelpad=20)
+
 def plotScenes(robots, scenes):
     csv_list = {}
     for r in robots:
@@ -87,6 +119,26 @@ def plotScenes(robots, scenes):
     plotBoxWhysker(update_scene_acc_kdl, update_scene_acc_hyrodyn, update_scene_acc_hyrodyn_hybrid, robots, "Scene Update (Acceleration)")
     plotBoxWhysker(solve_scene_vel_kdl, solve_scene_vel_hyrodyn, solve_scene_vel_hyrodyn_hybrid, robots, "Solve (Velocity)")
     plotBoxWhysker(solve_scene_acc_kdl, solve_scene_acc_hyrodyn, solve_scene_acc_hyrodyn_hybrid, robots, "Solve (Acceleration)")
+
+    total_serial = [csv_list["rh5v2_vel_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5v2_vel_hyrodyn"]["scene_solve"].values/1000,
+                    csv_list["rh5v2_acc_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5v2_acc_hyrodyn"]["scene_solve"].values/1000,
+                    csv_list["rh5_single_leg_vel_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5_single_leg_vel_hyrodyn"]["scene_solve"].values/1000,
+                    csv_list["rh5_single_leg_acc_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5_single_leg_acc_hyrodyn"]["scene_solve"].values/1000,
+                    csv_list["rh5_legs_vel_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5_legs_vel_hyrodyn"]["scene_solve"].values/1000,
+                    csv_list["rh5_legs_acc_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5_legs_acc_hyrodyn"]["scene_solve"].values/1000,
+                    csv_list["rh5_vel_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5_vel_hyrodyn"]["scene_solve"].values/1000,
+                    csv_list["rh5_acc_hyrodyn"]["scene_update"].values/1000 + csv_list["rh5_acc_hyrodyn"]["scene_solve"].values/1000]
+    total_hybrid = [csv_list["rh5v2_vel_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5v2_vel_hyrodyn_hybrid"]["scene_solve"].values/1000,
+                    csv_list["rh5v2_acc_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5v2_acc_hyrodyn_hybrid"]["scene_solve"].values/1000,
+                    csv_list["rh5_single_leg_vel_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5_single_leg_vel_hyrodyn_hybrid"]["scene_solve"].values/1000,
+                    csv_list["rh5_single_leg_acc_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5_single_leg_acc_hyrodyn_hybrid"]["scene_solve"].values/1000,
+                    csv_list["rh5_legs_vel_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5_legs_vel_hyrodyn_hybrid"]["scene_solve"].values/1000,
+                    csv_list["rh5_legs_acc_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5_legs_acc_hyrodyn_hybrid"]["scene_solve"].values/1000,
+                    csv_list["rh5_vel_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5_vel_hyrodyn_hybrid"]["scene_solve"].values/1000,
+                    csv_list["rh5_acc_hyrodyn_hybrid"]["scene_update"].values/1000 + csv_list["rh5_acc_hyrodyn_hybrid"]["scene_solve"].values/1000]
+
+    compareSerialVsHybrid(total_serial, total_hybrid, ["RH5v2\nVelocity", "RH5v2\nAcceleration", "RH5 One Leg\nVelocity", "RH5 One Leg\nAcceleration", "RH5 Legs\nVelocity", "RH5 Legs\nAcceleration", "RH5\nVelocity", "RH5\nAcceleration"], "")
+
 
 plotScenes(robots, scenes)
 plt.show()
