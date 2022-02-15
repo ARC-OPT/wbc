@@ -8,6 +8,7 @@
 #include "tools/URDFTools.hpp"
 #include <regex>
 #include <kdl_parser/kdl_parser.hpp>
+#include <urdf_parser/urdf_parser.h>
 
 using namespace std;
 using namespace wbc;
@@ -356,6 +357,14 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Check independent joints
+    urdf::ModelInterfaceSharedPtr model = urdf::parseURDFFile(urdf_filename);
+    TiXmlDocument *doc = urdf::exportURDF(model);
+    TiXmlPrinter printer;
+    doc->Accept(&printer);
+    std::string robot_xml_string = printer.CStr();
+    cout << robot_xml_string << endl;
+    cout << urdf_filename << endl;
+
     cout <<  robot_model.noOfJoints() << endl;
     cout <<  robot_model.noOfActuatedJoints() << endl;
     cout <<  joint_names.size() << endl;
