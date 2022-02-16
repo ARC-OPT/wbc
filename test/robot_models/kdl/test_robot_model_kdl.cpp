@@ -270,6 +270,8 @@ BOOST_AUTO_TEST_CASE(compare_forward_kinematics_wbc_vs_kdl){
     RobotModelKDL robot_model;
     BOOST_CHECK(robot_model.configure(config) == true);
 
+    BOOST_CHECK(robot_model.noOfJoints() == joint_names.size());
+
     KDL::Chain chain;
     KDL::Tree tree;
     BOOST_CHECK(kdl_parser::treeFromFile(urdf_filename,tree) == true);
