@@ -39,6 +39,14 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     robot_model_config = cfg;
 
+    std::cout<<"TEST"<<std::endl;
+
+    std::ifstream stream(cfg.file.c_str());
+    if (!stream){
+        LOG_ERROR("File %s does not exist", cfg.file.c_str());
+        return false;
+    }
+
     robot_urdf = urdf::parseURDFFile(cfg.file);
     if(!robot_urdf){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
@@ -318,7 +326,6 @@ const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
         space_jac_map[chain_id].col(idx) = kdl_chain->space_jacobian.data.col(j);
-#include <kdl/chaindynparam.hpp>
     }
     return space_jac_map[chain_id];
 }

@@ -3,16 +3,10 @@
 #include "core/RobotModelConfig.hpp"
 #include "scenes/VelocityScene.hpp"
 #include "solvers/hls/HierarchicalLSSolver.hpp"
+#include <tools/URDFTools.hpp>
 
 using namespace std;
 using namespace wbc;
-
-string rootDir(){
-    std::string root_dir = string(__FILE__);
-    const size_t last_slash_idx = root_dir.rfind('/');
-    root_dir =  root_dir.substr(0, last_slash_idx) + "/../..";
-    return root_dir;
-}
 
 BOOST_AUTO_TEST_CASE(configuration_test){
 
@@ -24,7 +18,7 @@ BOOST_AUTO_TEST_CASE(configuration_test){
 
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
+    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
     QPSolverPtr solver = std::make_shared<HierarchicalLSSolver>();
     VelocityScene wbc_scene(robot_model, solver);
@@ -55,10 +49,24 @@ BOOST_AUTO_TEST_CASE(simple_test){
     // Configure Robot model
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    BOOST_CHECK_EQUAL(robot_model->configure(config), true);
+    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
 
-    base::samples::Joints joint_state;
+    vector<string> joint_names = URDFTools::jointNamesFromURDF(config.file);
+    config.joint_names = config.actuated_joint_names = joint_names;
+    bool configured;
+    BOOST_CHECK_NO_THROW(configured = robot_model->configure(config));
+    BOOST_CHECK(configured);
+
+    std::cout<<"Joint Names from URDF"<<std::endl;
+    for(auto n : joint_names)
+        std::cout<<n<<std::endl;
+
+    std::cout<<"Joint Names in Robot Model"<<std::endl;
+    for(auto n : robot_model->jointNames())
+        std::cout<<n<<std::endl;
+
+
+/*    base::samples::Joints joint_state;
     joint_state.names = robot_model->jointNames();
     for(auto n : robot_model->jointNames()){
         base::JointState js;
@@ -102,7 +110,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(yd[i] - ref.twist.linear[i]) < 1e-5);
         BOOST_CHECK(fabs(yd[i+3] - ref.twist.angular[i]) < 1e5);
-    }
+    }*/
 }
 
 

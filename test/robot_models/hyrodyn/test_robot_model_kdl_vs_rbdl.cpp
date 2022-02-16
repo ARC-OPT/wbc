@@ -13,13 +13,6 @@ using namespace std;
 using namespace wbc;
 using namespace RigidBodyDynamics;
 
-string rootDir(){
-    std::string root_dir = string(__FILE__);
-    const size_t last_slash_idx = root_dir.rfind('/');
-    root_dir =  root_dir.substr(0, last_slash_idx) + "/../../..";
-    return root_dir;
-}
-
 BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
 
     /**
@@ -28,7 +21,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
 
     srand(time(NULL));
 
-    string urdf_filename = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
+    string urdf_filename = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
     string root = "kuka_lbr_l_link_0";
     string tip  = "kuka_lbr_l_link_7";
 
@@ -179,7 +172,7 @@ BOOST_AUTO_TEST_CASE(compare_wbc_vs_rbdl_floating_base){
      * Compare kinematics and dynamics of WBC for a floating base robot with the rigid body dynamics library (RBDL)
      */
 
-    string urdf_filename = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
+    string urdf_filename = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
     string world = "world";
     string root = "kuka_lbr_l_link_0";
     string tip  = "kuka_lbr_l_tcp";

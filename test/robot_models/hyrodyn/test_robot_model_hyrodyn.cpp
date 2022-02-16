@@ -5,13 +5,6 @@
 using namespace std;
 using namespace wbc;
 
-string rootDir(){
-    std::string root_dir = string(__FILE__);
-    const size_t last_slash_idx = root_dir.rfind('/');
-    root_dir =  root_dir.substr(0, last_slash_idx) + "/../../..";
-    return root_dir;
-}
-
 double whiteNoise(const double std_dev)
 {
     double rand_no = ( rand() / ( (double)RAND_MAX ) );
@@ -42,56 +35,56 @@ BOOST_AUTO_TEST_CASE(configuration_test){
                                                     "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
 
     // Valid config
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa.yml";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Invalid filename
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urd";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urd";
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Invalid submechanism file
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa.ym";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.ym";
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Valid config with floating base
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     config.floating_base = true;
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid floating base state
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     config.floating_base = true;
     config.floating_base_state.pose.orientation = base::Vector4d(1,1,1,1);
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Config with blacklisted joints
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
     config.joint_blacklist.push_back(joint_names[6]);
     config.floating_base = false;
     BOOST_CHECK(robot_model.configure(config) == true);
 
 
     // Config with invalid joints in blacklist
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
     config.joint_blacklist.push_back("kuka_lbr_l_joint_X");
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Config with contact points
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa.yml";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.push_back("kuka_lbr_l_tcp");
     config.joint_blacklist.clear();
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid contact points
-    config.file = rootDir() + "/models/kuka/urdf/kuka_iiwa.urdf";
-    config.submechanism_file = rootDir() + "/models/kuka/hyrodyn/kuka_iiwa.yml";
+    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.push_back("XYZ");
     BOOST_CHECK(robot_model.configure(config) == false);
 
@@ -105,7 +98,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
 
     const string base_link = "RH5_Root_Link";
     const string ee_link = "LLAnkle_FT";
-    RobotModelConfig config(rootDir() + "/models/rh5/urdf/rh5_single_leg.urdf",
+    RobotModelConfig config("../../../../models/rh5/urdf/rh5_single_leg.urdf",
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
     RobotModelKDL robot_model_kdl;
@@ -141,10 +134,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
 
     RobotModelHyrodyn robot_model_hyrodyn;
-    config = RobotModelConfig(rootDir() + "/models/rh5/urdf/rh5_single_leg.urdf",
+    config = RobotModelConfig("../../../../models/rh5/urdf/rh5_single_leg.urdf",
                              {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                              {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
-    config.submechanism_file = rootDir() + "/models/rh5/hyrodyn/rh5_single_leg.yml";
+    config.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg.yml";
     robot_model_hyrodyn.configure(config);
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state));
 
@@ -227,7 +220,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
     floating_base_state.twist.setZero();
     floating_base_state.acceleration.setZero();
-    RobotModelConfig config(rootDir() + "/models/rh5/urdf/rh5_single_leg.urdf",
+    RobotModelConfig config("../../../../models/rh5/urdf/rh5_single_leg.urdf",
                            {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z",
                             "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                            {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
@@ -235,7 +228,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
                             "world",
                             floating_base_state,
                             std::vector<std::string>(),
-                            rootDir() + "/models/rh5/hyrodyn/rh5_single_leg_floating_base.yml");
+                            "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml");
     RobotModelKDL robot_model_kdl;
     BOOST_CHECK(robot_model_kdl.configure(config) == true);
     uint na = robot_model_kdl.noOfActuatedJoints();
@@ -350,21 +343,21 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     string tip  = "LLAnklePitch_Link";
 
     RobotModelHyrodyn robot_model_hybrid;
-    RobotModelConfig config_hybrid(rootDir() + "/models/rh5/urdf/rh5_single_leg_hybrid.urdf",
+    RobotModelConfig config_hybrid("../../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf",
                                    {"LLHip1", "LLHip2",
                                     "LLHip3", "LLHip3_B11", "LLHip3_Act1",
                                     "LLKnee", "LLKnee_B11", "LLKnee_Act1",
                                     "LLAnkleRoll", "LLAnklePitch", "LLAnkle_E11", "LLAnkle_E21", "LLAnkle_B11", "LLAnkle_B12", "LLAnkle_Act1", "LLAnkle_B21", "LLAnkle_B22", "LLAnkle_Act2"},
                                    {"LLHip1", "LLHip2", "LLHip3_Act1","LLKnee_Act1", "LLAnkle_Act1", "LLAnkle_Act2"});
-    config_hybrid.submechanism_file = rootDir() + "/models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
+    config_hybrid.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
     BOOST_CHECK(robot_model_hybrid.configure(config_hybrid) == true);
 
 
     RobotModelHyrodyn robot_model_serial;
-    RobotModelConfig config_serial(rootDir() + "/models/rh5/urdf/rh5_single_leg.urdf",
+    RobotModelConfig config_serial("../../../../models/rh5/urdf/rh5_single_leg.urdf",
                                    {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
                                    {"LLHip1", "LLHip2", "LLHip3","LLKnee", "LLAnkleRoll", "LLAnklePitch"});
-    config_serial.submechanism_file = rootDir() + "/models/rh5/hyrodyn/rh5_single_leg.yml";
+    config_serial.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg.yml";
     BOOST_CHECK(robot_model_serial.configure(config_serial) == true);
 
     base::samples::Joints joint_state;

@@ -71,7 +71,7 @@ void toCSV(map<string, base::VectorXd> res, const string &filename){
         myfile << "\n";
     }
 
-    for(int i = 0; i < res["space_jac"].size(); i++){
+    for(int i = 0; i < res.begin()->second.size(); i++){
         for(auto it : res)
              myfile << res[it.first][i] << " ";
         myfile << "\n";
