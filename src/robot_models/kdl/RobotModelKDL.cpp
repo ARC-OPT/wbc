@@ -39,6 +39,12 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     robot_model_config = cfg;
 
+    std::ifstream stream(cfg.file.c_str());
+    if (!stream){
+        LOG_ERROR("File %s does not exist", cfg.file.c_str());
+        return false;
+    }
+
     robot_urdf = urdf::parseURDFFile(cfg.file);
     if(!robot_urdf){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
