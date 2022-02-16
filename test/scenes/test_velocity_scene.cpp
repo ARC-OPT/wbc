@@ -57,16 +57,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     BOOST_CHECK_NO_THROW(configured = robot_model->configure(config));
     BOOST_CHECK(configured);
 
-    std::cout<<"Joint Names from URDF"<<std::endl;
-    for(auto n : joint_names)
-        std::cout<<n<<std::endl;
-
-    std::cout<<"Joint Names in Robot Model"<<std::endl;
-    for(auto n : robot_model->jointNames())
-        std::cout<<n<<std::endl;
-
-
-/*    base::samples::Joints joint_state;
+    base::samples::Joints joint_state;
     joint_state.names = robot_model->jointNames();
     for(auto n : robot_model->jointNames()){
         base::JointState js;
@@ -110,7 +101,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(yd[i] - ref.twist.linear[i]) < 1e-5);
         BOOST_CHECK(fabs(yd[i+3] - ref.twist.angular[i]) < 1e5);
-    }*/
+    }
 }
 
 
