@@ -9,7 +9,7 @@
 #include <base/JointLimits.hpp>
 #include <base/samples/Wrenches.hpp>
 #include <base/commands/Joints.hpp>
-#include <core/RobotModelConfig.hpp>
+#include "RobotModelConfig.hpp"
 
 namespace wbc{
 
