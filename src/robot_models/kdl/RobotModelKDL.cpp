@@ -39,8 +39,6 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     robot_model_config = cfg;
 
-    std::cout<<"TEST"<<std::endl;
-
     std::ifstream stream(cfg.file.c_str());
     if (!stream){
         LOG_ERROR("File %s does not exist", cfg.file.c_str());
