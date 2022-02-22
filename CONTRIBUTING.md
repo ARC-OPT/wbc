@@ -51,7 +51,4 @@ Summary: maintainer can push minor changes directly, pull request + 1 reviewer f
 
 ## Project Roadmap
 
-* Allow separate configuration of "tasks" and "constraints"
-* Include more solvers, e.g., [eigquadprog](https://github.com/stack-of-tasks/eiquadprog)
-* Implement different dynamic WBC scenes
-* Integrate simulation environment for testing and prototyping
+Check the [Issue Tracker](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/issues) for roadmap planning. 
