@@ -1,0 +1,28 @@
+--- kdl_parser.pc.in
++++ kdl_parser.pc.in
+@@ -0,0 +1,11 @@
++prefix=@CMAKE_INSTALL_PREFIX@
++exec_prefix=@CMAKE_INSTALL_PREFIX@
++libdir=${prefix}/lib
++includedir=${prefix}/include
++
++Name: @PACKAGE_NAME@
++Description: @PACKAGE_DESCRIPTION@
++Version: @PACKAGE_VERSION@
++Requires: @PKGCONFIG_REQUIRES@
++Libs: -L${libdir} @PKGCONFIG_LIBS@ -lkdl_parser
++Cflags: -I${includedir} @PKGCONFIG_CFLAGS@
+
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -98,5 +98,9 @@ else()
+           LIBRARY DESTINATION lib
+           ARCHIVE DESTINATION lib)
+   install(DIRECTORY include/${PROJECT_NAME}/
+-          DESTINATION include)
++          DESTINATION include/${PROJECT_NAME})
++
++  configure_file(${CMAKE_CURRENT_SOURCE_DIR}/${PROJECT_NAME}.pc.in ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc @ONLY)
++  install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${PROJECT_NAME}.pc DESTINATION lib/pkgconfig)
++
+ endif()
