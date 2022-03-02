@@ -31,7 +31,7 @@ sudo make -j8 install &&  cd ../../..
 sudo apt-get -y install libtinyxml2-dev
 git clone https://github.com/ros/kdl_parser.git -b 1.14.1
 cd kdl_parser/kdl_parser
-git archive --remote=git@git.hb.dfki.de:dfki-control/wbc/package_set.git HEAD patches/kdl_parser.patch | tar -x
+git archive --remote=git@github.com:ARC-OPT/wbc.git HEAD patches/kdl_parser.patch | tar -x
 git apply patches/kdl_parser.patch
 mkdir build && cd build 
 cmake .. 
@@ -43,7 +43,7 @@ sudo make -j8 install && cd ../../..
 # qpOASES
 git clone https://github.com/coin-or/qpOASES.git -b releases/3.2.0
 cd qpOASES
-git archive --remote=git@github.com/ARC-OPT/wbc/blob/master/patches/qpOASES.patch HEAD patches/qpOASES.patch | tar -x
+git archive --remote=git@github.com:ARC-OPT/wbc.git HEAD patches/qpOASES.patch | tar -x
 git apply patches/qpOASES.patch
 mkdir build && cd build
 cmake .. && sudo make -j8 install && cd ../..
