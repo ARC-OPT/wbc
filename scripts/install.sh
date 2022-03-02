@@ -49,7 +49,7 @@ mkdir build && cd build
 cmake .. && sudo make -j8 install && cd ../..
 
 # WBC
-git clone git@git.hb.dfki.de:dfki-control/wbc/wbc.git 
+git clone git@github.com:ARC-OPT/wbc.git
 mkdir wbc/build && cd wbc/build
 cmake ..
 sudo make -j8 install

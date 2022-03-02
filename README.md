@@ -1,6 +1,6 @@
 # WBC - Whole-Body Control
 
-[Code API](http://bob.dfki.uni-bremen.de/apis/dfki-control/wbc/wbc)  | [Full Documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home)
+[Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/)
 
 WBC is C++ library for optimization-based control of redundant robots. It facilitates intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. 
 
@@ -23,7 +23,7 @@ The online solution of this problem is the robot joint control signal that compl
 
 ## Getting Started
 
-Please check out the tutorials section in the [documentation](https://git.hb.dfki.de/dfki-control/wbc/documentation/-/wikis/home) for examples of usage.
+Please check out the tutorials section in the [documentation](https://arc-opt.github.io/) for examples of usage.
 
 ## Requirements / Dependencies
 
@@ -39,14 +39,14 @@ Since WBC can be considered as an integrative framework that facilitates the com
 Optional: 
 
 * For python bindings: python-dev, libboost-python-dev, libboost-numpy-dev, python-numpy
-* To support robot architectures with closed loops: [rbdl](https://git.hb.dfki.de/dfki-mechanics/hyrodyn/rbdl), [hyrodyn](https://git.hb.dfki.de/dfki-mechanics/hyrodyn/hyrodyn)
+* To support robot architectures with closed loops (series-parallel hybrid systems): [rbdl](https://git.hb.dfki.de/dfki-mechanics/hyrodyn/rbdl), [hyrodyn](https://git.hb.dfki.de/dfki-mechanics/hyrodyn/hyrodyn)
 
 ## Installation
 
 
 ### Standalone
 
-Download the [install script](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/scripts/install.sh) and type
+Download the [install script](https://github.com/ARC-OPT/wbc/blob/master/scripts/install.sh) and type
 
 ```
 sh install.sh
@@ -64,13 +64,13 @@ sh install.sh
 
 ## Testing
 
-Please check the unit tests [here](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/test), as well the comprehensive [examples](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/examples)
+Please check the unit tests [here](https://github.com/ARC-OPT/wbc/tree/master/test), as well the [tutorials](https://github.com/ARC-OPT/wbc/tree/master/tutorials)
 
 ## Contributing
 
-Please use the [issue tracker](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/issues) to submit bug reports and feature requests.
+Please use the [issue tracker](https://github.com/ARC-OPT/wbc/issues) to submit bug reports and feature requests.
 
-Please use merge requests as described [here](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/blob/master/CONTRIBUTING.md) to add/adapt functionality. 
+Please use merge requests as described [here](https://github.com/ARC-OPT/wbc/blob/master/CONTRIBUTING.md) to add/adapt functionality. 
 
 ## License
 
