@@ -10,13 +10,13 @@ what you are trying to do.
 The preferred way to contribute to WBC is to fork the main repository on Gitlab, then submit a "pull request"
 (PR):
 
-1. Fork the [project repository](https://git.hb.dfki.de/dfki-control/wbc/wbc):
+1. Fork the [project repository](git@github.com:ARC-OPT/wbc.git):
    click on the 'Fork' button near the top of the page. This creates a copy of
    the code under your account on the Gitlab server.
 
 3. Clone this copy to your local disk:
 
-        $ git clone git@git.hb.dfki.de:YourLogin/wbc.git
+        $ git clone git@github.com:YourLogin/wbc.git
 
 4. Create a branch to hold your changes:
 
@@ -45,10 +45,10 @@ Summary: maintainer can push minor changes directly, pull request + 1 reviewer f
 
 * Developers have to submit pull requests. Those will be reviewed by at least one other developer and merged by the maintainer. New features must be documented and tested. Breaking changes must be discussed and announced in advance with deprecation warnings.
 
-* Any change of existing functionality requires that all unit tests must succeed. In addition, the major [example use cases](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/tree/master/examples) should be executed and the results should be compared with the results obtained prior to making those changes. If the results differ, the changes should be reconsidered.
+* Any change of existing functionality requires that all unit tests must succeed. In addition, the [tutorials](https://github.com/ARC-OPT/wbc/tree/master/tutorials) should be executed and the results should be compared with the results obtained prior to making those changes. If the results differ, the changes should be reconsidered.
 
 * Adding new functionality requires the addition of unit tests. In pinciple, every class should be accompanied by at least one unit test that checks the common use case, and one unit tests that checks for the common error cases
 
 ## Project Roadmap
 
-Check the [Issue Tracker](https://git.hb.dfki.de/dfki-control/wbc/wbc/-/issues) for roadmap planning. 
+Check the [Issue Tracker](https://github.com/ARC-OPT/wbc/issues) for roadmap planning. 
