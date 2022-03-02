@@ -43,7 +43,7 @@ sudo make -j8 install && cd ../../..
 # qpOASES
 git clone https://github.com/coin-or/qpOASES.git -b releases/3.2.0
 cd qpOASES
-git archive --remote=git@git.hb.dfki.de:dfki-control/wbc/package_set.git HEAD patches/qpOASES.patch | tar -x
+git archive --remote=git@github.com/ARC-OPT/wbc/blob/master/patches/qpOASES.patch HEAD patches/qpOASES.patch | tar -x
 git apply patches/qpOASES.patch
 mkdir build && cd build
 cmake .. && sudo make -j8 install && cd ../..
