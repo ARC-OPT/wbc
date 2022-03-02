@@ -1,6 +1,6 @@
 # WBC - Whole-Body Control
 
-[Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://git.hb.dfki.de/wbc/documentation/wikis/home)
+[Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/)
 
 WBC is C++ library for optimization-based control of redundant robots. It facilitates intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. 
 
