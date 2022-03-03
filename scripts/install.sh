@@ -28,7 +28,7 @@ cmake ..
 sudo make -j8 install &&  cd ../../..
 
 # Clone WBC repo to have the patches for KDL and qpOASES
-git clone git@github.com:ARC-OPT/wbc.git
+git clone https://github.com/ARC-OPT/wbc.git
 
 # KDL parser
 sudo apt-get -y install libtinyxml2-dev
