@@ -25,6 +25,8 @@ jobs:
     - uses: actions/checkout@v2
     - name: install
       run: sh scripts/install.sh
+    - name: LS
+      run: ls 
     - name: test
       run: |
         ./home/runner/work/wbc/wbc/wbc/build/test/controllers/test_pid_controllers
