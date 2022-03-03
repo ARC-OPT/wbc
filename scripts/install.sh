@@ -27,11 +27,14 @@ cd orocos_kinematics_dynamics/orocos_kdl/build
 cmake .. 
 sudo make -j8 install &&  cd ../../..
 
+# Clone WBC repo to have the patches for KDL and qpOASES
+git clone git@github.com:ARC-OPT/wbc.git
+
 # KDL parser
 sudo apt-get -y install libtinyxml2-dev
 git clone https://github.com/ros/kdl_parser.git -b 1.14.1
 cd kdl_parser/kdl_parser
-git archive --remote=git@github.com:ARC-OPT/wbc.git HEAD patches/kdl_parser.patch | tar -x
+mkdir patches && cp ../../wbc/patches/kdl_parser.patch patches
 git apply patches/kdl_parser.patch
 mkdir build && cd build 
 cmake .. 
@@ -43,13 +46,12 @@ sudo make -j8 install && cd ../../..
 # qpOASES
 git clone https://github.com/coin-or/qpOASES.git -b releases/3.2.0
 cd qpOASES
-git archive --remote=git@github.com:ARC-OPT/wbc.git HEAD patches/qpOASES.patch | tar -x
+mkdir patches && cp ../wbc/patches/qpOASES.patch patches
 git apply patches/qpOASES.patch
 mkdir build && cd build
 cmake .. && sudo make -j8 install && cd ../..
 
 # WBC
-git clone git@github.com:ARC-OPT/wbc.git
 mkdir wbc/build && cd wbc/build
 cmake ..
 sudo make -j8 install
