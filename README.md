@@ -2,9 +2,9 @@
 
 [Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/)
 
-WBC is C++ library for optimization-based control of redundant robots. It facilitates intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. 
+WBC is C++ library for optimization-based control of redundant robots. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. 
 
-WBC was initiated and is currently developed at the [Robotics Innovation Center](http://robotik.dfki-bremen.de/en/startpage.html) of the [German Research Center for Artificial Intelligence (DFKI)](http://www.dfki.de) in Bremen.
+WBC was initiated and is currently developed at the [Robotics Innovation Center](http://robotik.dfki-bremen.de/en/startpage.html) of the [German Research Center for Artificial Intelligence (DFKI)](http://www.dfki.de) in Bremen. It is part of the ARC-OPT (Adaptive Robot Control using Optimization) framework, which facilitates learning and optimizing whole-body controllers from data obtained, e.g., in user demonstrations. Also see the [ARC-OPT website](https://robotik.dfki-bremen.de/en/research/softwaretools/arc-opt/) of the Robotics Innovation Center.
 
 <img src="doc/images/DFKI_Logo_e_schrift.jpg" alt="drawing" width="300"/>
 
