@@ -8,6 +8,7 @@
 #include <algorithm>
 #include <tools/URDFTools.hpp>
 #include <kdl/chaindynparam.hpp>
+#include <fstream>
 
 namespace wbc{
 
