@@ -29,16 +29,22 @@ jobs:
       run: ls 
     - name: test
       run: |
-        ./wbc/build/test/controllers/test_pid_controllers
-        ./wbc/build/test/controllers/test_pos_pd_controllers
-        ./wbc/build/test/controllers/test_pot_field_controllers
-        ./wbc/build/test/core/test_core
-        ./wbc/build/test/robot_models/kdl/test_robot_model_kdl
-        ./wbc/build/test/scenes/test_velocity_scene
-        ./wbc/build/test/scenes/test_velocity_scene_quadratic_cost
-        ./wbc/build/test/scenes/test_acceleration_scene
-        ./wbc/build/test/solvers/hls/test_hls_solver
-        ./wbc/build/test/solvers/qpoases/test_qpoases_solver
+        cd wbc/build/test/controllers
+        ./test_pid_controllers
+        ./test_pos_pd_controllers
+        ./test_pot_field_controllers
+        cd ../core
+        ./test_core
+        cd ../robot_models/kdl
+        ./test_robot_model_kdl
+        cd ../../scenes
+        ./test_velocity_scene
+        ./test_velocity_scene_quadratic_cost
+        ./test_acceleration_scene
+        cd ../solvers/hls 
+        ./test_hls_solver
+        cd ../qpoases
+        ./test_qpoases_solver
     - name: Doxygen Action
       uses: mattnotmitt/doxygen-action@v1.1.0
       with:
