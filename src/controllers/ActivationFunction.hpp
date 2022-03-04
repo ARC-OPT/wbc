@@ -12,7 +12,7 @@ enum activationType{NO_ACTIVATION,              /** Activation values will alway
                     QUADRATIC_ACTIVATION,       /** If input < threshold, activation will be increase quadratically the input, otherwise 1 */
                     PROPORTIONAL_ACTIVATION};   /** If input < threshold, activation will be same as given value, otherwise 1 */
 
-/** Defines different activation function like linear, quadratic, etc.
+/** Define different activation function like linear, quadratic, etc.
  */
 struct ActivationFunction{
     ActivationFunction() :
