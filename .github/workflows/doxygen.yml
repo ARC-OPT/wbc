@@ -1,0 +1,30 @@
+name: Doxygen Action
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+  
+jobs:
+  generate_doc:
+    runs-on: ubuntu-latest
+
+    steps:
+    # Check out repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v2
+
+    - name: Doxygen Action
+      uses: mattnotmitt/doxygen-action@v1.1.0
+      with:
+        # Path to Doxyfile
+        doxyfile-path: "./Doxyfile" # default is ./Doxyfile
+        # Working directory
+        working-directory: "." # default is .
+    
+    - name: Deploy
+      uses: peaceiris/actions-gh-pages@v3
+      with:
+        github_token: ${{ secrets.GITHUB_TOKEN }}
+        publish_dir: ./doc
+
