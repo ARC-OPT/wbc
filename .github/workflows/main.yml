@@ -29,16 +29,16 @@ jobs:
       run: ls 
     - name: test
       run: |
-        ./home/runner/work/wbc/wbc/wbc/build/test/controllers/test_pid_controllers
-        ./home/runner/work/wbc/wbc/wbc/build/test/controllers/test_pos_pd_controllers
-        ./home/runner/work/wbc/wbc/wbc/build/test/controllers/test_pot_field_controllers
-        ./home/runner/work/wbc/wbc/wbc/build/test/core/test_core
-        ./home/runner/work/wbc/wbc/wbc/build/test/robot_models/kdl/test_robot_model_kdl
-        ./home/runner/work/wbc/wbc/wbc/build/test/scenes/test_velocity_scene
-        ./home/runner/work/wbc/wbc/wbc/build/test/scenes/test_velocity_scene_quadratic_cost
-        ./home/runner/work/wbc/wbc/wbc/build/test/scenes/test_acceleration_scene
-        ./home/runner/work/wbc/wbc/wbc/build/test/solvers/hls/test_hls_solver
-        ./home/runner/work/wbc/wbc/wbc/build/test/solvers/qpoases/test_qpoases_solver
+        ./wbc/build/test/controllers/test_pid_controllers
+        ./wbc/build/test/controllers/test_pos_pd_controllers
+        ./wbc/build/test/controllers/test_pot_field_controllers
+        ./wbc/build/test/core/test_core
+        ./wbc/build/test/robot_models/kdl/test_robot_model_kdl
+        ./wbc/build/test/scenes/test_velocity_scene
+        ./wbc/build/test/scenes/test_velocity_scene_quadratic_cost
+        ./wbc/build/test/scenes/test_acceleration_scene
+        ./wbc/build/test/solvers/hls/test_hls_solver
+        ./wbc/build/test/solvers/qpoases/test_qpoases_solver
     - name: Doxygen Action
       uses: mattnotmitt/doxygen-action@v1.1.0
       with:
