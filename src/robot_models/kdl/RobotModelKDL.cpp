@@ -135,13 +135,17 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     // 3. Set initial floating base state
     if(has_floating_base){
-        if(cfg.floating_base_state.hasValidPose() ||
-           cfg.floating_base_state.hasValidTwist() ||
-           cfg.floating_base_state.hasValidAcceleration()){
+        if(cfg.floating_base_state.hasValidPose()){
             base::samples::RigidBodyStateSE3 rbs;
             rbs.pose = cfg.floating_base_state.pose;
-            rbs.twist = cfg.floating_base_state.twist;
-            rbs.acceleration = cfg.floating_base_state.acceleration;
+            if(cfg.floating_base_state.hasValidTwist())
+                rbs.twist = cfg.floating_base_state.twist;
+            else
+                rbs.twist.setZero();
+            if(cfg.floating_base_state.hasValidAcceleration())
+                rbs.acceleration = cfg.floating_base_state.acceleration;
+            else
+                rbs.acceleration.setZero();
             rbs.time = base::Time::now();
             rbs.frame_id = cfg.world_frame_id;
             try{
@@ -150,6 +154,10 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
             catch(std::runtime_error e){
                 return false;
             }
+        }
+        else{
+            LOG_ERROR("If you set floating_base to true, you have to provide a valid floating_base_state (at least a position/orientation)");
+            return false;
         }
     }
 
