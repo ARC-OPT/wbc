@@ -39,21 +39,24 @@ public:
 
     }
 
-    /** Absolute path to URDF file*/
+    /** Absolute path to URDF file describing the robot model.*/
     std::string file;
-    /** Only Hyrodyn models: Absolute path to submechanism file*/
+    /** Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms.*/
     std::string submechanism_file;
-    /** Define all joints to use from the URDF model. The order here will be used in all computed quantities, like Jacobians, etc..*/
+    /** Optional: Order of joints used internally. If left empty, joint order will be alphabetical (from URDF parser). If not empty, this has to contain all non-fixed joints from URDF model. If floating_base is true,
+      * additionally, the first 6 joint names have to be {floating_base_trans_x, floating_base_trans_y, floating_base_trans_z, floating_base_rot_x, floating_base_rot_y, floating_base_rot_z}.
+      * The order here will be used in all computed quantities, like Jacobians, control output, etc.. Note: For Hyrodyn robot models, the joint order will be defined in the submechanism files, so this property will be ignored*/
     std::vector<std::string> joint_names;
-    /** Define all actuated joints here*/
+    /** Optional: Define actuated joints here. If empty, joint_names will be used as actuated_joints, i.e., all joints are actuated.
+      * Note: For Hyrodyn robot models, the actuated joints will be defined in the submechanism files, so this property will be ignored*/
     std::vector<std::string> actuated_joint_names;
-    /** Optional: Attach a virtual 6 DoF floating base to the model: Naming scheme of the joints is currently fix:
+    /** Optional: Attach a virtual 6 DoF floating base to the model: Naming scheme of the joints is currently fixed:
       * floating_base_trans_x, floating_base_trans_y, floating_base_trans_z,
       * floating_base_rot_x, floating_base_rot_y, floating_base_rot_z*/
     bool floating_base;
     /** Optional, only if floating_base is set to true: ID of the world frame, defaults to 'world'*/
     std::string world_frame_id;
-    /** Optional, only if floating_base is set to true: Initial state of the floating base. Pose defaults to identity, twist/acceleration to zero*/
+    /** Optional, only if floating_base is set to true: Initial state of the floating base. A valid pose has to be given, twist/acceleration is optional*/
     base::RigidBodyStateSE3 floating_base_state;
     /** Optional: Link names that are possibly in contact with the environment. These have to valid link names in the robot model.*/
     std::vector<std::string> contact_points;
