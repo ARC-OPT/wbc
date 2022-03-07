@@ -209,7 +209,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Define all actuated joints here </p>
+<p >Optional: Define actuated joints here. If empty, joint_names will be used as actuated_joints, i.e., all joints are actuated. Note: For Hyrodyn robot models, the actuated joints will be defined in the submechanism files, so this property will be ignored </p>
 
 </div>
 </div>
@@ -239,7 +239,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Absolute path to URDF file </p>
+<p >Absolute path to URDF file describing the robot model. </p>
 
 </div>
 </div>
@@ -254,7 +254,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Optional: Attach a virtual 6 DoF floating base to the model: Naming scheme of the joints is currently fix: floating_base_trans_x, floating_base_trans_y, floating_base_trans_z, floating_base_rot_x, floating_base_rot_y, floating_base_rot_z </p>
+<p >Optional: Attach a virtual 6 DoF floating base to the model: Naming scheme of the joints is currently fixed: floating_base_trans_x, floating_base_trans_y, floating_base_trans_z, floating_base_rot_x, floating_base_rot_y, floating_base_rot_z </p>
 
 </div>
 </div>
@@ -269,7 +269,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Optional, only if floating_base is set to true: Initial state of the floating base. Pose defaults to identity, twist/acceleration to zero </p>
+<p >Optional, only if floating_base is set to true: Initial state of the floating base. A valid pose has to be given, twist/acceleration is optional </p>
 
 </div>
 </div>
@@ -299,7 +299,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Define all joints to use from the URDF model. The order here will be used in all computed quantities, like Jacobians, etc.. </p>
+<p >Optional: Order of joints used internally. If left empty, joint order will be alphabetical (from URDF parser). If not empty, this has to contain all non-fixed joints from URDF model. If floating_base is true, additionally, the first 6 joint names have to be {floating_base_trans_x, floating_base_trans_y, floating_base_trans_z, floating_base_rot_x, floating_base_rot_y, floating_base_rot_z}. The order here will be used in all computed quantities, like Jacobians, control output, etc.. Note: For Hyrodyn robot models, the joint order will be defined in the submechanism files, so this property will be ignored </p>
 
 </div>
 </div>
@@ -314,7 +314,7 @@ Public Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p >Only Hyrodyn models: Absolute path to submechanism file </p>
+<p >Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms. </p>
 
 </div>
 </div>
