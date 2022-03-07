@@ -9,8 +9,8 @@
   <author>Dennis Mronga/dennis.mronga@dfki.de</author>
   <maintainer>Dennis Mronga/dennis.mronga@dfki.de</maintainer>
   <license></license>
-  <url>https://git.hb.dfki.de/dfki-control/wbc</url>
-  <logo>https://git.hb.dfki.de/dfki-control/wbc/blob/master/doc/images/wbc_principle.png</logo>
+  <url>https://github.com/ARC-OPT/wbc</url>
+  <logo>https://github.com/ARC-OPT/wbc/doc/images/arcopt_logo_v3_github.jpg</logo>
   <tags>stable</tags>
   <keywords>
      <keyword>Control</keyword>
