@@ -35,55 +35,56 @@ BOOST_AUTO_TEST_CASE(configuration_test){
                                                     "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
 
     // Valid config
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Invalid filename
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urd";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urd");
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Invalid submechanism file
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.ym";
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Valid config with floating base
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     config.floating_base = true;
+    config.floating_base_state.pose.fromTransform(Eigen::Affine3d::Identity());
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid floating base state
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     config.floating_base = true;
+    config.floating_base_state.pose.position.setZero();
     config.floating_base_state.pose.orientation = base::Vector4d(1,1,1,1);
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Config with blacklisted joints
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
     config.joint_blacklist.push_back(joint_names[6]);
     config.floating_base = false;
     BOOST_CHECK(robot_model.configure(config) == true);
 
-
     // Config with invalid joints in blacklist
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
     config.joint_blacklist.push_back("kuka_lbr_l_joint_X");
     BOOST_CHECK(robot_model.configure(config) == false);
 
     // Config with contact points
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.push_back("kuka_lbr_l_tcp");
     config.joint_blacklist.clear();
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid contact points
-    config.file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.push_back("XYZ");
     BOOST_CHECK(robot_model.configure(config) == false);
