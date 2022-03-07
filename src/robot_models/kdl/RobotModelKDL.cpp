@@ -56,6 +56,9 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
         return false;
 
+    // Joint names from URDF without floating base and without blacklisted joints
+    std::vector<std::string> joint_names_urdf = URDFTools::jointNamesFromURDF(robot_urdf);
+
     // Add floating base
     has_floating_base = cfg.floating_base;
     if(has_floating_base)
@@ -65,18 +68,21 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
     // If joint names is empty in config, use all joints from URDF
-    std::vector<std::string> joint_names = cfg.joint_names;
-    if(joint_names.empty())
-        joint_names = URDFTools::jointNamesFromURDF(robot_urdf);
-
-    current_joint_state.elements.resize(joint_names.size());
-    current_joint_state.names = joint_names;
-    independent_joint_names = joint_names;
+    independent_joint_names = cfg.joint_names;
+    if(independent_joint_names.empty())
+        independent_joint_names = joint_names_floating_base + joint_names_urdf;
 
     // If actuated joint names is empty in config, assume that all joints are actuated
     actuated_joint_names = cfg.actuated_joint_names;
-    if(actuated_joint_names.empty())
-        actuated_joint_names = joint_names;
+    if(actuated_joint_names.empty()){
+        if(cfg.joint_names.empty())
+            actuated_joint_names = joint_names_urdf;
+        else
+            actuated_joint_names = cfg.joint_names;
+    }
+
+    current_joint_state.elements.resize(independent_joint_names.size());
+    current_joint_state.names = independent_joint_names;
 
     // Parse KDL Tree
     if(!kdl_parser::treeFromUrdfModel(*robot_urdf, full_tree)){
@@ -87,16 +93,19 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     // 2. Verify consistency of URDF and config
 
     // Check correct floating base names first, if a floating base is available
-    for(const std::string& n : joint_names_floating_base){
-        if(!hasJoint(n)){
-            LOG_ERROR_S << "If you set 'floating_base' to 'true', you have to add the following virtual joints to joint_names: \n"
-                        << "   floating_base_trans_x, floating_base_trans_y, floating_base_trans_z\n"
-                        << "   floating_base_rot_x,   floating_base_rot_y,   floating_base_rot_z  ";
-            return false;
+    if(has_floating_base){
+        for(size_t i = 0; i < 6; i++){
+            if(jointNames()[i] != joint_names_floating_base[i]){
+                LOG_ERROR_S << "If you set 'floating_base' to 'true', the first six entries in joint_names have to be: \n"
+                            << "   floating_base_trans_x, floating_base_trans_y, floating_base_trans_z\n"
+                            << "   floating_base_rot_x,   floating_base_rot_y,   floating_base_rot_z\n"
+                            << "Alternatively you can leave joint_names empty, in which case the joint names will be taken from URDF";
+                return false;
+            }
         }
     }
     // All non-fixed URDF joint names have to be configured in cfg.joint_names and vice versa
-    std::vector<std::string> joint_names_urdf = URDFTools::jointNamesFromURDF(robot_urdf);
+    joint_names_urdf = URDFTools::jointNamesFromURDF(robot_urdf);
     for(const std::string& n : jointNames()){
         if(std::find(joint_names_urdf.begin(), joint_names_urdf.end(), n) == joint_names_urdf.end()){
             LOG_ERROR_S << "Joint " << n << " has been configured in joint_names, but is not a non-fixed joint in the robot URDF"<<std::endl;
