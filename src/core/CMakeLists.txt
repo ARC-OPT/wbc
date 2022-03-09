@@ -14,6 +14,7 @@ link_directories(${base-types_LIBRARY_DIRS})
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME}
                       wbc-tools
+                      dl
                       ${base-types_LIBRARIES})
 
 set_target_properties(${TARGET_NAME} PROPERTIES

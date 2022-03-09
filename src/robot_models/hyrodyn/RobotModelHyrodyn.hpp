@@ -1,7 +1,7 @@
 #ifndef ROBOTMODELHYRODYN_HPP
 #define ROBOTMODELHYRODYN_HPP
 
-#include "../../core/RobotModel.hpp"
+#include "../../core/RobotModelFactory.hpp"
 #include "../../core/RobotModelConfig.hpp"
 
 #include <hyrodyn/robot_model_hyrodyn.hpp>
@@ -11,6 +11,9 @@
 namespace wbc{
 
 class RobotModelHyrodyn : public RobotModel{
+private:
+    static RobotModelRegistry<RobotModelHyrodyn> reg;
+
 protected:
     base::samples::RigidBodyStateSE3 rbs;
     std::string base_frame;
@@ -145,6 +148,7 @@ public:
     /** @brief Compute and return the inverse dynamics solution*/
     virtual void computeInverseDynamics(base::commands::Joints &solver_output);
 };
+
 }
 
 #endif

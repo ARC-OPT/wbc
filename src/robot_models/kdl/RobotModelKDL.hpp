@@ -1,7 +1,7 @@
 #ifndef ROBOTMODELKDL_HPP
 #define ROBOTMODELKDL_HPP
 
-#include "../../core/RobotModel.hpp"
+#include "../../core/RobotModelFactory.hpp"
 #include "../../core/RobotModelConfig.hpp"
 
 #include <kdl/tree.hpp>
@@ -19,6 +19,9 @@ class KinematicChainKDL;
  *  and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios.
  */
 class RobotModelKDL : public RobotModel{
+private:
+
+    static RobotModelRegistry<RobotModelKDL> reg;
 
     std::vector<std::string> actuated_joint_names;
     std::string base_frame;

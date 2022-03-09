@@ -17,6 +17,7 @@ public:
         floating_base_state.pose.orientation.setIdentity();
         floating_base_state.twist.setZero();
         floating_base_state.acceleration.setZero();
+        type = "kdl";
     }
     RobotModelConfig(const std::string& file,
                      const std::vector<std::string> joint_names = {},
@@ -29,6 +30,7 @@ public:
                      const std::vector<std::string>& joint_blacklist = std::vector<std::string>()) :
         file(file),
         submechanism_file(submechanism_file),
+        type("kdl"),
         joint_names(joint_names),
         actuated_joint_names(actuated_joint_names),
         floating_base(floating_base),
@@ -43,6 +45,8 @@ public:
     std::string file;
     /** Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms.*/
     std::string submechanism_file;
+    /** Model type. Must be the exact name of one of the registered robot model plugins. See src/robot_models for all available plugins. Default is kdl*/
+    std::string type;
     /** Optional: Order of joints used internally. If left empty, joint order will be alphabetical (from URDF parser). If not empty, this has to contain all non-fixed joints from URDF model. If floating_base is true,
       * additionally, the first 6 joint names have to be {floating_base_trans_x, floating_base_trans_y, floating_base_trans_z, floating_base_rot_x, floating_base_rot_y, floating_base_rot_z}.
       * The order here will be used in all computed quantities, like Jacobians, control output, etc.. Note: For Hyrodyn robot models, the joint order will be defined in the submechanism files, so this property will be ignored*/
