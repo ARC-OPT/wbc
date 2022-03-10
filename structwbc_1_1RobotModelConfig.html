@@ -76,6 +76,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a33d23def7dc7e5c19e51138c12846d5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e2d9d81842c0e9870b27ea39cb50175"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModelConfig.html#a7e2d9d81842c0e9870b27ea39cb50175">submechanism_file</a></td></tr>
 <tr class="separator:a7e2d9d81842c0e9870b27ea39cb50175"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac804c3af4f4c76f7e3fd744cf4da34d1"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModelConfig.html#ac804c3af4f4c76f7e3fd744cf4da34d1">type</a></td></tr>
+<tr class="separator:ac804c3af4f4c76f7e3fd744cf4da34d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a263435f24ad5c901e0c4cdaede723c96"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModelConfig.html#a263435f24ad5c901e0c4cdaede723c96">joint_names</a></td></tr>
 <tr class="separator:a263435f24ad5c901e0c4cdaede723c96"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a53219a04483921a01607d0e863c4fc3a"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModelConfig.html#a53219a04483921a01607d0e863c4fc3a">actuated_joint_names</a></td></tr>
@@ -315,6 +317,21 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p >Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms. </p>
+
+</div>
+</div>
+<a id="ac804c3af4f4c76f7e3fd744cf4da34d1" name="ac804c3af4f4c76f7e3fd744cf4da34d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac804c3af4f4c76f7e3fd744cf4da34d1">&#9670;&nbsp;</a></span>type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string wbc::RobotModelConfig::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p >Model type. Must be the exact name of one of the registered robot model plugins. See src/robot_models for all available plugins. Default is kdl </p>
 
 </div>
 </div>
