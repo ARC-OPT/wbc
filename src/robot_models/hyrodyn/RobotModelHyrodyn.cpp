@@ -5,6 +5,8 @@
 
 namespace wbc{
 
+RobotModelRegistry<RobotModelHyrodyn> RobotModelHyrodyn::reg("hyrodyn");
+
 RobotModelHyrodyn::RobotModelHyrodyn(){
 }
 

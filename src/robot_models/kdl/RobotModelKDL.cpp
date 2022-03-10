@@ -12,6 +12,8 @@
 
 namespace wbc{
 
+RobotModelRegistry<RobotModelKDL> RobotModelKDL::reg("kdl");
+
 RobotModelKDL::RobotModelKDL(){
 }
 
