@@ -79,14 +79,16 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     // Config with contact points
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
-    config.contact_points.push_back("kuka_lbr_l_tcp");
+    config.contact_points.names.push_back("kuka_lbr_l_tcp");
+    config.contact_points.elements.push_back(1);
     config.joint_blacklist.clear();
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid contact points
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
-    config.contact_points.push_back("XYZ");
+    config.contact_points.names.push_back("XYZ");
+    config.contact_points.elements.push_back(1);
     BOOST_CHECK(robot_model.configure(config) == false);
 
 }
@@ -228,7 +230,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
                             true,
                             "world",
                             floating_base_state,
-                            std::vector<std::string>(),
+                            ActiveContacts(),
                             "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml");
     RobotModelKDL robot_model_kdl;
     BOOST_CHECK(robot_model_kdl.configure(config) == true);

@@ -65,7 +65,8 @@ int main(){
     config.floating_base = true;
     config.world_frame_id = "world";
     config.floating_base_state = floating_base_state;
-    config.contact_points = {"LLAnkle_FT", "LRAnkle_FT"};
+    config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    config.contact_points.elements = {1,1};
     if(!robot_model->configure(config))
         return -1;
 

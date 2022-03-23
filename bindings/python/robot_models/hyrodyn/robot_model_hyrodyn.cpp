@@ -37,10 +37,11 @@ BOOST_PYTHON_MODULE(robot_model_hyrodyn){
             .def("setGravityVector",        &wbc_py::RobotModelHyrodyn::setGravityVector)
             .def("selectionMatrix",         &wbc_py::RobotModelHyrodyn::selectionMatrix, py::return_value_policy<py::copy_const_reference>())
             .def("floatingBaseState",       &wbc_py::RobotModelHyrodyn::floatingBaseState, py::return_value_policy<py::copy_const_reference>())
-            .def("setContactPoints",        &wbc_py::RobotModelHyrodyn::setContactPoints)
-            .def("getContactPoints",        &wbc_py::RobotModelHyrodyn::getContactPoints, py::return_value_policy<py::copy_const_reference>())
+            .def("setActiveContacts",       &wbc_py::RobotModelHyrodyn::setActiveContacts)
+            .def("getActiveContacts",       &wbc_py::RobotModelHyrodyn::getActiveContacts, py::return_value_policy<py::copy_const_reference>())
             .def("hasLink",                 &wbc_py::RobotModelHyrodyn::hasLink)
-            .def("hasJoint",                &wbc_py::RobotModelHyrodyn::hasJoint);
+            .def("hasJoint",                &wbc_py::RobotModelHyrodyn::hasJoint)
+            .def("centerOfMass",            &wbc_py::RobotModelHyrodyn::centerOfMass, py::return_value_policy<py::copy_const_reference>());
 
 }
 

@@ -25,6 +25,7 @@ protected:
                             base::samples::Joints& joint_state);
 
     std::vector<std::string> contact_points;
+    ActiveContacts active_contacts;
     base::Vector3d gravity;
     base::samples::RigidBodyStateSE3 floating_base_state;
     base::samples::Wrenches contact_wrenches;
@@ -128,11 +129,11 @@ public:
     /** @brief Compute and return center of mass expressed in base frame*/
     virtual const base::samples::RigidBodyStateSE3& centerOfMass() = 0;
 
-    /** @brief Provide links names that are possibly in contact with the environment (typically the end effector links)*/
-    void setContactPoints(const std::vector<std::string> contacts){contact_points=contacts;}
+    /** @brief Provide information about which link is currently in contact with the environment*/
+    void setActiveContacts(const ActiveContacts &contacts);
 
     /** @brief Provide links names that are possibly in contact with the environment (typically the end effector links)*/
-    const std::vector<std::string>& getContactPoints(){return contact_points;}
+    const ActiveContacts& getActiveContacts(){return active_contacts;}
 
     /** @brief Return number of joints*/
     uint noOfJoints(){return jointNames().size();}

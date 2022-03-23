@@ -26,7 +26,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     }
 
     int nj = robot_model->noOfJoints();
-    std::vector<std::string> contact_points = robot_model->getContactPoints();
+    const ActiveContacts& contact_points = robot_model->getActiveContacts();
     uint ncp = contact_points.size();
     uint prio = 0;
 
@@ -107,7 +107,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     // For all contacts: Js*qd = 0 (Rigid Contacts, contact points do not move!)
     constraints_prio[prio].A.setZero();
     for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(i*6, 0, 6, nj) = robot_model->bodyJacobian(robot_model->baseFrame(), contact_points[i]);
+        constraints_prio[prio].A.block(i*6, 0, 6, nj) = contact_points[i]*robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]);
     constraints_prio[prio].lower_y.setZero();
     constraints_prio[prio].upper_y.setZero();
     // TODO: Using actual limits does not work well (QP Solver sometimes fails due to infeasible QP)

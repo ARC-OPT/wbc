@@ -210,7 +210,8 @@ void runRH5LegsBenchmarks(int n_samples){
     config_kdl.floating_base = true;
     config_kdl.world_frame_id = "world";
     config_kdl.floating_base_state = floating_base_state;
-    config_kdl.contact_points = {"LLAnkle_FT", "LRAnkle_FT"};
+    config_kdl.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    config_kdl.contact_points.elements = {1,1};
     RobotModelPtr robot_model_kdl = std::make_shared<RobotModelKDL>();
     if(!robot_model_kdl->configure(config_kdl))
         throw std::runtime_error("Failed to configure RobotModelKDL");
@@ -256,7 +257,8 @@ void runRH5Benchmarks(int n_samples){
     config_kdl.floating_base = true;
     config_kdl.world_frame_id = "world";
     config_kdl.floating_base_state = floating_base_state;
-    config_kdl.contact_points = {"LLAnkle_FT", "LRAnkle_FT"};
+    config_kdl.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    config_kdl.contact_points.elements = {1,1};
     RobotModelPtr robot_model_kdl = std::make_shared<RobotModelKDL>();
     if(!robot_model_kdl->configure(config_kdl))
         throw std::runtime_error("Failed to configure RobotModelKDL");

@@ -77,7 +77,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     // This is mostly being done internally in hyrodyn
 
     // All contact point have to be a valid link in the robot URDF
-    for(auto c : cfg.contact_points){
+    for(auto c : cfg.contact_points.names){
         if(!hasLink(c)){
             LOG_ERROR("Contact point %s is not a valid link in the robot model", c.c_str());
             return false;
@@ -118,7 +118,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     jacobian.resize(6,noOfJoints());
     jacobian.setConstant(std::numeric_limits<double>::quiet_NaN());
     base_frame =  robot_urdf->getRoot()->name;
-    contact_points = cfg.contact_points;
+    active_contacts = cfg.contact_points;
     joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
     bias_forces.resize(noOfJoints());
     selection_matrix.resize(noOfActuatedJoints(),noOfJoints());

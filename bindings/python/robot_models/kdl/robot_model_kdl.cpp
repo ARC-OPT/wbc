@@ -41,10 +41,11 @@ BOOST_PYTHON_MODULE(robot_model_kdl){
             .def("setGravityVector",        &wbc_py::RobotModelKDL::setGravityVector)
             .def("selectionMatrix",         &wbc_py::RobotModelKDL::selectionMatrix, py::return_value_policy<py::copy_const_reference>())
             .def("floatingBaseState",       &wbc_py::RobotModelKDL::floatingBaseState, py::return_value_policy<py::copy_const_reference>())
-            .def("setContactPoints",        &wbc_py::RobotModelKDL::setContactPoints)
-            .def("getContactPoints",        &wbc_py::RobotModelKDL::getContactPoints, py::return_value_policy<py::copy_const_reference>())
+            .def("setActiveContacts",       &wbc_py::RobotModelKDL::setActiveContacts)
+            .def("getActiveContacts",       &wbc_py::RobotModelKDL::getActiveContacts, py::return_value_policy<py::copy_const_reference>())
             .def("hasLink",                 &wbc_py::RobotModelKDL::hasLink)
-            .def("hasJoint",                &wbc_py::RobotModelKDL::hasJoint);
+            .def("hasJoint",                &wbc_py::RobotModelKDL::hasJoint)
+            .def("centerOfMass",            &wbc_py::RobotModelKDL::centerOfMass, py::return_value_policy<py::copy_const_reference>());
 }
 
 
