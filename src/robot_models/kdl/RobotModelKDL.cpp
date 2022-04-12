@@ -42,6 +42,11 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     robot_model_config = cfg;
 
+    if(!cfg.submechanism_file.empty()){
+        LOG_ERROR("You passed a submechanism file, but RobotModelKDL does not support submechanisms. Use RobotModelHyrodyn instead!");
+        return false;
+    }
+
     std::ifstream stream(cfg.file.c_str());
     if (!stream){
         LOG_ERROR("File %s does not exist", cfg.file.c_str());
