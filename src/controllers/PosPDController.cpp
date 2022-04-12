@@ -71,7 +71,7 @@ void PosPDController::setDGain(const base::VectorXd &gain){
     if(!base::isnotnan(gain))
         throw std::runtime_error("PosPDController::setDGain: Invalid D-Gain. Contains NaN values");
     if(gain.size() != dim_controller)
-        throw std::runtime_error("PosPDController::setPGain: Invalid D-Gain. Size is "
+        throw std::runtime_error("PosPDController::setDGain: Invalid D-Gain. Size is "
                                  + std::to_string(gain.size()) + " but should be " + std::to_string(dim_controller));
     d_gain = gain;
 }
@@ -80,7 +80,7 @@ void PosPDController::setFFGain(const base::VectorXd &gain){
     if(!base::isnotnan(gain))
         throw std::runtime_error("PosPDController::setFFGain: Invalid FF-Gain. Contains NaN values");
     if(gain.size() != dim_controller)
-        throw std::runtime_error("PosPDController::setPGain: Invalid FF-Gain. Size is "
+        throw std::runtime_error("PosPDController::setFFGain: Invalid FF-Gain. Size is "
                                  + std::to_string(gain.size()) + " but should be " + std::to_string(dim_controller));
     ff_gain = gain;
 }
@@ -90,7 +90,7 @@ void PosPDController::setMaxCtrlOutput(const base::VectorXd &max_ctrl_out){
     if(!base::isnotnan(max_ctrl_out))
         throw std::runtime_error("PosPDController::setMaxCtrlOutput: Invalid max. control output. Contains NaN values");
     if(max_ctrl_out.size() != dim_controller)
-        throw std::runtime_error("PosPDController::setPGain: Invalid max. control output. Size is "
+        throw std::runtime_error("PosPDController::setMaxCtrlOutput: Invalid max. control output. Size is "
                                  + std::to_string(max_ctrl_out.size()) + " but should be " + std::to_string(dim_controller));
     max_control_output = max_ctrl_out;
 }
