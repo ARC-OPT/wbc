@@ -230,8 +230,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
                             true,
                             "world",
                             floating_base_state,
-                            ActiveContacts(),
-                            "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml");
+                            ActiveContacts());
     RobotModelKDL robot_model_kdl;
     BOOST_CHECK(robot_model_kdl.configure(config) == true);
     uint na = robot_model_kdl.noOfActuatedJoints();
@@ -266,6 +265,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
 
     RobotModelHyrodyn robot_model_hyrodyn;
+    config.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml";
     robot_model_hyrodyn.configure(config);
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state, floating_base_state));
 
