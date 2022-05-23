@@ -4,6 +4,7 @@
 #include "core/ConstraintConfig.hpp"
 #include "core/ConstraintStatus.hpp"
 #include "core/QuadraticProgram.hpp"
+#include <base/JointLimits.hpp>
 #include <boost/python/enum.hpp>
 
 BOOST_PYTHON_MODULE(core){
@@ -14,8 +15,10 @@ BOOST_PYTHON_MODULE(core){
     pygen::convertVector<Eigen::Matrix<double, Eigen::Dynamic, 1, Eigen::DontAlign>>();
     pygen::convertStdVector<std::vector<std::string>>();
     pygen::convertStdVector<std::vector<double>>();
+    pygen::convertStdVector<std::vector<int>>();
     pygen::convertStdVector<std::vector<wbc::QuadraticProgram>>();
     pygen::convertStdVector<std::vector<base::JointState>>();
+    pygen::convertStdVector<std::vector<base::JointLimitRange>>();
     pygen::convertStdVector<std::vector<base::Wrench>>();
     pygen::convertStdVector<std::vector<wbc::ConstraintConfig>>();
     pygen::convertVector<Eigen::Matrix<double, 3, 1, Eigen::DontAlign>>();
@@ -97,6 +100,22 @@ BOOST_PYTHON_MODULE(core){
             .add_property("elements",
                 py::make_getter(&base::NamedVector<base::JointState>::elements, py::return_value_policy<py::copy_non_const_reference>()),
                 py::make_setter(&base::NamedVector<base::JointState>::elements));
+
+   py::class_<base::JointLimitRange>("JointLimitRange")
+           .add_property("min",
+               py::make_getter(&base::JointLimitRange::min, py::return_value_policy<py::copy_non_const_reference>()),
+               py::make_setter(&base::JointLimitRange::min))
+           .add_property("max",
+                         py::make_getter(&base::JointLimitRange::max, py::return_value_policy<py::copy_non_const_reference>()),
+                         py::make_setter(&base::JointLimitRange::max));
+
+   py::class_<base::NamedVector<base::JointLimitRange>>("JointLimits")
+            .add_property("names",
+                py::make_getter(&base::NamedVector<base::JointLimitRange>::names, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&base::NamedVector<base::JointLimitRange>::names))
+            .add_property("elements",
+                py::make_getter(&base::NamedVector<base::JointLimitRange>::elements, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&base::NamedVector<base::JointLimitRange>::elements));
 
    py::class_<wbc::RobotModelConfig>("RobotModelConfig")
             .def_readwrite("file",                 &wbc::RobotModelConfig::file)
@@ -183,6 +202,14 @@ BOOST_PYTHON_MODULE(core){
        .add_property("elements",
            py::make_getter(&wbc::JointWeights::elements, py::return_value_policy<py::copy_non_const_reference>()),
            py::make_setter(&wbc::JointWeights::elements));
+
+   py::class_<base::NamedVector<int>>("ActiveContacts")
+       .add_property("names",
+           py::make_getter(&wbc::ActiveContacts::names, py::return_value_policy<py::copy_non_const_reference>()),
+           py::make_setter(&wbc::ActiveContacts::names))
+       .add_property("elements",
+           py::make_getter(&wbc::ActiveContacts::elements, py::return_value_policy<py::copy_non_const_reference>()),
+           py::make_setter(&wbc::ActiveContacts::elements));
 
    py::class_<wbc::ConstraintStatus>("ConstraintStatus")
        .def_readwrite("config",  &wbc::ConstraintStatus::config)

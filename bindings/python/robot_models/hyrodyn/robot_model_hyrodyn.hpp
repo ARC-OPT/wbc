@@ -5,11 +5,15 @@
 
 namespace wbc_py {
 
-/** Wrapper for wbc::RobotModelHyrodyn. Unfortunately we have to do this, since base::samples::Joints cannot be easily exposed to python*/
+/** Wrapper for wbc::RobotModelHyrodyn. Unfortunately we have to do this, since base::samples::Joints and other Rock types cannot be easily exposed to python*/
 class RobotModelHyrodyn : public wbc::RobotModelHyrodyn{
 public:
     void update(const base::NamedVector<base::JointState> &joint_state);
     void update2(const base::NamedVector<base::JointState> &joint_state, const base::samples::RigidBodyStateSE3 &floating_base_state);
+    base::NamedVector<base::JointState> jointState2(const std::vector<std::string> &names);
+    void setActiveContacts(const base::NamedVector<int> & active_contacts);
+    base::NamedVector<int> getActiveContacts2();
+    base::NamedVector<base::JointLimitRange> jointLimits2();
 };
 
 }

@@ -10,14 +10,13 @@ def run(robot_model):
     tip_link = "LLAnkle_FT"
     nj = len(joint_names)
     gravity_vector = [0,0,-9.81]
-    contact_points = ["RH5_Root_link","LLAnkle_FT"]
-    active_contacts = ["LLAnkle_FT"]
-
-    robot_model = RobotModelHyrodyn()
+    contacts = ActiveContacts()
+    contacts.names = ["RH5_Root_link", "LLAnkle_FT"]
+    contacts.elements = [1,1]
 
     r=RobotModelConfig()
-    r.file="../../models/rh5/urdf/rh5_one_leg.urdf"
-    r.submechanism_file="../../models/rh5/hyrodyn/rh5_one_leg.yml"
+    r.file="../../../models/rh5/urdf/rh5_single_leg.urdf"
+    r.submechanism_file="../../../models/rh5/hyrodyn/rh5_single_leg.yml"
     r.joint_names = joint_names
     r.actuated_joint_names = joint_names
     r.floating_base = False
@@ -30,11 +29,7 @@ def run(robot_model):
     joint_state.elements = [js]*len(joint_names)
     robot_model.update(joint_state)
 
-    assert robot_model.noOfJoints() == nj
-    assert robot_model.noOfActuatedJoints() == nj
-    assert robot_model.jointNames() == joint_names
-    assert robot_model.actuatedJointNames() == joint_names
-
+    robot_model.jointState(joint_names) == joint_state
     rbs = robot_model.rigidBodyState(root_link, tip_link)
     space_jacobian = robot_model.spaceJacobian(root_link, tip_link)
     body_jacobian  = robot_model.bodyJacobian(root_link, tip_link)
@@ -48,6 +43,8 @@ def run(robot_model):
     assert np.all(np.isclose(accel[0:3] - rbs.acceleration.linear, np.array([0]*3)))
     assert np.all(np.isclose(accel[3:6] - rbs.acceleration.angular, np.array([0]*3)))
 
+    #jac_dot = robot_model.jacobianDot(root_link,tip_link)
+
     inertia_mat = robot_model.jointSpaceInertiaMatrix()
     assert inertia_mat.shape[0] == nj
     assert inertia_mat.shape[1] == nj
@@ -55,16 +52,37 @@ def run(robot_model):
     eff_bias = robot_model.biasForces()
     assert len(eff_bias) == nj
 
+    assert robot_model.jointNames() == joint_names
+    assert robot_model.actuatedJointNames() == joint_names
+    assert robot_model.independentJointNames() == joint_names
+    assert robot_model.jointIndex("LLHip2") == 1
+    assert robot_model.baseFrame() == "RH5_Root_Link"
+
+    joint_limits = robot_model.jointLimits()
+    joint_limits.names = joint_names
+
     sel_mat = robot_model.selectionMatrix()
     assert np.all(sel_mat == np.eye(nj))
-
-    robot_model.setContactPoints(["RH5_Root_link", "LLAnkle_FT"])
-    assert robot_model.getContactPoints() == contact_points
 
     assert robot_model.hasLink("LLAnkle_FT") == True
     assert robot_model.hasLink("LLAnkle_F") == False
     assert robot_model.hasJoint("LLAnkle_F") == False
     assert robot_model.hasJoint("LLKnee") == True
+    assert robot_model.hasActuatedJoint("LLKnee") == True
+    assert robot_model.hasActuatedJoint("LLKnee_F") == False
+
+    cog = robot_model.centerOfMass()
+
+    robot_model.setActiveContacts(contacts)
+    robot_model.getActiveContacts() == contacts
+
+    assert robot_model.noOfJoints() == nj
+    assert robot_model.noOfActuatedJoints() == nj
+
+    robot_model.setGravityVector([0,0,-9.81])
+
+    robot_model.getRobotModelConfig() == r
+    
 
 def test_robot_model_hyrodyn():
     run(RobotModelHyrodyn())
