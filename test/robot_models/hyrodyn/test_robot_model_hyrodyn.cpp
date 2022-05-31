@@ -79,14 +79,16 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     // Config with contact points
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
-    config.contact_points.push_back("kuka_lbr_l_tcp");
+    config.contact_points.names.push_back("kuka_lbr_l_tcp");
+    config.contact_points.elements.push_back(1);
     config.joint_blacklist.clear();
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid contact points
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
-    config.contact_points.push_back("XYZ");
+    config.contact_points.names.push_back("XYZ");
+    config.contact_points.elements.push_back(1);
     BOOST_CHECK(robot_model.configure(config) == false);
 
 }
@@ -228,8 +230,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
                             true,
                             "world",
                             floating_base_state,
-                            std::vector<std::string>(),
-                            "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml");
+                            ActiveContacts());
     RobotModelKDL robot_model_kdl;
     BOOST_CHECK(robot_model_kdl.configure(config) == true);
     uint na = robot_model_kdl.noOfActuatedJoints();
@@ -264,6 +265,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
 
     RobotModelHyrodyn robot_model_hyrodyn;
+    config.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml";
     robot_model_hyrodyn.configure(config);
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state, floating_base_state));
 
@@ -375,7 +377,7 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_serial.update(joint_state);
     robot_model_hybrid.update(joint_state);
 
-    cout<<"******************** HYBRID MODEL *****************"<<endl;
+   // cout<<"******************** HYBRID MODEL *****************"<<endl;
     base::MatrixXd jac = robot_model_hybrid.spaceJacobian(root, tip);
     base::Vector6d v;
     v.setZero();
@@ -384,17 +386,21 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_hybrid.hyrodynHandle()->ud = u;
     robot_model_hybrid.hyrodynHandle()->calculate_forward_system_state();
 
-    cout<< "Solution actuation space" << endl;
-    std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;
+    /*cout<< "Solution actuation space" << endl;
+    std::cout<<robot_model_hybrid.hyrodynHandle()->ud.transpose()<<endl;
 
     cout<< "Solution projected to independent joint space" << endl;
     std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;
 
 
-    cout<<"******************** SERIAL MODEL *****************"<<endl;
+    cout<<"******************** SERIAL MODEL *****************"<<endl;*/
     jac = robot_model_serial.spaceJacobian(root, tip);
-    base::VectorXd y = jac.completeOrthogonalDecomposition().pseudoInverse()*v;
+    base::VectorXd yd = jac.completeOrthogonalDecomposition().pseudoInverse()*v;
 
-    cout<< "Solution independent joint space" << endl;
-    std::cout<<y.transpose()<<endl;
+    /*cout<< "Solution independent joint space" << endl;
+    std::cout<<yd.transpose()<<endl;*/
+
+    for(int i = 0; i < robot_model_hybrid.noOfActuatedJoints(); i++)
+        BOOST_CHECK(fabs(robot_model_hybrid.hyrodynHandle()->yd[i] - yd[i]) < 1e-6);
+
 }

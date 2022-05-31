@@ -35,8 +35,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     int prio = 0; // Only one priority is implemented here!
     uint nj = robot_model->noOfJoints();
     uint na = robot_model->noOfActuatedJoints();
-    uint nc = n_constraint_variables_per_prio[prio]; // total number of task constraints
-    uint ncp = robot_model->getContactPoints().size();
+    uint ncp = robot_model->getActiveContacts().size();
 
     // QP Size: (NJoints+NContacts*2*6 x NJoints+NActuatedJoints+NContacts*6)
     // Variable order: (acc,torque,f_ext)
@@ -126,19 +125,19 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     // 1. M*qdd - S^T*tau - Jb_1^T*f_ext_1 - Jb_2^T*f_ext_2 - ... = -h (Rigid Body Dynamic Equation)
 
-    std::vector<std::string> contact_points = robot_model->getContactPoints();
+    ActiveContacts contact_points = robot_model->getActiveContacts();
     constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
     constraints_prio[prio].A.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
     for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->baseFrame(), contact_points[i]).transpose();
+        constraints_prio[prio].A.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]).transpose();
     constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();// + robot_model->bodyJacobian(world_link, contact_link).transpose() * f_ext;
 
     // 2. For all contacts: Js*qdd = -Jsdot*qd (Rigid Contacts, contact points do not move!)
 
     for(int i = 0; i < contact_points.size(); i++){
-        constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points[i]);
+        constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points.names[i]);
         base::Vector6d acc;
-        base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contact_points[i]);
+        base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contact_points.names[i]);
         acc.segment(0,3) = a.linear;
         acc.segment(3,3) = a.angular;
         constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
@@ -146,8 +145,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     // 3. Torque and acceleration limits
 
-    constraints_prio[prio].upper_x.setConstant(100);
-    constraints_prio[prio].lower_x.setConstant(-100);
+    constraints_prio[prio].upper_x.setConstant(10000);
+    constraints_prio[prio].lower_x.setConstant(-10000);
     for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
@@ -183,9 +182,9 @@ const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP&
     std::cout<<"F_ext: "<<solver_output.segment(nj+na,12).transpose()<<std::endl<<std::endl;*/
 
     // Convert solver output: contact wrenches
-    contact_wrenches.resize(robot_model->getContactPoints().size());
-    contact_wrenches.names = robot_model->getContactPoints();
-    for(uint i = 0; i < robot_model->getContactPoints().size(); i++){
+    contact_wrenches.resize(robot_model->getActiveContacts().size());
+    contact_wrenches.names = robot_model->getActiveContacts().names;
+    for(uint i = 0; i < robot_model->getActiveContacts().size(); i++){
         contact_wrenches[i].force = solver_output.segment(nj+na+i*6,3);
         contact_wrenches[i].torque = solver_output.segment(nj+na+i*6+3,3);
     }

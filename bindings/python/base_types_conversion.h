@@ -6,6 +6,7 @@
 #include <boost/python/numpy.hpp>
 #include <base/JointState.hpp>
 #include <base/samples/Joints.hpp>
+#include <base/JointLimits.hpp>
 
 namespace py = boost::python;
 namespace np = boost::python::numpy;
@@ -26,6 +27,14 @@ base::NamedVector<base::JointState> toNamedVector(const base::samples::Joints &j
     joints_out.names = joints_in.names;
     return joints_out;
 }
+
+base::NamedVector<base::JointLimitRange> fromJointLimits(const base::JointLimits &limits_in){
+    base::NamedVector<base::JointLimitRange> limits_out;
+    limits_out.elements = limits_in.elements;
+    limits_out.names = limits_in.names;
+    return limits_out;
+}
+
 
 }
 

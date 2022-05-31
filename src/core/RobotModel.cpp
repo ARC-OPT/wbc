@@ -55,4 +55,12 @@ void RobotModel::updateFloatingBase(const base::samples::RigidBodyStateSE3& rbs,
         joint_state.time = rbs.time;
 }
 
+void RobotModel::setActiveContacts(const ActiveContacts &contacts){
+    for(auto name : contacts.names){
+        if(contacts[name] != 0 && contacts[name] != 1)
+            throw std::runtime_error("RobotModel::setActiveContacts: Contact value has to been 0 or 1");
+    }
+    active_contacts = contacts;
+}
+
 } // namespace wbc

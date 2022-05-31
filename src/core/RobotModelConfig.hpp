@@ -2,8 +2,12 @@
 #define ROBOTMODELCONFIG_HPP
 
 #include <base/samples/RigidBodyStateSE3.hpp>
+#include <base/NamedVector.hpp>
 
 namespace wbc{
+
+struct ActiveContacts : public base::NamedVector<int>{
+};
 
 /**
  * @brief Robot Model configuration class
@@ -25,7 +29,7 @@ public:
                      const bool floating_base = false,
                      const std::string &world_frame_id = "world",
                      const base::RigidBodyStateSE3& floating_base_state = base::RigidBodyStateSE3(),
-                     const std::vector<std::string> &contact_points = std::vector<std::string>(),
+                     const ActiveContacts &contact_points = ActiveContacts(),
                      const std::string& submechanism_file = "",
                      const std::vector<std::string>& joint_blacklist = std::vector<std::string>()) :
         file(file),
@@ -63,7 +67,7 @@ public:
     /** Optional, only if floating_base is set to true: Initial state of the floating base. A valid pose has to be given, twist/acceleration is optional*/
     base::RigidBodyStateSE3 floating_base_state;
     /** Optional: Link names that are possibly in contact with the environment. These have to valid link names in the robot model.*/
-    std::vector<std::string> contact_points;
+    ActiveContacts contact_points;
     /** Optional: Blacklist some joint that shall not be used in the model. They will be replaced by fixed joints*/
     std::vector<std::string> joint_blacklist;
 };

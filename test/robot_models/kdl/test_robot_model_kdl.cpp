@@ -195,7 +195,8 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.joint_names = joint_names;
     config.actuated_joint_names = joint_names;
-    config.contact_points.push_back("kuka_lbr_l_tcp");
+    config.contact_points.names.push_back("kuka_lbr_l_tcp");
+    config.contact_points.elements.push_back(1);
     config.joint_blacklist.clear();
     BOOST_CHECK(robot_model.configure(config) == true);
 
@@ -203,7 +204,8 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.joint_names = joint_names;
     config.actuated_joint_names = joint_names;
-    config.contact_points.push_back("XYZ");
+    config.contact_points.names.push_back("XYZ");
+    config.contact_points.elements.push_back(1);
     BOOST_CHECK(robot_model.configure(config) == false);
 
 }

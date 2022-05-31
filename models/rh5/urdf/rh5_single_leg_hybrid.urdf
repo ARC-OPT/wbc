@@ -451,7 +451,7 @@
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="LLHip3_B11_Link"/>
     <child link="LLHip3_Act1_Link"/>
-    <limit effort="0.0" lower="0" upper="0" velocity="0.0"/>
+    <limit effort="3000.0" lower="-0.0255" upper="0.1335" velocity="0.175"/>
   </joint>
   <link name="LLHip3_Act1_Link">
     <inertial>

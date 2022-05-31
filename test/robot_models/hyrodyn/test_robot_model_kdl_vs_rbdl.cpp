@@ -196,15 +196,21 @@ BOOST_AUTO_TEST_CASE(compare_wbc_vs_rbdl_floating_base){
     // WBC (KDL) Robot Model
 
     wbc::RobotModelKDL robot_model;
-    vector<string> actuated_joint_names;
-    vector<string> joint_names ={"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
-                                 "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
+    RobotModelConfig config;
+    config.file = urdf_filename;
+    config.joint_names = {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
+                          "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
     for(int i = 0; i < 7; i++){
-        actuated_joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
-        joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
+        config.actuated_joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
+        config.joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
     }
+    config.floating_base = true;
+    config.floating_base_state.pose.position.setZero();
+    config.floating_base_state.pose.orientation.setIdentity();
+    config.floating_base_state.twist.setZero();
+    config.floating_base_state.acceleration.setZero();
 
-    BOOST_CHECK(robot_model.configure(RobotModelConfig(urdf_filename, joint_names, actuated_joint_names, true)) == true);
+    BOOST_CHECK(robot_model.configure(config) == true);
     base::samples::Joints joint_state;
     joint_state.resize(robot_model.noOfActuatedJoints());
     joint_state.names = robot_model.actuatedJointNames();
