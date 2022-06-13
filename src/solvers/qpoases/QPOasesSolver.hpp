@@ -5,6 +5,10 @@
 #include <qpOASES.hpp>
 #include <base/Time.hpp>
 
+namespace qpOASES {
+enum optionPresets{qp_default, qp_reliable, qp_fast, qp_unset};
+}
+
 namespace wbc {
 
 class HierarchicalQP;
@@ -45,6 +49,8 @@ public:
     qpOASES::Options getOptions(){return options;}
     /** Set new solver options*/
     void setOptions(const qpOASES::Options& opt);
+    /** Set new solver options using one of the following presets: qp_default, qp_reliable, qp_fast, qp_unset*/
+    void setOptionsPreset(const qpOASES::optionPresets& opt);
     /** Get Quadratic program*/
     const qpOASES::SQProblem& getSQProblem(){return sq_problem;}
 

@@ -120,4 +120,28 @@ void QPOASESSolver::setOptions(const qpOASES::Options& opt){
     sq_problem.setOptions(opt);
 }
 
+void QPOASESSolver::setOptionsPreset(const qpOASES::optionPresets& opt){
+    switch(opt){
+    case qpOASES::qp_default:{
+        options.setToDefault();
+        break;
+    }
+    case qpOASES::qp_reliable:{
+        options.setToReliable();
+        break;
+    }
+    case qpOASES::qp_fast:{
+        options.setToFast();
+        break;
+    }
+    case qpOASES::qp_unset:{
+        break;
+    }
+    default:{
+        throw std::runtime_error("QPOASESSolver::setOptionsPreset: Invalid preset: " + std::to_string(opt));
+    }
+    }
+    sq_problem.setOptions(options);
+}
+
 }
