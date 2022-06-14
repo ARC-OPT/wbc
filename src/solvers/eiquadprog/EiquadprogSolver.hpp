@@ -33,7 +33,7 @@ public:
      *                    the first entry has the highest priority. Currently only one priority level is implemented.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);
+    virtual void solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output);
 
     /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
     void setMaxNoWSR(const uint& n){ _n_wsr = n; }
@@ -57,8 +57,10 @@ public:
 protected:
     //qpOASES::Options options;
 
-    eiquadprog::eiquadprog_fast _solver;
-    int _n_wsr, _actual_n_wsr;
+    eiquadprog::solvers::EiquadprogFast _solver;
+    
+    int _n_wsr;
+    int _actual_n_wsr;
 
     //qpOASES::returnValue ret_val;
 

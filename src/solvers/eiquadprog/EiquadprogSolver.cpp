@@ -4,24 +4,22 @@
 #include <Eigen/Core>
 #include <iostream>
 
-using namespace qpOASES;
 
-namespace wbc{
+namespace wbc {
 
-EiquadprogSolver::EiquadprogSolver(){
-    n_wsr = 100;
-    options.setToDefault();
+EiquadprogSolver::EiquadprogSolver()
+{
+    _n_wsr = 100;
+    //options.setToDefault();
+}
 
-    n_cst = 0;
-    n_var = 0:
+EiquadprogSolver::~EiquadprogSolver()
+{
 
 }
 
-EiquadprogSolver::~EiquadprogSolver(){
-
-}
-
-void EiquadprogSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output){
+void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output)
+{
 
     if(hierarchical_qp.size() != 1)
         throw std::runtime_error("EiquadprogSolver::solve: Constraints vector size must be 1 for the current implementation");
@@ -38,7 +36,7 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::V
             + ", but lower bound has size " + std::to_string(qp.upper_x.size()));
 
     // Constraint space upper and lower bounds
-    if(qp.lower_y.size().size() > 0 && qp.lower_y.size() != qp.nc)
+    if(qp.lower_y.size() > 0 && qp.lower_y.size() != qp.nc)
         throw std::runtime_error("Number of constraints in quadratic program is " + std::to_string(qp.nc)
             + ", but lower bound has size " + std::to_string(qp.lower_y.size()));
 
@@ -49,12 +47,12 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::V
     // Constraint matrix
     if(qp.A.rows() != qp.nc || qp.A.cols() != qp.nq)
         throw std::runtime_error("Constraint matrix A should have size " + std::to_string(qp.nc) + "x" + std::to_string(qp.nq) +
-                                 "but has size " +  std::to_string(A.rows()) + "x" + std::to_string(A.cols()));
+                                 "but has size " +  std::to_string(qp.A.rows()) + "x" + std::to_string(qp.A.cols()));
 
     // Hessian matrix:
     if(qp.H.rows() != qp.nq || qp.H.cols() != qp.nq)
         throw std::runtime_error("Hessian matrix H should have size " + std::to_string(qp.nq) + "x" + std::to_string(qp.nq) +
-                                 "but has size " +  std::to_string(H.rows()) + "x" + std::to_string(H.cols()));
+                                 "but has size " +  std::to_string(qp.H.rows()) + "x" + std::to_string(qp.H.cols()));
 
     // Gradient vector
     if(qp.g.size() > 0 && qp.g.size() != qp.nq)
@@ -67,6 +65,7 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::V
     if(!configured) 
     {
         _solver.reset(n_var, 0, n_con);
+        _solver.setMaxIter(_n_wsr);
 
         // hessian and gradient are ok (don#t need to be stacked)
         // configuring constraints matrices
@@ -105,29 +104,35 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::V
 
     namespace eq = eiquadprog::solvers;
 
-    solver_output.resize(qp.nq);
+    Eigen::VectorXd out(qp.nq);
+    
     eq::EiquadprogFast_status status = _solver.solve_quadprog(
-        qp.H, qp.g, _CE_mtx, _ce0_vec, _CI_mtx, _ci0_vec, solver_output);
+        qp.H, qp.g, _CE_mtx, _ce0_vec, _CI_mtx, _ci0_vec, out);
+    
+    solver_output.resize(qp.nq);
+    solver_output = out;
 
-    if(status == EIQUADPROG_FAST_UNBOUNDED)
+    if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_UNBOUNDED)
         throw std::runtime_error("Eiquadprog returned error status:unbounded.");
-    if(status == EIQUADPROG_FAST_MAX_ITER_REACHED)
+    if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_MAX_ITER_REACHED)
         throw std::runtime_error("Eiquadprog returned error status: max iterations reached.");
-    if(status == EIQUADPROG_FAST_REDUNDANT_EQUALITIES)
+    if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_REDUNDANT_EQUALITIES)
         throw std::runtime_error("Eiquadprog returned error status: redundant equalities.");
-    if(status != EIQUADPROG_FAST_OPTIMAL)
-        throw std::runtime_error("Eiquadprog returned error status.");
+    if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_INFEASIBLE)
+        throw std::runtime_error("Eiquadprog returned error status: infeasible.");
 
-    actual_n_wsr = _solver.getIteratios();
+    _actual_n_wsr = _solver.getIteratios();
 }
 
 /*
-returnValue EiquadprogSolver::getReturnValue(){
+returnValue EiquadprogSolver::getReturnValue()
+{
     return ret_val;
 }
 
 
-void EiquadprogSolver::setOptions(const qpOASES::Options& opt){
+void EiquadprogSolver::setOptions(const qpOASES::Options& opt)
+{
     options = opt;
     sq_problem.setOptions(opt);
 }
