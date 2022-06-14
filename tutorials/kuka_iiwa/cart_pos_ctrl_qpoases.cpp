@@ -4,6 +4,7 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
+#include <chrono>
 
 using namespace std;
 using namespace wbc;
@@ -123,7 +124,10 @@ int main(int argc, char** argv){
 
         // Solve the QP. The output is the joint velocity that achieves the task space velocity demanded by the controller, i.e.,
         // this joint velocity will drive the end effector to the reference x_r
+        auto s = std::chrono::high_resolution_clock::now();
         solver_output = scene.solve(hqp);
+        auto e = std::chrono::high_resolution_clock::now();
+        double solve_time = std::chrono::duration_cast<std::chrono::microseconds>(e-s).count();
 
         // Update the current joint state. Simply integrate the current joint position using the joint velocity given by the solver.
         // On a real robot, this would be replaced by a function that sends the solver output to the joints.
@@ -138,6 +142,7 @@ int main(int argc, char** argv){
         cout<<"Solver output: "; cout<<endl;
         cout<<"Joint Names:   "; for(int i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
         cout<<"Velocity:      "; for(int i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
+        cout<<"solve time:    " << solve_time << " (mu s)" << endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 
         usleep(loop_time * 1e6);
