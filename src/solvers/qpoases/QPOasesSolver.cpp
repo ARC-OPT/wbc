@@ -20,7 +20,7 @@ QPOASESSolver::~QPOASESSolver(){
 void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output){
 
     if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("QPOASESSolver::solve: Constraints vector size must be 1 for the current implementation");
+        throw std::runtime_error("QPOASESSolver::solve: Number of task hierarchies must be 1 for the current implementation");
 
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
 
