@@ -6,6 +6,11 @@ namespace wbc {
 
 QPSwiftSolver::QPSwiftSolver(){
     my_qp = 0;
+    max_iter = 100;
+    rel_tol = 1e-6;
+    abs_tol = 1e-6;
+    sigma = 100;
+    verbose_level = 0;
 }
 
 QPSwiftSolver::~QPSwiftSolver(){
@@ -76,7 +81,7 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
         LOG_DEBUG_S << "n_bounds: " << n_bounds << std::endl;
 
         toQpSwift(qp);
-        my_qp = QP_SETUP_dense(n_dec,                  // Number decision variables
+        my_qp = QP_SETUP_dense(n_dec,                   // Number decision variables
                                n_ineq,                  // Number inequality constraints
                                n_eq,                    // Number equality constraints
                                (double*)P.data(),       // Hessian matrix
@@ -88,6 +93,12 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
                                NULL,
                                COLUMN_MAJOR_ORDERING);
 
+
+        my_qp->options->maxit = max_iter;
+        my_qp->options->reltol = rel_tol;
+        my_qp->options->abstol = abs_tol;
+        my_qp->options->sigma = sigma;
+        my_qp->options->verbose = verbose_level;
         LOG_DEBUG_S << "Setup Time     : " << my_qp->stats->tsetup * 1000.0 << " ms" << std::endl;
         configured = true;
     }
