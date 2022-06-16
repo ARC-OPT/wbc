@@ -9,8 +9,9 @@ using namespace qpOASES;
 namespace wbc{
 
 QPOASESSolver::QPOASESSolver(){
-    n_wsr = 10;
-    options.setToDefault();
+    n_wsr = 1000;
+    options.setToFast();
+    options.printLevel = PL_NONE;
 }
 
 QPOASESSolver::~QPOASESSolver(){
