@@ -89,7 +89,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:ab68cf04b5150494fe097928d1316e652"><td class="mdescLeft">&#160;</td><td class="mdescRight">configure Resizes member variables  <a href="classwbc_1_1HierarchicalLSSolver.html#ab68cf04b5150494fe097928d1316e652">More...</a><br /></td></tr>
 <tr class="separator:ab68cf04b5150494fe097928d1316e652"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a535945383d85c0b8c9c165ab8f6c3a12"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1HierarchicalLSSolver.html#a535945383d85c0b8c9c165ab8f6c3a12">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">wbc::HierarchicalQP</a> &amp;hierarchical_qp, base::VectorXd &amp;solver_output)</td></tr>
-<tr class="memdesc:a535945383d85c0b8c9c165ab8f6c3a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Compute optimal control solution  <a href="classwbc_1_1HierarchicalLSSolver.html#a535945383d85c0b8c9c165ab8f6c3a12">More...</a><br /></td></tr>
+<tr class="memdesc:a535945383d85c0b8c9c165ab8f6c3a12"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <a href="classwbc_1_1HierarchicalLSSolver.html#a535945383d85c0b8c9c165ab8f6c3a12">More...</a><br /></td></tr>
 <tr class="separator:a535945383d85c0b8c9c165ab8f6c3a12"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a68ac9ba630143e89e2d462c74b55deb1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1HierarchicalLSSolver.html#a68ac9ba630143e89e2d462c74b55deb1">setJointWeights</a> (const base::VectorXd &amp;weights)</td></tr>
 <tr class="memdesc:a68ac9ba630143e89e2d462c74b55deb1"><td class="mdescLeft">&#160;</td><td class="mdescRight">setJointWeights Sets the joint weight vector for all priorities  <a href="classwbc_1_1HierarchicalLSSolver.html#a68ac9ba630143e89e2d462c74b55deb1">More...</a><br /></td></tr>
@@ -519,11 +519,11 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>solve Compute optimal control solution </p>
+<p>solve Solve the given quadratic program </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">constraints</td><td>Description of the hierarchical quadratic program to solve. Each vector entry correspond to a stage in the hierarchy where the first entry has the highest priority. The solver will only use the constraint matrices A, the lower bound of the constraint variables and the constraint weight vector. </td></tr>
-    <tr><td class="paramname">x</td><td>solution </td></tr>
+    <tr><td class="paramname">hierarchical_qp</td><td>Description of the hierarchical quadratic program to solve. </td></tr>
+    <tr><td class="paramname">solver_output</td><td>solution of the quadratic program </td></tr>
   </table>
   </dd>
 </dl>
