@@ -2,13 +2,12 @@
 #include <iostream>
 #include <sys/time.h>
 #include "core/QuadraticProgram.hpp"
-#include "solvers/qpoases/QPOasesSolver.hpp"
+#include "solvers/qpswift/QPSwiftSolver.hpp"
 
 using namespace wbc;
 using namespace std;
-using namespace qpOASES;
 
-BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
+BOOST_AUTO_TEST_CASE(solver_qp_swift_without_constraints)
 {
     srand (time(NULL));
 
@@ -44,16 +43,14 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     qp.H = A.transpose()*A;
     qp.g = -(A.transpose()*y).transpose();
     wbc::HierarchicalQP hqp;
+    qp.A = A;
+    qp.lower_x.resize(NO_JOINTS);
+    qp.lower_x.setConstant(-1000);
+    qp.upper_x.resize(NO_JOINTS);
+    qp.upper_x.setConstant(1000);
     hqp << qp;
 
-    QPOASESSolver solver;
-    Options options = solver.getOptions();
-    options.printLevel = PL_NONE;
-    solver.setOptions(options);
-    solver.setMaxNoWSR(NO_WSR);
-
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
-
+    QPSwiftSolver solver;
     base::VectorXd solver_output;
 
     struct timeval start, end;
@@ -63,25 +60,25 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
+    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
     std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
     cout<<"No of joints: "<<NO_JOINTS<<endl;
     cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
 
     cout<<"\nSolver Input:"<<endl;
     cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
-    cout<<"Reference: y = "<<y.transpose()<<endl;
+    cout<<"Reference: y = "<< y.transpose()<<endl;
 
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;
+    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
-    cout<<"Test: A * q_dot = "<<test.transpose();
+    //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
-    cout<<"\n............................."<<endl;
+    //cout<<"\n............................."<<endl;
 }
 
-BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
+BOOST_AUTO_TEST_CASE(solver_qp_swift_with_constraints)
 {
     srand (time(NULL));
 
@@ -114,18 +111,15 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
     qp.lower_y = y;
     qp.upper_y = y;
+    qp.lower_x.resize(NO_JOINTS);
+    qp.lower_x.setConstant(-1000);
+    qp.upper_x.resize(NO_JOINTS);
+    qp.upper_x.setConstant(1000);
 
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    QPOASESSolver solver;
-    Options options = solver.getOptions();
-    options.printLevel = PL_NONE;
-    solver.setOptions(options);
-    solver.setMaxNoWSR(NO_WSR);
-
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
-
+    QPSwiftSolver solver;
     base::VectorXd solver_output;
 
     struct timeval start, end;
@@ -134,7 +128,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
+    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
     std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
     cout<<"No of joints: "<<NO_JOINTS<<endl;
     cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
@@ -143,11 +137,11 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
     cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
     cout<<"Reference: y = "<<y.transpose()<<endl;
 
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;
+    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
-    cout<<"Test: A * q_dot = "<<test.transpose();
+    //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
-    cout<<"\n............................."<<endl;
+    //cout<<"\n............................."<<endl;
 }

@@ -1,5 +1,6 @@
 #include "benchmarks_common.hpp"
 #include <fstream>
+#include <unistd.h>
 
 using namespace std;
 
@@ -57,6 +58,44 @@ base::samples::RigidBodyStateSE3 randomConstraintReference(){
     }
     ref.time = base::Time::now();
     return ref;
+}
+
+
+map<string, base::VectorXd> evaluateWBCSceneRandom(WbcScenePtr scene, int n_samples){
+
+    base::VectorXd time_scene_update(n_samples);
+    base::VectorXd time_scene_solve(n_samples);
+    for(int i = 0; i < n_samples; i++){
+        for(auto w : scene->getWbcConfig())
+            scene->setReference(w.name, randomConstraintReference());
+
+        base::samples::Joints joint_state = randomJointState(scene->getRobotModel()->independentJointNames(), scene->getRobotModel()->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(scene->getRobotModel()->getRobotModelConfig().floating_base_state);
+        scene->getRobotModel()->update(joint_state, floating_base_state);
+
+        base::Time start = base::Time::now();
+        HierarchicalQP qp = scene->update();
+        time_scene_update[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
+
+        try{
+            start = base::Time::now();
+            scene->solve(qp);
+            time_scene_solve[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
+        }
+        catch(exception e){
+            cout<<"Exception"<<endl;
+            i--;
+            usleep(0.01*1e6);
+            scene->getSolver()->reset();
+            continue;
+        }
+        usleep(0.01*1e6);
+    }
+
+    map<string, base::VectorXd> results;
+    results["scene_update"] = time_scene_update;
+    results["scene_solve"]  = time_scene_solve;
+    return results;
 }
 
 void toCSV(map<string, base::VectorXd> res, const string &filename){

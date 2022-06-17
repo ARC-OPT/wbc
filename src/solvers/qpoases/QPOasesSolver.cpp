@@ -9,8 +9,9 @@ using namespace qpOASES;
 namespace wbc{
 
 QPOASESSolver::QPOASESSolver(){
-    n_wsr = 10;
-    options.setToDefault();
+    n_wsr = 1000;
+    options.setToFast();
+    options.printLevel = PL_NONE;
 }
 
 QPOASESSolver::~QPOASESSolver(){
@@ -20,7 +21,7 @@ QPOASESSolver::~QPOASESSolver(){
 void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output){
 
     if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("QPOASESSolver::solve: Constraints vector size must be 1 for the current implementation");
+        throw std::runtime_error("QPOASESSolver::solve: Number of task hierarchies must be 1 for the current implementation");
 
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
 
@@ -118,6 +119,30 @@ returnValue QPOASESSolver::getReturnValue(){
 void QPOASESSolver::setOptions(const qpOASES::Options& opt){
     options = opt;
     sq_problem.setOptions(opt);
+}
+
+void QPOASESSolver::setOptionsPreset(const qpOASES::optionPresets& opt){
+    switch(opt){
+    case qpOASES::qp_default:{
+        options.setToDefault();
+        break;
+    }
+    case qpOASES::qp_reliable:{
+        options.setToReliable();
+        break;
+    }
+    case qpOASES::qp_fast:{
+        options.setToFast();
+        break;
+    }
+    case qpOASES::qp_unset:{
+        break;
+    }
+    default:{
+        throw std::runtime_error("QPOASESSolver::setOptionsPreset: Invalid preset: " + std::to_string(opt));
+    }
+    }
+    sq_problem.setOptions(options);
 }
 
 }
