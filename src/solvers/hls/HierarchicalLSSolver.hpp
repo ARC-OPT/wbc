@@ -82,11 +82,9 @@ public:
     bool configure(const std::vector<int>& n_constraints_per_prio, const unsigned int n_joints);
 
     /**
-     * @brief solve Compute optimal control solution
-     * @param constraints Description of the hierarchical quadratic program to solve. Each vector entry correspond to a stage in the hierarchy where
-     *                    the first entry has the highest priority. The solver will only use the constraint matrices A,  the lower bound of the
-     *                    constraint variables and the constraint weight vector.
-     * @param x solution
+     * @brief solve Solve the given quadratic program
+     * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
+     * @param solver_output solution of the quadratic program
      */
     virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);
 
