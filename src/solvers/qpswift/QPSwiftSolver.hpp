@@ -1,7 +1,7 @@
 #ifndef QP_SWIFT_SOLVER_HPP
 #define QP_SWIFT_SOLVER_HPP
 
-#include <core/QPSolver.hpp>
+#include "../../core/QPSolver.hpp"
 #include <qpSWIFT/qpSWIFT.h>
 
 namespace wbc {
