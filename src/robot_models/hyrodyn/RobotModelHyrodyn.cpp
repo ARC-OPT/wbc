@@ -241,15 +241,20 @@ const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const 
         throw std::runtime_error("Invalid root frame");
     }
 
-    hyrodyn.calculate_forward_kinematics(tip_frame);
-    rbs.pose.position        = hyrodyn.pose.segment(0,3);
-    rbs.pose.orientation     = base::Quaterniond(hyrodyn.pose[6],hyrodyn.pose[3],hyrodyn.pose[4],hyrodyn.pose[5]);
-    rbs.twist.linear         = hyrodyn.twist.segment(3,3);
-    rbs.twist.angular        = hyrodyn.twist.segment(0,3);
-    rbs.acceleration.linear  = hyrodyn.spatial_acceleration.segment(3,3);
-    rbs.acceleration.angular = hyrodyn.spatial_acceleration.segment(0,3);//
-    rbs.time                 = joint_state.time;
-    rbs.frame_id             = tip_frame;
+    if(tip_frame != "CoM"){
+        hyrodyn.calculate_forward_kinematics(tip_frame);
+        rbs.pose.position        = hyrodyn.pose.segment(0,3);
+        rbs.pose.orientation     = base::Quaterniond(hyrodyn.pose[6],hyrodyn.pose[3],hyrodyn.pose[4],hyrodyn.pose[5]);
+        rbs.twist.linear         = hyrodyn.twist.segment(3,3);
+        rbs.twist.angular        = hyrodyn.twist.segment(0,3);
+        rbs.acceleration.linear  = hyrodyn.spatial_acceleration.segment(3,3);
+        rbs.acceleration.angular = hyrodyn.spatial_acceleration.segment(0,3);//
+        rbs.time                 = joint_state.time;
+        rbs.frame_id             = tip_frame;
+    }
+    else{
+        rbs = centerOfMass();
+    }
     return rbs;
 }
 
@@ -265,7 +270,7 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
         throw std::runtime_error("Invalid call to spaceJacobian()");
     }
 
-    if(!hasLink(tip_frame)){
+    if(tip_frame != "CoM" && !hasLink(tip_frame)){
         LOG_ERROR_S << "Request jacobian for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
         throw std::runtime_error("Invalid call to spaceJacobian()");
     }
@@ -276,10 +281,18 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
     }
 
     if(hyrodyn.floating_base_robot){
-        hyrodyn.calculate_space_jacobian_actuation_space_including_floatingbase(tip_frame);
-        uint n_cols = hyrodyn.Jsufb.cols();
-        jacobian.block(0,0,3,n_cols) = hyrodyn.Jsufb.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = hyrodyn.Jsufb.block(0,0,3,n_cols);
+        if(tip_frame == "CoM"){
+            hyrodyn.calculate_com_jacobian();
+            uint n_cols = hyrodyn.Jcom.cols();
+            jacobian.block(0,0,3,n_cols) = hyrodyn.Jcom.block(0,0,3,n_cols);
+            jacobian.block(3,0,3,n_cols).setZero();// = hyrodyn.Jcom.block(0,0,3,n_cols);
+        }
+        else{
+            hyrodyn.calculate_space_jacobian_actuation_space_including_floatingbase(tip_frame);
+            uint n_cols = hyrodyn.Jsufb.cols();
+            jacobian.block(0,0,3,n_cols) = hyrodyn.Jsufb.block(3,0,3,n_cols);
+            jacobian.block(3,0,3,n_cols) = hyrodyn.Jsufb.block(0,0,3,n_cols);
+        }
     }else{
         hyrodyn.calculate_space_jacobian_actuation_space(tip_frame);
         uint n_cols = hyrodyn.Jsu.cols();
