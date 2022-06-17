@@ -46,6 +46,18 @@ void QPSwiftSolver::toQpSwift(const wbc::QuadraticProgram &qp){
     }
     P = qp.H;
     c = qp.g;
+    my_qp = QP_SETUP_dense(n_dec,                   // Number decision variables
+                           n_ineq,                  // Number inequality constraints
+                           n_eq,                    // Number equality constraints
+                           (double*)P.data(),       // Hessian matrix
+                           (double*)A.data(),       // Equality constraint matrix
+                           (double*)G.data(),       // Inequality constraint matrix
+                           (double*)c.data(),       // Cost function gradient vector
+                           (double*)h.data(),       // Inequality constraint vector
+                           (double*)b.data(),       // Equality constraint vector
+                           NULL,
+                           COLUMN_MAJOR_ORDERING);
+
 
 }
 
@@ -81,18 +93,6 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
         LOG_DEBUG_S << "n_bounds: " << n_bounds << std::endl;
 
         toQpSwift(qp);
-        my_qp = QP_SETUP_dense(n_dec,                   // Number decision variables
-                               n_ineq,                  // Number inequality constraints
-                               n_eq,                    // Number equality constraints
-                               (double*)P.data(),       // Hessian matrix
-                               (double*)A.data(),       // Equality constraint matrix
-                               (double*)G.data(),       // Inequality constraint matrix
-                               (double*)c.data(),       // Cost function gradient vector
-                               (double*)h.data(),       // Inequality constraint vector
-                               (double*)b.data(),       // Equality constraint vector
-                               NULL,
-                               COLUMN_MAJOR_ORDERING);
-
 
         my_qp->options->maxit = max_iter;
         my_qp->options->reltol = rel_tol;
