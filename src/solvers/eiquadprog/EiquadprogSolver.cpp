@@ -9,8 +9,7 @@ namespace wbc {
 
 EiquadprogSolver::EiquadprogSolver()
 {
-    _n_wsr = 100;
-    //options.setToDefault();
+    _n_iter = 100;
 }
 
 EiquadprogSolver::~EiquadprogSolver()
@@ -65,7 +64,7 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
     if(!configured) 
     {
         _solver.reset(n_var, 0, n_con);
-        _solver.setMaxIter(_n_wsr);
+        _solver.setMaxIter(_n_iter);
 
         // hessian and gradient are ok (don#t need to be stacked)
         // configuring constraints matrices
@@ -121,21 +120,6 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
     if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_INFEASIBLE)
         throw std::runtime_error("Eiquadprog returned error status: infeasible.");
 
-    _actual_n_wsr = _solver.getIteratios();
+    _actual_n_iter = _solver.getIteratios();
 }
-
-/*
-returnValue EiquadprogSolver::getReturnValue()
-{
-    return ret_val;
-}
-
-
-void EiquadprogSolver::setOptions(const qpOASES::Options& opt)
-{
-    options = opt;
-    sq_problem.setOptions(opt);
-}
-*/
-
 }

@@ -55,7 +55,6 @@ int main(int argc, char** argv){
     // level. However, prioritization can be achieved through the task weights. Also, it allows hard joint constraints,
     // like e.g., joint velocity limits.
     QPSolverPtr solver = std::make_shared<EiquadprogSolver>();
-    std::dynamic_pointer_cast<EiquadprogSolver>(solver)->setMaxNoWSR(100);
 
     // Configure WBC Scene. Use the Scene VelocitySceneQuadraticCost here. This scene implements tasks as part of the cost function
     // of the QP and defines the maximum joint velocities (taken from the URDF) as hard inequality constraints. The solution will

@@ -36,41 +36,25 @@ public:
     virtual void solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output);
 
     /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
-    void setMaxNoWSR(const uint& n){ _n_wsr = n; }
+    void setMaxNIter(const uint& n){ _n_iter = n; }
     
     /** Get the maximum number of working set recalculations to be performed during the initial homotopy*/
-    uint getMaxNoWSR(){ return _n_wsr; }
-    
-    /** Retrieve the return value from the last QP calculation*/
-    //qpOASES::returnValue getReturnValue();
+    uint getMaxNIter(){ return _n_iter; }
+
     /** Get number of working set recalculations actually performed*/
-    int getNoWSR(){ return _actual_n_wsr; }
-    
-    /** Return current solver options*/
-    //qpOASES::Options getOptions(){return options;}
-    /** Set new solver options*/
-    //void setOptions(const qpOASES::Options& opt);
-    
-    /** Get Quadratic program*/
-    //const qpOASES::SQProblem& getSQProblem(){return sq_problem;}
+    int getNter(){ return _actual_n_iter; }
 
 protected:
-    //qpOASES::Options options;
-
     eiquadprog::solvers::EiquadprogFast _solver;
     
-    int _n_wsr;
-    int _actual_n_wsr;
-
-    //qpOASES::returnValue ret_val;
+    int _n_iter;
+    int _actual_n_iter;
 
     Eigen::MatrixXd _CE_mtx;
     Eigen::VectorXd _ce0_vec;
 
     Eigen::MatrixXd _CI_mtx;
     Eigen::VectorXd _ci0_vec;
-
-    base::Time _stamp;
 };
 
 }

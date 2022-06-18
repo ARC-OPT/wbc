@@ -46,9 +46,9 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     hqp << qp;
 
     EiquadprogSolver solver;
-    solver.setMaxNoWSR(NO_WSR);
+    solver.setMaxNIter(NO_WSR);
 
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
+    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     base::VectorXd solver_output;
 
@@ -115,9 +115,9 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_constraints)
     hqp << qp;
 
     EiquadprogSolver solver;
-    solver.setMaxNoWSR(NO_WSR);
+    solver.setMaxNIter(NO_WSR);
 
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
+    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     base::VectorXd solver_output;
 
