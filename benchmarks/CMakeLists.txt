@@ -1,3 +1,5 @@
 add_subdirectory(robot_models)
 add_subdirectory(scenes)
-add_subdirectory(solvers)
+if(USE_QPSWIFT AND USE_EIQUADPROG)
+    add_subdirectory(solvers)
+endif()
