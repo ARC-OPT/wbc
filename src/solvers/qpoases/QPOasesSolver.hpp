@@ -31,8 +31,7 @@ public:
 
     /**
      * @brief solve Solve the given quadratic program
-     * @param constraints Description of the hierarchical quadratic program to solve. Each vector entry correspond to a stage in the hierarchy where
-     *                    the first entry has the highest priority. Currently only one priority level is implemented.
+     * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
      * @param solver_output solution of the quadratic program
      */
     virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);

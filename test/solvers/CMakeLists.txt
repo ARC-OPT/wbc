@@ -1,2 +1,8 @@
 add_subdirectory(hls)
 add_subdirectory(qpoases)
+if(USE_EIQUADPROG)
+    add_subdirectory(eiquadprog)
+endif()
+if(USE_QPSWIFT)
+    add_subdirectory(qpswift)
+endif()

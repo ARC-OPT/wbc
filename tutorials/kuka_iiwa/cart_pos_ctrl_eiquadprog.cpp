@@ -1,7 +1,7 @@
 #include <robot_models/kdl/RobotModelKDL.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>
-#include <solvers/qpoases/QPOasesSolver.hpp>
+#include <solvers/eiquadprog/EiquadprogSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
 #include <chrono>
@@ -54,12 +54,7 @@ int main(int argc, char** argv){
     // Create a solver. In this case, we use the QPOases solver, which is a numerical QP solver. It allows only a single priority
     // level. However, prioritization can be achieved through the task weights. Also, it allows hard joint constraints,
     // like e.g., joint velocity limits.
-    QPSolverPtr solver = std::make_shared<QPOASESSolver>();
-    qpOASES::Options options;
-    options.setToDefault();
-    options.printLevel = qpOASES::PL_NONE;
-    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
-    std::dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(100);
+    QPSolverPtr solver = std::make_shared<EiquadprogSolver>();
 
     // Configure WBC Scene. Use the Scene VelocitySceneQuadraticCost here. This scene implements tasks as part of the cost function
     // of the QP and defines the maximum joint velocities (taken from the URDF) as hard inequality constraints. The solution will
@@ -128,6 +123,7 @@ int main(int argc, char** argv){
         solver_output = scene.solve(hqp);
         auto e = std::chrono::high_resolution_clock::now();
         double solve_time = std::chrono::duration_cast<std::chrono::microseconds>(e-s).count();
+
 
         // Update the current joint state. Simply integrate the current joint position using the joint velocity given by the solver.
         // On a real robot, this would be replaced by a function that sends the solver output to the joints.
