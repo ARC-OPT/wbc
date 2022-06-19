@@ -78,7 +78,7 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
         if(cfg.type == cart){
             if(!robot_model->hasLink(cfg.root))
                 return false;
-            if(cfg.tip != "CoM" && !robot_model->hasLink(cfg.tip))
+            if(!robot_model->hasLink(cfg.tip))
                 return false;
             if(!robot_model->hasLink(cfg.ref_frame))
                 return false;

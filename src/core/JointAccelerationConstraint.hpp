@@ -20,6 +20,8 @@ public:
     virtual void setReference(const base::commands::Joints& ref);
 };
 
+typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraintPtr;
+
 } // namespace wbc
 
 #endif

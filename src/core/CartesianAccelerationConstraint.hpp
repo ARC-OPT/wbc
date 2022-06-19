@@ -24,6 +24,8 @@ public:
     virtual void setReference(const base::samples::RigidBodyStateSE3& ref);
 };
 
+typedef std::shared_ptr<CartesianAccelerationConstraint> CartesianAccelerationConstraintPtr;
+
 } // namespace wbc
 
 #endif

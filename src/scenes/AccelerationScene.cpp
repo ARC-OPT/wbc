@@ -1,6 +1,9 @@
 #include "AccelerationScene.hpp"
 #include "../core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
+#include "../core/JointAccelerationConstraint.hpp"
+#include "../core/CartesianAccelerationConstraint.hpp"
+#include "../core/CoMAccelerationConstraint.hpp"
 
 namespace wbc{
 
@@ -8,6 +11,8 @@ ConstraintPtr AccelerationScene::createConstraint(const ConstraintConfig &config
 
     if(config.type == cart)
         return std::make_shared<CartesianAccelerationConstraint>(config, robot_model->noOfJoints());
+    else if(config.type == com)
+        return std::make_shared<CoMAccelerationConstraint>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
         return std::make_shared<JointAccelerationConstraint>(config, robot_model->noOfJoints());
     else{
@@ -52,13 +57,8 @@ const HierarchicalQP& AccelerationScene::update(){
             // Constraint Jacobian
             constraint->A = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
 
-            // Constraint reference
-            base::samples::Joints joint_state = robot_model->jointState(robot_model->jointNames());
-            q_dot.resize(robot_model->noOfJoints());
-            for(size_t j = 0; j < joint_state.size(); j++)
-                q_dot(j) = joint_state[j].speed;
-            base::Acceleration bias_acc = robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
-            constraint->y_ref = constraint->y_ref - bias_acc;
+            // Desired task space acceleration: y_r = y_d - Jdot*qdot
+            constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
 
             // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
             // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
@@ -73,6 +73,14 @@ const HierarchicalQP& AccelerationScene::update(){
             constraint->weights_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(3,3);
             constraint->weights_root = constraint->weights_root.cwiseAbs();
 
+        }
+        else if(type == com){
+            CoMAccelerationConstraintPtr constraint = std::static_pointer_cast<CoMAccelerationConstraint>(constraints[prio][i]);
+            constraint->A = robot_model->comJacobian();
+            // Desired task space acceleration: y_r = y_d - Jdot*qdot
+            // CoM tasks are always in world/base frame, no need to transform.
+            constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(robot_model->worldFrame(), robot_model->baseFrame()).linear;
+            constraint->weights_root = constraint->weights;
         }
         else if(type == jnt){
             JointAccelerationConstraintPtr constraint = std::static_pointer_cast<JointAccelerationConstraint>(constraints[prio][i]);
@@ -140,6 +148,8 @@ const base::commands::Joints& AccelerationScene::solve(const HierarchicalQP& hqp
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
+        if(base::isNaN(solver_output[idx]))
+            throw std::runtime_error("Solver output (acceleration) for joint " + name + " is NaN");
         solver_output_joints[name].acceleration = solver_output[idx];
     }
     solver_output_joints.time = base::Time::now();

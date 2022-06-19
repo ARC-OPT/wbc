@@ -3,6 +3,7 @@
 #include <base-logging/Logging.hpp>
 #include "../core/JointVelocityConstraint.hpp"
 #include "../core/CartesianVelocityConstraint.hpp"
+#include "../core/CoMVelocityConstraint.hpp"
 
 namespace wbc{
 
@@ -10,6 +11,8 @@ ConstraintPtr VelocityScene::createConstraint(const ConstraintConfig &config){
 
     if(config.type == cart)
         return std::make_shared<CartesianVelocityConstraint>(config, robot_model->noOfJoints());
+    else if(config.type == com)
+        return std::make_shared<CoMVelocityConstraint>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
         return std::make_shared<JointVelocityConstraint>(config, robot_model->noOfJoints());
     else{
@@ -62,6 +65,13 @@ const HierarchicalQP& VelocityScene::update(){
                 constraint->weights_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(0,3);
                 constraint->weights_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(3,3);
                 constraint->weights_root = constraint->weights_root.cwiseAbs();
+            }
+            else if(type == com){
+                CoMVelocityConstraintPtr constraint = std::static_pointer_cast<CoMVelocityConstraint>(constraints[prio][i]);
+                constraint->A = robot_model->comJacobian();
+                // CoM tasks are always in world/base frame, no need to transform.
+                constraint->y_ref_root = constraint->y_ref;
+                constraint->weights_root = constraint->weights;
             }
             else if(type == jnt){
 
@@ -126,6 +136,8 @@ const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
+        if(base::isNaN(solver_output[idx]))
+            throw std::runtime_error("Solver output (speed) for joint " + name + " is NaN");
         solver_output_joints[name].speed = solver_output[idx];
     }
 

@@ -27,6 +27,7 @@ void RobotModelKDL::clear(){
     current_joint_state.clear();
     contact_points.clear();
     base_frame="";
+    world_frame="";
     gravity = base::Vector3d(0,0,-9.81);
     has_floating_base = false;
     joint_limits.clear();
@@ -58,6 +59,7 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
         return false;
     }
+    base_frame =  robot_urdf->getRoot()->name;
 
     // Blacklist not required joints
     if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
@@ -68,8 +70,11 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     // Add floating base
     has_floating_base = cfg.floating_base;
-    if(has_floating_base)
+    world_frame = base_frame;
+    if(cfg.floating_base){
         joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
+        world_frame = robot_urdf->getRoot()->name;
+    }
 
     // Read Joint Limits
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
@@ -176,7 +181,6 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     tau.resize(noOfJoints());
     zero.resize(noOfJoints());
     zero.data.setZero();
-    base_frame =  robot_urdf->getRoot()->name;
     contact_points = cfg.contact_points.names;
     active_contacts = cfg.contact_points;
     joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
@@ -378,6 +382,11 @@ const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame,
     return body_jac_map[chain_id];
 }
 
+
+const base::MatrixXd &RobotModelKDL::comJacobian(){
+    throw std::runtime_error("Not implemented: RobotModelKDL::comJacobian");
+}
+
 const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
@@ -519,7 +528,7 @@ const base::samples::RigidBodyStateSE3& RobotModelKDL::centerOfMass(){
     recursiveCOM( full_tree.getRootSegment(), current_joint_state, frame, mass, cog_pos );
 
     // Returns the COG
-    com_rbs.frame_id = base_frame;
+    com_rbs.frame_id = world_frame;
     com_rbs.pose.position = base::Vector3d( cog_pos.x(), cog_pos.y(), cog_pos.z() ) / mass;
     com_rbs.pose.orientation.setIdentity();
     com_rbs.time = current_joint_state.time;
