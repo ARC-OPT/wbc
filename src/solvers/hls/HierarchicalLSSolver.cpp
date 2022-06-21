@@ -7,6 +7,8 @@ using namespace std;
 
 namespace wbc{
 
+QPSolverRegistry<HierarchicalLSSolver> HierarchicalLSSolver::reg("hls");
+
 HierarchicalLSSolver::HierarchicalLSSolver() :
     no_of_joints(0),
     min_eigenvalue(1e-9),

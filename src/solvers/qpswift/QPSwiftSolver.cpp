@@ -4,6 +4,8 @@
 
 namespace wbc {
 
+QPSolverRegistry<QPSwiftSolver> QPSwiftSolver::reg("qpswift");
+
 QPSwiftSolver::QPSwiftSolver(){
     my_qp = 0;
     max_iter = 100;
