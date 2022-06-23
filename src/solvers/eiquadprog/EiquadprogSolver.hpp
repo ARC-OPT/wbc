@@ -1,6 +1,7 @@
 #ifndef WBC_SOLVERS_EIQUADPROG_SOLVER_HPP
 #define WBC_SOLVERS_EIQUADPROG_SOLVER_HPP
 
+#include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 
 #include <base/Time.hpp>
@@ -23,6 +24,9 @@ class HierarchicalQP;
  *  \f]
  */
 class EiquadprogSolver : public QPSolver{
+private:
+    static QPSolverRegistry<EiquadprogSolver> reg;
+
 public:
     EiquadprogSolver();
     virtual ~EiquadprogSolver();

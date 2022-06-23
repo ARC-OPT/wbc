@@ -4,8 +4,9 @@
 #include <Eigen/Core>
 #include <iostream>
 
-
 namespace wbc {
+
+QPSolverRegistry<EiquadprogSolver> EiquadprogSolver::reg("eiquadprog");
 
 EiquadprogSolver::EiquadprogSolver()
 {
