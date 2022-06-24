@@ -240,6 +240,23 @@ void RobotModelKDL::createChain(const std::string &root_frame, const std::string
     LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
 }
 
+void RobotModelKDL::createChain(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame){
+    KDL::Chain chain;
+    if(!tree.getChain(root_frame, tip_frame, chain)){
+        LOG_ERROR("Unable to extract kinematics chain from %s to %s from KDL tree", root_frame.c_str(), tip_frame.c_str());
+        throw std::invalid_argument("Invalid robot model config");
+    }
+
+    const std::string chain_id = chainID(root_frame, tip_frame);
+
+    KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain, root_frame, tip_frame);
+    kin_chain->update(current_joint_state);
+    kdl_chain_map[chain_id] = kin_chain;
+
+    LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
+}
+
+
 void RobotModelKDL::update(const base::samples::Joints& joint_state,
                            const base::samples::RigidBodyStateSE3& _floating_base_state){
 
@@ -358,6 +375,31 @@ const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame
     return space_jac_map[chain_id];
 }
 
+
+const base::MatrixXd& RobotModelKDL::spaceJacobian(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame){
+
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    }
+
+    // Create chain if it does not exist
+    const std::string chain_id = chainID(root_frame, tip_frame);
+    if(kdl_chain_map.count(chain_id) == 0)
+        createChain(tree, root_frame, tip_frame);
+
+    KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
+    kdl_chain->calculateSpaceJacobian();
+
+    space_jac_map[chain_id].resize(6,noOfJoints());
+    space_jac_map[chain_id].setZero(6,noOfJoints());
+    for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
+        int idx = jointIndex(kdl_chain->joint_names[j]);
+        space_jac_map[chain_id].col(idx) = kdl_chain->space_jacobian.data.col(j);
+    }
+    return space_jac_map[chain_id];
+}
+
 const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(current_joint_state.time.isNull()){
@@ -384,7 +426,45 @@ const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame,
 
 
 const base::MatrixXd &RobotModelKDL::comJacobian(){
-    throw std::runtime_error("Not implemented: RobotModelKDL::comJacobian");
+    // throw std::runtime_error("Not implemented: RobotModelKDL::comJacobian");
+
+    base::MatrixXd comJacobian = base::MatrixXd::Zero(3, full_tree.getNrOfJoints());
+
+    KDL::Tree tree_cog_frames = full_tree;
+
+    double totalMass = 0;
+    std::map<std::string, double> mass_map;
+
+    std::vector<std::string> COGSegmentNames;
+    for(auto& segment_it : full_tree.getSegments())
+    {
+        auto segment = segment_it.second.segment;
+        std::string segmentName = segment.getName();
+        std::string segmentNameCOG = segmentName + "_COG";
+        
+        KDL::Vector segmentCOG = segment.getInertia().getCOG();
+        double segmentMass = segment.getInertia().getMass();
+
+        if(segmentMass == 0.0)
+            continue;
+
+        KDL::Frame frameCOG(KDL::Rotation(), segmentCOG);
+        tree_cog_frames.addSegment(KDL::Segment(segmentNameCOG, KDL::Joint(KDL::Joint::Fixed), frameCOG), segmentName);
+
+        mass_map[segmentNameCOG] = segmentMass;
+        totalMass += segmentMass;
+
+        COGSegmentNames.push_back(segmentNameCOG);
+
+        std::cout << "Add segment " << segmentNameCOG << " to " <<segmentName << std::endl; 
+    }
+    
+    for(const auto& segment_name : COGSegmentNames)
+        comJacobian += (mass_map[segment_name] / totalMass) * 
+            spaceJacobian(tree_cog_frames, tree_cog_frames.getRootSegment()->second.segment.getName(), segment_name);
+    
+    space_jac_map["COM_jac"] = comJacobian;
+    return space_jac_map["COM_jac"];
 }
 
 const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
@@ -468,6 +548,14 @@ const base::MatrixXd& RobotModelKDL::jointSpaceInertiaMatrix(){
         }
     }
     return joint_space_inertia_mat;
+}
+
+
+base::MatrixXd recursiveCOMJacobian(const KDL::SegmentMap::const_iterator& currentSegment,
+    const base::samples::Joints& status, const KDL::Frame& frame,
+    double& mass, KDL::Vector& cog)
+{
+    
 }
 
 
