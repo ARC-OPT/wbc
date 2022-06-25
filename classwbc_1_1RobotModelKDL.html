@@ -96,6 +96,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a6ed92629cc435521defe9812539dbb4b"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#a6ed92629cc435521defe9812539dbb4b">bodyJacobian</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)</td></tr>
 <tr class="memdesc:a6ed92629cc435521defe9812539dbb4b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.  <a href="classwbc_1_1RobotModelKDL.html#a6ed92629cc435521defe9812539dbb4b">More...</a><br /></td></tr>
 <tr class="separator:a6ed92629cc435521defe9812539dbb4b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adbd5c0ae20d1fabc4adc569699b91f7e"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#adbd5c0ae20d1fabc4adc569699b91f7e">comJacobian</a> ()</td></tr>
+<tr class="memdesc:adbd5c0ae20d1fabc4adc569699b91f7e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates. Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot.  <a href="classwbc_1_1RobotModelKDL.html#adbd5c0ae20d1fabc4adc569699b91f7e">More...</a><br /></td></tr>
+<tr class="separator:adbd5c0ae20d1fabc4adc569699b91f7e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad30771641ece568cc2f4f3d00af8f5e9"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#ad30771641ece568cc2f4f3d00af8f5e9">jacobianDot</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)</td></tr>
 <tr class="memdesc:ad30771641ece568cc2f4f3d00af8f5e9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. By convention reference frame &amp; reference point of the Jacobian will be the root frame (corresponding to the body Jacobian). Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.  <a href="classwbc_1_1RobotModelKDL.html#ad30771641ece568cc2f4f3d00af8f5e9">More...</a><br /></td></tr>
 <tr class="separator:ad30771641ece568cc2f4f3d00af8f5e9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -118,9 +121,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a16a9eb4fff694608938a5f04ad1be270"><td class="memItemLeft" align="right" valign="top">virtual uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#a16a9eb4fff694608938a5f04ad1be270">jointIndex</a> (const std::string &amp;joint_name)</td></tr>
 <tr class="memdesc:a16a9eb4fff694608938a5f04ad1be270"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get index of joint name.  <a href="classwbc_1_1RobotModelKDL.html#a16a9eb4fff694608938a5f04ad1be270">More...</a><br /></td></tr>
 <tr class="separator:a16a9eb4fff694608938a5f04ad1be270"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af93384792de996548b0c2f7d4e35acc8"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#af93384792de996548b0c2f7d4e35acc8">baseFrame</a> ()</td></tr>
-<tr class="memdesc:af93384792de996548b0c2f7d4e35acc8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base frame of the robot.  <a href="classwbc_1_1RobotModelKDL.html#af93384792de996548b0c2f7d4e35acc8">More...</a><br /></td></tr>
-<tr class="separator:af93384792de996548b0c2f7d4e35acc8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad70e6269dc22747ddf319375790024fd"><td class="memItemLeft" align="right" valign="top">virtual const base::JointLimits &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#ad70e6269dc22747ddf319375790024fd">jointLimits</a> ()</td></tr>
 <tr class="memdesc:ad70e6269dc22747ddf319375790024fd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current joint limits.  <a href="classwbc_1_1RobotModelKDL.html#ad70e6269dc22747ddf319375790024fd">More...</a><br /></td></tr>
 <tr class="separator:ad70e6269dc22747ddf319375790024fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -168,6 +168,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae08e2ee0ac2c6ae57eceec7408cbea91 inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ae08e2ee0ac2c6ae57eceec7408cbea91">bodyJacobian</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)=0</td></tr>
 <tr class="memdesc:ae08e2ee0ac2c6ae57eceec7408cbea91 inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.  <a href="classwbc_1_1RobotModel.html#ae08e2ee0ac2c6ae57eceec7408cbea91">More...</a><br /></td></tr>
 <tr class="separator:ae08e2ee0ac2c6ae57eceec7408cbea91 inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8728f3fea14f1cc47338db5bf3877e20 inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a8728f3fea14f1cc47338db5bf3877e20">comJacobian</a> ()=0</td></tr>
+<tr class="memdesc:a8728f3fea14f1cc47338db5bf3877e20 inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates. Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot.  <a href="classwbc_1_1RobotModel.html#a8728f3fea14f1cc47338db5bf3877e20">More...</a><br /></td></tr>
+<tr class="separator:a8728f3fea14f1cc47338db5bf3877e20 inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5762fa6e6c48813ed75ca50b6b777a3d inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual const base::Acceleration &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a5762fa6e6c48813ed75ca50b6b777a3d">spatialAccelerationBias</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)=0</td></tr>
 <tr class="memdesc:a5762fa6e6c48813ed75ca50b6b777a3d inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the spatial acceleration bias, i.e. the term Jdot*qdot.  <a href="classwbc_1_1RobotModel.html#a5762fa6e6c48813ed75ca50b6b777a3d">More...</a><br /></td></tr>
 <tr class="separator:a5762fa6e6c48813ed75ca50b6b777a3d inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -192,9 +195,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad8de31e64843d88c4c19869a1825b8d0 inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ad8de31e64843d88c4c19869a1825b8d0">jointIndex</a> (const std::string &amp;joint_name)=0</td></tr>
 <tr class="memdesc:ad8de31e64843d88c4c19869a1825b8d0 inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get index of joint name.  <a href="classwbc_1_1RobotModel.html#ad8de31e64843d88c4c19869a1825b8d0">More...</a><br /></td></tr>
 <tr class="separator:ad8de31e64843d88c4c19869a1825b8d0 inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6a286b74c6d8b5239d05b02b6180ff8 inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ac6a286b74c6d8b5239d05b02b6180ff8">baseFrame</a> ()=0</td></tr>
-<tr class="memdesc:ac6a286b74c6d8b5239d05b02b6180ff8 inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base frame of the robot.  <a href="classwbc_1_1RobotModel.html#ac6a286b74c6d8b5239d05b02b6180ff8">More...</a><br /></td></tr>
-<tr class="separator:ac6a286b74c6d8b5239d05b02b6180ff8 inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20aa0b7957efe9514d9f835b3199b67d inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a20aa0b7957efe9514d9f835b3199b67d">baseFrame</a> ()</td></tr>
+<tr class="memdesc:a20aa0b7957efe9514d9f835b3199b67d inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base frame of the robot.  <a href="classwbc_1_1RobotModel.html#a20aa0b7957efe9514d9f835b3199b67d">More...</a><br /></td></tr>
+<tr class="separator:a20aa0b7957efe9514d9f835b3199b67d inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03e8d69545832c81df2c69d0640cda37 inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a03e8d69545832c81df2c69d0640cda37">worldFrame</a> ()</td></tr>
+<tr class="memdesc:a03e8d69545832c81df2c69d0640cda37 inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the world frame id.  <a href="classwbc_1_1RobotModel.html#a03e8d69545832c81df2c69d0640cda37">More...</a><br /></td></tr>
+<tr class="separator:a03e8d69545832c81df2c69d0640cda37 inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89682afec3437c7b2288b4ede324e238 inherit pub_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">virtual const base::JointLimits &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a89682afec3437c7b2288b4ede324e238">jointLimits</a> ()=0</td></tr>
 <tr class="memdesc:a89682afec3437c7b2288b4ede324e238 inherit pub_methods_classwbc_1_1RobotModel"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current joint limits.  <a href="classwbc_1_1RobotModel.html#a89682afec3437c7b2288b4ede324e238">More...</a><br /></td></tr>
 <tr class="separator:a89682afec3437c7b2288b4ede324e238 inherit pub_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -277,6 +283,10 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:ad61d5cbd1f172563c21772c888b2bf71 inherit pro_attribs_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c0f3811f95bfe17968ce2b0262583f7 inherit pro_attribs_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structwbc_1_1RobotModelConfig.html">RobotModelConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a2c0f3811f95bfe17968ce2b0262583f7">robot_model_config</a></td></tr>
 <tr class="separator:a2c0f3811f95bfe17968ce2b0262583f7 inherit pro_attribs_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f28b618c09eea132a2c3481704e9f4d inherit pro_attribs_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a0f28b618c09eea132a2c3481704e9f4d">world_frame</a></td></tr>
+<tr class="separator:a0f28b618c09eea132a2c3481704e9f4d inherit pro_attribs_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa64ca6ac20a136ffa9ae66c98a31376a inherit pro_attribs_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aa64ca6ac20a136ffa9ae66c98a31376a">base_frame</a></td></tr>
+<tr class="separator:aa64ca6ac20a136ffa9ae66c98a31376a inherit pro_attribs_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >This model describes the kinemetic relationships required for velocity based wbc. It is based on a single KDL Tree. However, multiple KDL trees can be added and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios. </p>
@@ -350,35 +360,6 @@ Protected Attributes</h2></td></tr>
 <p>Return only actuated joint names. </p>
 
 <p>Implements <a class="el" href="classwbc_1_1RobotModel.html#ab2cff89fbda60b3dabe1072d25466da1">wbc::RobotModel</a>.</p>
-
-</div>
-</div>
-<a id="af93384792de996548b0c2f7d4e35acc8" name="af93384792de996548b0c2f7d4e35acc8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af93384792de996548b0c2f7d4e35acc8">&#9670;&nbsp;</a></span>baseFrame()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual const std::string &amp; wbc::RobotModelKDL::baseFrame </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get the base frame of the robot. </p>
-
-<p>Implements <a class="el" href="classwbc_1_1RobotModel.html#ac6a286b74c6d8b5239d05b02b6180ff8">wbc::RobotModel</a>.</p>
 
 </div>
 </div>
@@ -546,6 +527,36 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p >Add a KDL Tree to the model. If the model is empty, the overall KDL::Tree will be replaced by the given tree. If there is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses of the trees can be updated online by calling <a class="el" href="classwbc_1_1RobotModelKDL.html#a08b2f1043effb15cc02767c74ecb6ce7" title="Update the robot model. The joint state has to contain all joints that are relevant in the model....">update()</a> with poses parameter appropriately set. This will also create the joint index map Free storage and clear data structures </p>
+
+</div>
+</div>
+<a id="adbd5c0ae20d1fabc4adc569699b91f7e" name="adbd5c0ae20d1fabc4adc569699b91f7e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adbd5c0ae20d1fabc4adc569699b91f7e">&#9670;&nbsp;</a></span>comJacobian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const base::MatrixXd &amp; wbc::RobotModelKDL::comJacobian </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates. Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot. </p>
+<dl class="section return"><dt>Returns</dt><dd>A 3xN matrix, where N is the number of robot joints </dd></dl>
+
+<p>Implements <a class="el" href="classwbc_1_1RobotModel.html#a8728f3fea14f1cc47338db5bf3877e20">wbc::RobotModel</a>.</p>
 
 </div>
 </div>

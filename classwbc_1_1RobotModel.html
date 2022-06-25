@@ -96,6 +96,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ae08e2ee0ac2c6ae57eceec7408cbea91"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ae08e2ee0ac2c6ae57eceec7408cbea91">bodyJacobian</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)=0</td></tr>
 <tr class="memdesc:ae08e2ee0ac2c6ae57eceec7408cbea91"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.  <a href="classwbc_1_1RobotModel.html#ae08e2ee0ac2c6ae57eceec7408cbea91">More...</a><br /></td></tr>
 <tr class="separator:ae08e2ee0ac2c6ae57eceec7408cbea91"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8728f3fea14f1cc47338db5bf3877e20"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a8728f3fea14f1cc47338db5bf3877e20">comJacobian</a> ()=0</td></tr>
+<tr class="memdesc:a8728f3fea14f1cc47338db5bf3877e20"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates. Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot.  <a href="classwbc_1_1RobotModel.html#a8728f3fea14f1cc47338db5bf3877e20">More...</a><br /></td></tr>
+<tr class="separator:a8728f3fea14f1cc47338db5bf3877e20"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5762fa6e6c48813ed75ca50b6b777a3d"><td class="memItemLeft" align="right" valign="top">virtual const base::Acceleration &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a5762fa6e6c48813ed75ca50b6b777a3d">spatialAccelerationBias</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)=0</td></tr>
 <tr class="memdesc:a5762fa6e6c48813ed75ca50b6b777a3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the spatial acceleration bias, i.e. the term Jdot*qdot.  <a href="classwbc_1_1RobotModel.html#a5762fa6e6c48813ed75ca50b6b777a3d">More...</a><br /></td></tr>
 <tr class="separator:a5762fa6e6c48813ed75ca50b6b777a3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -120,9 +123,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad8de31e64843d88c4c19869a1825b8d0"><td class="memItemLeft" align="right" valign="top">virtual uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ad8de31e64843d88c4c19869a1825b8d0">jointIndex</a> (const std::string &amp;joint_name)=0</td></tr>
 <tr class="memdesc:ad8de31e64843d88c4c19869a1825b8d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get index of joint name.  <a href="classwbc_1_1RobotModel.html#ad8de31e64843d88c4c19869a1825b8d0">More...</a><br /></td></tr>
 <tr class="separator:ad8de31e64843d88c4c19869a1825b8d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac6a286b74c6d8b5239d05b02b6180ff8"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ac6a286b74c6d8b5239d05b02b6180ff8">baseFrame</a> ()=0</td></tr>
-<tr class="memdesc:ac6a286b74c6d8b5239d05b02b6180ff8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base frame of the robot.  <a href="classwbc_1_1RobotModel.html#ac6a286b74c6d8b5239d05b02b6180ff8">More...</a><br /></td></tr>
-<tr class="separator:ac6a286b74c6d8b5239d05b02b6180ff8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a20aa0b7957efe9514d9f835b3199b67d"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a20aa0b7957efe9514d9f835b3199b67d">baseFrame</a> ()</td></tr>
+<tr class="memdesc:a20aa0b7957efe9514d9f835b3199b67d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base frame of the robot.  <a href="classwbc_1_1RobotModel.html#a20aa0b7957efe9514d9f835b3199b67d">More...</a><br /></td></tr>
+<tr class="separator:a20aa0b7957efe9514d9f835b3199b67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03e8d69545832c81df2c69d0640cda37"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a03e8d69545832c81df2c69d0640cda37">worldFrame</a> ()</td></tr>
+<tr class="memdesc:a03e8d69545832c81df2c69d0640cda37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the world frame id.  <a href="classwbc_1_1RobotModel.html#a03e8d69545832c81df2c69d0640cda37">More...</a><br /></td></tr>
+<tr class="separator:a03e8d69545832c81df2c69d0640cda37"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89682afec3437c7b2288b4ede324e238"><td class="memItemLeft" align="right" valign="top">virtual const base::JointLimits &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a89682afec3437c7b2288b4ede324e238">jointLimits</a> ()=0</td></tr>
 <tr class="memdesc:a89682afec3437c7b2288b4ede324e238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current joint limits.  <a href="classwbc_1_1RobotModel.html#a89682afec3437c7b2288b4ede324e238">More...</a><br /></td></tr>
 <tr class="separator:a89682afec3437c7b2288b4ede324e238"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -188,6 +194,10 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:ad61d5cbd1f172563c21772c888b2bf71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a2c0f3811f95bfe17968ce2b0262583f7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structwbc_1_1RobotModelConfig.html">RobotModelConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a2c0f3811f95bfe17968ce2b0262583f7">robot_model_config</a></td></tr>
 <tr class="separator:a2c0f3811f95bfe17968ce2b0262583f7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0f28b618c09eea132a2c3481704e9f4d"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a0f28b618c09eea132a2c3481704e9f4d">world_frame</a></td></tr>
+<tr class="separator:a0f28b618c09eea132a2c3481704e9f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa64ca6ac20a136ffa9ae66c98a31376a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aa64ca6ac20a136ffa9ae66c98a31376a">base_frame</a></td></tr>
+<tr class="separator:aa64ca6ac20a136ffa9ae66c98a31376a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC. </p>
@@ -264,8 +274,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ac6a286b74c6d8b5239d05b02b6180ff8" name="ac6a286b74c6d8b5239d05b02b6180ff8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac6a286b74c6d8b5239d05b02b6180ff8">&#9670;&nbsp;</a></span>baseFrame()</h2>
+<a id="a20aa0b7957efe9514d9f835b3199b67d" name="a20aa0b7957efe9514d9f835b3199b67d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a20aa0b7957efe9514d9f835b3199b67d">&#9670;&nbsp;</a></span>baseFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -282,14 +292,12 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Get the base frame of the robot. </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a2d62e3010b48ac363da2da7484d74f65">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#af93384792de996548b0c2f7d4e35acc8">wbc::RobotModelKDL</a>.</p>
 
 </div>
 </div>
@@ -396,6 +404,36 @@ Protected Attributes</h2></td></tr>
 <p>Compute and return center of mass expressed in base frame. </p>
 
 <p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a05da85b0f2ede12e221e581dc0b99da3">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a6b23b8e97e72ad58f82021bf4aa1a37e">wbc::RobotModelKDL</a>.</p>
+
+</div>
+</div>
+<a id="a8728f3fea14f1cc47338db5bf3877e20" name="a8728f3fea14f1cc47338db5bf3877e20"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8728f3fea14f1cc47338db5bf3877e20">&#9670;&nbsp;</a></span>comJacobian()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const base::MatrixXd &amp; wbc::RobotModel::comJacobian </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates. Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot. </p>
+<dl class="section return"><dt>Returns</dt><dd>A 3xN matrix, where N is the number of robot joints </dd></dl>
+
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af349320a5e7628bdb1b27083bfc059f8">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#adbd5c0ae20d1fabc4adc569699b91f7e">wbc::RobotModelKDL</a>.</p>
 
 </div>
 </div>
@@ -1243,6 +1281,33 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a03e8d69545832c81df2c69d0640cda37" name="a03e8d69545832c81df2c69d0640cda37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03e8d69545832c81df2c69d0640cda37">&#9670;&nbsp;</a></span>worldFrame()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual const std::string &amp; wbc::RobotModel::worldFrame </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get the world frame id. </p>
+
+</div>
+</div>
 <h2 class="groupheader">Member Data Documentation</h2>
 <a id="a670d06f9f468f975cf7a7521f769a4c9" name="a670d06f9f468f975cf7a7521f769a4c9"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a670d06f9f468f975cf7a7521f769a4c9">&#9670;&nbsp;</a></span>active_contacts</h2>
@@ -1255,6 +1320,28 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structwbc_1_1ActiveContacts.html">ActiveContacts</a> wbc::RobotModel::active_contacts</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa64ca6ac20a136ffa9ae66c98a31376a" name="aa64ca6ac20a136ffa9ae66c98a31376a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa64ca6ac20a136ffa9ae66c98a31376a">&#9670;&nbsp;</a></span>base_frame</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string wbc::RobotModel::base_frame</td>
         </tr>
       </table>
   </td>
@@ -1365,6 +1452,28 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structwbc_1_1RobotModelConfig.html">RobotModelConfig</a> wbc::RobotModel::robot_model_config</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a0f28b618c09eea132a2c3481704e9f4d" name="a0f28b618c09eea132a2c3481704e9f4d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0f28b618c09eea132a2c3481704e9f4d">&#9670;&nbsp;</a></span>world_frame</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string wbc::RobotModel::world_frame</td>
         </tr>
       </table>
   </td>

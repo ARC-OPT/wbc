@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.4"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>wbc: wbc::CartesianConstraint Class Reference</title>
+<title>wbc: wbc::CoMVelocityConstraint Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -46,44 +46,49 @@ $(function() {
 <div id="main-nav"></div>
 <div id="nav-path" class="navpath">
   <ul>
-<li class="navelem"><a class="el" href="namespacewbc.html">wbc</a></li><li class="navelem"><a class="el" href="classwbc_1_1CartesianConstraint.html">CartesianConstraint</a></li>  </ul>
+<li class="navelem"><a class="el" href="namespacewbc.html">wbc</a></li><li class="navelem"><a class="el" href="classwbc_1_1CoMVelocityConstraint.html">CoMVelocityConstraint</a></li>  </ul>
 </div>
 </div><!-- top -->
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="classwbc_1_1CartesianConstraint-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">wbc::CartesianConstraint Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
+<a href="classwbc_1_1CoMVelocityConstraint-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">wbc::CoMVelocityConstraint Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Abstract interface for a constraint in Cartesian space.  
- <a href="classwbc_1_1CartesianConstraint.html#details">More...</a></p>
+<p>Implementation of a CoM velocity constraint.  
+ <a href="classwbc_1_1CoMVelocityConstraint.html#details">More...</a></p>
 
-<p><code>#include &lt;<a class="el" href="CartesianConstraint_8hpp_source.html">CartesianConstraint.hpp</a>&gt;</code></p>
+<p><code>#include &lt;<a class="el" href="CoMVelocityConstraint_8hpp_source.html">CoMVelocityConstraint.hpp</a>&gt;</code></p>
 <div class="dynheader">
-Inheritance diagram for wbc::CartesianConstraint:</div>
+Inheritance diagram for wbc::CoMVelocityConstraint:</div>
 <div class="dyncontent">
  <div class="center">
-  <img src="classwbc_1_1CartesianConstraint.png" usemap="#wbc::CartesianConstraint_map" alt=""/>
-  <map id="wbc::CartesianConstraint_map" name="wbc::CartesianConstraint_map">
-<area href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic constraint for a WBC optimization problem." alt="wbc::Constraint" shape="rect" coords="351,0,575,24"/>
-<area href="classwbc_1_1CartesianAccelerationConstraint.html" title="Implementation of a Cartesian acceleration constraint." alt="wbc::CartesianAccelerationConstraint" shape="rect" coords="0,112,224,136"/>
-<area href="classwbc_1_1CartesianVelocityConstraint.html" title="Implementation of a Cartesian velocity constraint." alt="wbc::CartesianVelocityConstraint" shape="rect" coords="234,112,458,136"/>
-<area href="classwbc_1_1CoMAccelerationConstraint.html" title="Implementation of a CoM velocity constraint." alt="wbc::CoMAccelerationConstraint" shape="rect" coords="468,112,692,136"/>
-<area href="classwbc_1_1CoMVelocityConstraint.html" title="Implementation of a CoM velocity constraint." alt="wbc::CoMVelocityConstraint" shape="rect" coords="702,112,926,136"/>
+  <img src="classwbc_1_1CoMVelocityConstraint.png" usemap="#wbc::CoMVelocityConstraint_map" alt=""/>
+  <map id="wbc::CoMVelocityConstraint_map" name="wbc::CoMVelocityConstraint_map">
+<area href="classwbc_1_1CartesianConstraint.html" title="Abstract interface for a constraint in Cartesian space." alt="wbc::CartesianConstraint" shape="rect" coords="0,56,171,80"/>
+<area href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic constraint for a WBC optimization problem." alt="wbc::Constraint" shape="rect" coords="0,0,171,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5a5157512b67ff8bda8b02ca7367b1b4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CartesianConstraint.html#a5a5157512b67ff8bda8b02ca7367b1b4">CartesianConstraint</a> (const <a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a> &amp;_config, uint n_robot_joints)</td></tr>
-<tr class="separator:a5a5157512b67ff8bda8b02ca7367b1b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a95c16492b457b32f7fb43b96150bd130"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CartesianConstraint.html#a95c16492b457b32f7fb43b96150bd130">~CartesianConstraint</a> ()</td></tr>
-<tr class="separator:a95c16492b457b32f7fb43b96150bd130"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aba7ab30c0b3af4889b811d091d8c3524"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CartesianConstraint.html#aba7ab30c0b3af4889b811d091d8c3524">setReference</a> (const base::samples::RigidBodyStateSE3 &amp;ref)=0</td></tr>
-<tr class="memdesc:aba7ab30c0b3af4889b811d091d8c3524"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the Cartesian reference input for this constraint.  <a href="classwbc_1_1CartesianConstraint.html#aba7ab30c0b3af4889b811d091d8c3524">More...</a><br /></td></tr>
-<tr class="separator:aba7ab30c0b3af4889b811d091d8c3524"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abe23dadc2ee2f6b0bcab7162eb8262ca"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CoMVelocityConstraint.html#abe23dadc2ee2f6b0bcab7162eb8262ca">CoMVelocityConstraint</a> (<a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a> <a class="el" href="classwbc_1_1Constraint.html#a7f5bc8049a572f7de5015a72d07a3d25">config</a>, uint n_robot_joints)</td></tr>
+<tr class="separator:abe23dadc2ee2f6b0bcab7162eb8262ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaa231c9643ae22b5f4dffe21faafaf8a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CoMVelocityConstraint.html#aaa231c9643ae22b5f4dffe21faafaf8a">~CoMVelocityConstraint</a> ()</td></tr>
+<tr class="separator:aaa231c9643ae22b5f4dffe21faafaf8a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae1ffd45ceb0e4127f285d7439db14985"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CoMVelocityConstraint.html#ae1ffd45ceb0e4127f285d7439db14985">setReference</a> (const base::samples::RigidBodyStateSE3 &amp;ref)</td></tr>
+<tr class="memdesc:ae1ffd45ceb0e4127f285d7439db14985"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the CoM reference input for this constraint.  <a href="classwbc_1_1CoMVelocityConstraint.html#ae1ffd45ceb0e4127f285d7439db14985">More...</a><br /></td></tr>
+<tr class="separator:ae1ffd45ceb0e4127f285d7439db14985"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pub_methods_classwbc_1_1CartesianConstraint"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classwbc_1_1CartesianConstraint')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1CartesianConstraint.html">wbc::CartesianConstraint</a></td></tr>
+<tr class="memitem:a5a5157512b67ff8bda8b02ca7367b1b4 inherit pub_methods_classwbc_1_1CartesianConstraint"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CartesianConstraint.html#a5a5157512b67ff8bda8b02ca7367b1b4">CartesianConstraint</a> (const <a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a> &amp;_config, uint n_robot_joints)</td></tr>
+<tr class="separator:a5a5157512b67ff8bda8b02ca7367b1b4 inherit pub_methods_classwbc_1_1CartesianConstraint"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95c16492b457b32f7fb43b96150bd130 inherit pub_methods_classwbc_1_1CartesianConstraint"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CartesianConstraint.html#a95c16492b457b32f7fb43b96150bd130">~CartesianConstraint</a> ()</td></tr>
+<tr class="separator:a95c16492b457b32f7fb43b96150bd130 inherit pub_methods_classwbc_1_1CartesianConstraint"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aba7ab30c0b3af4889b811d091d8c3524 inherit pub_methods_classwbc_1_1CartesianConstraint"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1CartesianConstraint.html#aba7ab30c0b3af4889b811d091d8c3524">setReference</a> (const base::samples::RigidBodyStateSE3 &amp;ref)=0</td></tr>
+<tr class="memdesc:aba7ab30c0b3af4889b811d091d8c3524 inherit pub_methods_classwbc_1_1CartesianConstraint"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the Cartesian reference input for this constraint.  <a href="classwbc_1_1CartesianConstraint.html#aba7ab30c0b3af4889b811d091d8c3524">More...</a><br /></td></tr>
+<tr class="separator:aba7ab30c0b3af4889b811d091d8c3524 inherit pub_methods_classwbc_1_1CartesianConstraint"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1Constraint"><td colspan="2" onclick="javascript:toggleInherit('pub_methods_classwbc_1_1Constraint')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1Constraint.html">wbc::Constraint</a></td></tr>
 <tr class="memitem:a2e8eff615b1c4ea35064e3435d5c180f inherit pub_methods_classwbc_1_1Constraint"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a2e8eff615b1c4ea35064e3435d5c180f">Constraint</a> ()</td></tr>
 <tr class="memdesc:a2e8eff615b1c4ea35064e3435d5c180f inherit pub_methods_classwbc_1_1Constraint"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classwbc_1_1Constraint.html#a2e8eff615b1c4ea35064e3435d5c180f">More...</a><br /></td></tr>
@@ -131,19 +136,19 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ac0b70832f54251682c50944866591909 inherit pub_attribs_classwbc_1_1Constraint"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Abstract interface for a constraint in Cartesian space. </p>
+<div class="textblock"><p >Implementation of a CoM velocity constraint. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5a5157512b67ff8bda8b02ca7367b1b4" name="a5a5157512b67ff8bda8b02ca7367b1b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a5157512b67ff8bda8b02ca7367b1b4">&#9670;&nbsp;</a></span>CartesianConstraint()</h2>
+<a id="abe23dadc2ee2f6b0bcab7162eb8262ca" name="abe23dadc2ee2f6b0bcab7162eb8262ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe23dadc2ee2f6b0bcab7162eb8262ca">&#9670;&nbsp;</a></span>CoMVelocityConstraint()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">wbc::CartesianConstraint::CartesianConstraint </td>
+          <td class="memname">wbc::CoMVelocityConstraint::CoMVelocityConstraint </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a> &amp;&#160;</td>
-          <td class="paramname"><em>_config</em>, </td>
+          <td class="paramtype"><a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a>&#160;</td>
+          <td class="paramname"><em>config</em>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -161,8 +166,8 @@ Additional Inherited Members</h2></td></tr>
 
 </div>
 </div>
-<a id="a95c16492b457b32f7fb43b96150bd130" name="a95c16492b457b32f7fb43b96150bd130"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a95c16492b457b32f7fb43b96150bd130">&#9670;&nbsp;</a></span>~CartesianConstraint()</h2>
+<a id="aaa231c9643ae22b5f4dffe21faafaf8a" name="aaa231c9643ae22b5f4dffe21faafaf8a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaa231c9643ae22b5f4dffe21faafaf8a">&#9670;&nbsp;</a></span>~CoMVelocityConstraint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -171,7 +176,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">wbc::CartesianConstraint::~CartesianConstraint </td>
+          <td class="memname">wbc::CoMVelocityConstraint::~CoMVelocityConstraint </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -187,8 +192,8 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="aba7ab30c0b3af4889b811d091d8c3524" name="aba7ab30c0b3af4889b811d091d8c3524"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aba7ab30c0b3af4889b811d091d8c3524">&#9670;&nbsp;</a></span>setReference()</h2>
+<a id="ae1ffd45ceb0e4127f285d7439db14985" name="ae1ffd45ceb0e4127f285d7439db14985"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae1ffd45ceb0e4127f285d7439db14985">&#9670;&nbsp;</a></span>setReference()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -197,7 +202,7 @@ Additional Inherited Members</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual void wbc::CartesianConstraint::setReference </td>
+          <td class="memname">void wbc::CoMVelocityConstraint::setReference </td>
           <td>(</td>
           <td class="paramtype">const base::samples::RigidBodyStateSE3 &amp;&#160;</td>
           <td class="paramname"><em>ref</em></td><td>)</td>
@@ -206,20 +211,26 @@ Additional Inherited Members</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Update the Cartesian reference input for this constraint. </p>
+<p>Update the CoM reference input for this constraint. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">ref</td><td>Reference input for this constraint. Only the velocity part is relevant (Must have a valid linear and angular velocity!) </td></tr>
+  </table>
+  </dd>
+</dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1CartesianAccelerationConstraint.html#af29bdef8e09ef4e705abf74f8498a9c4">wbc::CartesianAccelerationConstraint</a>, <a class="el" href="classwbc_1_1CartesianVelocityConstraint.html#a404ddd0de58323f2eba96bd567af913c">wbc::CartesianVelocityConstraint</a>, <a class="el" href="classwbc_1_1CoMAccelerationConstraint.html#a81dbe9b199a94ceeb5ad5866d23de545">wbc::CoMAccelerationConstraint</a>, and <a class="el" href="classwbc_1_1CoMVelocityConstraint.html#ae1ffd45ceb0e4127f285d7439db14985">wbc::CoMVelocityConstraint</a>.</p>
+<p>Implements <a class="el" href="classwbc_1_1CartesianConstraint.html#aba7ab30c0b3af4889b811d091d8c3524">wbc::CartesianConstraint</a>.</p>
 
 </div>
 </div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li>src/core/<a class="el" href="CartesianConstraint_8hpp_source.html">CartesianConstraint.hpp</a></li>
-<li>src/core/<a class="el" href="CartesianConstraint_8cpp.html">CartesianConstraint.cpp</a></li>
+<li>src/core/<a class="el" href="CoMVelocityConstraint_8hpp_source.html">CoMVelocityConstraint.hpp</a></li>
+<li>src/core/<a class="el" href="CoMVelocityConstraint_8cpp.html">CoMVelocityConstraint.cpp</a></li>
 </ul>
 </div><!-- contents -->
 <!-- start footer part -->
