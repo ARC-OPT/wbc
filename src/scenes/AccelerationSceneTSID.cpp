@@ -1,6 +1,9 @@
 #include "AccelerationSceneTSID.hpp"
 #include "core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
+#include "../core/JointAccelerationConstraint.hpp"
+#include "../core/CartesianAccelerationConstraint.hpp"
+#include "../core/CoMAccelerationConstraint.hpp"
 
 namespace wbc {
 
@@ -14,6 +17,8 @@ ConstraintPtr AccelerationSceneTSID::createConstraint(const ConstraintConfig &co
 
     if(config.type == cart)
         return std::make_shared<CartesianAccelerationConstraint>(config, robot_model->noOfJoints());
+    else if(config.type == com)
+        return std::make_shared<CoMAccelerationConstraint>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
         return std::make_shared<JointAccelerationConstraint>(config, robot_model->noOfJoints());
     else{
@@ -59,10 +64,6 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             constraint->A = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
 
              // Desired task space acceleration: y_r = y_d - Jdot*qdot
-            base::samples::Joints joint_state = robot_model->jointState(robot_model->jointNames());
-            q_dot.resize(robot_model->noOfJoints());
-            for(size_t j = 0; j < joint_state.size(); j++)
-                q_dot(j) = joint_state[j].speed;
             constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
 
             // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
@@ -78,6 +79,14 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             constraint->weights_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(3,3);
             constraint->weights_root = constraint->weights_root.cwiseAbs();
         }
+        else if(type == com){
+            CoMAccelerationConstraintPtr constraint = std::static_pointer_cast<CoMAccelerationConstraint>(constraints[prio][i]);
+            constraint->A = robot_model->comJacobian();
+            // Desired task space acceleration: y_r = y_d - Jdot*qdot
+            // CoM tasks are always in world/base frame, no need to transform.
+            constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(robot_model->worldFrame(), robot_model->baseFrame()).linear;
+            constraint->weights_root = constraint->weights;
+        }
         else if(type == jnt){
             constraint = std::static_pointer_cast<JointAccelerationConstraint>(constraints[prio][i]);
 
@@ -90,7 +99,6 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
                 constraint->y_ref_root = constraint->y_ref;     // In joint space y_ref is equal to y_ref_root
                 constraint->weights_root = constraint->weights; // Same for the weights
             }
-
         }
         else{
             LOG_ERROR("Constraint %s: Invalid type: %i", constraints[prio][i]->config.name.c_str(), type);
@@ -129,15 +137,15 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
     constraints_prio[prio].A.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
     for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]).transpose();
+        constraints_prio[prio].A.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contact_points.names[i]).transpose();
     constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();// + robot_model->bodyJacobian(world_link, contact_link).transpose() * f_ext;
 
     // 2. For all contacts: Js*qdd = -Jsdot*qd (Rigid Contacts, contact points do not move!)
 
     for(int i = 0; i < contact_points.size(); i++){
-        constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points.names[i]);
+        constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->worldFrame(), contact_points.names[i]);
         base::Vector6d acc;
-        base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contact_points.names[i]);
+        base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->worldFrame(), contact_points.names[i]);
         acc.segment(0,3) = a.linear;
         acc.segment(3,3) = a.angular;
         constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
@@ -172,8 +180,12 @@ const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP&
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
+        if(base::isNaN(solver_output[idx]))
+            throw std::runtime_error("Solver output (acceleration) for joint " + name + " is NaN");
+        if(base::isNaN(solver_output[idx+nj]))
+            throw std::runtime_error("Solver output (force/torque) for joint " + name + " is NaN");
         solver_output_joints[name].acceleration = solver_output[idx];
-        solver_output_joints[name].effort = solver_output[i+nj];
+        solver_output_joints[name].effort = solver_output[idx+nj];
     }
     solver_output_joints.time = base::Time::now();
 

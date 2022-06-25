@@ -2,14 +2,10 @@
 #define WBCACCELERATIONSCENETSID_HPP
 
 #include "../core/Scene.hpp"
-#include "../core/JointAccelerationConstraint.hpp"
-#include "../core/CartesianAccelerationConstraint.hpp"
 #include <base/samples/Wrenches.hpp>
 
 namespace wbc{
 
-typedef std::shared_ptr<CartesianAccelerationConstraint> CartesianAccelerationConstraintPtr;
-typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraintPtr;
 /**
  * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:
  *  \f[
@@ -43,7 +39,6 @@ typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraint
 class AccelerationSceneTSID : public WbcScene{
 protected:
     // Helper variables
-    base::VectorXd q_dot;
     base::VectorXd solver_output, robot_acc, solver_output_acc;
     base::samples::Wrenches contact_wrenches;
     double hessian_regularizer;

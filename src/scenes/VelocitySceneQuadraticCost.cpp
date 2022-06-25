@@ -3,6 +3,8 @@
 #include <base-logging/Logging.hpp>
 #include "../core/CartesianVelocityConstraint.hpp"
 #include "../core/JointVelocityConstraint.hpp"
+#include "../core/CoMVelocityConstraint.hpp"
+
 
 namespace wbc{
 
@@ -60,6 +62,13 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
             constraint->weights_root.segment(3,3) = rot_mat * constraint->weights.segment(3,3);
             constraint->weights_root = constraint->weights_root.cwiseAbs();
         }
+        else if(type == com){
+            CoMVelocityConstraintPtr constraint = std::static_pointer_cast<CoMVelocityConstraint>(constraints[prio][i]);
+            constraint->A = robot_model->comJacobian();
+            // CoM tasks are always in world/base frame, no need to transform.
+            constraint->y_ref_root = constraint->y_ref;
+            constraint->weights_root = constraint->weights;
+        }
         else if(type == jnt){
 
             JointVelocityConstraintPtr constraint = std::static_pointer_cast<JointVelocityConstraint>(constraints[prio][i]);
@@ -107,7 +116,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     // For all contacts: Js*qd = 0 (Rigid Contacts, contact points do not move!)
     constraints_prio[prio].A.setZero();
     for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(i*6, 0, 6, nj) = contact_points[i]*robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]);
+        constraints_prio[prio].A.block(i*6, 0, 6, nj) = contact_points[i]*robot_model->bodyJacobian(robot_model->worldFrame(), contact_points.names[i]);
     constraints_prio[prio].lower_y.setZero();
     constraints_prio[prio].upper_y.setZero();
     // TODO: Using actual limits does not work well (QP Solver sometimes fails due to infeasible QP)

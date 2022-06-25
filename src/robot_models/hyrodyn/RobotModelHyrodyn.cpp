@@ -17,6 +17,7 @@ void RobotModelHyrodyn::clear(){
     joint_state.clear();
     contact_points.clear();
     base_frame="";
+    world_frame="";
     gravity = base::Vector3d(0,0,-9.81);
     joint_limits.clear();
     robot_urdf.reset();
@@ -43,14 +44,18 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
         return false;
     }
+    base_frame = robot_urdf->getRoot()->name;
 
     // Blacklist not required joints
     if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
         return false;
 
     // Add floating base
-    if(cfg.floating_base)
+    world_frame = base_frame;
+    if(cfg.floating_base){
         joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
+        world_frame = robot_urdf->getRoot()->name;
+    }
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
@@ -117,7 +122,8 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
 
     jacobian.resize(6,noOfJoints());
     jacobian.setConstant(std::numeric_limits<double>::quiet_NaN());
-    base_frame =  robot_urdf->getRoot()->name;
+    com_jacobian.resize(3,noOfJoints());
+    com_jacobian.setConstant(std::numeric_limits<double>::quiet_NaN());
     active_contacts = cfg.contact_points;
     joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
     bias_forces.resize(noOfJoints());
@@ -236,7 +242,7 @@ const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const 
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
-    if(root_frame != base_frame){
+    if(root_frame != world_frame){
         LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid root frame");
     }
@@ -250,6 +256,7 @@ const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const 
     rbs.acceleration.angular = hyrodyn.spatial_acceleration.segment(0,3);//
     rbs.time                 = joint_state.time;
     rbs.frame_id             = tip_frame;
+
     return rbs;
 }
 
@@ -270,7 +277,7 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
         throw std::runtime_error("Invalid call to spaceJacobian()");
     }
 
-    if(root_frame != base_frame){
+    if(root_frame != world_frame){
         LOG_ERROR_S<<"Requested Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid root frame");
     }
@@ -308,7 +315,7 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
     }
 
 
-    if(root_frame != base_frame){
+    if(root_frame != world_frame){
         LOG_ERROR_S<<"Requested Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid root frame");
     }
@@ -327,6 +334,17 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
     }
 
     return jacobian;
+}
+
+const base::MatrixXd &RobotModelHyrodyn::comJacobian(){
+    if(joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to comJacobian()");
+    }
+
+    hyrodyn.calculate_com_jacobian();
+    com_jacobian = hyrodyn.Jcom;
+    return com_jacobian;
 }
 
 const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
@@ -405,7 +423,7 @@ bool RobotModelHyrodyn::hasActuatedJoint(const std::string &joint_name){
 const base::samples::RigidBodyStateSE3& RobotModelHyrodyn::centerOfMass(){
     hyrodyn.calculate_com_properties();
 
-    com_rbs.frame_id = base_frame;
+    com_rbs.frame_id = world_frame;
     com_rbs.pose.position = hyrodyn.com;
     com_rbs.pose.orientation.setIdentity();
     com_rbs.twist.linear = hyrodyn.com_vel;

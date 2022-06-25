@@ -16,7 +16,6 @@ private:
 
 protected:
     base::samples::RigidBodyStateSE3 rbs;
-    std::string base_frame;
     base::JointLimits joint_limits;
     base::samples::Joints joint_state;
     base::MatrixXd joint_space_inertia_mat;
@@ -30,7 +29,7 @@ protected:
     base::samples::RigidBodyStateSE3 floating_base_state;
     urdf::ModelInterfaceSharedPtr robot_urdf;
     base::samples::RigidBodyStateSE3 com_rbs;
-    base::MatrixXd jacobian;
+    base::MatrixXd jacobian, com_jacobian;
     hyrodyn::RobotModel_HyRoDyn hyrodyn;
 
     void clear();
@@ -85,6 +84,13 @@ public:
       */
     virtual const base::MatrixXd &bodyJacobian(const std::string &root_frame, const std::string &tip_frame);
 
+    /** @brief Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates.
+      * Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+      * columns will be the same as the configured joint order of the robot.
+      * @return A 3xN matrix, where N is the number of robot joints
+      */
+    virtual const base::MatrixXd &comJacobian();
+
     /** @brief Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. By convention reference frame & reference point
       *  of the Jacobian will be the root frame (corresponding to the body Jacobian). Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
@@ -118,9 +124,6 @@ public:
 
     /** @brief Get index of joint name*/
     virtual uint jointIndex(const std::string &joint_name);
-
-    /** @brief Get the base frame of the robot*/
-    virtual const std::string& baseFrame(){return base_frame;}
 
     /** @brief Return current joint limits*/
     virtual const base::JointLimits& jointLimits(){return joint_limits;}
