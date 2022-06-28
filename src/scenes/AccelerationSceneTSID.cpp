@@ -80,11 +80,12 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             constraint->weights_root = constraint->weights_root.cwiseAbs();
         }
         else if(type == com){
-            CoMAccelerationConstraintPtr constraint = std::static_pointer_cast<CoMAccelerationConstraint>(constraints[prio][i]);
+            constraint = std::static_pointer_cast<CoMAccelerationConstraint>(constraints[prio][i]);
             constraint->A = robot_model->comJacobian();
             // Desired task space acceleration: y_r = y_d - Jdot*qdot
-            // CoM tasks are always in world/base frame, no need to transform.
             constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(robot_model->worldFrame(), robot_model->baseFrame()).linear;
+            // CoM tasks are always in world/base frame, no need to transform.
+            constraint->y_ref_root = constraint->y_ref;
             constraint->weights_root = constraint->weights;
         }
         else if(type == jnt){
