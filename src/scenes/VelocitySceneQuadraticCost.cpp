@@ -43,10 +43,11 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
         constraints[prio][i]->checkTimeout();
         int type = constraints[prio][i]->config.type;
+        ConstraintPtr constraint;
 
         if(type == cart){
 
-            CartesianVelocityConstraintPtr constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
+            constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
 
             // Constraint Jacobian
             constraint->A = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
@@ -63,7 +64,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
             constraint->weights_root = constraint->weights_root.cwiseAbs();
         }
         else if(type == com){
-            CoMVelocityConstraintPtr constraint = std::static_pointer_cast<CoMVelocityConstraint>(constraints[prio][i]);
+            constraint = std::static_pointer_cast<CoMVelocityConstraint>(constraints[prio][i]);
             constraint->A = robot_model->comJacobian();
             // CoM tasks are always in world/base frame, no need to transform.
             constraint->y_ref_root = constraint->y_ref;
@@ -71,7 +72,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
         }
         else if(type == jnt){
 
-            JointVelocityConstraintPtr constraint = std::static_pointer_cast<JointVelocityConstraint>(constraints[prio][i]);
+            constraint = std::static_pointer_cast<JointVelocityConstraint>(constraints[prio][i]);
 
             // Joint space constraints: constraint matrix has only ones and Zeros. The joint order in the constraints might be different than in the robot model.
             // Thus, for joint space constraints, the joint indices have to be mapped correctly.
@@ -87,8 +88,6 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
             LOG_ERROR("Constraint %s: Invalid type: %i", constraints[prio][i]->config.name.c_str(), type);
             throw std::invalid_argument("Invalid constraint configuration");
         }
-
-        ConstraintPtr constraint = constraints[prio][i];
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
