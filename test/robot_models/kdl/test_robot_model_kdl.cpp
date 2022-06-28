@@ -517,12 +517,12 @@ BOOST_AUTO_TEST_CASE(com_jacobian_test)
     base::Vector3d com_vel_diff = (1.0 / dt) * (com_next - com);
 
     for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(com_vel(i) - com_vel_diff(i)) < 1e-4);
+        BOOST_CHECK(fabs(com_vel(i) - com_vel_diff(i)) < 1e-3);
 
-    // std::cout << "\n\nCOM Jacobian (" << com_jacobian.rows() << "x" << com_jacobian.cols() << "):" << std::endl << com_jacobian << std::endl;
-    // std::cout << "\nqd (size: " << qd.size() << "): " << qd.transpose() << std::endl;
-    // std::cout << "\nCOM velocity (from jacobian) = " << com_vel.transpose() << std::endl;
-    // std::cout << "COM velocity (from differentiation) = " << com_vel_diff.transpose() << std::endl;
+    std::cout << "\n\nCOM Jacobian (" << com_jacobian.rows() << "x" << com_jacobian.cols() << "):" << std::endl << com_jacobian << std::endl;
+    std::cout << "\nqd (size: " << qd.size() << "): " << qd.transpose() << std::endl;
+    std::cout << "\nCOM velocity (from jacobian) = " << com_vel.transpose() << std::endl;
+    std::cout << "COM velocity (from differentiation) = " << com_vel_diff.transpose() << std::endl;
     
 
 }

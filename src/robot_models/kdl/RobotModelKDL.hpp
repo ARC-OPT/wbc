@@ -91,6 +91,14 @@ protected:
                        const base::samples::Joints& status, const KDL::Frame& frame,
                        double& mass, KDL::Vector& cog);
 
+    /** @brief Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+      * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
+      * @param tree kinematic tree from which the jacobian is computed.
+      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
+      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+      */
+    virtual const base::MatrixXd &spaceJacobianFromTree(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame);
+
 
 public:
     RobotModelKDL();
@@ -135,14 +143,6 @@ public:
       * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
       */
     virtual const base::MatrixXd &spaceJacobian(const std::string &root_frame, const std::string &tip_frame);
-
-    /** @brief Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
-      * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
-      * @param tree kinematic tree from which the jacobian is computed.
-      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
-      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
-      */
-    virtual const base::MatrixXd &spaceJacobian(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame);
 
     /** @brief Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
