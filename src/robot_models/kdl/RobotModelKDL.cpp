@@ -426,10 +426,15 @@ const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame,
 
 
 const base::MatrixXd &RobotModelKDL::comJacobian(){
-    // throw std::runtime_error("Not implemented: RobotModelKDL::comJacobian");
 
-    base::MatrixXd comJacobian = base::MatrixXd::Zero(3, full_tree.getNrOfJoints());
+    if(current_joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    }
 
+    base::MatrixXd com_jacobian = base::MatrixXd::Zero(3, noOfJoints());
+
+    // create a copy in which, for each segment with mass, COG frames are added
     KDL::Tree tree_cog_frames = full_tree;
 
     double totalMass = 0;
@@ -455,15 +460,14 @@ const base::MatrixXd &RobotModelKDL::comJacobian(){
         totalMass += segmentMass;
 
         COGSegmentNames.push_back(segmentNameCOG);
-
-        std::cout << "Add segment " << segmentNameCOG << " to " <<segmentName << std::endl; 
     }
     
+    // compute com jacobian as (mass) weighted average over COG frame jacobians
     for(const auto& segment_name : COGSegmentNames)
-        comJacobian += (mass_map[segment_name] / totalMass) * 
-            spaceJacobian(tree_cog_frames, tree_cog_frames.getRootSegment()->second.segment.getName(), segment_name);
-    
-    space_jac_map["COM_jac"] = comJacobian;
+        com_jacobian += (mass_map[segment_name] / totalMass) * 
+            spaceJacobian(tree_cog_frames, tree_cog_frames.getRootSegment()->second.segment.getName(), segment_name).topRows<3>();
+
+    space_jac_map["COM_jac"] = com_jacobian;
     return space_jac_map["COM_jac"];
 }
 
@@ -549,15 +553,6 @@ const base::MatrixXd& RobotModelKDL::jointSpaceInertiaMatrix(){
     }
     return joint_space_inertia_mat;
 }
-
-
-base::MatrixXd recursiveCOMJacobian(const KDL::SegmentMap::const_iterator& currentSegment,
-    const base::samples::Joints& status, const KDL::Frame& frame,
-    double& mass, KDL::Vector& cog)
-{
-    
-}
-
 
 void RobotModelKDL::recursiveCOM( const KDL::SegmentMap::const_iterator& currentSegment,
                                   const base::samples::Joints& status, const KDL::Frame& frame,
