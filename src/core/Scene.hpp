@@ -16,6 +16,7 @@ protected:
     RobotModelPtr robot_model;
     QPSolverPtr solver;
     std::vector< std::vector<ConstraintPtr> > constraints;
+    std::vector< std::vector<HardConstraintPtr> > hard_constraints;
     ConstraintsStatus constraints_status;
     HierarchicalQP constraints_prio;
     std::vector<int> n_constraint_variables_per_prio;

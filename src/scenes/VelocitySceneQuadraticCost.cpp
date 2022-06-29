@@ -103,22 +103,53 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
 
     ///////// Constraints
-
-    // For all contacts: Js*qd = 0 (Rigid Contacts, contact points do not move!)
     constraints_prio[prio].A.setZero();
-    for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(i*6, 0, 6, nj) = contact_points[i]*robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]);
-    constraints_prio[prio].lower_y.setZero();
-    constraints_prio[prio].upper_y.setZero();
-    // TODO: Using actual limits does not work well (QP Solver sometimes fails due to infeasible QP)
-    constraints_prio[prio].lower_x.setConstant(-1000);
-    constraints_prio[prio].upper_x.setConstant(1000);
-    for(auto n : robot_model->actuatedJointNames()){
-        size_t idx = robot_model->jointIndex(n);
-        const base::JointLimitRange &range = robot_model->jointLimits().getElementByName(n);
-        constraints_prio[prio].lower_x(idx) = range.min.speed;
-        constraints_prio[prio].upper_x(idx) = range.max.speed;
+    constraints_prio[prio].lower_y.setConstant(-99999);
+    constraints_prio[prio].upper_y.setConstant(+99999);
+    constraints_prio[prio].lower_x.setConstant(-99999);
+    constraints_prio[prio].upper_x.setConstant(+99999);
+
+    size_t total_eqs = 0;
+    for(uint i = 0; i < hard_constraints[prio].size(); i++) {
+
+        hard_constraints[prio][i].update();
+
+        HardConstraint::Type type = hard_constraints[prio][i].type();
+        size_t c_var = hard_constraints[prio][i].noVar();
+
+        if(type == HardConstraint::bounds) {
+            constraints_prio[prio].lower_x = hard_constraints[prio][i].lb();
+            constraints_prio[prio].upper_x = hard_constraints[prio][i].ub();
+        }
+        else if (type == HardConstraint::equality) {
+            constraints_prio[prio].A.rows(total_eqs, c_var) = hard_constraints[prio][i].A();
+            constraints_prio[prio].lower_y.segment(total_eqs, c_var) = hard_constraints[prio][i].b();
+            constraints_prio[prio].upper_y.segment(total_eqs, c_var) = hard_constraints[prio][i].b();
+        }
+        else if (type == HardConstraint::inequality) {
+            constraints_prio[prio].A.rows(total_eqs, c_var) = hard_constraints[prio][i].A();
+            constraints_prio[prio].lower_y.segment(total_eqs, c_var) = hard_constraints[prio][i].lb();
+            constraints_prio[prio].upper_y.segment(total_eqs, c_var) = hard_constraints[prio][i].ub();
+        }
+
+        total_eqs += c_var;
     }
+
+    // // For all contacts: Js*qd = 0 (Rigid Contacts, contact points do not move!)
+    // constraints_prio[prio].A.setZero();
+    // for(int i = 0; i < contact_points.size(); i++)
+    //     constraints_prio[prio].A.block(i*6, 0, 6, nj) = contact_points[i]*robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]);
+    // constraints_prio[prio].lower_y.setZero();
+    // constraints_prio[prio].upper_y.setZero();
+    // // TODO: Using actual limits does not work well (QP Solver sometimes fails due to infeasible QP)
+    // constraints_prio[prio].lower_x.setConstant(-1000);
+    // constraints_prio[prio].upper_x.setConstant(1000);
+    // for(auto n : robot_model->actuatedJointNames()){
+    //     size_t idx = robot_model->jointIndex(n);
+    //     const base::JointLimitRange &range = robot_model->jointLimits().getElementByName(n);
+    //     constraints_prio[prio].lower_x(idx) = range.min.speed;
+    //     constraints_prio[prio].upper_x(idx) = range.max.speed;
+    // }
 
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
 
