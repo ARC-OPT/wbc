@@ -19,7 +19,7 @@ public:
     /** @brief Default constructor */
     ContactsAccelerationHardConstraint() = default;
 
-    ~ContactsAccelerationHardConstraint() = default;
+    virtual ~ContactsAccelerationHardConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) override;
 

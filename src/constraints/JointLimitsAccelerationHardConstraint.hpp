@@ -21,9 +21,9 @@ public:
     
     JointLimitsAccelerationHardConstraint(double dt);
 
-    ~JointLimitsAccelerationHardConstraint() = default;
+    virtual ~JointLimitsAccelerationHardConstraint() = default;
 
-    virtual void update(RobotModelPtr robot_model) = 0;
+    virtual void update(RobotModelPtr robot_model) override;
 
 protected:
 

@@ -4,11 +4,19 @@
 #include "../core/CartesianVelocityConstraint.hpp"
 #include "../core/JointVelocityConstraint.hpp"
 
+#include "../constraints/ContactsVelocityHardConstraint.hpp"
+#include "../constraints/JointLimitsVelocityHardConstraint.hpp"
+
 namespace wbc{
 
 VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver) :
     VelocityScene(robot_model, solver),
     hessian_regularizer(1e-8){
+
+    // for now manually adding constraint to this scene (an option would be to take them during configuration)
+    hard_constraints.resize(1);
+    hard_constraints[0].push_back(std::make_shared<ContactsVelocityHardConstraint>());
+    hard_constraints[0].push_back(std::make_shared<JointLimitsVelocityHardConstraint>(0.001));
 
 }
 

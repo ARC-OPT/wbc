@@ -19,7 +19,7 @@ public:
     /** @brief Default constructor */
     RigidbodyDynamicsHardConstraint() = default;
 
-    ~RigidbodyDynamicsHardConstraint() = default;
+    virtual ~RigidbodyDynamicsHardConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) override;
 

@@ -2,11 +2,21 @@
 #include "core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
 
+#include "../constraints/RigidbodyDynamicsHardConstraint.hpp"
+#include "../constraints/ContactsAccelerationHardConstraint.hpp"
+#include "../constraints/JointLimitsAccelerationHardConstraint.hpp"
+
 namespace wbc {
 
 AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver) :
     WbcScene(robot_model,solver),
     hessian_regularizer(1e-8){
+    
+    // for now manually adding constraint to this scene (an option would be to take them during configuration)
+    hard_constraints.resize(1);
+    hard_constraints[0].push_back(std::make_shared<RigidbodyDynamicsHardConstraint>());
+    hard_constraints[0].push_back(std::make_shared<ContactsAccelerationHardConstraint>());
+    hard_constraints[0].push_back(std::make_shared<JointLimitsAccelerationHardConstraint>(0.001));
 
 }
 
@@ -118,40 +128,78 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     ///////// Constraints
 
+    size_t total_eqs = 0;
+    for(auto hard_contraint : hard_constraints[prio]) {
+        hard_contraint->update(robot_model);
+        if(hard_contraint->type() != HardConstraint::bounds)
+            total_eqs += hard_contraint->size();
+    }
+
+    // Note already performed at the beginning of the update (but does not consider additional constriants)
+    constraints_prio[prio].A.resize(total_eqs, nj+na+ncp*6);
+    constraints_prio[prio].lower_x.resize(nj+na+ncp*6);
+    constraints_prio[prio].upper_y.resize(nj+na+ncp*6);
+    constraints_prio[prio].lower_y.resize(total_eqs);
+    constraints_prio[prio].upper_y.resize(total_eqs);
+
     constraints_prio[prio].A.setZero();
-    constraints_prio[prio].lower_y.setZero();
-    constraints_prio[prio].upper_y.setZero();
+    constraints_prio[prio].lower_y.setConstant(-99999);
+    constraints_prio[prio].upper_y.setConstant(+99999);
+    constraints_prio[prio].lower_x.setConstant(-99999);
+    constraints_prio[prio].upper_x.setConstant(+99999);
 
+    total_eqs = 0;
+    for(uint i = 0; i < hard_constraints[prio].size(); i++) {
+        HardConstraint::Type type = hard_constraints[prio][i]->type();
+        size_t c_size = hard_constraints[prio][i]->size();
 
-    // 1. M*qdd - S^T*tau - Jb_1^T*f_ext_1 - Jb_2^T*f_ext_2 - ... = -h (Rigid Body Dynamic Equation)
+        if(type == HardConstraint::bounds) {
+            constraints_prio[prio].lower_x = hard_constraints[prio][i]->lb();
+            constraints_prio[prio].upper_x = hard_constraints[prio][i]->ub();
+        }
+        else if (type == HardConstraint::equality) {
+            constraints_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
+            constraints_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
+            constraints_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
+        }
+        else if (type == HardConstraint::inequality) {
+            constraints_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
+            constraints_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->lb();
+            constraints_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->ub();
+        }
 
-    ActiveContacts contact_points = robot_model->getActiveContacts();
-    constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
-    constraints_prio[prio].A.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
-    for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]).transpose();
-    constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();// + robot_model->bodyJacobian(world_link, contact_link).transpose() * f_ext;
-
-    // 2. For all contacts: Js*qdd = -Jsdot*qd (Rigid Contacts, contact points do not move!)
-
-    for(int i = 0; i < contact_points.size(); i++){
-        constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points.names[i]);
-        base::Vector6d acc;
-        base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contact_points.names[i]);
-        acc.segment(0,3) = a.linear;
-        acc.segment(3,3) = a.angular;
-        constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
+        total_eqs += c_size;
     }
+    
+    // // 1. M*qdd - S^T*tau - Jb_1^T*f_ext_1 - Jb_2^T*f_ext_2 - ... = -h (Rigid Body Dynamic Equation)
 
-    // 3. Torque and acceleration limits
+    // ActiveContacts contact_points = robot_model->getActiveContacts();
+    // constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
+    // constraints_prio[prio].A.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
+    // for(int i = 0; i < contact_points.size(); i++)
+    //     constraints_prio[prio].A.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->baseFrame(), contact_points.names[i]).transpose();
+    // constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();// + robot_model->bodyJacobian(world_link, contact_link).transpose() * f_ext;
 
-    constraints_prio[prio].upper_x.setConstant(10000);
-    constraints_prio[prio].lower_x.setConstant(-10000);
-    for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
-        const std::string& name = robot_model->actuatedJointNames()[i];
-        constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
-        constraints_prio[prio].upper_x(i+nj) = robot_model->jointLimits()[name].max.effort;
-    }
+    // // 2. For all contacts: Js*qdd = -Jsdot*qd (Rigid Contacts, contact points do not move!)
+
+    // for(int i = 0; i < contact_points.size(); i++){
+    //     constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contact_points.names[i]);
+    //     base::Vector6d acc;
+    //     base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contact_points.names[i]);
+    //     acc.segment(0,3) = a.linear;
+    //     acc.segment(3,3) = a.angular;
+    //     constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
+    // }
+
+    // // 3. Torque and acceleration limits
+
+    // constraints_prio[prio].upper_x.setConstant(10000);
+    // constraints_prio[prio].lower_x.setConstant(-10000);
+    // for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
+    //     const std::string& name = robot_model->actuatedJointNames()[i];
+    //     constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
+    //     constraints_prio[prio].upper_x(i+nj) = robot_model->jointLimits()[name].max.effort;
+    // }
 
     constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
