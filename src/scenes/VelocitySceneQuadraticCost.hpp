@@ -42,7 +42,7 @@ public:
      * @param robot_model Pointer to the robot model
      * @param model_tasks_as_constraints Model tasks as constraints (true) or as part of the cost function
      */
-    VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver);
+    VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver, double dt=0.001);
     virtual ~VelocitySceneQuadraticCost();
 
     /**

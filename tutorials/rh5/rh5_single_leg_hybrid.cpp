@@ -20,6 +20,8 @@ using namespace ctrl_lib;
  */
 int main(){
 
+    double dt = 0.001;
+
     // Create Hyrodyn based robot model.  In this case, we use the Hyrodyn-based model, which allows handling of parallel mechanisms.
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
 
@@ -50,7 +52,7 @@ int main(){
     cart_constraint.ref_frame = "RH5_Root_Link";   // In what frame is the task specified?
     cart_constraint.activation = 1;                // (0..1) initial task activation. 1 - Task should be active initially
     cart_constraint.weights = vector<double>(6,1); // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
-    VelocitySceneQuadraticCost scene(robot_model, solver);
+    VelocitySceneQuadraticCost scene(robot_model, solver, dt);
     if(!scene.configure({cart_constraint}))
         return -1;
 
@@ -84,7 +86,7 @@ int main(){
     feedback.pose.orientation.setIdentity();
 
     // Run control loop
-    double loop_time = 0.001; // seconds
+    double loop_time = dt; // seconds
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-3){
 

@@ -8,7 +8,7 @@
 
 namespace wbc {
 
-AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver) :
+AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
     WbcScene(robot_model,solver),
     hessian_regularizer(1e-8){
     
@@ -16,7 +16,7 @@ AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolver
     hard_constraints.resize(1);
     hard_constraints[0].push_back(std::make_shared<RigidbodyDynamicsHardConstraint>());
     hard_constraints[0].push_back(std::make_shared<ContactsAccelerationHardConstraint>());
-    hard_constraints[0].push_back(std::make_shared<JointLimitsAccelerationHardConstraint>(0.001));
+    hard_constraints[0].push_back(std::make_shared<JointLimitsAccelerationHardConstraint>(dt));
 
 }
 

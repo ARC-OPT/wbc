@@ -56,7 +56,7 @@ protected:
     base::Time stamp;
 
 public:
-    AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver);
+    AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt=0.001);
     virtual ~AccelerationSceneTSID(){
     }
     /**

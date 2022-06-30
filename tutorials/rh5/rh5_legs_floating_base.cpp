@@ -41,6 +41,8 @@ using namespace ctrl_lib;
  */
 int main(){
 
+    double dt = 0.001;
+
     // Create KDL based robot model
     RobotModelPtr robot_model = std::make_shared<RobotModelKDL>();
 
@@ -93,7 +95,7 @@ int main(){
     cart_constraint.ref_frame = "world";
     cart_constraint.activation = 1;
     cart_constraint.weights = vector<double>(6,1);
-    VelocitySceneQuadraticCost scene(robot_model, solver);
+    VelocitySceneQuadraticCost scene(robot_model, solver, dt);
     if(!scene.configure({cart_constraint}))
         return -1;
 
@@ -128,7 +130,7 @@ int main(){
     feedback.pose.orientation.setIdentity();
 
     // Run control loop
-    double loop_time = 0.001; // seconds
+    double loop_time = dt; // seconds
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
 
