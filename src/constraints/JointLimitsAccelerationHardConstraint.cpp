@@ -25,6 +25,14 @@ namespace wbc{
         
         auto state = robot_model->jointState(robot_model->actuatedJointNames());
 
+        // check if a value is not nan otherwise return a substiture value
+        // used for acceleration limits since they might not be define in URDFs
+        auto check_number = [](double val, double sub){
+            if(std::isnan(val))
+                return sub;
+            return val;
+        };
+
         // joint acceleration, velocity and position limits
         for(auto n : robot_model->actuatedJointNames()){
             size_t idx = robot_model->jointIndex(n);
@@ -34,8 +42,8 @@ namespace wbc{
             double vel = state[n].speed;
 
             // enforce joint acceleration and velocity limit
-            lb_vec(idx) = std::max(static_cast<double>(range.min.acceleration), (range.min.speed - vel) / dt);
-            ub_vec(idx) = std::min(static_cast<double>(range.max.acceleration), (range.max.speed - vel) / dt);
+            lb_vec(idx) = std::max(check_number(range.min.acceleration, -999999), (range.min.speed - vel) / dt);
+            ub_vec(idx) = std::min(check_number(range.max.acceleration, +999999), (range.max.speed - vel) / dt);
             // enforce joint position limit
             lb_vec(idx) = std::max(lb_vec(idx), 2*(range.min.position - pos - dt*vel) / (dt*dt));
             ub_vec(idx) = std::min(ub_vec(idx), 2*(range.max.position - pos - dt*vel) / (dt*dt));
