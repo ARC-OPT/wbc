@@ -1,7 +1,8 @@
-#ifndef CONSTRAINT_HPP
-#define CONSTRAINT_HPP
+#ifndef JOINT_LIMIT_VELOCITY_HARD_CONSTRAINT_HPP
+#define JOINT_LIMIT_VELOCITY_HARD_CONSTRAINT_HPP
 
-#include "ConstraintConfig.hpp"
+#include "../core/HardConstraint.hpp"
+
 #include <base/Eigen.hpp>
 #include <base/Time.hpp>
 #include <base/NamedVector.hpp>
@@ -16,12 +17,11 @@ class JointLimitsVelocityHardConstraint : public HardConstraint {
 public:
 
     /** @brief Default constructor */
-    JointLimitsVelocityHardConstraint();
+    JointLimitsVelocityHardConstraint() = default;
 
+    JointLimitsVelocityHardConstraint(double dt);
 
-    JointLimitsVelocityHardConstraint(uint n_robot_joints, double dt);
-
-    ~JointLimitsVelocityHardConstraint();
+    ~JointLimitsVelocityHardConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) = 0;
 

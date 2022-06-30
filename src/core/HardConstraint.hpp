@@ -1,7 +1,7 @@
-#ifndef CONSTRAINT_HPP
-#define CONSTRAINT_HPP
+#ifndef HARD_CONSTRAINT_HPP
+#define HARD_CONSTRAINT_HPP
 
-#include "ConstraintConfig.hpp"
+#include "RobotModel.hpp"
 #include <base/Eigen.hpp>
 #include <base/Time.hpp>
 #include <base/NamedVector.hpp>
@@ -10,7 +10,11 @@
 namespace wbc{
 
 /**
- * @brief Abstract class to represent a generic hard constraint for a WBC optimization problem.
+ * @brief Abstract class to represent a generic hard (linear) constraint for a WBC optimization problem.
+ * the constraint belongs to one of three types:
+ * equality Ax = b
+ * inequality lb <= Ax <= ub
+ * bounds lb <= x <= ub
  */
 class HardConstraint{
 public:
@@ -21,44 +25,50 @@ public:
       bounds = 2
     };
 
-    ~HardConstraint();
+    virtual ~HardConstraint() = default;
 
-    virtual void update() = 0;
+    /** @brief Update constraint matrix and vectors, depending on the type. Abstract method. */
+    virtual void update(RobotModelPtr robot_model) = 0;
 
-    const Type type(); 
+    /** @brief Return the type of this constraint */
+    Type type(); 
 
+    /** @brief return constraint matrix A */
     const base::MatrixXd& A();
 
+    /** @brief return constraint vector b */
     const base::VectorXd& b();
 
+    /** @brief return constraint lower bound lb */
     const base::VectorXd& lb();
 
+    /** @brief return constraint upper bound ub */
     const base::VectorXd& ub();
+
+    /** @brief return size of the constraint (i.e. number of rows of the constraint matrix) */
+    uint size();
 
 protected:
 
     /** @brief Default constructor */
     HardConstraint();
 
-    /** @brief Resizes all members */
-    HardConstraint(Type type, uint n_robot_joints);
+    /** @brief Constructor. Initialiye the type of this constraint */
+    HardConstraint(Type type);
 
-    Type type;
-
-    /** Number of joints in the constraint*/
-    uint number_of_joints;
+    Type c_type;
 
     /** Constraint matrix */
-    base::MatrixXd A;
+    base::MatrixXd A_mtx;
+
+    /** Constraint vector */
+    base::VectorXd b_vec;
 
     /** Constraint lower bound */
-    base::VectorXd lb;
+    base::VectorXd lb_vec;
 
     /** Constraint upper bound */
-    base::VectorXd ub;
-
-    /** Joint mask vector. Values among {0,1}. 1 will activate  */
-    base::VectorXi mask;
+    base::VectorXd ub_vec;
 
 };
 typedef std::shared_ptr<HardConstraint> HardConstraintPtr;

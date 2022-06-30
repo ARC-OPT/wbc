@@ -18,7 +18,7 @@ VelocitySceneQuadraticCost::~VelocitySceneQuadraticCost(){
 const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
     if(!configured)
-        throw std::runtime_error("VelocitySceneQuadraticCost has not been configured!. PLease call configure() before calling update() for the first time!");
+        throw std::runtime_error("VelocitySceneQuadraticCost has not been configured!. Please call configure() before calling update() for the first time!");
 
     if(constraints.size() != 1){
         LOG_ERROR("Number of priorities in VelocitySceneQuadraticCost should be 1, but is %i", constraints.size());
@@ -103,36 +103,48 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
 
     ///////// Constraints
+
+    size_t total_eqs = 0;
+    for(auto hard_contraint : hard_constraints[prio]) {
+        hard_contraint->update(robot_model);
+        if(hard_contraint->type() != HardConstraint::bounds)
+            total_eqs += hard_contraint->size();
+    }
+
+    // Note already performed at the beginning of the update (but does not consider additional constriants)
+    constraints_prio[prio].A.resize(total_eqs, nj);
+    constraints_prio[prio].lower_x.resize(nj);
+    constraints_prio[prio].upper_y.resize(nj);
+    constraints_prio[prio].lower_y.resize(total_eqs);
+    constraints_prio[prio].upper_y.resize(total_eqs);
+
     constraints_prio[prio].A.setZero();
     constraints_prio[prio].lower_y.setConstant(-99999);
     constraints_prio[prio].upper_y.setConstant(+99999);
     constraints_prio[prio].lower_x.setConstant(-99999);
     constraints_prio[prio].upper_x.setConstant(+99999);
 
-    size_t total_eqs = 0;
+    total_eqs = 0;
     for(uint i = 0; i < hard_constraints[prio].size(); i++) {
-
-        hard_constraints[prio][i].update();
-
-        HardConstraint::Type type = hard_constraints[prio][i].type();
-        size_t c_var = hard_constraints[prio][i].noVar();
+        HardConstraint::Type type = hard_constraints[prio][i]->type();
+        size_t c_size = hard_constraints[prio][i]->size();
 
         if(type == HardConstraint::bounds) {
-            constraints_prio[prio].lower_x = hard_constraints[prio][i].lb();
-            constraints_prio[prio].upper_x = hard_constraints[prio][i].ub();
+            constraints_prio[prio].lower_x = hard_constraints[prio][i]->lb();
+            constraints_prio[prio].upper_x = hard_constraints[prio][i]->ub();
         }
         else if (type == HardConstraint::equality) {
-            constraints_prio[prio].A.rows(total_eqs, c_var) = hard_constraints[prio][i].A();
-            constraints_prio[prio].lower_y.segment(total_eqs, c_var) = hard_constraints[prio][i].b();
-            constraints_prio[prio].upper_y.segment(total_eqs, c_var) = hard_constraints[prio][i].b();
+            constraints_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
+            constraints_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
+            constraints_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
         }
         else if (type == HardConstraint::inequality) {
-            constraints_prio[prio].A.rows(total_eqs, c_var) = hard_constraints[prio][i].A();
-            constraints_prio[prio].lower_y.segment(total_eqs, c_var) = hard_constraints[prio][i].lb();
-            constraints_prio[prio].upper_y.segment(total_eqs, c_var) = hard_constraints[prio][i].ub();
+            constraints_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
+            constraints_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->lb();
+            constraints_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->ub();
         }
 
-        total_eqs += c_var;
+        total_eqs += c_size;
     }
 
     // // For all contacts: Js*qd = 0 (Rigid Contacts, contact points do not move!)
