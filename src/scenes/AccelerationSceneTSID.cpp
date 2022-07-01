@@ -57,55 +57,11 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     // Walk through all tasks
     for(uint i = 0; i < constraints[prio].size(); i++){
-
-        int type = constraints[prio][i]->config.type;
-        constraints[prio][i]->checkTimeout();
-        ConstraintPtr constraint;
-
-        if(type == cart){
-            constraint = std::static_pointer_cast<CartesianAccelerationConstraint>(constraints[prio][i]);
-
-            // Task Jacobian
-            constraint->A = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
-
-             // Desired task space acceleration: y_r = y_d - Jdot*qdot
-            base::samples::Joints joint_state = robot_model->jointState(robot_model->jointNames());
-            q_dot.resize(robot_model->noOfJoints());
-            for(size_t j = 0; j < joint_state.size(); j++)
-                q_dot(j) = joint_state[j].speed;
-            constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
-
-            // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
-            // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
-            // be the origin of ref frame, not the root frame. This is more intuitive when controlling the orientation of e.g. a robot' s end effector.
-            base::samples::RigidBodyStateSE3 ref_frame = robot_model->rigidBodyState(constraint->config.root, constraint->config.ref_frame);
-            constraint->y_ref_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(0,3);
-            constraint->y_ref_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(3,3);
-
-            // Also convert the weight vector from ref frame to the root frame. Take the absolute values after rotation, since weights can only
-            // assume positive values
-            constraint->weights_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(0,3);
-            constraint->weights_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(3,3);
-            constraint->weights_root = constraint->weights_root.cwiseAbs();
-        }
-        else if(type == jnt){
-            constraint = std::static_pointer_cast<JointAccelerationConstraint>(constraints[prio][i]);
-
-            // Joint space constraints: constraint matrix has only ones and Zeros. The joint order in the constraints might be different than in the robot model.
-            // Thus, for joint space constraints, the joint indices have to be mapped correctly.
-            for(uint k = 0; k < constraint->config.joint_names.size(); k++){
-
-                int idx = robot_model->jointIndex(constraint->config.joint_names[k]);
-                constraint->A(k,idx) = 1.0;
-                constraint->y_ref_root = constraint->y_ref;     // In joint space y_ref is equal to y_ref_root
-                constraint->weights_root = constraint->weights; // Same for the weights
-            }
-
-        }
-        else{
-            LOG_ERROR("Constraint %s: Invalid type: %i", constraints[prio][i]->config.name.c_str(), type);
-            throw std::invalid_argument("Invalid constraint configuration");
-        }
+        
+        ConstraintPtr constraint = constraints[prio][i];
+        
+        constraint->checkTimeout();
+        constraint->update(robot_model);
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
