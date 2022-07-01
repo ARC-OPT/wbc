@@ -16,7 +16,8 @@ namespace wbc{
  */
 enum TaskType{unset = -1,
                 jnt = 0,
-                cart = 1};
+                cart = 1,
+                com = 2};
 
 using ConstraintType [[deprecated("Renamed to TaskType")]] = TaskType;
 
@@ -55,6 +56,12 @@ public:
                      const int priority,
                      const std::vector<std::string> joint_names,
                      const std::vector<double> weights,
+                     const double activation = 0,
+                     const double timeout = 0);
+    /** Default constructor for a com task*/
+    ConstraintConfig(const std::string &name,
+                     const int priority,
+                     const std::vector<double> weights = {1,1,1},
                      const double activation = 0,
                      const double timeout = 0);
     ~ConstraintConfig();

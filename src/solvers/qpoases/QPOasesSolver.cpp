@@ -8,6 +8,8 @@ using namespace qpOASES;
 
 namespace wbc{
 
+QPSolverRegistry<QPOASESSolver> QPOASESSolver::reg("qpoases");
+
 QPOASESSolver::QPOASESSolver(){
     n_wsr = 1000;
     options.setToFast();

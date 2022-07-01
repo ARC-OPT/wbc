@@ -30,6 +30,8 @@ public:
     virtual void setReference(const base::samples::RigidBodyStateSE3& ref);
 };
 
+using CartesianAccelerationTaskPtr = std::shared_ptr<CartesianAccelerationTask>;
+
 } // namespace wbc
 
 #endif

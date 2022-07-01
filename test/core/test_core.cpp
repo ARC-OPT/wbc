@@ -2,6 +2,7 @@
 #include <core/ConstraintConfig.hpp>
 #include <core/PluginLoader.hpp>
 #include <core/RobotModelFactory.hpp>
+#include <core/QPSolverFactory.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -90,6 +91,17 @@ BOOST_AUTO_TEST_CASE(robot_model_factory){
     BOOST_CHECK(robot_model_map->at("kdl") != 0);
     RobotModel* model;
     BOOST_CHECK_NO_THROW(model = RobotModelFactory::createInstance("kdl"));
+    BOOST_CHECK(model != 0);
+}
+
+BOOST_AUTO_TEST_CASE(qp_solver_factory){
+    BOOST_CHECK_NO_THROW(PluginLoader::loadPlugin("libwbc-solvers-qpoases.so"));
+    QPSolverFactory::QPSolverMap *qp_solver_map = QPSolverFactory::getQPSolverMap();
+    BOOST_CHECK(qp_solver_map->size() == 1);
+    BOOST_CHECK(qp_solver_map->count("qpoases") == 1);
+    BOOST_CHECK(qp_solver_map->at("qpoases") != 0);
+    QPSolver* model;
+    BOOST_CHECK_NO_THROW(model = QPSolverFactory::createInstance("qpoases"));
     BOOST_CHECK(model != 0);
 }
 

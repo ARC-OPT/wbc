@@ -27,6 +27,9 @@ public:
     virtual void setReference(const base::commands::Joints& ref);
 };
 
+using JointAccelerationTaskPtr = std::shared_ptr<JointAccelerationTask>;
+
+
 } // namespace wbc
 
 #endif

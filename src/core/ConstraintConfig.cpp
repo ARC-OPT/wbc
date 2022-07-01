@@ -45,6 +45,19 @@ ConstraintConfig::ConstraintConfig(const std::string &name,
     timeout(timeout){
 }
 
+ConstraintConfig::ConstraintConfig(const std::string &name,
+                                   const int priority,
+                                   const std::vector<double> weights,
+                                   const double activation,
+                                   const double timeout) :
+    name(name),
+    type(com),
+    priority(priority),
+    weights(weights),
+    activation(activation),
+    timeout(timeout){
+}
+
 ConstraintConfig::~ConstraintConfig(){
 }
 
@@ -72,6 +85,11 @@ void ConstraintConfig::validate() const{
             LOG_ERROR("Task %s: Size of weight vector should be 6, but is %i", name.c_str(), weights.size());
             throw std::invalid_argument("Invalid task config");}
     }
+    else if(type == com){
+        if(weights.size() != 3){
+            LOG_ERROR("Constraint %s: Size of weight vector should be 3, but is %i", name.c_str(), weights.size());
+            throw std::invalid_argument("Invalid constraint config");}
+    }
     else if(type == jnt){
         if(weights.size() != joint_names.size()){
             LOG_ERROR("Task %s: Size of weight vector should be %i, but is %i", name.c_str(), joint_names.size(), weights.size());
@@ -94,6 +112,8 @@ void ConstraintConfig::validate() const{
 unsigned int ConstraintConfig::nVariables() const{
     if(type == cart)
         return 6;
+    else if(type == com)
+        return 3;
     else
         return joint_names.size();
 }

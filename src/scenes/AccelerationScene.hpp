@@ -2,13 +2,9 @@
 #define ACCELERATIONSCENE_HPP
 
 #include "../core/Scene.hpp"
-#include "../tasks/JointAccelerationTask.hpp"
-#include "../tasks/CartesianAccelerationTask.hpp"
 
 namespace wbc{
 
-typedef std::shared_ptr<CartesianAccelerationTask> CartesianAccelerationTaskPtr;
-typedef std::shared_ptr<JointAccelerationTask> JointAccelerationTaskPtr;
 
 /**
  * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following optimization problem:
@@ -30,7 +26,6 @@ typedef std::shared_ptr<JointAccelerationTask> JointAccelerationTaskPtr;
  */
 class AccelerationScene : public WbcScene{
 protected:
-    base::VectorXd q_dot;
     base::VectorXd solver_output, robot_acc;
 
     /**

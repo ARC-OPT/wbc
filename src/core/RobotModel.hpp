@@ -30,6 +30,7 @@ protected:
     base::samples::RigidBodyStateSE3 floating_base_state;
     base::samples::Wrenches contact_wrenches;
     RobotModelConfig robot_model_config;
+    std::string world_frame, base_frame;
 
 public:
     RobotModel();
@@ -72,6 +73,13 @@ public:
       */
     virtual const base::MatrixXd &bodyJacobian(const std::string &root_frame, const std::string &tip_frame) = 0;
 
+    /** @brief Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates.
+      * Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+      * columns will be the same as the configured joint order of the robot.
+      * @return A 3xN matrix, where N is the number of robot joints
+      */
+    virtual const base::MatrixXd &comJacobian() = 0;
+
     /** @brief Returns the spatial acceleration bias, i.e. the term Jdot*qdot
       * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
       * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
@@ -107,7 +115,10 @@ public:
     virtual uint jointIndex(const std::string &joint_name) = 0;
 
     /** @brief Get the base frame of the robot*/
-    virtual const std::string& baseFrame() = 0;
+    virtual const std::string& baseFrame(){return base_frame;}
+
+    /** @brief Get the world frame id*/
+    virtual const std::string& worldFrame(){return world_frame;}
 
     /** @brief Return current joint limits*/
     virtual const base::JointLimits& jointLimits() = 0;

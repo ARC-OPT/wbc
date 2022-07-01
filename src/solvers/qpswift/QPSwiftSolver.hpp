@@ -1,6 +1,7 @@
 #ifndef QP_SWIFT_SOLVER_HPP
 #define QP_SWIFT_SOLVER_HPP
 
+#include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 #include <qpSWIFT/qpSWIFT.h>
 
@@ -8,6 +9,9 @@ namespace wbc {
 class QuadraticProgram;
 
 class QPSwiftSolver : public QPSolver{
+private:
+    static QPSolverRegistry<QPSwiftSolver> reg;
+
 protected:
     base::MatrixXd P;   /** Cost function Hessian matrix*/
     base::VectorXd c;   /** Cost function gradient*/

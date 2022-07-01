@@ -2,6 +2,10 @@
 #include "core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
 
+#include "../tasks/JointAccelerationTask.hpp"
+#include "../tasks/CartesianAccelerationTask.hpp"
+#include "../tasks/CoMAccelerationTask.hpp"
+
 #include "../constraints/RigidbodyDynamicsHardConstraint.hpp"
 #include "../constraints/ContactsAccelerationHardConstraint.hpp"
 #include "../constraints/JointLimitsAccelerationHardConstraint.hpp"
@@ -24,6 +28,8 @@ TaskPtr AccelerationSceneTSID::createTask(const TaskConfig &config){
 
     if(config.type == cart)
         return std::make_shared<CartesianAccelerationTask>(config, robot_model->noOfJoints());
+    else if(config.type == com)
+        return std::make_shared<CoMAccelerationTask>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
         return std::make_shared<JointAccelerationTask>(config, robot_model->noOfJoints());
     else{
@@ -146,8 +152,12 @@ const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP&
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
+        if(base::isNaN(solver_output[idx]))
+            throw std::runtime_error("Solver output (acceleration) for joint " + name + " is NaN");
+        if(base::isNaN(solver_output[idx+nj]))
+            throw std::runtime_error("Solver output (force/torque) for joint " + name + " is NaN");
         solver_output_joints[name].acceleration = solver_output[idx];
-        solver_output_joints[name].effort = solver_output[i+nj];
+        solver_output_joints[name].effort = solver_output[idx+nj];
     }
     solver_output_joints.time = base::Time::now();
 

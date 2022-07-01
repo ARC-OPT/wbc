@@ -4,6 +4,7 @@
 
 #include "../tasks/JointVelocityTask.hpp"
 #include "../tasks/CartesianVelocityTask.hpp"
+#include "../tasks/CoMVelocityTask.hpp"
 
 namespace wbc{
 
@@ -11,6 +12,8 @@ TaskPtr VelocityScene::createTask(const TaskConfig &config){
 
     if(config.type == cart)
         return std::make_shared<CartesianVelocityTask>(config, robot_model->noOfJoints());
+    else if(config.type == com)
+        return std::make_shared<CoMVelocityTask>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
         return std::make_shared<JointVelocityTask>(config, robot_model->noOfJoints());
     else{
@@ -88,6 +91,8 @@ const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
+        if(base::isNaN(solver_output[idx]))
+            throw std::runtime_error("Solver output (speed) for joint " + name + " is NaN");
         solver_output_joints[name].speed = solver_output[idx];
     }
 

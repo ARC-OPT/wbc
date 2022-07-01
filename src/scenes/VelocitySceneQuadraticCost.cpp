@@ -5,9 +5,11 @@
 
 #include "../tasks/CartesianVelocityTask.hpp"
 #include "../tasks/JointVelocityTask.hpp"
+#include "../tasks/CoMVelocityTask.hpp"
 
 #include "../constraints/ContactsVelocityHardConstraint.hpp"
 #include "../constraints/JointLimitsVelocityHardConstraint.hpp"
+
 
 namespace wbc{
 

@@ -3,6 +3,7 @@
 
 #include <base/Eigen.hpp>
 #include <vector>
+#include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 
 namespace wbc{
@@ -30,6 +31,9 @@ class HierarchicalQP;
  * the eqn. system of the next priority will be solved in the nullspace of the priovious priority, and so on. Additionally the solver can include weights in joint space and task space.
  */
 class HierarchicalLSSolver : public QPSolver{
+private:
+    static QPSolverRegistry<HierarchicalLSSolver> reg;
+
 public:
 
     /**
