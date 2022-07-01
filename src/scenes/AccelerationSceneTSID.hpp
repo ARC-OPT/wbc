@@ -2,14 +2,14 @@
 #define WBCACCELERATIONSCENETSID_HPP
 
 #include "../core/Scene.hpp"
-#include "../tasks/JointAccelerationConstraint.hpp"
-#include "../tasks/CartesianAccelerationConstraint.hpp"
+#include "../tasks/JointAccelerationTask.hpp"
+#include "../tasks/CartesianAccelerationTask.hpp"
 #include <base/samples/Wrenches.hpp>
 
 namespace wbc{
 
-typedef std::shared_ptr<CartesianAccelerationConstraint> CartesianAccelerationConstraintPtr;
-typedef std::shared_ptr<JointAccelerationConstraint> JointAccelerationConstraintPtr;
+typedef std::shared_ptr<CartesianAccelerationTask> CartesianAccelerationTaskPtr;
+typedef std::shared_ptr<JointAccelerationTask> JointAccelerationTaskPtr;
 /**
  * @brief Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:
  *  \f[
@@ -49,9 +49,9 @@ protected:
     double hessian_regularizer;
 
     /**
-     * brief Create a constraint and add it to the WBC scene
+     * brief Create a task and add it to the WBC scene
      */
-    virtual ConstraintPtr createConstraint(const ConstraintConfig &config);
+    virtual TaskPtr createTask(const TaskConfig &config);
 
     base::Time stamp;
 
@@ -61,7 +61,7 @@ public:
     }
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
-     * @param ctrl_output Control solution that fulfill the given constraints as good as possible
+     * @param ctrl_output Control solution that fulfill the given tasks as good as possible
      */
     virtual const HierarchicalQP& update();
 
@@ -72,9 +72,9 @@ public:
     virtual const base::commands::Joints& solve(const HierarchicalQP& hqp);
 
     /**
-     * @brief evaluateConstraints Evaluate the fulfillment of the constraints given the current robot state and the solver output
+     * @brief evaluateTasks Evaluate the fulfillment of the tasks given the current robot state and the solver output
      */
-    virtual const ConstraintsStatus &updateConstraintsStatus();
+    virtual const TasksStatus &updateTasksStatus();
 
     /**
      * @brief Get estimated contact wrenches

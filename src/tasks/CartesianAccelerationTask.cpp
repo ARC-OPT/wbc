@@ -1,4 +1,4 @@
-#include "CartesianAccelerationConstraint.hpp"
+#include "CartesianAccelerationTask.hpp"
 #include <base-logging/Logging.hpp>
 #include <base/samples/RigidBodyStateSE3.hpp>
 
@@ -16,11 +16,11 @@ base::Vector6d operator-(base::Vector6d a, base::Acceleration b){
     return a;
 }
 
-CartesianAccelerationConstraint::CartesianAccelerationConstraint(ConstraintConfig config, uint n_robot_joints)
-    : CartesianConstraint(config, n_robot_joints){
+CartesianAccelerationTask::CartesianAccelerationTask(TaskConfig config, uint n_robot_joints)
+    : CartesianTask(config, n_robot_joints){
 }
 
-void CartesianAccelerationConstraint::update(RobotModelPtr robot_model){
+void CartesianAccelerationTask::update(RobotModelPtr robot_model){
     // Task Jacobian
     A = robot_model->spaceJacobian(config.root, config.tip);
 
@@ -45,7 +45,7 @@ void CartesianAccelerationConstraint::update(RobotModelPtr robot_model){
     weights_root = weights_root.cwiseAbs();
 }
 
-void CartesianAccelerationConstraint::setReference(const base::samples::RigidBodyStateSE3& ref){
+void CartesianAccelerationTask::setReference(const base::samples::RigidBodyStateSE3& ref){
 
     if(!ref.hasValidAcceleration()){
         LOG_ERROR("Constraint %s has invalid linear and/or angular acceleration", config.name.c_str())
