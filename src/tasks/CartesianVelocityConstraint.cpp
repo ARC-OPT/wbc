@@ -8,7 +8,21 @@ CartesianVelocityConstraint::CartesianVelocityConstraint(ConstraintConfig config
     : CartesianConstraint(config, n_robot_joints){
 }
 
-CartesianVelocityConstraint::~CartesianVelocityConstraint(){
+void CartesianVelocityConstraint::update(RobotModelPtr robot_model){
+    
+    // Constraint Jacobian
+    A = robot_model->spaceJacobian(config.root, config.tip);
+
+    // Convert constraint twist to robot root
+    base::MatrixXd rot_mat = robot_model->rigidBodyState(config.root, config.ref_frame).pose.orientation.toRotationMatrix();
+    y_ref_root.segment(0,3) = rot_mat * y_ref.segment(0,3);
+    y_ref_root.segment(3,3) = rot_mat * y_ref.segment(3,3);
+
+    // Also convert the weight vector from ref frame to the root frame. Take the absolute values after rotation, since weights can only
+    // assume positive values
+    weights_root.segment(0,3) = rot_mat * weights.segment(0,3);
+    weights_root.segment(3,3) = rot_mat * weights.segment(3,3);
+    weights_root = weights_root.cwiseAbs();
 }
 
 void CartesianVelocityConstraint::setReference(const base::samples::RigidBodyStateSE3& ref){

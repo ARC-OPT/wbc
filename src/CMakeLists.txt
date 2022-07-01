@@ -1,5 +1,6 @@
 add_subdirectory(core)
 add_subdirectory(robot_models)
+add_subdirectory(tasks)
 add_subdirectory(constraints)
 add_subdirectory(scenes)
 add_subdirectory(solvers)

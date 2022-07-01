@@ -1,7 +1,7 @@
 #ifndef JOINTCONSTRAINT_HPP
 #define JOINTCONSTRAINT_HPP
 
-#include "Constraint.hpp"
+#include "../core/Constraint.hpp"
 #include <base/commands/Joints.hpp>
 
 namespace wbc {

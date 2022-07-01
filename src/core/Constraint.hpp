@@ -2,6 +2,7 @@
 #define CONSTRAINT_HPP
 
 #include "ConstraintConfig.hpp"
+#include "RobotModel.hpp"
 #include <base/Eigen.hpp>
 #include <base/Time.hpp>
 #include <base/NamedVector.hpp>
@@ -26,6 +27,11 @@ public:
      * @brief Reset constraint variables to initial values
      */
     void reset();
+
+    /**
+     * @brief Update Task matrices and vectors
+     */
+    virtual void update(RobotModelPtr robot_model) = 0;
 
     /**
      * @brief Check if the constraint is in timeout and set the timeout flag accordingly. A constraint is in timeout if

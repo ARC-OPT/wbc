@@ -8,8 +8,17 @@ JointVelocityConstraint::JointVelocityConstraint(ConstraintConfig config, uint n
 
 }
 
-JointVelocityConstraint::~JointVelocityConstraint(){
+void JointVelocityConstraint::update(RobotModelPtr robot_model){
 
+    // Joint space constraints: constraint matrix has only ones and Zeros. The joint order in the constraints might be different than in the robot model.
+    // Thus, for joint space constraints, the joint indices have to be mapped correctly.
+    for(uint k = 0; k < config.joint_names.size(); k++){
+
+        int idx = robot_model->jointIndex(config.joint_names[k]);
+        A(k,idx) = 1.0;
+        y_ref_root = y_ref;     // In joint space y_ref is equal to y_ref_root
+        weights_root = weights; // Same of the weights
+    }
 }
 
 void JointVelocityConstraint::setReference(const base::commands::Joints& ref){

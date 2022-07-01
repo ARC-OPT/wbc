@@ -10,7 +10,14 @@ namespace wbc{
 class JointAccelerationConstraint : public JointConstraint{
 public:
     JointAccelerationConstraint(ConstraintConfig config, uint n_robot_joints);
-    virtual ~JointAccelerationConstraint();
+    virtual ~JointAccelerationConstraint() = default;
+
+    /**
+     * @brief Compute the joint task matrix A
+     * @param robot_model Pointer to the robot model from which get the state and compute the joint task matrix A
+     */
+    virtual void update(RobotModelPtr robot_model) override;
+
 
     /**
      * @brief Update the Joint reference input for this constraint.

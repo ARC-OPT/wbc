@@ -11,7 +11,13 @@ namespace wbc{
 class CartesianVelocityConstraint : public CartesianConstraint{
 public:
     CartesianVelocityConstraint(ConstraintConfig config, uint n_robot_joints);
-    virtual ~CartesianVelocityConstraint();
+    virtual ~CartesianVelocityConstraint() = default;
+
+    /**
+     * @brief Compute the cartesian task matrix A
+     * @param robot_model Pointer to the robot model from which get the state and compute the cartesian task matrix A
+     */
+    virtual void update(RobotModelPtr robot_model) override;
 
     /**
      * @brief Update the Cartesian reference input for this constraint.

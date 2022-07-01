@@ -1,8 +1,10 @@
 #include "VelocitySceneQuadraticCost.hpp"
+
 #include <base/JointLimits.hpp>
 #include <base-logging/Logging.hpp>
-#include "../core/CartesianVelocityConstraint.hpp"
-#include "../core/JointVelocityConstraint.hpp"
+
+#include "../tasks/CartesianVelocityConstraint.hpp"
+#include "../tasks/JointVelocityConstraint.hpp"
 
 #include "../constraints/ContactsVelocityHardConstraint.hpp"
 #include "../constraints/JointLimitsVelocityHardConstraint.hpp"

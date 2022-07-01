@@ -1,7 +1,7 @@
 #ifndef CARTESIANCONSTRAINT_HPP
 #define CARTESIANCONSTRAINT_HPP
 
-#include "Constraint.hpp"
+#include "../core/Constraint.hpp"
 
 namespace base{ namespace samples { class RigidBodyStateSE3; } }
 

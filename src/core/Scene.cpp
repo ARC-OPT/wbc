@@ -1,7 +1,7 @@
 #include "Scene.hpp"
 #include <base-logging/Logging.hpp>
-#include "JointConstraint.hpp"
-#include "CartesianConstraint.hpp"
+#include "../tasks/JointConstraint.hpp"
+#include "../tasks/CartesianConstraint.hpp"
 
 namespace wbc{
 

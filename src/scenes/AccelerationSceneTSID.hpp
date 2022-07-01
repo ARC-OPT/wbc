@@ -2,8 +2,8 @@
 #define WBCACCELERATIONSCENETSID_HPP
 
 #include "../core/Scene.hpp"
-#include "../core/JointAccelerationConstraint.hpp"
-#include "../core/CartesianAccelerationConstraint.hpp"
+#include "../tasks/JointAccelerationConstraint.hpp"
+#include "../tasks/CartesianAccelerationConstraint.hpp"
 #include <base/samples/Wrenches.hpp>
 
 namespace wbc{

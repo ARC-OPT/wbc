@@ -15,7 +15,13 @@ base::Vector6d operator-(base::Vector6d a, base::Acceleration b);
 class CartesianAccelerationConstraint : public CartesianConstraint{
 public:
     CartesianAccelerationConstraint(ConstraintConfig config, uint n_robot_joints);
-    virtual ~CartesianAccelerationConstraint();
+    virtual ~CartesianAccelerationConstraint() = default;
+
+    /**
+     * @brief Compute the cartesian task matrix A
+     * @param robot_model Pointer to the robot model from which get the state and compute the cartesian task matrix A
+     */
+    virtual void update(RobotModelPtr robot_model) override;
 
     /**
      * @brief Update the Cartesian reference input for this constraint.
