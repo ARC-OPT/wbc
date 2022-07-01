@@ -35,5 +35,5 @@
   <depend package="control/qpOASES" />
   <depend package="control/qpSWIFT"/>
   <depend package="control/eiquadprog"/>
-  <depend package="control/hyrodyn"/>
+  <depend package="control/hyrodyn" optional="1"/>
 </package>
