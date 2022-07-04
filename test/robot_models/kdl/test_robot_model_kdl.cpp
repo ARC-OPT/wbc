@@ -283,20 +283,20 @@ BOOST_AUTO_TEST_CASE(verify_jacobian_and_forward_kinematics){
             BOOST_CHECK(fabs(twist(i+3) - cstate.twist.angular(i)) <= 1e-7);
         }
 
-        base::VectorXd acceleration = robot_model.jacobianDot("base", "ee")*joint_vel + robot_model.spaceJacobian("base", "ee")*joint_acc;
+        base::VectorXd acceleration = robot_model.jacobianDot("base", "ee")*joint_vel +robot_model.spaceJacobian("base", "ee")*joint_acc;
         double expected_y_acc = -acc*cos(pos) +  vel*vel*sin(pos);
         double expected_z_acc = -acc*sin(pos) -vel*vel*cos(pos);
         /*printf("Expected Linear Acc:  %.4f %.4f %.4f\n",   zero, expected_y_acc, expected_z_acc);
         printf("Computed Linear Acc:  %.4f %.4f %.4f\n\n",   acceleration(0), acceleration(1), acceleration(2));*/
-        BOOST_CHECK(fabs(zero - acceleration(0)) <= 1e-7);
-        BOOST_CHECK(fabs(expected_y_acc - acceleration(1)) <= 1e-7);
-        BOOST_CHECK(fabs(expected_z_acc - acceleration(2)) <= 1e-7);
+        BOOST_CHECK(fabs(zero - cstate.acceleration.linear(0)) <= 1e-7);
+        BOOST_CHECK(fabs(expected_y_acc - cstate.acceleration.linear(1)) <= 1e-7);
+        BOOST_CHECK(fabs(expected_z_acc - cstate.acceleration.linear(2)) <= 1e-7);
 
         /*printf("Expected Angular Acc:  %.4f %.4f %.4f\n",   acc, zero, zero);
         printf("Computed Angular Acc:  %.4f %.4f %.4f\n\n",   acceleration(3), acceleration(4), acceleration(5));*/
-        BOOST_CHECK(fabs(acc - acceleration(3)) <= 1e-7);
-        BOOST_CHECK(fabs(zero - acceleration(4)) <= 1e-7);
-        BOOST_CHECK(fabs(zero - acceleration(5)) <= 1e-7);
+        BOOST_CHECK(fabs(acc - cstate.acceleration.angular(0)) <= 1e-7);
+        BOOST_CHECK(fabs(zero - cstate.acceleration.angular(1)) <= 1e-7);
+        BOOST_CHECK(fabs(zero - cstate.acceleration.angular(2)) <= 1e-7);
 
         //printf("...........................................................\n");
         usleep(0.1*1000*1000);
@@ -519,10 +519,10 @@ BOOST_AUTO_TEST_CASE(com_jacobian_test)
     for(int i = 0; i < 3; i++)
         BOOST_CHECK(fabs(com_vel(i) - com_vel_diff(i)) < 1e-3);
 
-    std::cout << "\n\nCOM Jacobian (" << com_jacobian.rows() << "x" << com_jacobian.cols() << "):" << std::endl << com_jacobian << std::endl;
+    /*std::cout << "\n\nCOM Jacobian (" << com_jacobian.rows() << "x" << com_jacobian.cols() << "):" << std::endl << com_jacobian << std::endl;
     std::cout << "\nqd (size: " << qd.size() << "): " << qd.transpose() << std::endl;
     std::cout << "\nCOM velocity (from jacobian) = " << com_vel.transpose() << std::endl;
-    std::cout << "COM velocity (from differentiation) = " << com_vel_diff.transpose() << std::endl;
+    std::cout << "COM velocity (from differentiation) = " << com_vel_diff.transpose() << std::endl;*/
     
 
 }

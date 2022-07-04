@@ -26,6 +26,9 @@ protected:
                             base::samples::Joints& joint_state);
     void clear();
 
+    /** ID of kinematic chain given root and tip*/
+    const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
+
     std::vector<std::string> contact_points;
     ActiveContacts active_contacts;
     base::Vector3d gravity;
@@ -42,13 +45,17 @@ protected:
     bool has_floating_base;
     base::samples::Joints joint_state;
     base::MatrixXd joint_space_inertia_mat;
-    base::MatrixXd jac;
     base::MatrixXd com_jac;
     base::VectorXd bias_forces;
     base::Acceleration spatial_acc_bias;
     base::MatrixXd selection_matrix;
     base::samples::RigidBodyStateSE3 com_rbs;
     base::samples::RigidBodyStateSE3 rbs;
+
+    typedef std::map<std::string, base::MatrixXd > JacobianMap;
+    JacobianMap space_jac_map;
+    JacobianMap body_jac_map;
+    JacobianMap jac_dot_map;
 
     // Helper
     base::samples::Joints joint_state_out;

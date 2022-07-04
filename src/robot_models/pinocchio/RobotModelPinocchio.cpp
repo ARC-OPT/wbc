@@ -176,11 +176,12 @@ const base::MatrixXd &RobotModelPinocchio::spaceJacobian(const std::string &root
         LOG_ERROR_S<<"Requested space Jacobian for tip frame "<<tip_frame<<" but this frame does not exist in robot model"<<std::endl;
         throw std::runtime_error("Invalid tip frame");
     }
-    jac.resize(6,model.nv);
-    jac.setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED, jac);
+    std::string chain_id = chainID(root_frame, tip_frame);
+    space_jac_map[chain_id].resize(6,model.nv);
+    space_jac_map[chain_id].setZero();
+    pinocchio::computeFrameJacobian(model, *data, q, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED, space_jac_map[chain_id]);
 
-    return jac;
+    return space_jac_map[chain_id];
 }
 
 const base::MatrixXd &RobotModelPinocchio::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
@@ -199,11 +200,12 @@ const base::MatrixXd &RobotModelPinocchio::bodyJacobian(const std::string &root_
         LOG_ERROR_S<<"Requested space Jacobian for tip frame "<<tip_frame<<" but this frame does not exist in robot model"<<std::endl;
         throw std::runtime_error("Invalid tip frame");
     }
-    jac.resize(6,model.nv);
-    jac.setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, model.getFrameId(tip_frame), pinocchio::LOCAL, jac);
+    std::string chain_id = chainID(root_frame, tip_frame);
+    body_jac_map[chain_id].resize(6,model.nv);
+    body_jac_map[chain_id].setZero();
+    pinocchio::computeFrameJacobian(model, *data, q, model.getFrameId(tip_frame), pinocchio::LOCAL, body_jac_map[chain_id]);
 
-    return jac;
+    return body_jac_map[chain_id];
 }
 
 const base::MatrixXd &RobotModelPinocchio::comJacobian(){

@@ -28,6 +28,9 @@ void RobotModel::clear(){
     robot_urdf.reset();
     joint_state.clear();
     joint_state_out.clear();
+    space_jac_map.clear();
+    body_jac_map.clear();
+    jac_dot_map.clear();
 }
 
 void RobotModel::updateFloatingBase(const base::samples::RigidBodyStateSE3& rbs,

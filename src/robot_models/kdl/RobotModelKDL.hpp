@@ -25,7 +25,6 @@ private:
 
     typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
-    typedef std::map<std::string, base::MatrixXd > JacobianMap;
 
     KDL::JntArray q,qdot,qdotdot,tau,zero;
     base::VectorXd tmp_acc;
@@ -56,9 +55,6 @@ protected:
 
     /** Free storage and clear data structures*/
     void clear();
-
-    /** ID of kinematic chain given root and tip*/
-    const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
     /**
      * Recursively loops through all the tree segments and compute the

@@ -116,10 +116,6 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
 
     // 4. Create data structures
 
-    jac.resize(6,noOfJoints());
-    jac.setConstant(std::numeric_limits<double>::quiet_NaN());
-    com_jac.resize(3,noOfJoints());
-    com_jac.setConstant(std::numeric_limits<double>::quiet_NaN());
     active_contacts = cfg.contact_points;
     joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
     bias_forces.resize(noOfJoints());
@@ -255,20 +251,23 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
         throw std::runtime_error("Invalid root frame");
     }
 
-    jac.setZero();
+    std::string chain_id = chainID(root_frame,tip_frame);
+
+    space_jac_map[chain_id].resize(6,noOfJoints());
+    space_jac_map[chain_id].setZero();
     if(hyrodyn.floating_base_robot){
         hyrodyn.calculate_space_jacobian_actuation_space_including_floatingbase(tip_frame);
         uint n_cols = hyrodyn.Jsufb.cols();
-        jac.block(0,0,3,n_cols) = hyrodyn.Jsufb.block(3,0,3,n_cols);
-        jac.block(3,0,3,n_cols) = hyrodyn.Jsufb.block(0,0,3,n_cols);
+        space_jac_map[chain_id].block(0,0,3,n_cols) = hyrodyn.Jsufb.block(3,0,3,n_cols);
+        space_jac_map[chain_id].block(3,0,3,n_cols) = hyrodyn.Jsufb.block(0,0,3,n_cols);
     }else{
         hyrodyn.calculate_space_jacobian_actuation_space(tip_frame);
         uint n_cols = hyrodyn.Jsu.cols();
-        jac.block(0,0,3,n_cols) = hyrodyn.Jsu.block(3,0,3,n_cols);
-        jac.block(3,0,3,n_cols) = hyrodyn.Jsu.block(0,0,3,n_cols);
+        space_jac_map[chain_id].block(0,0,3,n_cols) = hyrodyn.Jsu.block(3,0,3,n_cols);
+        space_jac_map[chain_id].block(3,0,3,n_cols) = hyrodyn.Jsu.block(0,0,3,n_cols);
     }
 
-    return jac;
+    return space_jac_map[chain_id];
 }
 
 const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
@@ -294,21 +293,24 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
         throw std::runtime_error("Invalid root frame");
     }
 
-    jac.setZero();
+    std::string chain_id = chainID(root_frame,tip_frame);
+
+    body_jac_map[chain_id].resize(6,noOfJoints());
+    body_jac_map[chain_id].setZero();
     if(hyrodyn.floating_base_robot){
         hyrodyn.calculate_body_jacobian_actuation_space_including_floatingbase(tip_frame);
         uint n_cols = hyrodyn.Jbufb.cols();
-        jac.block(0,0,3,n_cols) = hyrodyn.Jbufb.block(3,0,3,n_cols);
-        jac.block(3,0,3,n_cols) = hyrodyn.Jbufb.block(0,0,3,n_cols);
+        body_jac_map[chain_id].block(0,0,3,n_cols) = hyrodyn.Jbufb.block(3,0,3,n_cols);
+        body_jac_map[chain_id].block(3,0,3,n_cols) = hyrodyn.Jbufb.block(0,0,3,n_cols);
     }
     else{
         hyrodyn.calculate_body_jacobian_actuation_space(tip_frame);
         uint n_cols = hyrodyn.Jbu.cols();
-        jac.block(0,0,3,n_cols) = hyrodyn.Jbu.block(3,0,3,n_cols);
-        jac.block(3,0,3,n_cols) = hyrodyn.Jbu.block(0,0,3,n_cols);
+        body_jac_map[chain_id].block(0,0,3,n_cols) = hyrodyn.Jbu.block(3,0,3,n_cols);
+        body_jac_map[chain_id].block(3,0,3,n_cols) = hyrodyn.Jbu.block(0,0,3,n_cols);
     }
 
-    return jac;
+    return body_jac_map[chain_id];
 }
 
 const base::MatrixXd &RobotModelHyrodyn::comJacobian(){
@@ -318,6 +320,7 @@ const base::MatrixXd &RobotModelHyrodyn::comJacobian(){
     }
 
     hyrodyn.calculate_com_jacobian();
+    com_jac.resize(3,noOfJoints());
     com_jac = hyrodyn.Jcom;
     return com_jac;
 }

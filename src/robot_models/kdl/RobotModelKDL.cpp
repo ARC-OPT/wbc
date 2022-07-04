@@ -330,13 +330,13 @@ const base::MatrixXd& RobotModelKDL::spaceJacobianFromTree(const KDL::Tree& tree
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
     kdl_chain->calculateSpaceJacobian();
 
-    jac.resize(6,noOfJoints());
-    jac.setZero();
+    space_jac_map[chain_id].resize(6,noOfJoints());
+    space_jac_map[chain_id].setZero();
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac.col(idx) = kdl_chain->space_jacobian.data.col(j);
+        space_jac_map[chain_id].col(idx) = kdl_chain->space_jacobian.data.col(j);
     }
-    return jac;
+    return space_jac_map[chain_id];
 }
 
 const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
@@ -354,13 +354,13 @@ const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame,
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
     kdl_chain->calculateBodyJacobian();
 
-    jac.resize(6,noOfJoints());
-    jac.setZero();
+    body_jac_map[chain_id].resize(6,noOfJoints());
+    body_jac_map[chain_id].setZero();
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac.col(idx) = kdl_chain->body_jacobian.data.col(j);
+        body_jac_map[chain_id].col(idx) = kdl_chain->body_jacobian.data.col(j);
     }
-    return jac;
+    return body_jac_map[chain_id];
 }
 
 
@@ -424,13 +424,13 @@ const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
     kdl_chain->calculateJacobianDot();
 
-    jac.resize(6,noOfJoints());
-    jac.setZero();
+    jac_dot_map[chain_id].resize(6,noOfJoints());
+    jac_dot_map[chain_id].setZero();
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac.col(idx) = kdl_chain->jacobian_dot.data.col(j);
+        jac_dot_map[chain_id].col(idx) = kdl_chain->jacobian_dot.data.col(j);
     }
-    return jac;
+    return jac_dot_map[chain_id];
 }
 
 const base::Acceleration &RobotModelKDL::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
