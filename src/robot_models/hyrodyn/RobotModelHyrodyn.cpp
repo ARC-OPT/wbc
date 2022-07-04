@@ -14,15 +14,9 @@ RobotModelHyrodyn::~RobotModelHyrodyn(){
 }
 
 void RobotModelHyrodyn::clear(){
-    joint_state.clear();
-    contact_points.clear();
-    base_frame="";
-    world_frame="";
-    gravity = base::Vector3d(0,0,-9.81);
-    joint_limits.clear();
-    robot_urdf.reset();
-    joint_names_floating_base.clear();
-    joint_names.clear();
+
+    RobotModel::clear();
+
     hyrodyn = hyrodyn::RobotModel_HyRoDyn();
 }
 
@@ -52,7 +46,8 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
 
     // Add floating base
     world_frame = base_frame;
-    if(cfg.floating_base){
+    has_floating_base = cfg.floating_base;
+    if(has_floating_base){
         joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
         world_frame = robot_urdf->getRoot()->name;
     }
@@ -75,6 +70,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     joint_state.elements.resize(hyrodyn.jointnames_spanningtree.size());
 
     joint_names = joint_names_floating_base + hyrodyn.jointnames_active;
+    actuated_joint_names = hyrodyn.jointnames_active;
     independent_joint_names = joint_names_floating_base + hyrodyn.jointnames_independent;
 
     // 2. Verify consistency of URDF and config
@@ -120,10 +116,10 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
 
     // 4. Create data structures
 
-    jacobian.resize(6,noOfJoints());
-    jacobian.setConstant(std::numeric_limits<double>::quiet_NaN());
-    com_jacobian.resize(3,noOfJoints());
-    com_jacobian.setConstant(std::numeric_limits<double>::quiet_NaN());
+    jac.resize(6,noOfJoints());
+    jac.setConstant(std::numeric_limits<double>::quiet_NaN());
+    com_jac.resize(3,noOfJoints());
+    com_jac.setConstant(std::numeric_limits<double>::quiet_NaN());
     active_contacts = cfg.contact_points;
     joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
     bias_forces.resize(noOfJoints());
@@ -212,33 +208,10 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
     joint_state.time = joint_state_in.time;
 }
 
-const base::samples::Joints& RobotModelHyrodyn::jointState(const std::vector<std::string> &joint_names){
-
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to jointState()");
-    }
-
-    joint_state_out.resize(joint_names.size());
-    joint_state_out.names = joint_names;
-    joint_state_out.time = joint_state.time;
-
-    for(size_t i = 0; i < joint_names.size(); i++){
-        try{
-            joint_state_out[i] = joint_state.getElementByName(joint_names[i]);
-        }
-        catch(std::exception e){
-            LOG_ERROR("RobotModelKDL: Requested state of joint %s but this joint does not exist in robot model", joint_names[i].c_str());
-            throw std::invalid_argument("Invalid call to jointState()");
-        }
-    }
-    return joint_state_out;
-}
-
 const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
 
     if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelHyrodyn: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
@@ -263,7 +236,7 @@ const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const 
 const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelHyrodyn: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to spaceJacobian()");
     }
 
@@ -282,25 +255,26 @@ const base::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &root_f
         throw std::runtime_error("Invalid root frame");
     }
 
+    jac.setZero();
     if(hyrodyn.floating_base_robot){
         hyrodyn.calculate_space_jacobian_actuation_space_including_floatingbase(tip_frame);
         uint n_cols = hyrodyn.Jsufb.cols();
-        jacobian.block(0,0,3,n_cols) = hyrodyn.Jsufb.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = hyrodyn.Jsufb.block(0,0,3,n_cols);
+        jac.block(0,0,3,n_cols) = hyrodyn.Jsufb.block(3,0,3,n_cols);
+        jac.block(3,0,3,n_cols) = hyrodyn.Jsufb.block(0,0,3,n_cols);
     }else{
         hyrodyn.calculate_space_jacobian_actuation_space(tip_frame);
         uint n_cols = hyrodyn.Jsu.cols();
-        jacobian.block(0,0,3,n_cols) = hyrodyn.Jsu.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = hyrodyn.Jsu.block(0,0,3,n_cols);
+        jac.block(0,0,3,n_cols) = hyrodyn.Jsu.block(3,0,3,n_cols);
+        jac.block(3,0,3,n_cols) = hyrodyn.Jsu.block(0,0,3,n_cols);
     }
 
-    return jacobian;
+    return jac;
 }
 
 const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
 
     if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelHyrodyn: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to bodyJacobian()");
     }
 
@@ -320,31 +294,32 @@ const base::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &root_fr
         throw std::runtime_error("Invalid root frame");
     }
 
+    jac.setZero();
     if(hyrodyn.floating_base_robot){
         hyrodyn.calculate_body_jacobian_actuation_space_including_floatingbase(tip_frame);
         uint n_cols = hyrodyn.Jbufb.cols();
-        jacobian.block(0,0,3,n_cols) = hyrodyn.Jbufb.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = hyrodyn.Jbufb.block(0,0,3,n_cols);
+        jac.block(0,0,3,n_cols) = hyrodyn.Jbufb.block(3,0,3,n_cols);
+        jac.block(3,0,3,n_cols) = hyrodyn.Jbufb.block(0,0,3,n_cols);
     }
     else{
         hyrodyn.calculate_body_jacobian_actuation_space(tip_frame);
         uint n_cols = hyrodyn.Jbu.cols();
-        jacobian.block(0,0,3,n_cols) = hyrodyn.Jbu.block(3,0,3,n_cols);
-        jacobian.block(3,0,3,n_cols) = hyrodyn.Jbu.block(0,0,3,n_cols);
+        jac.block(0,0,3,n_cols) = hyrodyn.Jbu.block(3,0,3,n_cols);
+        jac.block(3,0,3,n_cols) = hyrodyn.Jbu.block(0,0,3,n_cols);
     }
 
-    return jacobian;
+    return jac;
 }
 
 const base::MatrixXd &RobotModelHyrodyn::comJacobian(){
     if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelHyrodyn: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to comJacobian()");
     }
 
     hyrodyn.calculate_com_jacobian();
-    com_jacobian = hyrodyn.Jcom;
-    return com_jacobian;
+    com_jac = hyrodyn.Jcom;
+    return com_jac;
 }
 
 const base::MatrixXd &RobotModelHyrodyn::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
@@ -360,7 +335,7 @@ const base::Acceleration &RobotModelHyrodyn::spatialAccelerationBias(const std::
 
 const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){
     if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelHyrodyn: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jointSpaceInertiaMatrix()");
     }
 
@@ -379,7 +354,7 @@ const base::MatrixXd &RobotModelHyrodyn::jointSpaceInertiaMatrix(){
 
 const base::VectorXd &RobotModelHyrodyn::biasForces(){
     if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelHyrodyn: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to biasForces()");
     }
 
@@ -397,29 +372,6 @@ const base::VectorXd &RobotModelHyrodyn::biasForces(){
     return bias_forces;
 }
 
-
-uint RobotModelHyrodyn::jointIndex(const std::string &joint_name){
-    uint idx = std::find(joint_names.begin(), joint_names.end(), joint_name) - joint_names.begin();
-    if(idx >= joint_names.size())
-        throw std::invalid_argument("Index of joint  " + joint_name + " was requested but this joint is not in robot model");
-    return idx;
-}
-
-bool RobotModelHyrodyn::hasLink(const std::string &link_name){
-    for(auto l  : robot_urdf->links_)
-        if(l.second->name == link_name)
-            return true;
-    return false;
-}
-
-bool RobotModelHyrodyn::hasJoint(const std::string &joint_name){
-    return std::find(joint_state.names.begin(), joint_state.names.end(), joint_name) != joint_state.names.end();
-}
-
-bool RobotModelHyrodyn::hasActuatedJoint(const std::string &joint_name){
-    return std::find(hyrodyn.jointnames_active.begin(), hyrodyn.jointnames_active.end(), joint_name) != hyrodyn.jointnames_active.end();
-}
-
 const base::samples::RigidBodyStateSE3& RobotModelHyrodyn::centerOfMass(){
     hyrodyn.calculate_com_properties();
 
@@ -428,7 +380,7 @@ const base::samples::RigidBodyStateSE3& RobotModelHyrodyn::centerOfMass(){
     com_rbs.pose.orientation.setIdentity();
     com_rbs.twist.linear = hyrodyn.com_vel;
     com_rbs.twist.angular.setZero();
-    com_rbs.acceleration.linear = hyrodyn.com_acc;
+    com_rbs.acceleration.linear = hyrodyn.com_acc; // TODO: double check CoM acceleration
     com_rbs.acceleration.angular.setZero();
     com_rbs.time = joint_state.time;
     return com_rbs;
@@ -436,7 +388,7 @@ const base::samples::RigidBodyStateSE3& RobotModelHyrodyn::centerOfMass(){
 
 void RobotModelHyrodyn::computeInverseDynamics(base::commands::Joints &solver_output){
     if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        LOG_ERROR("RobotModelHyrodyn: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to computeInverseDynamics()");
     }
 

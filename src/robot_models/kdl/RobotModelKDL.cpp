@@ -21,18 +21,11 @@ RobotModelKDL::~RobotModelKDL(){
 }
 
 void RobotModelKDL::clear(){
+
+    RobotModel::clear();
+
     full_tree = KDL::Tree();
     kdl_chain_map.clear();
-    actuated_joint_names.clear();
-    current_joint_state.clear();
-    contact_points.clear();
-    base_frame="";
-    world_frame="";
-    gravity = base::Vector3d(0,0,-9.81);
-    has_floating_base = false;
-    joint_limits.clear();
-    robot_urdf.reset();
-    joint_names_floating_base.clear();
 }
 
 bool RobotModelKDL::configure(const RobotModelConfig& cfg){
@@ -93,8 +86,9 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
             actuated_joint_names = cfg.joint_names;
     }
 
-    current_joint_state.elements.resize(independent_joint_names.size());
-    current_joint_state.names = independent_joint_names;
+    joint_names = independent_joint_names;
+    joint_state.elements.resize(independent_joint_names.size());
+    joint_state.names = independent_joint_names;
 
     // Parse KDL Tree
     if(!kdl_parser::treeFromUrdfModel(*robot_urdf, full_tree)){
@@ -161,7 +155,7 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
             rbs.time = base::Time::now();
             rbs.frame_id = cfg.world_frame_id;
             try{
-                updateFloatingBase(rbs, joint_names_floating_base, current_joint_state);
+                updateFloatingBase(rbs, joint_names_floating_base, joint_state);
             }
             catch(std::runtime_error e){
                 return false;
@@ -234,21 +228,21 @@ void RobotModelKDL::createChain(const std::string &root_frame, const std::string
     const std::string chain_id = chainID(root_frame, tip_frame);
 
     KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain, root_frame, tip_frame);
-    kin_chain->update(current_joint_state);
+    kin_chain->update(joint_state);
     kdl_chain_map[chain_id] = kin_chain;
 
     LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
 }
 
-void RobotModelKDL::update(const base::samples::Joints& joint_state,
+void RobotModelKDL::update(const base::samples::Joints& joint_state_in,
                            const base::samples::RigidBodyStateSE3& _floating_base_state){
 
-    if(joint_state.elements.size() != joint_state.names.size()){
+    if(joint_state_in.elements.size() != joint_state_in.names.size()){
         LOG_ERROR_S << "Size of names and size of elements in joint state do not match"<<std::endl;
         throw std::runtime_error("Invalid joint state");
     }
 
-    if(joint_state.time.isNull()){
+    if(joint_state_in.time.isNull()){
         LOG_ERROR_S << "Joint State does not have a valid timestamp. Or do we have 1970?"<<std::endl;
         throw std::runtime_error("Invalid joint state");
     }
@@ -257,21 +251,21 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state,
         const std::string& name = actuated_joint_names[i];
         std::size_t idx;
         try{
-            idx = joint_state.mapNameToIndex(name);
+            idx = joint_state_in.mapNameToIndex(name);
         }
         catch(base::samples::Joints::InvalidName e){
             LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint state vector"<<std::endl;
             throw e;
         }
-        current_joint_state[name] = joint_state[idx];
+        joint_state[name] = joint_state_in[idx];
     }
-    current_joint_state.time = joint_state.time;
+    joint_state.time = joint_state_in.time;
     // Convert floating base to joint state
     if(has_floating_base)
-        updateFloatingBase(_floating_base_state, joint_names_floating_base, current_joint_state);
+        updateFloatingBase(_floating_base_state, joint_names_floating_base, joint_state);
 
     for(auto c : kdl_chain_map)
-        c.second->update(current_joint_state);
+        c.second->update(joint_state);
 
     // Update KDL data types
     for(const auto &it : full_tree.getSegments()){
@@ -286,39 +280,16 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state,
                 throw std::runtime_error("Incomplete Joint State");
             }
 
-            q(idx)       = current_joint_state[name].position;
-            qdot(idx)    = current_joint_state[name].speed;
-            qdotdot(idx) = current_joint_state[name].acceleration;
+            q(idx)       = joint_state[name].position;
+            qdot(idx)    = joint_state[name].speed;
+            qdotdot(idx) = joint_state[name].acceleration;
         }
     }
-}
-
-const base::samples::Joints& RobotModelKDL::jointState(const std::vector<std::string> &joint_names){
-
-    if(current_joint_state.time.isNull()){
-        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to jointState()");
-    }
-
-    joint_state_out.resize(joint_names.size());
-    joint_state_out.names = joint_names;
-    joint_state_out.time = current_joint_state.time;
-
-    for(size_t i = 0; i < joint_names.size(); i++){
-        try{
-            joint_state_out[i] = current_joint_state.getElementByName(joint_names[i]);
-        }
-        catch(std::exception e){
-            LOG_ERROR("RobotModelKDL: Requested state of joint %s but this joint does not exist in robot model", joint_names[i].c_str());
-            throw std::invalid_argument("Invalid call to jointState()");
-        }
-    }
-    return joint_state_out;
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
 
-    if(current_joint_state.time.isNull()){
+    if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
@@ -330,13 +301,14 @@ const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std:
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chainID(root_frame, tip_frame)];
     kdl_chain->calculateForwardKinematics();
+    rbs = kdl_chain->rigidBodyState();
 
-    return kdl_chain->rigidBodyState();
+    return rbs;
 }
 
 const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
 
-    if(current_joint_state.time.isNull()){
+    if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
@@ -349,18 +321,18 @@ const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
     kdl_chain->calculateSpaceJacobian();
 
-    space_jac_map[chain_id].resize(6,noOfJoints());
-    space_jac_map[chain_id].setZero(6,noOfJoints());
+    jac.resize(6,noOfJoints());
+    jac.setZero();
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        space_jac_map[chain_id].col(idx) = kdl_chain->space_jacobian.data.col(j);
+        jac.col(idx) = kdl_chain->space_jacobian.data.col(j);
     }
-    return space_jac_map[chain_id];
+    return jac;
 }
 
 const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
 
-    if(current_joint_state.time.isNull()){
+    if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
@@ -373,13 +345,13 @@ const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame,
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
     kdl_chain->calculateBodyJacobian();
 
-    body_jac_map[chain_id].resize(6,noOfJoints());
-    body_jac_map[chain_id].setZero(6,noOfJoints());
+    jac.resize(6,noOfJoints());
+    jac.setZero();
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        body_jac_map[chain_id].col(idx) = kdl_chain->body_jacobian.data.col(j);
+        jac.col(idx) = kdl_chain->body_jacobian.data.col(j);
     }
-    return body_jac_map[chain_id];
+    return jac;
 }
 
 
@@ -389,7 +361,7 @@ const base::MatrixXd &RobotModelKDL::comJacobian(){
 
 const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
 
-    if(current_joint_state.time.isNull()){
+    if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobianDot()");
     }
@@ -402,13 +374,13 @@ const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
     kdl_chain->calculateJacobianDot();
 
-    jac_dot_map[chain_id].resize(6,noOfJoints());
-    jac_dot_map[chain_id].setZero(6,noOfJoints());
+    jac.resize(6,noOfJoints());
+    jac.setZero();
     for(uint j = 0; j < kdl_chain->joint_names.size(); j++){
         int idx = jointIndex(kdl_chain->joint_names[j]);
-        jac_dot_map[chain_id].col(idx) = kdl_chain->jacobian_dot.data.col(j);
+        jac.col(idx) = kdl_chain->jacobian_dot.data.col(j);
     }
-    return jac_dot_map[chain_id];
+    return jac;
 }
 
 const base::Acceleration &RobotModelKDL::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
@@ -419,7 +391,7 @@ const base::Acceleration &RobotModelKDL::spatialAccelerationBias(const std::stri
 
 const base::VectorXd &RobotModelKDL::biasForces(){
 
-    if(current_joint_state.time.isNull()){
+    if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobianDot()");
     }
@@ -433,7 +405,7 @@ const base::VectorXd &RobotModelKDL::biasForces(){
         if(jnt.getType() != KDL::Joint::None){
             const std::string& name = jnt.getName();
             uint idx = GetTreeElementQNr(it.second);
-            bias_forces[current_joint_state.mapNameToIndex(name)] = tau(idx);
+            bias_forces[joint_state.mapNameToIndex(name)] = tau(idx);
         }
     }
     return bias_forces;
@@ -441,7 +413,7 @@ const base::VectorXd &RobotModelKDL::biasForces(){
 
 const base::MatrixXd& RobotModelKDL::jointSpaceInertiaMatrix(){
 
-    if(current_joint_state.time.isNull()){
+    if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobianDot()");
     }
@@ -460,9 +432,9 @@ const base::MatrixXd& RobotModelKDL::jointSpaceInertiaMatrix(){
             int ret = solver.CartToJnt(q, zero, qdotdot, std::map<std::string,KDL::Wrench>(), tau);
             if(ret != 0)
                 throw(std::runtime_error("Unable to compute Tree Inverse Dynamics in joint space inertia matrix computation. Error Code is " + std::to_string(ret)));
-            uint idx_col = current_joint_state.mapNameToIndex(name);
+            uint idx_col = joint_state.mapNameToIndex(name);
             for(int j = 0; j < noOfJoints(); j++){
-                uint idx_row = current_joint_state.mapNameToIndex(current_joint_state.names[j]);
+                uint idx_row = joint_state.mapNameToIndex(joint_state.names[j]);
                 joint_space_inertia_mat(idx_row, idx_col) = tau(idx_row);
             }
         }
@@ -520,45 +492,29 @@ void RobotModelKDL::recursiveCOM( const KDL::SegmentMap::const_iterator& current
 }
 
 const base::samples::RigidBodyStateSE3& RobotModelKDL::centerOfMass(){
+
+    if(joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to centerOfMass()");
+    }
+
     double mass = 0.0; // to get the total mass
     KDL::Frame frame = KDL::Frame::Identity(); // Transformation of the last frame
 
     // Computes the COG of the complete robot
     KDL::Vector cog_pos;
-    recursiveCOM( full_tree.getRootSegment(), current_joint_state, frame, mass, cog_pos );
+    recursiveCOM( full_tree.getRootSegment(), joint_state, frame, mass, cog_pos );
 
     // Returns the COG
     com_rbs.frame_id = world_frame;
     com_rbs.pose.position = base::Vector3d( cog_pos.x(), cog_pos.y(), cog_pos.z() ) / mass;
     com_rbs.pose.orientation.setIdentity();
-    com_rbs.time = current_joint_state.time;
+    com_rbs.time = joint_state.time;
     return com_rbs;
 }
 
-uint RobotModelKDL::jointIndex(const std::string &joint_name){
-    uint idx = std::find(current_joint_state.names.begin(), current_joint_state.names.end(), joint_name) - current_joint_state.names.begin();
-    if(idx >= current_joint_state.names.size())
-        throw std::invalid_argument("Index of joint  " + joint_name + " was requested but this joint is not in robot model");
-    return idx;
-}
-
-bool RobotModelKDL::hasLink(const std::string &link_name){
-    for(auto l  : robot_urdf->links_)
-        if(l.second->name == link_name)
-            return true;
-    return false;
-}
-
-bool RobotModelKDL::hasJoint(const std::string &joint_name){
-    return std::find(current_joint_state.names.begin(), current_joint_state.names.end(), joint_name) != current_joint_state.names.end();
-}
-
-bool RobotModelKDL::hasActuatedJoint(const std::string &joint_name){
-    return std::find(actuated_joint_names.begin(), actuated_joint_names.end(), joint_name) != actuated_joint_names.end();
-}
-
 void RobotModelKDL::computeInverseDynamics(base::commands::Joints &solver_output){
-    if(current_joint_state.time.isNull()){
+    if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to jacobianDot()");
     }
