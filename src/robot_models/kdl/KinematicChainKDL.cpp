@@ -63,7 +63,7 @@ void KinematicChainKDL::update(const base::samples::Joints &joint_state){
                       chain.getSegment(0).getName().c_str(), chain.getSegment(chain.getNrOfSegments()-1).getName().c_str(), joint_names[i].c_str());
             throw std::invalid_argument("Invalid joint state");
         }
-    space_jacobian_is_up_to_date = body_jacobian_is_up_to_date = jac_dot_is_up_to_date = false;
+    space_jacobian_is_up_to_date = body_jacobian_is_up_to_date = jac_dot_is_up_to_date = fk_is_up_to_date = false;
 }
 
 void KinematicChainKDL::calculateForwardKinematics(){
@@ -79,6 +79,8 @@ void KinematicChainKDL::calculateForwardKinematics(){
         calculateJacobianDot();
 
     acc = jacobian_dot.data*jnt_array_vel.qdot.data + space_jacobian.data*jnt_array_acc.qdotdot.data;
+
+    fk_is_up_to_date = true;
 }
 
 void KinematicChainKDL::calculateSpaceJacobian(){
@@ -88,6 +90,8 @@ void KinematicChainKDL::calculateSpaceJacobian(){
 }
 
 void KinematicChainKDL::calculateBodyJacobian(){
+    if(!fk_is_up_to_date)
+        calculateForwardKinematics();
     if(!space_jacobian_is_up_to_date)
         calculateSpaceJacobian();
     body_jacobian = space_jacobian;

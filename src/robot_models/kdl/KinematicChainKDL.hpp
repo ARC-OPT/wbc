@@ -64,7 +64,7 @@ public:
     std::string root_frame;                          /** UID of the kinematics chain root link*/
     std::string tip_frame;                           /** UID of the kinematics chain tip link*/
     base::Time stamp;
-    bool has_acceleration, space_jacobian_is_up_to_date, body_jacobian_is_up_to_date, jac_dot_is_up_to_date;
+    bool has_acceleration, space_jacobian_is_up_to_date, body_jacobian_is_up_to_date, jac_dot_is_up_to_date, fk_is_up_to_date;
     std::shared_ptr<KDL::ChainJntToJacSolver> jac_solver;
     std::shared_ptr<KDL::ChainFkSolverVel_recursive> fk_solver_vel;
     std::shared_ptr<KDL::ChainJntToJacDotSolver> jac_dot_solver;
