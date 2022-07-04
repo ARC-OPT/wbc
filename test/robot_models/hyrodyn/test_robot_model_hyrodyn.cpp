@@ -135,6 +135,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     base::MatrixXd H_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
     base::MatrixXd C_kdl = robot_model_kdl.biasForces();
     base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
+    base::samples::RigidBodyStateSE3 com_kdl = robot_model_kdl.centerOfMass();
 
     RobotModelHyrodyn robot_model_hyrodyn;
     config = RobotModelConfig("../../../../models/rh5/urdf/rh5_single_leg.urdf",
@@ -150,6 +151,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     base::MatrixXd H_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
     base::MatrixXd C_hyrodyn = robot_model_hyrodyn.biasForces();
     base::Acceleration acc_hyrodyn  = robot_model_hyrodyn.spatialAccelerationBias(base_link,ee_link);
+    base::samples::RigidBodyStateSE3 com_hyrodyn = robot_model_hyrodyn.centerOfMass();
 
     /*cout<<"Robot Model KDL"<<endl;
     cout<<"Pose"<<endl;
@@ -166,6 +168,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<H_kdl<<endl;
     cout<<"Bias Forces"<<endl;
     cout<<C_kdl.transpose()<<endl<<endl;
+    cout<<"CoM"<<endl;
+    cout<<com_kdl.pose.position.transpose()<<endl<<endl;
 
     cout<<"Robot Model Hyrodyn"<<endl;
     cout<<"Pose"<<endl;
@@ -181,7 +185,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_hyrodyn<<endl;
     cout<<"Bias Forces"<<endl;
-    cout<<C_hyrodyn.transpose()<<endl<<endl;*/
+    cout<<C_hyrodyn.transpose()<<endl<<endl;
+    cout<<"CoM"<<endl;
+    cout<<com_hyrodyn.pose.position.transpose()<<endl<<endl;*/
 
     for(int i = 0; i < 3; i++)
         BOOST_CHECK(fabs(rbs_kdl.pose.position(i) - rbs_hyrodyn.pose.position(i)) < 1e-9);
@@ -191,6 +197,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
         BOOST_CHECK(fabs(rbs_kdl.twist.linear(i) - rbs_hyrodyn.twist.linear(i)) < 1e-9);
     for(int i = 0; i < 3; i++)
         BOOST_CHECK(fabs(rbs_kdl.twist.angular(i) - rbs_hyrodyn.twist.angular(i)) < 1e-9);
+    for(int i = 0; i < 3; i++)
+        BOOST_CHECK(fabs(rbs_kdl.acceleration.linear(i) - rbs_hyrodyn.acceleration.linear(i)) < 1e-9);
+    for(int i = 0; i < 3; i++)
+        BOOST_CHECK(fabs(rbs_kdl.acceleration.angular(i) - rbs_hyrodyn.acceleration.angular(i)) < 1e-9);
     for(int i = 0; i < 6; i++)
         for(int j = 0; j < na; j++)
             BOOST_CHECK(fabs(Js_kdl(i,j) - Js_hyrodyn(i,j)) < 1e-3);
@@ -206,6 +216,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
         BOOST_CHECK(fabs(acc_kdl.linear(i) - acc_hyrodyn.linear(i)) < 1e-3);
         BOOST_CHECK(fabs(acc_kdl.angular(i) - acc_hyrodyn.angular(i)) < 1e-3);
     }
+    for(int i = 0; i < na; i++)
+        BOOST_CHECK(fabs(com_kdl.pose.position(i) - com_hyrodyn.pose.position(i)) < 1e-6);
 }
 
 
