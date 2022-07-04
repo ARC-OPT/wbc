@@ -219,8 +219,12 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 }
 
 void RobotModelKDL::createChain(const std::string &root_frame, const std::string &tip_frame){
+    createChain(full_tree, root_frame, tip_frame);
+}
+
+void RobotModelKDL::createChain(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame){
     KDL::Chain chain;
-    if(!full_tree.getChain(root_frame, tip_frame, chain)){
+    if(!tree.getChain(root_frame, tip_frame, chain)){
         LOG_ERROR("Unable to extract kinematics chain from %s to %s from KDL tree", root_frame.c_str(), tip_frame.c_str());
         throw std::invalid_argument("Invalid robot model config");
     }
@@ -307,6 +311,11 @@ const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std:
 }
 
 const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
+    return spaceJacobianFromTree(full_tree, root_frame, tip_frame);
+}
+
+
+const base::MatrixXd& RobotModelKDL::spaceJacobianFromTree(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame){
 
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
@@ -316,7 +325,7 @@ const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame
     // Create chain if it does not exist
     const std::string chain_id = chainID(root_frame, tip_frame);
     if(kdl_chain_map.count(chain_id) == 0)
-        createChain(root_frame, tip_frame);
+        createChain(tree, root_frame, tip_frame);
 
     KinematicChainKDLPtr kdl_chain = kdl_chain_map[chain_id];
     kdl_chain->calculateSpaceJacobian();
@@ -356,7 +365,49 @@ const base::MatrixXd& RobotModelKDL::bodyJacobian(const std::string &root_frame,
 
 
 const base::MatrixXd &RobotModelKDL::comJacobian(){
-    throw std::runtime_error("Not implemented: RobotModelKDL::comJacobian");
+
+    if(joint_state.time.isNull()){
+        LOG_ERROR("RobotModelKDL: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    }
+
+    base::MatrixXd com_jacobian = base::MatrixXd::Zero(3, noOfJoints());
+
+    // create a copy in which, for each segment with mass, COG frames are added
+    KDL::Tree tree_cog_frames = full_tree;
+
+    double totalMass = 0;
+    std::map<std::string, double> mass_map;
+
+    std::vector<std::string> COGSegmentNames;
+    for(auto& segment_it : full_tree.getSegments())
+    {
+        auto segment = segment_it.second.segment;
+        std::string segmentName = segment.getName();
+        std::string segmentNameCOG = segmentName + "_COG";
+        
+        KDL::Vector segmentCOG = segment.getInertia().getCOG();
+        double segmentMass = segment.getInertia().getMass();
+
+        if(segmentMass == 0.0)
+            continue;
+
+        KDL::Frame frameCOG(KDL::Rotation(), segmentCOG);
+        tree_cog_frames.addSegment(KDL::Segment(segmentNameCOG, KDL::Joint(KDL::Joint::Fixed), frameCOG), segmentName);
+
+        mass_map[segmentNameCOG] = segmentMass;
+        totalMass += segmentMass;
+
+        COGSegmentNames.push_back(segmentNameCOG);
+    }
+    
+    // compute com jacobian as (mass) weighted average over COG frame jacobians
+    for(const auto& segment_name : COGSegmentNames)
+        com_jacobian += (mass_map[segment_name] / totalMass) * 
+            spaceJacobianFromTree(tree_cog_frames, tree_cog_frames.getRootSegment()->second.segment.getName(), segment_name).topRows<3>();
+
+    space_jac_map["COM_jac"] = com_jacobian;
+    return space_jac_map["COM_jac"];
 }
 
 const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){

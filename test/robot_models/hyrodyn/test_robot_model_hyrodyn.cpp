@@ -136,6 +136,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     base::MatrixXd C_kdl = robot_model_kdl.biasForces();
     base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
     base::samples::RigidBodyStateSE3 com_kdl = robot_model_kdl.centerOfMass();
+    base::MatrixXd com_jac_kdl = robot_model_kdl.comJacobian();
 
     RobotModelHyrodyn robot_model_hyrodyn;
     config = RobotModelConfig("../../../../models/rh5/urdf/rh5_single_leg.urdf",
@@ -152,6 +153,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     base::MatrixXd C_hyrodyn = robot_model_hyrodyn.biasForces();
     base::Acceleration acc_hyrodyn  = robot_model_hyrodyn.spatialAccelerationBias(base_link,ee_link);
     base::samples::RigidBodyStateSE3 com_hyrodyn = robot_model_hyrodyn.centerOfMass();
+    base::MatrixXd com_jac_hyrodyn = robot_model_hyrodyn.comJacobian();
 
     /*cout<<"Robot Model KDL"<<endl;
     cout<<"Pose"<<endl;
@@ -170,6 +172,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<C_kdl.transpose()<<endl<<endl;
     cout<<"CoM"<<endl;
     cout<<com_kdl.pose.position.transpose()<<endl<<endl;
+    cout<<"CoM Jacobian"<<endl;
+    cout<<com_jac_kdl<<endl<<endl;
 
     cout<<"Robot Model Hyrodyn"<<endl;
     cout<<"Pose"<<endl;
@@ -187,7 +191,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     cout<<"Bias Forces"<<endl;
     cout<<C_hyrodyn.transpose()<<endl<<endl;
     cout<<"CoM"<<endl;
-    cout<<com_hyrodyn.pose.position.transpose()<<endl<<endl;*/
+    cout<<com_hyrodyn.pose.position.transpose()<<endl<<endl;
+    cout<<"CoM Jacobian"<<endl;
+    cout<<com_jac_hyrodyn<<endl<<endl;*/
 
     for(int i = 0; i < 3; i++)
         BOOST_CHECK(fabs(rbs_kdl.pose.position(i) - rbs_hyrodyn.pose.position(i)) < 1e-9);
@@ -218,6 +224,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
     }
     for(int i = 0; i < na; i++)
         BOOST_CHECK(fabs(com_kdl.pose.position(i) - com_hyrodyn.pose.position(i)) < 1e-6);
+    for(int i = 0; i < 3; i++)
+        for(int j = 0; j < na; j++)
+            BOOST_CHECK(fabs(com_jac_kdl(i,j) - com_jac_hyrodyn(i,j)) < 1e-3);
+
 }
 
 
@@ -275,6 +285,8 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     base::MatrixXd H_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
     base::MatrixXd C_kdl = robot_model_kdl.biasForces();
     base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
+    base::MatrixXd com_jac_kdl = robot_model_kdl.comJacobian();
+
 
     RobotModelHyrodyn robot_model_hyrodyn;
     config.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml";
@@ -288,6 +300,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     base::MatrixXd H_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
     base::MatrixXd C_hyrodyn = robot_model_hyrodyn.biasForces();
     base::Acceleration acc_hyrodyn  = robot_model_hyrodyn.spatialAccelerationBias(base_link,ee_link);
+    base::MatrixXd com_jac_hyrodyn = robot_model_hyrodyn.comJacobian();
 
     /*cout<<"Robot Model KDL"<<endl;
     cout<<"Pose"<<endl;
@@ -303,7 +316,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_kdl<<endl;
     cout<<"Bias Forces"<<endl;
-    cout<<C_kdl.transpose()<<endl<<endl;
+    cout<<C_kdl.transpose()<<endl;
+    cout<<"CoM Jacobian"<<endl;
+    cout<<com_jac_kdl<<endl<<endl;
 
     cout<<"Robot Model Hyrodyn"<<endl;
     cout<<"Pose"<<endl;
@@ -319,7 +334,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
     cout<<"Joint Space Inertia"<<endl;
     cout<<H_hyrodyn<<endl;
     cout<<"Bias Forces"<<endl;
-    cout<<C_hyrodyn.transpose()<<endl<<endl;*/
+    cout<<C_hyrodyn.transpose()<<endl;
+    cout<<"CoM Jacobian"<<endl;
+    cout<<com_jac_hyrodyn<<endl<<endl;*/
 
     for(int i = 0; i < 3; i++)
         BOOST_CHECK(fabs(rbs_kdl.pose.position(i) - rbs_hyrodyn.pose.position(i)) < 1e-6);
@@ -344,6 +361,9 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
         BOOST_CHECK(fabs(acc_kdl.linear(i) - acc_hyrodyn.linear(i)) < 1e-3);
         BOOST_CHECK(fabs(acc_kdl.angular(i) - acc_hyrodyn.angular(i)) < 1e-3);
     }
+    for(int i = 0; i < 3; i++)
+        for(int j = 0; j < na; j++)
+            BOOST_CHECK(fabs(com_jac_kdl(i,j) - com_jac_hyrodyn(i,j)) < 1e-3);
 }
 
 
