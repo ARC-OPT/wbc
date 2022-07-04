@@ -371,7 +371,7 @@ const base::MatrixXd &RobotModelKDL::comJacobian(){
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
 
-    base::MatrixXd com_jacobian = base::MatrixXd::Zero(3, noOfJoints());
+    com_jac = base::MatrixXd::Zero(3, noOfJoints());
 
     // create a copy in which, for each segment with mass, COG frames are added
     KDL::Tree tree_cog_frames = full_tree;
@@ -403,11 +403,10 @@ const base::MatrixXd &RobotModelKDL::comJacobian(){
     
     // compute com jacobian as (mass) weighted average over COG frame jacobians
     for(const auto& segment_name : COGSegmentNames)
-        com_jacobian += (mass_map[segment_name] / totalMass) * 
+        com_jac += (mass_map[segment_name] / totalMass) *
             spaceJacobianFromTree(tree_cog_frames, tree_cog_frames.getRootSegment()->second.segment.getName(), segment_name).topRows<3>();
 
-    space_jac_map["COM_jac"] = com_jacobian;
-    return space_jac_map["COM_jac"];
+    return com_jac;
 }
 
 const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
