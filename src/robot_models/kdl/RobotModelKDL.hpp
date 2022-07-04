@@ -23,23 +23,29 @@ private:
 
     static RobotModelRegistry<RobotModelKDL> reg;
 
+    typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
+    typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
+    typedef std::map<std::string, base::MatrixXd > JacobianMap;
+
+    // Description
+    urdf::ModelInterfaceSharedPtr robot_urdf;
+    std::vector<std::string> joint_names_floating_base;
     std::vector<std::string> actuated_joint_names;
+    std::vector<std::string> independent_joint_names;
     base::JointLimits joint_limits;
-    base::samples::Joints current_joint_state;
+    bool has_floating_base;
+
+    // Dynamics
     base::MatrixXd joint_space_inertia_mat;
     base::VectorXd bias_forces;
     base::Acceleration spatial_acc_bias;
     base::MatrixXd selection_matrix;
     base::samples::Joints joint_state_out;
-    std::vector<std::string> joint_names_floating_base;
-    std::vector<std::string> independent_joint_names;
-    bool has_floating_base;
-    urdf::ModelInterfaceSharedPtr robot_urdf;
+
+    // State
+    base::samples::Joints current_joint_state;
     base::samples::RigidBodyStateSE3 com_rbs;
-    typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
-    typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
-    KDL::JntArray q,qdot,qdotdot,tau,zero;
-    typedef std::map<std::string, base::MatrixXd > JacobianMap;
+    KDL::JntArray q, qdot, qdotdot, tau, zero;
     JacobianMap space_jac_map;
     JacobianMap body_jac_map;
     JacobianMap jac_dot_map;
@@ -55,6 +61,14 @@ protected:
      * @param tip_frame Tip frame of the chain
      */
     void createChain(const std::string &root_frame, const std::string &tip_frame);
+
+    /**
+     * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree
+     * @param tree tree from which the kinematic chain is extracted
+     * @param root_frame Root frame of the chain
+     * @param tip_frame Tip frame of the chain
+     */
+    void createChain(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame);
 
     /** Add a KDL Tree to the model. If the model is empty, the overall KDL::Tree will be replaced by the given tree. If there
      *  is already a KDL Tree, the new tree will be attached with the given pose to the hook frame of the overall tree. The relative poses
@@ -76,6 +90,14 @@ protected:
     void recursiveCOM( const KDL::SegmentMap::const_iterator& currentSegment,
                        const base::samples::Joints& status, const KDL::Frame& frame,
                        double& mass, KDL::Vector& cog);
+
+    /** @brief Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
+      * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
+      * @param tree kinematic tree from which the jacobian is computed.
+      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
+      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+      */
+    virtual const base::MatrixXd &spaceJacobianFromTree(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame);
 
 
 public:

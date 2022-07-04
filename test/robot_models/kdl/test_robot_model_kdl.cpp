@@ -298,7 +298,6 @@ BOOST_AUTO_TEST_CASE(verify_jacobian_and_forward_kinematics){
         BOOST_CHECK(fabs(zero - acceleration(4)) <= 1e-7);
         BOOST_CHECK(fabs(zero - acceleration(5)) <= 1e-7);
 
-
         //printf("...........................................................\n");
         usleep(0.1*1000*1000);
         t+=0.1;
@@ -457,3 +456,73 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
 }
 
 
+BOOST_AUTO_TEST_CASE(com_jacobian_test)
+{
+    /**
+     * Check whether the automatic configuration of a floating base in WBC works as intended. Compare FK with a URDF model
+     * where the floating base is already integrated as virtual 6 DoF linkage.
+     */
+
+    srand(time(NULL));
+    double dt = 0.002;
+    
+    string urdf_filename = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+
+    wbc::RobotModelKDL robot_model;
+    vector<string> actuated_joint_names;
+    vector<string> joint_names ={"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
+    for(int i = 0; i < 7; i++){
+        actuated_joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
+        joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
+    }
+    RobotModelConfig config(urdf_filename, joint_names, actuated_joint_names, true);
+    config.floating_base_state.pose.fromTransform(Eigen::Affine3d::Identity());
+    BOOST_CHECK(robot_model.configure(config) == true);
+
+    Eigen::VectorXd qd(joint_names.size());
+    qd.head<3>() << 0.0, 0.0, 5.0;
+    qd.segment<3>(3).setZero();
+
+    base::samples::Joints joint_state;
+    joint_state.resize(robot_model.noOfActuatedJoints());
+    joint_state.names = robot_model.actuatedJointNames();
+    for(int i = 0; i < robot_model.noOfActuatedJoints(); i++){
+        joint_state[i].position = double(rand()) / RAND_MAX;
+        joint_state[i].speed = double(rand()) / RAND_MAX;
+        joint_state[i].acceleration = 0; // double(rand()) / RAND_MAX;
+        qd(i+6) = joint_state[i].speed;
+    }
+    base::samples::RigidBodyStateSE3 floating_base_pose;
+    floating_base_pose.pose.position = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_pose.pose.orientation.setIdentity();
+    floating_base_pose.twist.setZero();
+    floating_base_pose.twist.linear = qd.head<3>();
+    floating_base_pose.acceleration.setZero();
+
+    joint_state.time = floating_base_pose.time = base::Time::now();
+    robot_model.update(joint_state, floating_base_pose);
+    
+    base::VectorXd com = robot_model.centerOfMass().pose.position;
+    base::MatrixXd com_jacobian = robot_model.comJacobian(); 
+    base::VectorXd com_vel = com_jacobian * qd;
+    
+    // integrate one step and update model. then compute COM and get COM velocity from differentiations
+    floating_base_pose.pose.position = floating_base_pose.pose.position + dt * floating_base_pose.twist.linear;
+    for(int i = 0; i < robot_model.noOfActuatedJoints(); i++)
+        joint_state[i].position = joint_state[i].position + dt * joint_state[i].speed;
+
+    robot_model.update(joint_state, floating_base_pose);
+
+    base::VectorXd com_next = robot_model.centerOfMass().pose.position;
+    base::Vector3d com_vel_diff = (1.0 / dt) * (com_next - com);
+
+    for(int i = 0; i < 3; i++)
+        BOOST_CHECK(fabs(com_vel(i) - com_vel_diff(i)) < 1e-3);
+
+    std::cout << "\n\nCOM Jacobian (" << com_jacobian.rows() << "x" << com_jacobian.cols() << "):" << std::endl << com_jacobian << std::endl;
+    std::cout << "\nqd (size: " << qd.size() << "): " << qd.transpose() << std::endl;
+    std::cout << "\nCOM velocity (from jacobian) = " << com_vel.transpose() << std::endl;
+    std::cout << "COM velocity (from differentiation) = " << com_vel_diff.transpose() << std::endl;
+    
+
+}
