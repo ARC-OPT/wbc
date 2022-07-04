@@ -252,12 +252,18 @@ Protected Member Functions</h2></td></tr>
 <tr class="memitem:a318dbde056b0bf3a18e9403aef50bd46"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#a318dbde056b0bf3a18e9403aef50bd46">createChain</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)</td></tr>
 <tr class="memdesc:a318dbde056b0bf3a18e9403aef50bd46"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree.  <a href="classwbc_1_1RobotModelKDL.html#a318dbde056b0bf3a18e9403aef50bd46">More...</a><br /></td></tr>
 <tr class="separator:a318dbde056b0bf3a18e9403aef50bd46"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aeddf2b92123d00393de71819ad2a320c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#aeddf2b92123d00393de71819ad2a320c">createChain</a> (const KDL::Tree &amp;tree, const std::string &amp;root_frame, const std::string &amp;tip_frame)</td></tr>
+<tr class="memdesc:aeddf2b92123d00393de71819ad2a320c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree.  <a href="classwbc_1_1RobotModelKDL.html#aeddf2b92123d00393de71819ad2a320c">More...</a><br /></td></tr>
+<tr class="separator:aeddf2b92123d00393de71819ad2a320c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36160e90768ed90ce4ae1831ff182e59"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#a36160e90768ed90ce4ae1831ff182e59">clear</a> ()</td></tr>
 <tr class="separator:a36160e90768ed90ce4ae1831ff182e59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a25d113d8119ce0aa46e5aedfa7985998"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#a25d113d8119ce0aa46e5aedfa7985998">chainID</a> (const std::string &amp;root, const std::string &amp;tip)</td></tr>
 <tr class="separator:a25d113d8119ce0aa46e5aedfa7985998"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a9922871317980b767a1c9ba56e575c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#a3a9922871317980b767a1c9ba56e575c">recursiveCOM</a> (const KDL::SegmentMap::const_iterator &amp;currentSegment, const base::samples::Joints &amp;status, const KDL::Frame &amp;frame, double &amp;mass, KDL::Vector &amp;cog)</td></tr>
 <tr class="separator:a3a9922871317980b767a1c9ba56e575c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8b0b028ccf54a2490832652227ef361b"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelKDL.html#a8b0b028ccf54a2490832652227ef361b">spaceJacobianFromTree</a> (const KDL::Tree &amp;tree, const std::string &amp;root_frame, const std::string &amp;tip_frame)</td></tr>
+<tr class="memdesc:a8b0b028ccf54a2490832652227ef361b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.  <a href="classwbc_1_1RobotModelKDL.html#a8b0b028ccf54a2490832652227ef361b">More...</a><br /></td></tr>
+<tr class="separator:a8b0b028ccf54a2490832652227ef361b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_methods_classwbc_1_1RobotModel"><td colspan="2" onclick="javascript:toggleInherit('pro_methods_classwbc_1_1RobotModel')"><img src="closed.png" alt="-"/>&#160;Protected Member Functions inherited from <a class="el" href="classwbc_1_1RobotModel.html">wbc::RobotModel</a></td></tr>
 <tr class="memitem:a8f5388c8af5244ca8733fc04fefe656c inherit pro_methods_classwbc_1_1RobotModel"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a8f5388c8af5244ca8733fc04fefe656c">updateFloatingBase</a> (const base::samples::RigidBodyStateSE3 &amp;rbs, const std::vector&lt; std::string &gt; &amp;floating_base_virtual_joint_names, base::samples::Joints &amp;joint_state)</td></tr>
 <tr class="separator:a8f5388c8af5244ca8733fc04fefe656c inherit pro_methods_classwbc_1_1RobotModel"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -628,8 +634,60 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aeddf2b92123d00393de71819ad2a320c" name="aeddf2b92123d00393de71819ad2a320c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aeddf2b92123d00393de71819ad2a320c">&#9670;&nbsp;</a></span>createChain() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::RobotModelKDL::createChain </td>
+          <td>(</td>
+          <td class="paramtype">const KDL::Tree &amp;&#160;</td>
+          <td class="paramname"><em>tree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tip_frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tree</td><td>tree from which the kinematic chain is extracted </td></tr>
+    <tr><td class="paramname">root_frame</td><td>Root frame of the chain </td></tr>
+    <tr><td class="paramname">tip_frame</td><td>Tip frame of the chain </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a318dbde056b0bf3a18e9403aef50bd46" name="a318dbde056b0bf3a18e9403aef50bd46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a318dbde056b0bf3a18e9403aef50bd46">&#9670;&nbsp;</a></span>createChain()</h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a318dbde056b0bf3a18e9403aef50bd46">&#9670;&nbsp;</a></span>createChain() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1219,6 +1277,58 @@ Protected Attributes</h2></td></tr>
 </dl>
 
 <p>Implements <a class="el" href="classwbc_1_1RobotModel.html#a7e71b2f2657edecf04ed6a75da8c9c80">wbc::RobotModel</a>.</p>
+
+</div>
+</div>
+<a id="a8b0b028ccf54a2490832652227ef361b" name="a8b0b028ccf54a2490832652227ef361b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8b0b028ccf54a2490832652227ef361b">&#9670;&nbsp;</a></span>spaceJacobianFromTree()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const base::MatrixXd &amp; wbc::RobotModelKDL::spaceJacobianFromTree </td>
+          <td>(</td>
+          <td class="paramtype">const KDL::Tree &amp;&#160;</td>
+          <td class="paramname"><em>tree</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root_frame</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tip_frame</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span><span class="mlabel">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">tree</td><td>kinematic tree from which the jacobian is computed. </td></tr>
+    <tr><td class="paramname">root_frame</td><td>Root frame of the chain. Has to be a valid link in the robot model. </td></tr>
+    <tr><td class="paramname">tip_frame</td><td>Tip frame of the chain. Has to be a valid link in the robot model. </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
