@@ -28,7 +28,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
     // RBDL Robot model
     Model rbdl_model;
     BOOST_CHECK(Addons::URDFReadFromFile(urdf_filename.c_str(), &rbdl_model, false) == true);
-    Eigen::VectorXd q(rbdl_model.dof_count), qdot(rbdl_model.dof_count);
+    Eigen::VectorXd q(rbdl_model.dof_count), qdot(rbdl_model.dof_count), qddot(rbdl_model.dof_count);
 
     Eigen::MatrixXd H;
     H.resize(rbdl_model.dof_count,rbdl_model.dof_count);
@@ -53,9 +53,11 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         for(int i = 0; i < rbdl_model.dof_count; i++){
             q(i) = double(rand())/RAND_MAX;
             qdot(i) = double(rand())/RAND_MAX;
+            qddot(i) = double(rand())/RAND_MAX;
             base::JointState js;
             joint_state[i].position = q(i);
             joint_state[i].speed = qdot(i);
+            joint_state[i].acceleration = qddot(i);
         }
         joint_state.time = base::Time::now();
 
@@ -76,6 +78,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         base::Matrix3d orientation_rbdl = CalcBodyWorldOrientation(rbdl_model,q,body_id).inverse();
 
         Math::SpatialVector twist_rbdl = CalcPointVelocity6D(rbdl_model, q, qdot, body_id, base::Vector3d(0,0,0));
+        Math::SpatialVector acc_rbdl = CalcPointAcceleration6D(rbdl_model,q,qdot,qddot,body_id, base::Vector3d(0,0,0));
 
         Math::MatrixNd jac_rbdl(6,rbdl_model.dof_count);
         CalcPointJacobian6D(rbdl_model, q, body_id, base::Vector3d(0,0,0), jac_rbdl);
@@ -97,6 +100,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         base::Vector3d position_wbc = robot_model.rigidBodyState(root, tip).pose.position;
         base::Matrix3d orientation_wbc = robot_model.rigidBodyState(root, tip).pose.orientation.toRotationMatrix();
         base::Twist twist_wbc = robot_model.rigidBodyState(root, tip).twist;
+        base::Acceleration acc_wbc = robot_model.rigidBodyState(root, tip).acceleration;
         base::MatrixXd jac_wbc = robot_model.spaceJacobian(root, tip);
 
         // Check joint space inertia matrix
@@ -117,6 +121,10 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_rbdl){
         for(int i = 0; i < 3; i++){
             BOOST_CHECK(fabs(twist_wbc.linear(i) - twist_rbdl(i+3))  < 1e-6);
             BOOST_CHECK(fabs(twist_wbc.angular(i) - twist_rbdl(i))  < 1e-6);
+        }
+        for(int i = 0; i < 3; i++){
+            BOOST_CHECK(fabs(acc_wbc.linear(i) - acc_rbdl(i+3))  < 1e-6);
+            BOOST_CHECK(fabs(acc_wbc.angular(i) - acc_rbdl(i))  < 1e-6);
         }
 
         // Check Jacobian
