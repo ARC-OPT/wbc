@@ -413,7 +413,7 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
     }
 
     base::samples::RigidBodyStateSE3 floating_base_state;
-    base::Vector3d euler(0,0,0);
+    base::Vector3d euler(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
     floating_base_state.pose.position = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
     floating_base_state.pose.orientation = Eigen::AngleAxisd(euler[0], Eigen::Vector3d::UnitX())
                                          * Eigen::AngleAxisd(euler[1], Eigen::Vector3d::UnitY())
