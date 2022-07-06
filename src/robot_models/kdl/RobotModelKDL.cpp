@@ -434,7 +434,10 @@ const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, 
 }
 
 const base::Acceleration &RobotModelKDL::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
-    tmp_acc = jacobianDot(root_frame, tip_frame)*qdot.data;
+    qdot_tmp.resize(noOfJoints());
+    for(int i = 0; i < noOfJoints(); i++)
+        qdot_tmp[i] = joint_state[i].speed;
+    tmp_acc = jacobianDot(root_frame, tip_frame)*qdot_tmp;
     spatial_acc_bias = base::Acceleration(tmp_acc.segment(0,3), tmp_acc.segment(3,3));
     return spatial_acc_bias;
 }
@@ -478,14 +481,14 @@ const base::MatrixXd& RobotModelKDL::jointSpaceInertiaMatrix(){
         if(jnt.getType() != KDL::Joint::None){
             const std::string& name = jnt.getName();
             qdotdot.data.setZero();
-            qdotdot(GetTreeElementQNr(it.second)) = 1;
+            qdotdot(joint_idx_map_kdl[name]) = 1;
             int ret = solver.CartToJnt(q, zero, qdotdot, std::map<std::string,KDL::Wrench>(), tau);
             if(ret != 0)
                 throw(std::runtime_error("Unable to compute Tree Inverse Dynamics in joint space inertia matrix computation. Error Code is " + std::to_string(ret)));
             uint idx_col = joint_state.mapNameToIndex(name);
             for(int j = 0; j < noOfJoints(); j++){
                 uint idx_row = joint_state.mapNameToIndex(joint_state.names[j]);
-                joint_space_inertia_mat(idx_row, idx_col) = tau(idx_row);
+                joint_space_inertia_mat(idx_row, idx_col) = tau(joint_idx_map_kdl[joint_state.names[j]]);
             }
         }
     }

@@ -27,6 +27,7 @@ private:
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
 
     KDL::JntArray q,qdot,qdotdot,tau,zero;
+    base::VectorXd qdot_tmp;
     base::VectorXd tmp_acc;
 
 protected:
