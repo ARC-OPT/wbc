@@ -12,7 +12,6 @@ add_executable(test_robot_model_pinocchio test_robot_model_pinocchio.cpp ../../s
 target_link_libraries(test_robot_model_pinocchio
                       wbc-robot_models-pinocchio
                       wbc-robot_models-kdl
-                      wbc-robot_models-hyrodyn
                       ${base-types_LIBRARIES}
                       ${kdl_parser_LIBRARIES}
                       ${pinocchio_LIBRARIES}

@@ -22,3 +22,18 @@ target_link_libraries(test_robot_model_kdl
                       ${kdl_parser_LIBRARIES}
                       ${orocos-kdl_LIBRARIES}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+if(USE_HYRODYN)
+    find_package(RBDL COMPONENTS URDFReader REQUIRED)
+    pkg_search_module(kdl_parser REQUIRED kdl_parser)
+    include_directories(${RBDL_INCLUDE_DIR})
+    link_directories(${RBDL_LIBRARY_DIRS})
+    add_executable(compare_robot_model_kdl_vs_rbdl compare_robot_model_kdl_vs_rbdl.cpp ../../suite.cpp)
+    target_link_libraries(compare_robot_model_kdl_vs_rbdl
+                          wbc-robot_models-kdl
+                          wbc-tools
+                          ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY}
+                          ${RBDL_LIBRARY}
+                          ${RBDL_URDFReader_LIBRARY})
+endif()
+
