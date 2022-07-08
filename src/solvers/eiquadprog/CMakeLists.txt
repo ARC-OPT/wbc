@@ -20,6 +20,9 @@ target_link_libraries(${TARGET_NAME}
                       ${base-types_LIBRARIES}
                       eiquadprog)
 
+target_include_directories(${TARGET_NAME} PUBLIC ${base-types_INCLUDE_DIRS} ${eiquadprog_INCLUDE_DIRS})
+target_link_directories(${TARGET_NAME} PUBLIC ${base-types_LIBRARY_DIRS} ${eiquadprog_LIBRARY_DIRS})
+
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
        SOVERSION ${API_VERSION})
