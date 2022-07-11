@@ -16,3 +16,22 @@ target_link_libraries(test_robot_model_pinocchio
                       ${kdl_parser_LIBRARIES}
                       ${pinocchio_LIBRARIES}
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+find_package(RBDL COMPONENTS URDFReader REQUIRED)
+add_executable(compare_all compare_all.cpp)
+target_link_libraries(compare_all
+                    wbc-robot_models-pinocchio
+                    wbc-robot_models-hyrodyn
+                    wbc-robot_models-kdl
+                    ${RBDL_LIBRARY}
+                    ${RBDL_URDFReader_LIBRARY}
+                    ${base-types_LIBRARIES}
+                    ${pinocchio_LIBRARIES})
+add_executable(compare_all_floating_base compare_all_floating_base.cpp)
+target_link_libraries(compare_all_floating_base
+                    wbc-robot_models-pinocchio
+                    wbc-robot_models-hyrodyn
+                    wbc-robot_models-kdl
+                    ${RBDL_LIBRARY}
+                    ${RBDL_URDFReader_LIBRARY}
+                    ${base-types_LIBRARIES}
+                    ${pinocchio_LIBRARIES})
