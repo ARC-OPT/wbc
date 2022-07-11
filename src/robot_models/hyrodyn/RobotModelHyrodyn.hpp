@@ -14,7 +14,6 @@ private:
     static RobotModelRegistry<RobotModelHyrodyn> reg;
 
 protected:
-    base::samples::RigidBodyStateSE3 rbs;
     hyrodyn::RobotModel_HyRoDyn hyrodyn;
 
     void clear();
