@@ -7,6 +7,7 @@
 #include <pinocchio/algorithm/crba.hpp>
 #include <pinocchio/algorithm/rnea.hpp>
 #include <pinocchio/algorithm/center-of-mass.hpp>
+#include <pinocchio/algorithm/joint-configuration.hpp>
 
 namespace wbc{
 
@@ -21,6 +22,7 @@ void RobotModelPinocchio::clear(){
 
     RobotModel::clear();
     data.reset();
+    model = pinocchio::Model();
 }
 
 bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
@@ -37,8 +39,24 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
         return false;
     }
 
+    // Blacklist not required joints
+    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
+        return false;
+
+    // Add floating base
+    has_floating_base = cfg.floating_base;
+
+    base_frame = robot_urdf->getRoot()->name;
+
     try{
-        pinocchio::urdf::buildModel(robot_urdf,model);
+        if(has_floating_base){
+            pinocchio::urdf::buildModel(robot_urdf,pinocchio::JointModelFreeFlyer(), model);
+            world_frame = cfg.world_frame_id;
+        }
+        else{
+            pinocchio::urdf::buildModel(robot_urdf, model);
+            world_frame = base_frame;
+        }
     }
     catch(std::invalid_argument e){
         LOG_ERROR_S << "RobotModelPinocchio: Failed to load urdf model from " << cfg.file <<std::endl;
@@ -48,22 +66,27 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
 
     joint_names = model.names;
     joint_names.erase(joint_names.begin()); // Erase global joint 'universe' which is added by Pinocchio
-    independent_joint_names = actuated_joint_names = joint_names;
+    if(has_floating_base)
+        joint_names.erase(joint_names.begin()); // Erase 'floating_base' root joint
+    actuated_joint_names = independent_joint_names = joint_names;
 
-    q.resize(noOfJoints());
-    qd.resize(noOfJoints());
-    qdd.resize(noOfJoints());
+    // Joint order in q,qd,qdd:
+    //
+    // Floating base:
+    // q:   x,y,z,qw,qx,qy,qz,joints_q,         Size: 7 + joint_names.size()
+    // qd:  vx,vy,vz,wx,wx,wy,wz,joints_dq,     Size: 6 + joint_names.size()
+    // qdd: dvx,dvy,dvz,dwx,dwy,dwz,joints_ddq, Size: 6 + joint_names.size()
+    //
+    // Fixed base:
+    // q:   joint_names_q,   Size: joint_names.size()
+    // qd:  joint_names_dq,  Size: joint_names.size()
+    // qdd: joint_names_ddq, Size: joint_names.size()
+    q.resize(model.nq);
+    qd.resize(model.nv);
+    qdd.resize(model.nv);
 
     joint_state.resize(noOfJoints());
     joint_state.names = jointNames();
-
-    base_frame = world_frame = robot_urdf->getRoot()->name;
-
-    // Blacklist not required joints
-    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
-        return false;
-
-    // TODO: floating base configuration here!
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
@@ -105,6 +128,20 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
+    if(has_floating_base){
+        for(int i = 0; i < 3; i++){
+            q[i] = floating_base_state.pose.position[i];
+            qd[i] = floating_base_state.twist.linear[i];
+            qd[i+3] = floating_base_state.twist.angular[i];
+            qdd[i] = floating_base_state.acceleration.linear[i];
+            qdd[i+3] = floating_base_state.acceleration.angular[i];
+        }
+        q[3] = floating_base_state.pose.orientation.x();
+        q[4] = floating_base_state.pose.orientation.y();
+        q[5] = floating_base_state.pose.orientation.z();
+        q[6] = floating_base_state.pose.orientation.w();
+    }
+
     for(size_t i = 0; i < noOfActuatedJoints(); i++){
         const std::string& name = actuated_joint_names[i];
         std::size_t idx;
@@ -119,11 +156,26 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
     }
     joint_state.time = joint_state_in.time;
 
+    // Joint IDs in Pinocchio:
+    //
+    // Floating base
+    // universe,root_joint,joint_names
+    //
+    // Fixed base
+    // universe,joint_names
     for(auto name : joint_names){
         base::JointState state = joint_state[name];
-        q[model.getJointId(name)-1] = state.position;
-        qd[model.getJointId(name)-1] = state.speed;
-        qdd[model.getJointId(name)-1] = state.acceleration;
+        if(has_floating_base){
+            // Subtract 2 due to universe & root_joint
+            q[model.getJointId(name)-2+7]   = state.position;     // first 7 elements in q are floating base pose
+            qd[model.getJointId(name)-2+6]  = state.speed;        // first 6 elements in q are floating base twist
+            qdd[model.getJointId(name)-2+6] = state.acceleration; // first 6 elements in q are floating base acceleration
+        }
+        else{
+            q[model.getJointId(name)-1]   = state.position;
+            qd[model.getJointId(name)-1]  = state.speed;
+            qdd[model.getJointId(name)-1] = state.acceleration;
+        }
     }
 }
 
@@ -222,7 +274,7 @@ const base::MatrixXd &RobotModelPinocchio::comJacobian(){
 }
 
 const base::Acceleration &RobotModelPinocchio::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
-    pinocchio::forwardKinematics(model,*data,q,qd,base::VectorXd::Zero(noOfJoints()));
+    pinocchio::forwardKinematics(model,*data,q,qd,base::VectorXd::Zero(model.nv));
     spatial_acc_bias.linear = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
     spatial_acc_bias.angular = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
     return spatial_acc_bias;
