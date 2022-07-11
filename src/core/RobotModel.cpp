@@ -51,7 +51,7 @@ void RobotModel::updateFloatingBase(const base::samples::RigidBodyStateSE3& rbs,
 
     floating_base_state = rbs;
     base::JointState js;
-    base::Vector3d euler = rbs.pose.toTransform().rotation().eulerAngles(0,1,2); // TODO: Use Rotation Vector instead?
+    base::Vector3d euler = rbs.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
     for(int j = 0; j < 3; j++){
         js.position = rbs.pose.position(j);
         js.speed = rbs.twist.linear(j);

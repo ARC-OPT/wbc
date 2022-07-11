@@ -63,6 +63,11 @@ base::samples::RigidBodyStateSE3 testRobotModelKDL(const string &urdf_file, cons
         qdd_kdl.qdotdot(i+6) = joint_state[i].acceleration;
     }
 
+    std::cout<<"Joint configuration KDL"<<std::endl;
+    cout<<q_and_qd_kdl.q.data.transpose()<<endl;
+    cout<<q_and_qd_kdl.qdot.data.transpose()<<endl;
+    cout<<qdd_kdl.qdotdot.data.transpose()<<endl<<endl;
+
     // Compute pose & twist
     KDL::FrameVel frame_vel;
     if(solver.JntToCart(q_and_qd_kdl,frame_vel)){
@@ -112,11 +117,20 @@ base::samples::RigidBodyStateSE3 testRobotModelRBDL(const string &urdf_file, con
         qd[i+6] = joint_state[i].speed;
         qdd[i+6] = joint_state[i].acceleration;
     }
-
-    for(int i = 0; i < 3; i++)
+    for(int i = 0; i < 3; i++){
         q[i] = floating_base_state.pose.position[i];
+        qd[i] = floating_base_state.twist.linear[i];
+        qdd[i] = floating_base_state.acceleration.linear[i];
+        qd[i+3] = floating_base_state.twist.angular[i];
+        qdd[i+3] = floating_base_state.acceleration.angular[i];
+    }
     int floating_body_id = rbdl_model.GetBodyId(wbc::URDFTools::rootLinkFromURDF(urdf_file).c_str());
     rbdl_model.SetQuaternion(floating_body_id, Math::Quaternion(floating_base_state.pose.orientation.coeffs()), q);
+
+    std::cout<<"Joint configuration RBDL"<<std::endl;
+    cout<<q.transpose()<<endl;
+    cout<<qd.transpose()<<endl;
+    cout<<qdd.transpose()<<endl<<endl;
 
     base::samples::RigidBodyStateSE3 rbs;
     int body_id = rbdl_model.GetBodyId(tip_frame.c_str());
@@ -156,6 +170,12 @@ base::samples::RigidBodyStateSE3 testRobotModelHyrodyn(const string &urdf_file, 
         hyrodyn.ydd_robot[i] = joint_state[i].acceleration;
     }
     hyrodyn.update_all_independent_coordinates();
+
+
+    std::cout<<"Joint configuration Hyrodyn"<<std::endl;
+    cout<<hyrodyn.y.transpose()<<endl;
+    cout<<hyrodyn.yd.transpose()<<endl;
+    cout<<hyrodyn.ydd.transpose()<<endl<<endl;
 
     base::samples::RigidBodyStateSE3 rbs;
     hyrodyn.calculate_forward_kinematics(tip_frame);
@@ -197,6 +217,11 @@ base::samples::RigidBodyStateSE3 testRobotModelPinocchio(const string &urdf_file
         qdd[i+6] = joint_state[i].acceleration;
     }
 
+    std::cout<<"Joint configuration Pinocchio"<<std::endl;
+    cout<<q.transpose()<<endl;
+    cout<<qd.transpose()<<endl;
+    cout<<qdd.transpose()<<endl<<endl;
+
     pinocchio::Data data(model);
     pinocchio::forwardKinematics(model,data,q,qd,qdd);
     pinocchio::updateFramePlacement(model,data,model.getFrameId(tip_frame));
@@ -229,6 +254,11 @@ int main(){
         joint_state[n].acceleration = (double)rand()/RAND_MAX;
     }
 
+    cout<<"Input Joint State"<<endl;
+    for(auto n : joint_state.names) cout<<joint_state[n].position<<" "; cout<<endl;
+    for(auto n : joint_state.names) cout<<joint_state[n].speed<<" "; cout<<endl;
+    for(auto n : joint_state.names) cout<<joint_state[n].acceleration<<" "; cout<<endl;
+
     base::samples::RigidBodyStateSE3 floating_base_state;
     floating_base_state.pose.position = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
     floating_base_state.pose.orientation = Eigen::AngleAxisd(double(rand())/RAND_MAX, Eigen::Vector3d::UnitX())
@@ -238,6 +268,9 @@ int main(){
     floating_base_state.twist.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
     floating_base_state.acceleration.linear  = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
     floating_base_state.acceleration.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+
+    cout<<"Input floating base state"<<endl;
+    printRbs(floating_base_state);
 
     base::samples::RigidBodyStateSE3 rbs_kdl = testRobotModelKDL(urdf_file_with_floating_base, tip_frame, joint_state, floating_base_state);
     base::samples::RigidBodyStateSE3 rbs_rbdl = testRobotModelRBDL(urdf_file, tip_frame, joint_state, floating_base_state);
