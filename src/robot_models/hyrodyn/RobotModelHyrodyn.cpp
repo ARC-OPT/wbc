@@ -87,7 +87,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
 
     // 3. Set initial floating base state
 
-    if(hyrodyn.floating_base_robot){
+    /*if(hyrodyn.floating_base_robot){
         if(cfg.floating_base_state.hasValidPose()){
             base::samples::RigidBodyStateSE3 rbs;
             rbs.pose = cfg.floating_base_state.pose;
@@ -112,7 +112,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
             LOG_ERROR("If you set floating_base to true, you have to provide a valid floating_base_state (at least a position/orientation)");
             return false;
         }
-    }
+    }*/
 
     // 4. Create data structures
 
@@ -166,30 +166,33 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
     }
 
     uint start_idx = 0;
-    // Update floating base if available
-    if(hyrodyn.floating_base_robot){
-        updateFloatingBase(_floating_base_state, joint_names_floating_base, joint_state);
+    if(has_floating_base){
+        hyrodyn.floating_robot_pose.segment(0,3) = _floating_base_state.pose.position;
+        hyrodyn.floating_robot_pose[3] = _floating_base_state.pose.orientation.x();
+        hyrodyn.floating_robot_pose[4] = _floating_base_state.pose.orientation.y();
+        hyrodyn.floating_robot_pose[5] = _floating_base_state.pose.orientation.z();
+        hyrodyn.floating_robot_pose[6] = _floating_base_state.pose.orientation.w();
+        hyrodyn.floating_robot_twist.segment(0,3) = _floating_base_state.twist.angular;
+        hyrodyn.floating_robot_twist.segment(3,3) = _floating_base_state.twist.linear;
+        hyrodyn.floating_robot_accn.segment(0,3) = _floating_base_state.acceleration.angular;
+        hyrodyn.floating_robot_accn.segment(3,3) = _floating_base_state.acceleration.linear;
         start_idx = 6;
-        for(int i = 0; i < 6; i++){
-            hyrodyn.y(i)   = joint_state[i].position;
-            hyrodyn.yd(i)   = joint_state[i].speed;
-            hyrodyn.ydd(i)   = joint_state[i].acceleration;
-        }
     }
 
-    // Update independent joints. This assumes that joints 0..5 are the floating base joints
     for( unsigned int i = start_idx; i < hyrodyn.jointnames_independent.size(); ++i){
         const std::string& name =  hyrodyn.jointnames_independent[i];
         try{
-            hyrodyn.y[i] = joint_state_in[name].position;
-            hyrodyn.yd[i] = joint_state_in[name].speed;
-            hyrodyn.ydd[i] = joint_state_in[name].acceleration;
+            hyrodyn.y_robot[i-start_idx] = joint_state_in[name].position;
+            hyrodyn.yd_robot[i-start_idx] = joint_state_in[name].speed;
+            hyrodyn.ydd_robot[i-start_idx] = joint_state_in[name].acceleration;
         }
         catch(base::samples::Joints::InvalidName e){
             LOG_ERROR_S << "Joint " << name << " is in independent joints of Hyrodyn model, but it is not given in joint state vector" << std::endl;
             throw e;
         }
     }
+
+    hyrodyn.update_all_independent_coordinates();
 
     // Compute system state
     hyrodyn.calculate_system_state();
@@ -199,7 +202,6 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         joint_state[name].position = hyrodyn.Q[i];
         joint_state[name].speed = hyrodyn.QDot[i];
         joint_state[name].acceleration = hyrodyn.QDDot[i];
-        //joint_state[name].effort = hyrodyn.Tau_spanningtree[i]; // It seems Tau_spanningtree is currently not being computed by hyrodyn
     }
     joint_state.time = joint_state_in.time;
 }
