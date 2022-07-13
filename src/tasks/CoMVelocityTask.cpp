@@ -1,17 +1,21 @@
-#include "CoMVelocityConstraint.hpp"
+#include "CoMVelocityTask.hpp"
 #include <base-logging/Logging.hpp>
 #include <base/samples/RigidBodyStateSE3.hpp>
 
 namespace wbc {
 
-CoMVelocityConstraint::CoMVelocityConstraint(ConstraintConfig config, uint n_robot_joints)
-    : CartesianConstraint(config, n_robot_joints){
+CoMVelocityTask::CoMVelocityTask(TaskConfig config, uint n_robot_joints)
+    : CartesianTask(config, n_robot_joints){
 }
 
-CoMVelocityConstraint::~CoMVelocityConstraint(){
+void CoMVelocityTask::update(RobotModelPtr robot_model){
+    A = robot_model->comJacobian();
+    // CoM tasks are always in world/base frame, no need to transform.
+    y_ref_root = y_ref;
+    weights_root = weights;
 }
 
-void CoMVelocityConstraint::setReference(const base::samples::RigidBodyStateSE3& ref){
+void CoMVelocityTask::setReference(const base::samples::RigidBodyStateSE3& ref){
 
     if(!base::isnotnan(ref.twist.linear)){
         LOG_ERROR("Constraint %s has invalid linear velocity", config.name.c_str())

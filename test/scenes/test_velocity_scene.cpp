@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(configuration_test){
      * Check if the WBC velocity scene fails to configure with invalid configuration
      */
 
-    ConstraintConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0");
+    TaskConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0");
 
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
@@ -70,7 +70,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     // Configure WBC Scene
     QPSolverPtr solver = std::make_shared<HierarchicalLSSolver>();
     (std::dynamic_pointer_cast<HierarchicalLSSolver>(solver))->setMaxSolverOutputNorm(1000);
-    ConstraintConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
+    TaskConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
     VelocityScene wbc_scene(robot_model, solver);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), true);
 

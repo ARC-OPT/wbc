@@ -36,6 +36,8 @@ using namespace wbc;
  */
 int main(int argc, char** argv){
 
+    double dt = 0.01;
+
     // Create a robot model. Each robot model is derived from a common RobotModel class, as it will be passed to the WBC scene later on.
     // Currently 2 different robot models are implemented. A KDL-based model (robot_models/kdl) and a Hyrodyn-based model (robot_models(hyrodyn)
     RobotModelPtr robot_model = make_shared<RobotModelKDL>();
@@ -73,7 +75,7 @@ int main(int argc, char** argv){
     cart_constraint.ref_frame  = "kuka_lbr_l_link_0";  // In what frame is the task specified?
     cart_constraint.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
     cart_constraint.weights    = vector<double>(6,1);  // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
-    VelocitySceneQuadraticCost scene(robot_model, solver);
+    VelocitySceneQuadraticCost scene(robot_model, solver, dt);
     if(!scene.configure({cart_constraint}))
         return -1;
 
@@ -97,14 +99,14 @@ int main(int argc, char** argv){
     // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
     // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, ctrl_output, feedback;
-    setpoint.pose.position = base::Vector3d(0.0, 0.0, 0.8);
+    setpoint.pose.position = base::Vector3d(0.0, 0.45, 0.45);
     setpoint.pose.orientation.setIdentity();
     setpoint.frame_id = cart_constraint.ref_frame;
     feedback.pose.position.setZero();
     feedback.pose.orientation.setIdentity();
 
     // Run control loop
-    double loop_time = 0.01; // seconds
+    double loop_time = dt; // seconds
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
 

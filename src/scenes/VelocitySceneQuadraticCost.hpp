@@ -17,7 +17,7 @@ namespace wbc{
  *        \end{array}
  *  \f]
  *
- * In contrast to the VelocityScene class, the tasks are formulated within the cost function instead of modeling them as constraints. The problem is
+ * In contrast to the VelocityScene class, the tasks are formulated within the cost function instead of modeling them as tasks. The problem is
  * solved with respect to a number of rigid contacts \f$\mathbf{J}_{c,i}\dot{\mathbf{q}}=0, \, \forall i \f$ and under consideration of the joint velocity limits of the robot.
  *
  * \f$\dot{\mathbf{q}}\f$ - Vector of robot joint velocities<br>
@@ -40,9 +40,9 @@ public:
     /**
      * @brief WbcVelocityScene
      * @param robot_model Pointer to the robot model
-     * @param model_tasks_as_constraints Model tasks as constraints (true) or as part of the cost function
+     * @param solver Solver used to solver the qp optimization problem
      */
-    VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver);
+    VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver, double dt=0.001);
     virtual ~VelocitySceneQuadraticCost();
 
     /**

@@ -1,7 +1,7 @@
 #include "Scene.hpp"
 #include <base-logging/Logging.hpp>
-#include "JointConstraint.hpp"
-#include "CartesianConstraint.hpp"
+#include "../tasks/JointTask.hpp"
+#include "../tasks/CartesianTask.hpp"
 
 namespace wbc{
 
@@ -14,52 +14,52 @@ WbcScene::WbcScene(RobotModelPtr robot_model, QPSolverPtr solver) :
 WbcScene::~WbcScene(){
 }
 
-void WbcScene::clearConstraints(){
+void WbcScene::clearTasks(){
 
-    for(uint i = 0; i < constraints.size(); i++ ){
-        for(uint j = 0; j < constraints[i].size(); j++)
-            constraints[i][j].reset();
-        constraints[i].clear();
+    for(uint i = 0; i < tasks.size(); i++ ){
+        for(uint j = 0; j < tasks[i].size(); j++)
+            tasks[i][j].reset();
+        tasks[i].clear();
     }
-    constraints.clear();
-    constraints_status.clear();
+    tasks.clear();
+    tasks_status.clear();
     configured = false;
 }
 
-bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
+bool WbcScene::configure(const std::vector<TaskConfig> &config){
 
     solver->reset();
-    clearConstraints();
+    clearTasks();
     if(config.empty())
         return false;
 
     for(auto c : config)
         c.validate();
-    std::vector< std::vector<ConstraintConfig> > sorted_config;
-    sortConstraintConfig(config, sorted_config);
+    std::vector< std::vector<TaskConfig> > sorted_config;
+    sortTaskConfig(config, sorted_config);
 
-    //// Create constraints. Store the number of constraint variables per priority
+    //// Create tasks. Store the number of task variables per priority
     ///
-    constraints.resize(sorted_config.size());
+    tasks.resize(sorted_config.size());
     for(size_t i = 0; i < sorted_config.size(); i++){
 
-        constraints[i].resize(sorted_config[i].size());
+        tasks[i].resize(sorted_config[i].size());
         for(size_t j = 0; j < sorted_config[i].size(); j++)
-            constraints[i][j] = createConstraint(sorted_config[i][j]);
+            tasks[i][j] = createTask(sorted_config[i][j]);
     }
-    n_constraint_variables_per_prio = getNConstraintVariablesPerPrio(config);
+    n_task_variables_per_prio = getNTaskVariablesPerPrio(config);
 
-    for(size_t i = 0; i < constraints.size(); i++){
-        for(size_t j = 0; j < constraints[i].size(); j++){
-            ConstraintPtr constraint = constraints[i][j];
-            constraints_status.names.push_back(constraint->config.name);
-            constraints_status.elements.push_back(ConstraintStatus());
+    for(size_t i = 0; i < tasks.size(); i++){
+        for(size_t j = 0; j < tasks[i].size(); j++){
+            TaskPtr task = tasks[i][j];
+            tasks_status.names.push_back(task->config.name);
+            tasks_status.elements.push_back(TaskStatus());
         }
     }
 
-    constraints_prio.resize(constraints.size());
-    for(uint prio = 0; prio < constraints.size(); prio++)
-        constraints_prio[prio].resize(n_constraint_variables_per_prio[prio], robot_model->noOfJoints());
+    tasks_prio.resize(tasks.size());
+    for(uint prio = 0; prio < tasks.size(); prio++)
+        tasks_prio[prio].resize(n_task_variables_per_prio[prio], robot_model->noOfJoints());
     configured = true;
 
     // Set actuated joint weights to 1 and unactuated joint weight to 0 by default
@@ -96,49 +96,49 @@ bool WbcScene::configure(const std::vector<ConstraintConfig> &config){
 }
 
 void WbcScene::setReference(const std::string& constraint_name, const base::samples::Joints& ref){
-    ConstraintPtr c = getConstraint(constraint_name);
+    TaskPtr c = getTask(constraint_name);
     if(c->config.type == cart)
         throw std::runtime_error("Constraint '" + c->config.name + "' has type cart, but you are trying to set a joint space reference");
-    std::static_pointer_cast<JointConstraint>(c)->setReference(ref);
+    std::static_pointer_cast<JointTask>(c)->setReference(ref);
 }
 
 void WbcScene::setReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
-    ConstraintPtr c = getConstraint(constraint_name);
+    TaskPtr c = getTask(constraint_name);
     if(c->config.type == jnt)
         throw std::runtime_error("Constraint '" + c->config.name + "' has type jnt, but you are trying to set a cartesian reference");
-    std::static_pointer_cast<CartesianConstraint>(getConstraint(constraint_name))->setReference(ref);
+    std::static_pointer_cast<CartesianTask>(getTask(constraint_name))->setReference(ref);
 }
 
 void WbcScene::setTaskWeights(const std::string& constraint_name, const base::VectorXd &weights){
-    getConstraint(constraint_name)->setWeights(weights);
+    getTask(constraint_name)->setWeights(weights);
 }
 
 void WbcScene::setTaskActivation(const std::string& constraint_name, const double activation){
-    getConstraint(constraint_name)->setActivation(activation);
+    getTask(constraint_name)->setActivation(activation);
 }
 
-ConstraintPtr WbcScene::getConstraint(const std::string& name){
+TaskPtr WbcScene::getTask(const std::string& name){
 
-    for(size_t i = 0; i < constraints.size(); i++){
-        for(size_t j = 0; j < constraints[i].size(); j++){
-            if(constraints[i][j]->config.name == name)
-                return constraints[i][j];
+    for(size_t i = 0; i < tasks.size(); i++){
+        for(size_t j = 0; j < tasks[i].size(); j++){
+            if(tasks[i][j]->config.name == name)
+                return tasks[i][j];
         }
     }
     throw std::invalid_argument("Invalid constraint name: " + name);
 }
 
-bool WbcScene::hasConstraint(const std::string &name){
+bool WbcScene::hasTask(const std::string &name){
 
-    for(size_t i = 0; i < constraints.size(); i++){
-        for(size_t j = 0; j < constraints[i].size(); j++)
-            if(constraints[i][j]->config.name == name)
+    for(size_t i = 0; i < tasks.size(); i++){
+        for(size_t j = 0; j < tasks[i].size(); j++)
+            if(tasks[i][j]->config.name == name)
                 return true;
     }
     return false;
 }
 
-void WbcScene::sortConstraintConfig(const std::vector<ConstraintConfig>& config, std::vector< std::vector<ConstraintConfig> >& sorted_config){
+void WbcScene::sortTaskConfig(const std::vector<TaskConfig>& config, std::vector< std::vector<TaskConfig> >& sorted_config){
 
     // Get highest prio
     int max_prio = 0;
@@ -162,10 +162,10 @@ void WbcScene::sortConstraintConfig(const std::vector<ConstraintConfig>& config,
     }
 }
 
-std::vector<int> WbcScene::getNConstraintVariablesPerPrio(const std::vector<ConstraintConfig> &config){
+std::vector<int> WbcScene::getNTaskVariablesPerPrio(const std::vector<TaskConfig> &config){
 
-    std::vector< std::vector<ConstraintConfig> > sorted_config;
-    sortConstraintConfig(config, sorted_config);
+    std::vector< std::vector<TaskConfig> > sorted_config;
+    sortTaskConfig(config, sorted_config);
 
     std::vector<int> nn_pp(sorted_config.size());
     for(size_t i = 0; i < sorted_config.size(); i++){

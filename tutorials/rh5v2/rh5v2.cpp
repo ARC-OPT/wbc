@@ -41,6 +41,8 @@ using namespace ctrl_lib;
  */
 int main()
 {
+    double dt = 0.01;
+
     // Create robot model, use hyrodyn-based model in this case
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
 
@@ -67,7 +69,7 @@ int main()
 
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
-    AccelerationSceneTSID scene(robot_model, solver);
+    AccelerationSceneTSID scene(robot_model, solver, dt);
     vector<ConstraintConfig> wbc_config;
     wbc_config.push_back(ConstraintConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
     wbc_config.push_back(ConstraintConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
