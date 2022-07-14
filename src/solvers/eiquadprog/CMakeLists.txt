@@ -1,7 +1,7 @@
 SET(TARGET_NAME wbc-solvers-eiquadprog)
 
 pkg_search_module(base-types REQUIRED base-types)
-pkg_search_module(eiquadprog REQUIRED eiquadprog)
+pkg_search_module(eiquadprog REQUIRED IMPORTED_TARGET eiquadprog)
 
 set(SOURCES EiquadprogSolver.cpp)
 set(HEADERS EiquadprogSolver.hpp)
@@ -18,7 +18,7 @@ add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME}
                       wbc-core
                       ${base-types_LIBRARIES}
-                      eiquadprog)
+                      PkgConfig::eiquadprog)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
