@@ -171,10 +171,18 @@ BOOST_AUTO_TEST_CASE(compare_wbc_vs_rbdl_floating_base){
         config.joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
     }
     config.floating_base = true;
-    config.floating_base_state.pose.position.setZero();
-    config.floating_base_state.pose.orientation.setIdentity();
-    config.floating_base_state.twist.setZero();
-    config.floating_base_state.acceleration.setZero();
+    base::samples::RigidBodyStateSE3 floating_base_state;
+    base::Vector3d euler(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.pose.position = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.pose.orientation = Eigen::AngleAxisd(euler[0], Eigen::Vector3d::UnitX())
+                                         * Eigen::AngleAxisd(euler[1], Eigen::Vector3d::UnitY())
+                                         * Eigen::AngleAxisd(euler[2], Eigen::Vector3d::UnitZ());
+    floating_base_state.twist.linear  = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.twist.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.acceleration.linear  = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.acceleration.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.time = base::Time::now();
+    config.floating_base_state = floating_base_state;
 
     BOOST_CHECK(robot_model.configure(config) == true);
     base::samples::Joints joint_state;
@@ -216,7 +224,7 @@ BOOST_AUTO_TEST_CASE(compare_wbc_vs_rbdl_floating_base){
         floating_rbs.pose.orientation = base::Quaterniond(q(rbdl_model.q_size-1),q(3),q(4),q(5));
         floating_rbs.twist = base::Twist(base::Vector3d(qdot(0),qdot(1),qdot(2)), base::Vector3d(qdot(3),qdot(4),qdot(5)));
         floating_rbs.acceleration = base::Acceleration(base::Vector3d(qddot(0),qddot(1),qddot(2)), base::Vector3d(qddot(3),qddot(4),qddot(5)));
-        BOOST_CHECK_NO_THROW(robot_model.update(joint_state, floating_rbs));
+        BOOST_CHECK_NO_THROW(robot_model.update(joint_state, floating_base_state));
 
         // Compute with RBDL
 

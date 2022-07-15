@@ -399,8 +399,6 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
      * where the floating base is already integrated as virtual 6 DoF linkage.
      */
 
-    srand(time(NULL));
-
     string urdf_filename = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
     string urdf_filename_floating_base = "../../../../models/kuka/urdf/kuka_iiwa_with_floating_base.urdf";
 
@@ -488,19 +486,19 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
     // (2) Check if the floating base state is correct in general, i.e., compare with the configured state
 
     base::samples::RigidBodyStateSE3 floating_base_state_measured = robot_model.rigidBodyState("world", "kuka_lbr_l_link_0");
-    base::samples::RigidBodyStateSE3 floating_base_state_measured_urdf = robot_model_floating_base.rigidBodyState("world", "kuka_lbr_l_link_0");
 
+    base::MatrixXd rot_mat = floating_base_state.pose.orientation.toRotationMatrix().inverse();
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(floating_base_state_measured.pose.position(i) - floating_base_state.pose.position(i)) < 1e-3);
         BOOST_CHECK(fabs(floating_base_state_measured.twist.linear(i) - floating_base_state.twist.linear(i)) < 1e-3);
-        BOOST_CHECK(fabs(floating_base_state_measured.twist.angular(i) - floating_base_state.twist.angular(i)) < 1e-3);
+        BOOST_CHECK(fabs(floating_base_state_measured.twist.angular(i) - (rot_mat*floating_base_state.twist.angular)(i)) < 1e-3);
         BOOST_CHECK(fabs(floating_base_state_measured.acceleration.linear(i) - floating_base_state.acceleration.linear(i)) < 1e-3);
-        //BOOST_CHECK(fabs(floating_base_state_measured.acceleration.angular(i) - floating_base_state.acceleration.angular(i)) < 1e-3);
+        BOOST_CHECK(fabs(floating_base_state_measured.acceleration.angular(i) - (rot_mat*floating_base_state.acceleration.angular)(i)) < 1e-3);
     }
     for(int i = 0; i < 4; i++)
         BOOST_CHECK(fabs(floating_base_state_measured.pose.orientation.coeffs()(i) - floating_base_state.pose.orientation.coeffs()(i)) < 1e-3);
 
-    /*cout<<"Expected floating base state"<<endl;
+    cout<<"Expected floating base state"<<endl;
     cout<<"Position:               "<<floating_base_state.pose.position.transpose()<<endl;
     cout<<"Orientation:            "<<floating_base_state.pose.orientation.coeffs().transpose()<<endl;
     cout<<"Twist (linear):         "<<floating_base_state.twist.linear.transpose()<<endl;
@@ -514,7 +512,7 @@ BOOST_AUTO_TEST_CASE(floating_base_test)
     cout<<"Twist (linear):         "<<floating_base_state_measured.twist.linear.transpose()<<endl;
     cout<<"Twist (angular):        "<<floating_base_state_measured.twist.angular.transpose()<<endl;
     cout<<"Acceleration (linear):  "<<floating_base_state_measured.acceleration.linear.transpose()<<endl;
-    cout<<"Acceleration (angular): "<<floating_base_state_measured.acceleration.angular.transpose()<<endl<<endl;*/
+    cout<<"Acceleration (angular): "<<floating_base_state_measured.acceleration.angular.transpose()<<endl<<endl;
 
     // (3) Check if the floating base virtual joints are correctly set in the joint state
 

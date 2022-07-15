@@ -165,7 +165,6 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
-    uint start_idx = 0;
     if(has_floating_base){
         hyrodyn.floating_robot_pose.segment(0,3) = _floating_base_state.pose.position;
         hyrodyn.floating_robot_pose[3] = _floating_base_state.pose.orientation.x();
@@ -176,23 +175,35 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         hyrodyn.floating_robot_twist.segment(3,3) = _floating_base_state.twist.linear;
         hyrodyn.floating_robot_accn.segment(0,3) = _floating_base_state.acceleration.angular;
         hyrodyn.floating_robot_accn.segment(3,3) = _floating_base_state.acceleration.linear;
-        start_idx = 6;
-    }
 
-    for( unsigned int i = start_idx; i < hyrodyn.jointnames_independent.size(); ++i){
-        const std::string& name =  hyrodyn.jointnames_independent[i];
-        try{
-            hyrodyn.y_robot[i-start_idx] = joint_state_in[name].position;
-            hyrodyn.yd_robot[i-start_idx] = joint_state_in[name].speed;
-            hyrodyn.ydd_robot[i-start_idx] = joint_state_in[name].acceleration;
+        for( unsigned int i = 0; i < hyrodyn.jointnames_active.size(); ++i){
+            const std::string& name =  hyrodyn.jointnames_active[i];
+            try{
+                hyrodyn.y_robot[i]   = joint_state_in[name].position;
+                hyrodyn.yd_robot[i]  = joint_state_in[name].speed;
+                hyrodyn.ydd_robot[i] = joint_state_in[name].acceleration;
+            }
+            catch(base::samples::Joints::InvalidName e){
+                LOG_ERROR_S << "Joint " << name << " is in independent joints of Hyrodyn model, but it is not given in joint state vector" << std::endl;
+                throw e;
+            }
         }
-        catch(base::samples::Joints::InvalidName e){
-            LOG_ERROR_S << "Joint " << name << " is in independent joints of Hyrodyn model, but it is not given in joint state vector" << std::endl;
-            throw e;
+        hyrodyn.update_all_independent_coordinates();
+    }
+    else{
+        for( unsigned int i = 0; i < hyrodyn.jointnames_active.size(); ++i){
+            const std::string& name =  hyrodyn.jointnames_active[i];
+            try{
+                hyrodyn.y[i]   = joint_state_in[name].position;
+                hyrodyn.yd[i]  = joint_state_in[name].speed;
+                hyrodyn.ydd[i] = joint_state_in[name].acceleration;
+            }
+            catch(base::samples::Joints::InvalidName e){
+                LOG_ERROR_S << "Joint " << name << " is in independent joints of Hyrodyn model, but it is not given in joint state vector" << std::endl;
+                throw e;
+            }
         }
     }
-
-    hyrodyn.update_all_independent_coordinates();
 
     // Compute system state
     hyrodyn.calculate_system_state();

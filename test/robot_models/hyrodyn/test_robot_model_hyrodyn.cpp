@@ -104,10 +104,15 @@ void compareRobotModels(RobotModelHyrodyn robot_model_hyrodyn, RobotModelKDL rob
     joint_state.time = base::Time::now();
 
     base::samples::RigidBodyStateSE3 floating_base_state;
-    floating_base_state.pose.position = base::Vector3d(-0.027769312129200783, 0.0, 0.918141273555804);
-    floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
-    floating_base_state.twist.setZero();
-    floating_base_state.acceleration.setZero();
+    base::Vector3d euler((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.pose.position = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.pose.orientation = Eigen::AngleAxisd(euler[0], Eigen::Vector3d::UnitX())
+                                         * Eigen::AngleAxisd(euler[1], Eigen::Vector3d::UnitY())
+                                         * Eigen::AngleAxisd(euler[2], Eigen::Vector3d::UnitZ());
+    floating_base_state.twist.linear = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.twist.angular =  base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.acceleration.linear =  base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.acceleration.angular =  base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
     floating_base_state.time = joint_state.time;
 
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state, floating_base_state));
@@ -194,6 +199,9 @@ void compareRobotModels(RobotModelHyrodyn robot_model_hyrodyn, RobotModelKDL rob
     cout<<"Twist"<<endl;
     cout<<rbs_hyrodyn.twist.linear.transpose()<<endl;
     cout<<rbs_hyrodyn.twist.angular.transpose()<<endl;
+    cout<<"Acceleration"<<endl;
+    cout<<rbs_hyrodyn.acceleration.linear.transpose()<<endl;
+    cout<<rbs_hyrodyn.acceleration.angular.transpose()<<endl;
     cout<<"Space Jacobian"<<endl;
     cout<<Js_hyrodyn<<endl;
     cout<<"Body Jacobian"<<endl;
@@ -216,6 +224,9 @@ void compareRobotModels(RobotModelHyrodyn robot_model_hyrodyn, RobotModelKDL rob
     cout<<"Twist"<<endl;
     cout<<rbs_kdl.twist.linear.transpose()<<endl;
     cout<<rbs_kdl.twist.angular.transpose()<<endl;
+    cout<<"Acceleration"<<endl;
+    cout<<rbs_kdl.acceleration.linear.transpose()<<endl;
+    cout<<rbs_kdl.acceleration.angular.transpose()<<endl;
     cout<<"Space Jacobian"<<endl;
     cout<<Js_kdl<<endl;
     cout<<"Body Jacobian"<<endl;
@@ -280,7 +291,7 @@ BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
 
     RobotModelHyrodyn robot_model_hyrodyn;
     config.submechanism_file = "../../../../models/rh5/hyrodyn/rh5.yml";
-    robot_model_hyrodyn.configure(config);
+    BOOST_CHECK(robot_model_hyrodyn.configure(config) == true);
 
     compareRobotModels(robot_model_hyrodyn, robot_model_kdl, frame_id);
 }
@@ -352,16 +363,14 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
         BOOST_CHECK(fabs(robot_model_hybrid.hyrodynHandle()->yd[i] - yd[i]) < 1e-6);
 }
 
-/*BOOST_AUTO_TEST_CASE(floating_base_test)
+BOOST_AUTO_TEST_CASE(floating_base_test)
 {
-    srand(time(NULL));
-
     string urdf_filename = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
 
     wbc::RobotModelHyrodyn robot_model;
 
     base::samples::RigidBodyStateSE3 floating_base_state;
-    base::Vector3d euler(0s,0,0);
+    base::Vector3d euler(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
     floating_base_state.pose.position = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
     floating_base_state.pose.orientation = Eigen::AngleAxisd(euler[0], Eigen::Vector3d::UnitX())
                                          * Eigen::AngleAxisd(euler[1], Eigen::Vector3d::UnitY())
@@ -419,4 +428,4 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     cout<<"Twist (angular):        "<<floating_base_state_measured.twist.angular.transpose()<<endl;
     cout<<"Acceleration (linear):  "<<floating_base_state_measured.acceleration.linear.transpose()<<endl;
     cout<<"Acceleration (angular): "<<floating_base_state_measured.acceleration.angular.transpose()<<endl<<endl;
-}*/
+}

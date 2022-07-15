@@ -117,7 +117,7 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
 }
 
 void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
-                                 const base::samples::RigidBodyStateSE3& floating_base_state){
+                                 const base::samples::RigidBodyStateSE3& floating_base_state_in){
     if(joint_state_in.elements.size() != joint_state_in.names.size()){
         LOG_ERROR_S << "Size of names and size of elements in joint state do not match"<<std::endl;
         throw std::runtime_error("Invalid joint state");
@@ -129,11 +129,24 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
     }
 
     if(has_floating_base){
+
+        floating_base_state = floating_base_state_in;
+
+        // Transform the linear parts of spatial velocity and acceleration to local coordinates to
+        // match the pinocchio convention (see here https://sites.google.com/site/xinsongyan/researches/rbdl-pinnochio)
+        // TODO: Is this correct?
+        base::Pose tf;
+        tf.fromTransform(floating_base_state.pose.toTransform().inverse());
+        base::Twist twist_linear_local;
+        base::Acceleration acc_linear_local;
+        twist_linear_local.linear = tf.orientation.inverse() * floating_base_state.twist.linear;
+        acc_linear_local.linear   = tf.orientation.inverse() * floating_base_state.acceleration.linear;
+
         for(int i = 0; i < 3; i++){
             q[i] = floating_base_state.pose.position[i];
-            qd[i] = floating_base_state.twist.linear[i];
+            qd[i] = twist_linear_local.linear[i];
             qd[i+3] = floating_base_state.twist.angular[i];
-            qdd[i] = floating_base_state.acceleration.linear[i];
+            qdd[i] = acc_linear_local.linear[i];
             qdd[i+3] = floating_base_state.acceleration.angular[i];
         }
         q[3] = floating_base_state.pose.orientation.x();
@@ -207,8 +220,8 @@ const base::samples::RigidBodyStateSE3 &RobotModelPinocchio::rigidBodyState(cons
     // but with axes aligned with the frame of the Universe. This a MIXED representation betwenn the LOCAL and the WORLD conventions.
     rbs.twist.linear = pinocchio::getFrameVelocity(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
     rbs.twist.angular = pinocchio::getFrameVelocity(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
-    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    rbs.acceleration.linear = pinocchio::getFrameAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
+    rbs.acceleration.angular = pinocchio::getFrameAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
     return rbs;
 }
 

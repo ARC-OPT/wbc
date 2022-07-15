@@ -26,6 +26,122 @@ void printRbs(base::samples::RigidBodyStateSE3 rbs){
     cout<<"Acc angular:   "<<rbs.acceleration.angular.transpose()<<endl<<endl;
 }
 
+base::Matrix3d getRotMatfromRPY(const base::Vector3d& rpy)
+{
+    // Returns the Rotation matrix (3x3) by applying Euler angles in the order: roll[0], pitch[1], yaw[2]
+    double roll = rpy(0);
+    double pitch = rpy(1);
+    double yaw = rpy(2);
+
+    base::Matrix3d R_z, R_y, R_x;
+    R_z << cos(yaw), -sin(yaw), 0,
+           sin(yaw),  cos(yaw), 0,
+                  0,         0, 1;
+    R_y << cos(pitch), 0, sin(pitch),
+                    0, 1,          0,
+          -sin(pitch), 0, cos(pitch);
+    R_x << 1,         0,          0,
+           0, cos(roll), -sin(roll),
+           0, sin(roll),  cos(roll);
+
+    return R_z*R_y*R_x;
+}
+
+base::Vector3d getEulerAngles(const base::Quaterniond& orientation)
+{
+    // Returns the Euler angles in the order: roll[0], pitch[1], yaw[2]
+    // Inspired from Determining yaw, pitch, and roll from a rotation matrix (http://planning.cs.uiuc.edu/node103.html) and Pose.cpp from base-types
+    const Eigen::Matrix3d m = orientation.toRotationMatrix();
+    //cout<<"Input RotMat from Quat: \n"<<m<<endl;
+    double x = Eigen::Vector2d(m.coeff(2,2) , m.coeff(2,1)).norm();	// x = sqrt(r33^2 + r32^2)
+    base::Vector3d res(0,::atan2(-m.coeff(2,0), x),0);	// pitch = atan2(-r31, x)
+    if (x > Eigen::NumTraits<double>::dummy_precision()){
+        res[2] = ::atan2(m.coeff(1,0), m.coeff(0,0));	// yaw = atan2(r21, r11)
+        res[0] = ::atan2(m.coeff(2,1), m.coeff(2,2));	// roll = atan2(r32, r33)
+    }else{
+        res[2] = 0;
+        res[0] = (m.coeff(2,0)>0?1:-1)* ::atan2(-m.coeff(0,1), m.coeff(1,1));
+    }
+
+    //cout<<"Output RotMat from RPY: \n"<<getRotMat(res)<<endl;
+    res = -res;	// this produces correct derivatives of floating base coordinates and lower error in inverse dynamics (not clear, why?)
+    return res;
+}
+
+base::Vector3d getEulerAnglesDerivative(const base::Quaterniond& orientation, const base::Vector3d& omega)
+{
+    // Returns the time derivative of Euler angles in the order: yaw[0], pitch[1], roll[2]
+
+    Eigen::Vector3d rpy = getEulerAngles(orientation);
+    double roll = rpy(0);
+    double pitch = rpy(1);
+    double yaw = rpy(2);
+
+    Eigen::Matrix3d m;
+     // Method 1: this formulation is motivated from body fixed angular velocity, see https://davidbrown3.github.io/2017-07-25/EulerAngles/
+    m << cos(yaw)/cos(pitch), -sin(yaw)/cos(pitch), 0,
+         sin(yaw),             cos(yaw),            0,
+        -cos(yaw)*sin(pitch)/cos(pitch), sin(yaw)*sin(pitch)/cos(pitch), 1;
+    //m = -m; // correction term  (it produces correct derivatives of the floating base coordinates as well but error in inverse dynamics is high)
+
+    /*	// Method 2: Inspired from Differential rotations (http://planning.cs.uiuc.edu/node690.html), corrected by Khalil's book
+    m << cos(yaw)/cos(pitch), sin(yaw)/cos(pitch), 0,
+         -sin(yaw),           cos(yaw),            0,
+         cos(yaw)*sin(pitch)/cos(pitch), sin(yaw)*sin(pitch)/cos(pitch), 1;
+    */
+    // rpy_dot = A * omega, where A is the Jacobian that maps the angular velocity(omega) to RPY angular rates
+    base::Vector3d rpy_dot = m*omega;
+
+    return rpy_dot;
+}
+
+
+base::Vector3d getEulerAnglesSecondDerivative(const base::Quaterniond& orientation, const base::Vector3d& omega, const base::Vector3d& omega_dot)
+{
+    // Returns the 2nd time derivative of Euler angles in the order: yaw[0], pitch[1], roll[2]
+    // 1. Extract RPY angles from Quaternion representation
+    Eigen::Vector3d rpy = getEulerAngles(orientation);
+    double roll = rpy(0);
+    double pitch = rpy(1);
+    double yaw = rpy(2);
+    // 2. Extract RPY angle rates from Quaternion and angular velocity
+    base::Vector3d rpy_dot = getEulerAnglesDerivative(orientation, omega);
+    double roll_dot = rpy_dot(0);
+    double pitch_dot = rpy_dot(1);
+    double yaw_dot = rpy_dot(2);
+
+    // 3. Extract RPY 2nd derivative (symbolic derivative derived in MATLAB symbolic toolbox of Method 1)
+    double t2 = cos(pitch);
+    double t3 = cos(yaw);
+    double t4 = sin(pitch);
+    double t5 = sin(yaw);
+    double t6 = t4*t4;
+    double t7 = 1.0/t2;
+    double t8 = t7*t7;
+    base::Matrix3d m;
+    m(0,0) = -t5*t7*yaw_dot+pitch_dot*t3*t4*t8;
+    m(0,1) = -t3*t7*yaw_dot-pitch_dot*t4*t5*t8;
+    m(0,2) = 0.0;
+    m(1,0) = t3*yaw_dot;
+    m(1,1) = -t5*yaw_dot;
+    m(1,2) = 0.0;
+    m(2,0) = -pitch_dot*t3-pitch_dot*t3*t6*t8+t4*t5*t7*yaw_dot;
+    m(2,1) = pitch_dot*t5+pitch_dot*t5*t6*t8+t3*t4*t7*yaw_dot;
+    m(2,2) = 0.0;
+    //m = -m;	// correction term (it produces correct derivatives of the floating base coordinates as well but error in inverse dynamics is high)
+
+    /*
+    // additional sign changes as per lecture notes (Method 2)
+    m(0,1) = -m(0,1);
+    m(1,0) = -m(1,0);
+    m(2,0) = -m(2,0);
+    */
+    // rpy_ddot = A * omega_dot + Adot * omega
+    base::Vector3d rpy_ddot = getEulerAnglesDerivative(orientation, omega_dot) + m*omega;
+
+    return rpy_ddot;
+}
+
 base::samples::RigidBodyStateSE3 testRobotModelKDL(const string &urdf_file, const string &tip_frame, const base::samples::Joints &joint_state, const base::samples::RigidBodyStateSE3& floating_base_state){
     string root_frame = wbc::URDFTools::rootLinkFromURDF(urdf_file);
 
@@ -48,15 +164,26 @@ base::samples::RigidBodyStateSE3 testRobotModelKDL(const string &urdf_file, cons
     // Setup KDL state vectors
     KDL::JntArrayVel q_and_qd_kdl(nj+6);
     KDL::JntArrayAcc qdd_kdl(nj+6);
-    base::Vector3d euler = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+    base::Vector3d euler = getEulerAngles(floating_base_state.pose.orientation);//.toRotationMatrix().eulerAngles(0, 1, 2);
+
+    base::Vector3d omega(floating_base_state.twist.angular[0], floating_base_state.twist.angular[1], floating_base_state.twist.angular[2]);
+    base::Vector3d rpy_dot = getEulerAnglesDerivative(floating_base_state.pose.orientation, omega);
+
+    base::Vector3d omega_dot(floating_base_state.acceleration.angular[0], floating_base_state.acceleration.angular[1], floating_base_state.acceleration.angular[2]);
+    base::Vector3d rpy_ddot = getEulerAnglesSecondDerivative(floating_base_state.pose.orientation, omega, omega_dot);
+
     for(int i = 0; i < 3; i++){
         q_and_qd_kdl.q(i) = floating_base_state.pose.position[i];
         q_and_qd_kdl.qdot(i) = qdd_kdl.qdot(i) = floating_base_state.twist.linear[i];
         qdd_kdl.qdotdot(i) = floating_base_state.acceleration.linear[i];
         q_and_qd_kdl.q(i+3) = euler[i];
-        q_and_qd_kdl.qdot(i+3) = qdd_kdl.qdot(i) = floating_base_state.twist.angular[i];
-        qdd_kdl.qdotdot(i+3) = floating_base_state.acceleration.angular[i];
+        q_and_qd_kdl.qdot(i+3) = qdd_kdl.qdot(i+3) = rpy_dot[i];
+        qdd_kdl.qdotdot(i+3) = rpy_ddot[i];
     }
+
+    base::Matrix3d rot_mat = base::Quaterniond(Eigen::AngleAxisd(euler[2], Eigen::Vector3d::UnitZ())).toRotationMatrix();;
+    q_and_qd_kdl.qdot(4) = qdd_kdl.qdot(4) = (rot_mat.inverse()*floating_base_state.twist.angular)[4];
+
     for(int i = 0; i < nj; i++){
         q_and_qd_kdl.q(i+6) = joint_state[i].position;
         q_and_qd_kdl.qdot(i+6) = qdd_kdl.qdot(i) = joint_state[i].speed;
@@ -185,6 +312,15 @@ base::samples::RigidBodyStateSE3 testRobotModelHyrodyn(const string &urdf_file, 
     rbs.twist.angular        = hyrodyn.twist.segment(0,3);
     rbs.acceleration.linear  = hyrodyn.spatial_acceleration.segment(3,3);
     rbs.acceleration.angular = hyrodyn.spatial_acceleration.segment(0,3);
+
+    hyrodyn.calculate_space_jacobian(tip_frame);
+    base::MatrixXd jac(6,nj+6);
+    jac.block(0,0,3,nj+6) = hyrodyn.Js.block(3,0,3,nj+6);
+    jac.block(3,0,3,nj+6) = hyrodyn.Js.block(0,0,3,nj+6);
+
+    cout<<"Jac Hyrodyn"<<endl;
+    cout<<jac<<endl;
+
     return rbs;
 }
 
@@ -199,6 +335,7 @@ base::samples::RigidBodyStateSE3 testRobotModelPinocchio(const string &urdf_file
     // Setup Pinocchio state vectors
     uint nj = joint_state.size();
     Eigen::VectorXd q(nj+7),qd(nj+6),qdd(nj+6);
+
     for(int i = 0; i < 3; i++){
         q[i] = floating_base_state.pose.position[i];
         qd[i] = floating_base_state.twist.linear[i];
@@ -230,19 +367,25 @@ base::samples::RigidBodyStateSE3 testRobotModelPinocchio(const string &urdf_file
     rbs.pose.orientation = base::Quaterniond(data.oMf[model.getFrameId(tip_frame)].rotation());
     rbs.twist.linear = pinocchio::getFrameVelocity(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
     rbs.twist.angular = pinocchio::getFrameVelocity(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
-    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
+    rbs.acceleration.linear = pinocchio::getFrameAcceleration(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
     rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
+
+    base::MatrixXd jac(6,q.size()-1);
+    jac.setZero();
+    pinocchio::computeFrameJacobian(model, data, q, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED, jac);
+
+    cout<<"Jac Pinocchio"<<endl;
+    cout<<jac<<endl;
+
     return rbs;
 }
 
 int main(){
 
-    srand(time(NULL));
-
     string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
     string urdf_file_with_floating_base = "../../../../models/kuka/urdf/kuka_iiwa_with_floating_base.urdf";
     string sub_mec_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
-    string tip_frame = "kuka_lbr_l_tcp";
+    string tip_frame = "kuka_lbr_l_link_7";
 
     vector<string> joint_names = wbc::URDFTools::jointNamesFromURDF(urdf_file);
     base::samples::Joints joint_state;
@@ -261,13 +404,13 @@ int main(){
 
     base::samples::RigidBodyStateSE3 floating_base_state;
     floating_base_state.pose.position = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
-    floating_base_state.pose.orientation = Eigen::AngleAxisd(double(rand())/RAND_MAX, Eigen::Vector3d::UnitX())
-                                         * Eigen::AngleAxisd(double(rand())/RAND_MAX, Eigen::Vector3d::UnitY())
-                                         * Eigen::AngleAxisd(double(rand())/RAND_MAX, Eigen::Vector3d::UnitZ());
-    floating_base_state.twist.linear  = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
-    floating_base_state.twist.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
-    floating_base_state.acceleration.linear  = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
-    floating_base_state.acceleration.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.pose.orientation = Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitX())
+                                         * Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitY())
+                                         * Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitZ());
+    floating_base_state.twist.linear  = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.twist.angular = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.acceleration.linear  = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.acceleration.angular = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
 
     cout<<"Input floating base state"<<endl;
     printRbs(floating_base_state);
