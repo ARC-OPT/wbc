@@ -17,8 +17,6 @@ target_link_libraries(${TARGET_NAME} PUBLIC
                       PkgConfig::urdfdom
                       PkgConfig::hyrodyn)
 
-target_include_directories(${TARGET_NAME} PUBLIC ${urdfdom_INCLUDE_DIRS} ${hyrodyn_INCLUDE_DIRS})
-
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
        SOVERSION ${API_VERSION})
