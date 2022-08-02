@@ -235,6 +235,29 @@ base::samples::RigidBodyStateSE3 testRobotModelRBDL(const string &urdf_file, con
     if(!Addons::URDFReadFromFile(urdf_file.c_str(), &rbdl_model, true))
         abort();
 
+    // Transformation from fb body linear acceleration to fb joint linear acceleration ----------------------
+    // since RBDL treat the floating base as XYZ translation followed by spherica
+    // aj is S*qdd(i)
+    // j is parent of i
+    // a(i) = Xa(j) + aj + cross(v(i), vj)
+    // For pinocchio we give directly a(fb), for RBDL we give aj instead (for the first two joints)
+    // so we have to remove the cross contribution cross(v(i), vj) from it
+
+    Eigen::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
+
+    base::Twist fb_twist = floating_base_state.twist;
+    base::Acceleration fb_acc = floating_base_state.acceleration;
+
+    Eigen::VectorXd spherical_j_vel(6);
+    spherical_j_vel << fb_twist.angular, Eigen::Vector3d::Zero();
+    Eigen::VectorXd spherical_b_vel(6);
+    spherical_b_vel << fb_twist.angular, fb_rot.transpose() * fb_twist.linear;
+
+    Eigen::VectorXd fb_spherical_cross = crossm(spherical_b_vel, spherical_j_vel);
+
+    fb_acc.linear = fb_acc.linear - fb_rot * fb_spherical_cross.tail<3>(); // remove cross contribution from linear acc s(in world coordinates as RBDL want)
+    // ------------------------------------------------------------------------------------------------------------
+
     // Setup RBDL state vectors
     uint nj = joint_state.size();
     // RBDL adds the real part of the quaternion for the floating base at the end of the state vector, so we have to augment the state vector by one here!
@@ -246,10 +269,10 @@ base::samples::RigidBodyStateSE3 testRobotModelRBDL(const string &urdf_file, con
     }
     for(int i = 0; i < 3; i++){
         q[i] = floating_base_state.pose.position[i];
-        qd[i] = floating_base_state.twist.linear[i];
-        qdd[i] = floating_base_state.acceleration.linear[i];
-        qd[i+3] = floating_base_state.twist.angular[i];
-        qdd[i+3] = floating_base_state.acceleration.angular[i];
+        qd[i] = fb_twist.linear[i];
+        qdd[i] = fb_acc.linear[i];
+        qd[i+3] = fb_twist.angular[i];
+        qdd[i+3] = fb_acc.angular[i];
     }
     int floating_body_id = rbdl_model.GetBodyId(wbc::URDFTools::rootLinkFromURDF(urdf_file).c_str());
     rbdl_model.SetQuaternion(floating_body_id, Math::Quaternion(floating_base_state.pose.orientation.coeffs()), q);
@@ -270,6 +293,15 @@ base::samples::RigidBodyStateSE3 testRobotModelRBDL(const string &urdf_file, con
     rbs.acceleration.linear = acc_rbdl.segment(3,3);
     rbs.acceleration.angular = acc_rbdl.segment(0,3);
 
+    base::Vector3d point_position;
+    point_position.setZero();
+    Math::MatrixNd J;
+    J.setZero(6, nj+6);
+    CalcPointJacobian6D(rbdl_model,q,body_id,point_position,J);
+
+    cout<<"Jac RBDL"<<endl;
+    cout<<J<<endl;
+
     return rbs;
 }
 
@@ -281,6 +313,22 @@ base::samples::RigidBodyStateSE3 testRobotModelHyrodyn(const string &urdf_file, 
 
     uint nj = joint_state.size();
 
+    // Transformation from fb body linear acceleration to fb joint linear acceleration ----------------------
+    // look at RBDL for description
+    Eigen::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
+
+    base::Twist fb_twist = floating_base_state.twist;
+    base::Acceleration fb_acc = floating_base_state.acceleration;
+
+    Eigen::VectorXd spherical_j_vel(6);
+    spherical_j_vel << fb_twist.angular, Eigen::Vector3d::Zero();
+    Eigen::VectorXd spherical_b_vel(6);
+    spherical_b_vel << fb_twist.angular, fb_rot.transpose() * fb_twist.linear;
+
+    Eigen::VectorXd fb_spherical_cross = crossm(spherical_b_vel, spherical_j_vel);
+    fb_acc.linear = fb_acc.linear - fb_rot * fb_spherical_cross.tail<3>(); // remove cross contribution from linear acc s(in world coordinates as RBDL want)
+    // --------------------------------------------------------------------------------------------------
+
     hyrodyn.floating_robot_pose.segment(0,3) = floating_base_state.pose.position;
     hyrodyn.floating_robot_pose[3] = floating_base_state.pose.orientation.x();
     hyrodyn.floating_robot_pose[4] = floating_base_state.pose.orientation.y();
@@ -288,8 +336,8 @@ base::samples::RigidBodyStateSE3 testRobotModelHyrodyn(const string &urdf_file, 
     hyrodyn.floating_robot_pose[6] = floating_base_state.pose.orientation.w();
     hyrodyn.floating_robot_twist.segment(0,3) = floating_base_state.twist.angular;
     hyrodyn.floating_robot_twist.segment(3,3) = floating_base_state.twist.linear;
-    hyrodyn.floating_robot_accn.segment(0,3) = floating_base_state.acceleration.angular;
-    hyrodyn.floating_robot_accn.segment(3,3) = floating_base_state.acceleration.linear;
+    hyrodyn.floating_robot_accn.segment(0,3) = fb_acc.angular;
+    hyrodyn.floating_robot_accn.segment(3,3) = fb_acc.linear;
 
     for( unsigned int i = 0; i < nj; ++i){
         hyrodyn.y_robot[i]   = joint_state[i].position;
@@ -336,12 +384,20 @@ base::samples::RigidBodyStateSE3 testRobotModelPinocchio(const string &urdf_file
     uint nj = joint_state.size();
     Eigen::VectorXd q(nj+7),qd(nj+6),qdd(nj+6);
 
+    base::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
+
+    base::Twist fb_twist = floating_base_state.twist;
+    fb_twist.linear = fb_rot.transpose() * floating_base_state.twist.linear;
+
+    base::Acceleration fb_acc = floating_base_state.acceleration;
+    fb_acc.linear = fb_rot.transpose() * floating_base_state.acceleration.linear;
+
     for(int i = 0; i < 3; i++){
         q[i] = floating_base_state.pose.position[i];
-        qd[i] = floating_base_state.twist.linear[i];
-        qd[i+3] = floating_base_state.twist.angular[i];
-        qdd[i] = floating_base_state.acceleration.linear[i];
-        qdd[i+3] = floating_base_state.acceleration.angular[i];
+        qd[i] = fb_twist.linear[i];
+        qd[i+3] = fb_twist.angular[i];
+        qdd[i] = fb_acc.linear[i];
+        qdd[i+3] = fb_acc.angular[i];
     }
     q[3] = floating_base_state.pose.orientation.x();
     q[4] = floating_base_state.pose.orientation.y();
@@ -367,7 +423,7 @@ base::samples::RigidBodyStateSE3 testRobotModelPinocchio(const string &urdf_file
     rbs.pose.orientation = base::Quaterniond(data.oMf[model.getFrameId(tip_frame)].rotation());
     rbs.twist.linear = pinocchio::getFrameVelocity(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
     rbs.twist.angular = pinocchio::getFrameVelocity(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
-    rbs.acceleration.linear = pinocchio::getFrameAcceleration(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
+    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
     rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
 
     base::MatrixXd jac(6,q.size()-1);
@@ -407,9 +463,13 @@ int main(){
     floating_base_state.pose.orientation = Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitX())
                                          * Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitY())
                                          * Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitZ());
+
+    // these are in world coordinates (just to make this test easier) (world based rotated)
     floating_base_state.twist.linear  = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
-    floating_base_state.twist.angular = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
     floating_base_state.acceleration.linear  = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+
+    // these are in local coordinates (just to make this test easier)
+    floating_base_state.twist.angular = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
     floating_base_state.acceleration.angular = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
 
     cout<<"Input floating base state"<<endl;
@@ -430,3 +490,4 @@ int main(){
     printRbs(rbs_pinocchio);
 
 }
+
