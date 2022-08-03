@@ -17,6 +17,11 @@ list(APPEND PKGCONFIG_REQUIRES eigen3)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
+
+target_include_directories(${TARGET_NAME} PUBLIC
+	$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}>/src
+	$<INSTALL_INTERFACE:include>)
+
 target_link_libraries(${TARGET_NAME} PUBLIC
                       PkgConfig::base-types
                       PkgConfig::base-logging
