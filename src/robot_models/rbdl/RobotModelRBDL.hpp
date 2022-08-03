@@ -7,9 +7,10 @@
 namespace wbc {
 
 class RobotModelRBDL : public RobotModel{
-protected:
+public:
     std::shared_ptr<RigidBodyDynamics::Model> rbdl_model;
-    Eigen::VectorXd q, qd, qdd;
+    Eigen::VectorXd q, qd, qdd, tau;
+    RigidBodyDynamics::Math::MatrixNd J, H_q;
 
     std::vector<std::string> jointNamesInRBDLOrder(const std::string &urdf_file);
     void updateFloatingBase(const base::samples::RigidBodyStateSE3& floating_base_state_in);

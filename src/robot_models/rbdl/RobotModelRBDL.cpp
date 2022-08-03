@@ -1,10 +1,10 @@
 #include "RobotModelRBDL.hpp"
 #include "tools/URDFTools.hpp"
+#include <rbdl/rbdl_utils.h>
 #include <rbdl/addons/urdfreader/urdfreader.h>
-#include <stack>
 #include <base-logging/Logging.hpp>
-#include <sstream>
-#include <fstream>
+
+using namespace RigidBodyDynamics;
 
 namespace wbc {
 
@@ -15,78 +15,6 @@ RobotModelRBDL::RobotModelRBDL(){
 RobotModelRBDL::~RobotModelRBDL(){
 
 }
-
-std::vector<std::string> RobotModelRBDL::jointNamesInRBDLOrder(const std::string &urdf_file){
-    urdf::ModelInterfaceSharedPtr robot_urdf = urdf::parseURDFFile(urdf_file);
-    if(!robot_urdf){
-        LOG_ERROR_S << "Unable to parse urdf from file " << urdf_file <<std::endl;
-        throw std::runtime_error("Failed to parse urdf file");
-    }
-    std::vector<std::string> joint_names;
-    std::map<std::string, urdf::LinkSharedPtr> link_map = robot_urdf->links_;
-    std::stack< std::shared_ptr<urdf::Link> > link_stack;
-    link_stack.push (link_map[(robot_urdf->getRoot()->name)]);
-    std::stack<int> joint_index_stack;
-    joint_index_stack.push(0);
-    while (link_stack.size() > 0) {
-        std::shared_ptr<urdf::Link> cur_link = link_stack.top();
-        unsigned int joint_idx = joint_index_stack.top();
-        if (joint_idx < cur_link->child_joints.size()) {
-            std::shared_ptr<urdf::Joint> cur_joint = cur_link->child_joints[joint_idx];
-            joint_index_stack.pop();
-            joint_index_stack.push (joint_idx + 1);
-            link_stack.push (link_map[cur_joint->child_link_name]);
-            joint_index_stack.push(0);
-            if(cur_joint->type != urdf::Joint::FIXED)
-                joint_names.push_back(cur_joint->name);
-        }
-        else{
-            link_stack.pop();
-            joint_index_stack.pop();
-        }
-    }
-    return joint_names;
-}
-
-bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
-
-    rbdl_model.reset();
-    rbdl_model = std::make_shared<RigidBodyDynamics::Model>();
-
-    if(!RigidBodyDynamics::Addons::URDFReadFromFile(cfg.file.c_str(), rbdl_model.get(), cfg.floating_base)){
-        LOG_ERROR_S << "Unable to parse urdf from file " << cfg.file << std::endl;
-        return false;
-    }
-
-    URDFTools::jointLimitsFromURDF(cfg.file, joint_limits);
-
-    joint_names = jointNamesInRBDLOrder(cfg.file);
-    independent_joint_names = actuated_joint_names = joint_names;
-
-    joint_state.names = joint_names;
-    joint_state.elements.resize(joint_names.size());
-
-
-    // Fixed base: If the robot has N dof, q_size = qd_size = N
-    // Floating base: If the robot has N dof, q_size = N+7, qd_size = N+6
-    q.resize(rbdl_model->q_size);
-    qd.resize(rbdl_model->qd_size);
-    qdd.resize(rbdl_model->qd_size);
-
-    std::cout<<"Dof count: "<<rbdl_model->dof_count<<std::endl;
-    std::cout<<"q_size: "<<rbdl_model->q_size<<std::endl;
-    std::cout<<"qd_size: "<<rbdl_model->qdot_size<<std::endl;
-
-    world_frame = cfg.world_frame_id;
-    base_frame = URDFTools::rootLinkFromURDF(cfg.file);
-    has_floating_base = cfg.floating_base;
-
-    for(auto n : joint_names)
-        std::cout<< n << std::endl;
-
-    return true;
-}
-
 
 void RobotModelRBDL::updateFloatingBase(const base::samples::RigidBodyStateSE3& floating_base_state_in){
     floating_base_state = floating_base_state_in;
@@ -107,12 +35,12 @@ void RobotModelRBDL::updateFloatingBase(const base::samples::RigidBodyStateSE3& 
     Eigen::VectorXd spherical_b_vel(6);
     spherical_b_vel << fb_twist.angular, fb_rot.transpose() * fb_twist.linear;
 
-    Eigen::VectorXd fb_spherical_cross = RigidBodyDynamics::Math::crossm(spherical_b_vel, spherical_j_vel);
+    Eigen::VectorXd fb_spherical_cross = Math::crossm(spherical_b_vel, spherical_j_vel);
     // remove cross contribution from linear acc s(in world coordinates as RBDL want)
     fb_acc.linear = fb_acc.linear - fb_rot * fb_spherical_cross.tail<3>();
 
     int floating_body_id = rbdl_model->GetBodyId(base_frame.c_str());
-    rbdl_model->SetQuaternion(floating_body_id, RigidBodyDynamics::Math::Quaternion(floating_base_state_in.pose.orientation.coeffs()), q);
+    rbdl_model->SetQuaternion(floating_body_id, Math::Quaternion(floating_base_state_in.pose.orientation.coeffs()), q);
 
     for(int i = 0; i < 3; i++){
         q[i] = floating_base_state.pose.position[i];
@@ -121,6 +49,39 @@ void RobotModelRBDL::updateFloatingBase(const base::samples::RigidBodyStateSE3& 
         qd[i+3] = fb_twist.angular[i];
         qdd[i+3] = fb_acc.angular[i];
     }
+}
+
+bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
+
+    rbdl_model.reset();
+    rbdl_model = std::make_shared<Model>();
+
+    if(!Addons::URDFReadFromFile(cfg.file.c_str(), rbdl_model.get(), cfg.floating_base)){
+        LOG_ERROR_S << "Unable to parse urdf from file " << cfg.file << std::endl;
+        return false;
+    }
+
+    robot_urdf = urdf::parseURDFFile(cfg.file);
+    URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
+
+    joint_names = URDFTools::jointNamesFromURDF(robot_urdf);
+    independent_joint_names = actuated_joint_names = joint_names;
+
+    joint_state.names = joint_names;
+    joint_state.elements.resize(joint_names.size());
+
+
+    // Fixed base: If the robot has N dof, q_size = qd_size = N
+    // Floating base: If the robot has N dof, q_size = N+7, qd_size = N+6
+    q.resize(rbdl_model->q_size);
+    qd.resize(rbdl_model->qdot_size);
+    qdd.resize(rbdl_model->qdot_size);
+
+    world_frame = cfg.world_frame_id;
+    base_frame = URDFTools::rootLinkFromURDF(cfg.file);
+    has_floating_base = cfg.floating_base;
+
+    return true;
 }
 
 void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
@@ -136,16 +97,22 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
+    joint_state.time = joint_state_in.time;
+
     uint start_idx = 0;
     if(has_floating_base){
         start_idx = 6;
         updateFloatingBase(floating_base_state_in);
+        // Use the latest timestamp
+        if(floating_base_state_in.time > joint_state_in.time)
+            joint_state.time = floating_base_state_in.time;
     }
 
     for(int i = 0; i < joint_names.size(); i++){
         const std::string &name = joint_names[i];
         try{
-            const base::JointState& state = joint_state[name];
+            const base::JointState& state = joint_state_in[name];
+            joint_state[name] = joint_state_in[name];
             q[i+start_idx] = state.position;
             qd[i+start_idx] = state.speed;
             qdd[i+start_idx] = state.acceleration;
@@ -158,43 +125,198 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelRBDL::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    }
+    if(!hasLink(tip_frame)){
+        LOG_ERROR_S << "Request rigidBodyState for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to rigidBodyState()");
+    }
+    if(root_frame != world_frame){
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
+        throw std::runtime_error("Invalid call to rigidBodyState()");
+    }
 
+    int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
+    rbs.pose.position = CalcBodyToBaseCoordinates(*rbdl_model,q,body_id,base::Vector3d(0,0,0));
+    rbs.pose.orientation = base::Quaterniond(CalcBodyWorldOrientation(*rbdl_model,q,body_id).inverse());
+    Math::SpatialVector twist_rbdl = CalcPointVelocity6D(*rbdl_model,q,qd,body_id,base::Vector3d(0,0,0));
+    Math::SpatialVector acc_rbdl = CalcPointAcceleration6D(*rbdl_model,q,qd,qdd,body_id,base::Vector3d(0,0,0));
+    rbs.twist.linear = twist_rbdl.segment(3,3);
+    rbs.twist.angular = twist_rbdl.segment(0,3);
+    rbs.acceleration.linear = acc_rbdl.segment(3,3);
+    rbs.acceleration.angular = acc_rbdl.segment(0,3);
+    rbs.frame_id = root_frame;
+    rbs.time = joint_state.time;
+
+    return rbs;
 }
 
 const base::MatrixXd &RobotModelRBDL::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to spaceJacobian()");
+    }
+    if(!hasLink(tip_frame)){
+        LOG_ERROR_S << "Request jacobian for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to spaceJacobian()");
+    }
+    if(root_frame != world_frame){
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
+        throw std::runtime_error("Invalid call to spaceJacobian()");
+    }
 
+    std::string chain_id = chainID(root_frame,tip_frame);
+
+    uint nj = noOfJoints();
+    if(has_floating_base)
+        nj += 6;
+    space_jac_map[chain_id].resize(6,nj);
+    space_jac_map[chain_id].setZero();
+
+    base::Vector3d point_position;
+    point_position.setZero();
+    J.setZero(6, nj);
+    int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
+    CalcPointJacobian6D(*rbdl_model,q,body_id,point_position,J);
+
+    space_jac_map[chain_id].block(0,0,3,nj) = J.block(3,0,3,nj);
+    space_jac_map[chain_id].block(3,0,3,nj) = J.block(0,0,3,nj);
+
+    return space_jac_map[chain_id];
 }
 
 const base::MatrixXd &RobotModelRBDL::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to bodyJacobian()");
+    }
+    if(!hasLink(tip_frame)){
+        LOG_ERROR_S << "Request jacobian for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to bodyJacobian()");
+    }
+    if(root_frame != world_frame){
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
+        throw std::runtime_error("Invalid call to bodyJacobian()");
+    }
 
+    std::string chain_id = chainID(root_frame,tip_frame);
+
+    uint nj = rbdl_model->dof_count;
+    body_jac_map[chain_id].resize(6,nj);
+    body_jac_map[chain_id].setZero();
+
+    J.setZero(6, nj);
+    int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
+    CalcBodySpatialJacobian(*rbdl_model,q,body_id,J);
+
+    body_jac_map[chain_id].block(0,0,3,nj) = J.block(3,0,3,nj);
+    body_jac_map[chain_id].block(3,0,3,nj) = J.block(0,0,3,nj);
+
+    return body_jac_map[chain_id];
 }
 
 const base::MatrixXd &RobotModelRBDL::comJacobian(){
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to spatialAccelerationBias()");
+    }
+    com_jac.setZero(3, rbdl_model->dof_count);
+    double total_mass = 0.0;
 
+    // iterate over the moving bodies except base link (numbered 0 in the graph)
+    for (unsigned int i = 1; i < rbdl_model->mBodies.size(); i++){
+        const Body& body = rbdl_model->mBodies.at(i);
+        Math::MatrixNd com_jac_body_i;
+        com_jac_body_i.setZero(3, rbdl_model->dof_count);
+        CalcPointJacobian(*rbdl_model, q, i, body.mCenterOfMass, com_jac_body_i, true);
+
+        com_jac = com_jac + body.mMass * com_jac_body_i;
+        total_mass = total_mass + body.mMass;
+    }
+
+    com_jac = (1/total_mass) * com_jac;
+    return com_jac;
 }
 
 const base::MatrixXd &RobotModelRBDL::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
-
+    throw std::runtime_error("RobotModelRBDL::jacobianDot: Not implemented!");
 }
 
 const base::Acceleration &RobotModelRBDL::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
-
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to spatialAccelerationBias()");
+    }
+    if(!hasLink(tip_frame)){
+        LOG_ERROR_S << "Request jacobian for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to spatialAccelerationBias()");
+    }
+    if(root_frame != world_frame){
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
+        throw std::runtime_error("Invalid call to spatialAccelerationBias()");
+    }
+    base::Vector3d point_position;
+    point_position.setZero();
+    unsigned int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
+    Math::SpatialVector spatial_acceleration = CalcPointAcceleration6D(*rbdl_model, q, qd, Math::VectorNd::Zero(rbdl_model->dof_count), body_id, point_position);
+    spatial_acc_bias = base::Acceleration(spatial_acceleration.segment(3,3), spatial_acceleration.segment(0,3));
+    return spatial_acc_bias;
 }
 
 const base::MatrixXd &RobotModelRBDL::jointSpaceInertiaMatrix(){
-
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to jointSpaceInertiaMatrix()");
+    }
+    H_q.setZero(rbdl_model->dof_count, rbdl_model->dof_count);
+    CompositeRigidBodyAlgorithm(*rbdl_model, q, H_q);
+    joint_space_inertia_mat = H_q;
+    return joint_space_inertia_mat;
 }
 
 const base::VectorXd &RobotModelRBDL::biasForces(){
-
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to biasForces()");
+    }
+    tau.resize(rbdl_model->dof_count);
+    InverseDynamics(*rbdl_model, q, qd, Math::VectorNd::Zero(rbdl_model->dof_count), tau);
+    bias_forces = tau;
+    return bias_forces;
 }
 
 const base::samples::RigidBodyStateSE3& RobotModelRBDL::centerOfMass(){
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to centerOfMass()");
+    }
 
+    double mass;
+    Math::Vector3d com_pos, com_vel, com_acc;
+    Utils::CalcCenterOfMass(*rbdl_model, q, qd, &qdd, mass, com_pos, &com_vel, &com_acc);
+
+    com_rbs.frame_id = world_frame;
+    com_rbs.pose.position = com_pos;
+    com_rbs.pose.orientation.setIdentity();
+    com_rbs.twist.linear = com_vel;
+    com_rbs.twist.angular.setZero();
+    com_rbs.acceleration.linear = com_acc; // TODO: double check CoM acceleration
+    com_rbs.acceleration.angular.setZero();
+    com_rbs.time = joint_state.time;
+    return com_rbs;
 }
 
 void RobotModelRBDL::computeInverseDynamics(base::commands::Joints &solver_output){
-
+    if(joint_state.time.isNull()){
+        LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to computeInverseDynamics()");
+    }
+    InverseDynamics(*rbdl_model, q, qd, qdd, tau);
+    for(uint i = 0; i < noOfJoints(); i++){
+        solver_output[joint_names[i]].effort = tau[i+6];
+    }
 }
 
 }
