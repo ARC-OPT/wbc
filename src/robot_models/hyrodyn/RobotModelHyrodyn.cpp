@@ -73,7 +73,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     actuated_joint_names = hyrodyn.jointnames_active;
     independent_joint_names = hyrodyn.jointnames_independent;
 
-    // 2. Verify consistency of URDF and config
+    // 2. Verify consistency of URDF and configurdf_model
 
     // This is mostly being done internally in hyrodyn
 
