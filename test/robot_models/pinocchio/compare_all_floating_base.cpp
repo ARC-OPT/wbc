@@ -297,10 +297,15 @@ base::samples::RigidBodyStateSE3 testRobotModelRBDL(const string &urdf_file, con
     point_position.setZero();
     Math::MatrixNd J;
     J.setZero(6, nj+6);
-    CalcPointJacobian6D(rbdl_model,q,body_id,point_position,J);
+    CalcBodySpatialJacobian(rbdl_model,q,body_id,J);
+
+    base::MatrixXd jac(6,nj+6);
+    jac.block(0,0,3,nj+6) = J.block(3,0,3,nj+6);
+    jac.block(3,0,3,nj+6) = J.block(0,0,3,nj+6);
+
 
     cout<<"Jac RBDL"<<endl;
-    cout<<J<<endl;
+    cout<<jac<<endl;
 
     return rbs;
 }
@@ -441,7 +446,7 @@ int main(){
     string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
     string urdf_file_with_floating_base = "../../../../models/kuka/urdf/kuka_iiwa_with_floating_base.urdf";
     string sub_mec_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
-    string tip_frame = "kuka_lbr_l_link_7";
+    string tip_frame = "kuka_lbr_l_tcp";
 
     vector<string> joint_names = wbc::URDFTools::jointNamesFromURDF(urdf_file);
     base::samples::Joints joint_state;

@@ -162,6 +162,13 @@ BOOST_AUTO_TEST_CASE(fk){
         BOOST_CHECK(fabs(acc[i] - rbs.acceleration.linear[i]) < 1e-6);
         BOOST_CHECK(fabs(acc[i+3] - rbs.acceleration.angular[i]) < 1e-6);
     }
+
+    /*cout<<"FK"<<endl;
+    printRbs(rbs);
+    cout<<"Space Jac"<<endl;
+    cout<<space_jac<<endl;
+    cout<<"Body Jac"<<endl;
+    cout<<body_jac<<endl;*/
 }
 
 BOOST_AUTO_TEST_CASE(com){
@@ -194,6 +201,11 @@ BOOST_AUTO_TEST_CASE(com){
         BOOST_CHECK(fabs(com_vel[i] - com.twist.linear[i]) < 1e-3);
         BOOST_CHECK(fabs(com_vel[i] - com_diff[i]) < 1e-3);
     }
+
+    /*cout<<"CoM"<<endl;
+    printRbs(com);
+    cout<<"CoM Jacobian"<<endl;
+    cout<<com_jac<<endl;*/
 }
 
 BOOST_AUTO_TEST_CASE(dynamics){
@@ -211,22 +223,23 @@ BOOST_AUTO_TEST_CASE(dynamics){
     base::VectorXd bias_forces = robot_model.biasForces();
     base::MatrixXd mass_inertia_mat = robot_model.jointSpaceInertiaMatrix();
 
-    cout<<"Bias forces"<<endl;
+    /*cout<<"Bias forces"<<endl;
     cout<<bias_forces.transpose()<<endl;
     cout<<"Mass Inertia Matrix"<<endl;
-    cout<<mass_inertia_mat<<endl;
+    cout<<mass_inertia_mat<<endl;*/
 
     base::commands::Joints state;
     state.names = robot_model.jointNames();
     state.elements.resize(robot_model.noOfJoints());
     robot_model.computeInverseDynamics(state);
 
-    cout<<"Inverse dynamics: "<<endl;
-    for(auto n : state.names) cout<<state[n].effort<<" "; cout<<endl;
     base::VectorXd tau = (mass_inertia_mat * robot_model.qdd + bias_forces).segment(6,robot_model.noOfJoints());
-    cout<<"Check"<<endl;
-    cout<<(mass_inertia_mat * robot_model.qdd + bias_forces).segment(6,robot_model.noOfJoints()).transpose()<<endl;
-
     for(int i = 0; i < robot_model.noOfJoints(); i++)
         BOOST_CHECK(fabs(tau[i] - state[i].effort) < 1e-6);
+
+    /*cout<<"Inverse dynamics: "<<endl;
+    for(auto n : state.names) cout<<state[n].effort<<" "; cout<<endl;
+    cout<<"Check"<<endl;
+    cout<<(mass_inertia_mat * robot_model.qdd + bias_forces).segment(6,robot_model.noOfJoints()).transpose()<<endl;*/
+
 }
