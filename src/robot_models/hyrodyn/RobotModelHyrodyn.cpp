@@ -166,6 +166,20 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
     }
 
     if(has_floating_base){
+
+        // Transformation from fb body linear acceleration to fb joint linear acceleration
+        // look at RobotModelRBDL for description
+        Eigen::Matrix3d fb_rot = _floating_base_state.pose.orientation.toRotationMatrix();
+        base::Twist fb_twist = _floating_base_state.twist;
+        base::Acceleration fb_acc = _floating_base_state.acceleration;
+
+        Eigen::VectorXd spherical_j_vel(6);
+        spherical_j_vel << fb_twist.angular, Eigen::Vector3d::Zero();
+        Eigen::VectorXd spherical_b_vel(6);
+        spherical_b_vel << fb_twist.angular, fb_rot.transpose() * fb_twist.linear;
+        Eigen::VectorXd fb_spherical_cross = crossm(spherical_b_vel, spherical_j_vel);
+        fb_acc.linear = fb_acc.linear - fb_rot * fb_spherical_cross.tail<3>(); // remove cross contribution from linear acc s(in world coordinates as RBDL want)
+
         hyrodyn.floating_robot_pose.segment(0,3) = _floating_base_state.pose.position;
         hyrodyn.floating_robot_pose[3] = _floating_base_state.pose.orientation.x();
         hyrodyn.floating_robot_pose[4] = _floating_base_state.pose.orientation.y();
@@ -173,8 +187,8 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         hyrodyn.floating_robot_pose[6] = _floating_base_state.pose.orientation.w();
         hyrodyn.floating_robot_twist.segment(0,3) = _floating_base_state.twist.angular;
         hyrodyn.floating_robot_twist.segment(3,3) = _floating_base_state.twist.linear;
-        hyrodyn.floating_robot_accn.segment(0,3) = _floating_base_state.acceleration.angular;
-        hyrodyn.floating_robot_accn.segment(3,3) = _floating_base_state.acceleration.linear;
+        hyrodyn.floating_robot_accn.segment(0,3) = fb_acc.angular;
+        hyrodyn.floating_robot_accn.segment(3,3) = fb_acc.linear;
 
         for( unsigned int i = 0; i < hyrodyn.jointnames_active.size(); ++i){
             const std::string& name =  hyrodyn.jointnames_active[i];
