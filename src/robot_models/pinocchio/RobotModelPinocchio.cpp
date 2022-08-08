@@ -11,6 +11,8 @@
 
 namespace wbc{
 
+RobotModelRegistry<RobotModelPinocchio> RobotModelPinocchio::reg("pinocchio");
+
 RobotModelPinocchio::RobotModelPinocchio(){
 
 }
@@ -32,30 +34,19 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     // 1. Load Robot Model
 
     robot_model_config = cfg;
-
     robot_urdf = urdf::parseURDFFile(cfg.file);
     if(!robot_urdf){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
         return false;
     }
-
-    // Blacklist not required joints
-    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
-        return false;
-
-    // Add floating base
-    has_floating_base = cfg.floating_base;
-
-    base_frame = robot_urdf->getRoot()->name;
+    base_frame =  robot_urdf->getRoot()->name;
 
     try{
-        if(has_floating_base){
+        if(cfg.floating_base){
             pinocchio::urdf::buildModel(robot_urdf,pinocchio::JointModelFreeFlyer(), model);
-            world_frame = cfg.world_frame_id;
         }
         else{
             pinocchio::urdf::buildModel(robot_urdf, model);
-            world_frame = base_frame;
         }
     }
     catch(std::invalid_argument e){
@@ -64,11 +55,22 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     }
     data = std::make_shared<pinocchio::Data>(model);
 
+    // Add floating base
+    has_floating_base = cfg.floating_base;
+    world_frame = base_frame;
+    if(has_floating_base){
+        joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf);
+        world_frame = robot_urdf->getRoot()->name;
+    }
+
+    // 4. Create data structures
+
     joint_names = model.names;
     joint_names.erase(joint_names.begin()); // Erase global joint 'universe' which is added by Pinocchio
     if(has_floating_base)
         joint_names.erase(joint_names.begin()); // Erase 'floating_base' root joint
-    actuated_joint_names = independent_joint_names = joint_names;
+    actuated_joint_names = joint_names;
+    joint_names = independent_joint_names = joint_names_floating_base + joint_names;
 
     // Joint order in q,qd,qdd:
     //
@@ -85,20 +87,17 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     qd.resize(model.nv);
     qdd.resize(model.nv);
 
-    joint_state.resize(noOfJoints());
-    joint_state.names = jointNames();
+    joint_state.resize(noOfActuatedJoints());
+    joint_state.names = actuatedJointNames();
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
+
+    selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
+    selection_matrix.setZero();
 
     LOG_DEBUG("------------------- WBC RobotModelPinocchio -----------------");
     LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
     LOG_DEBUG_S << "Floating base robot: " << has_floating_base << std::endl;
-    if(has_floating_base){
-        LOG_DEBUG_S << "Floating base pose: " << std::endl;
-        LOG_DEBUG_S << "Pos: " << cfg.floating_base_state.pose.position.transpose() << std::endl;
-        LOG_DEBUG_S << "Ori: " << cfg.floating_base_state.pose.orientation.coeffs().transpose() << std::endl;
-        LOG_DEBUG_S << "World frame: " << cfg.world_frame_id << std::endl;
-    }
     LOG_DEBUG("Joint Names");
     for(auto n : jointNames())
         LOG_DEBUG_S << n << std::endl;
@@ -128,68 +127,76 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
-    if(has_floating_base){
+    joint_state = joint_state_in;
 
+    if(has_floating_base){        
+        if(!floating_base_state_in.hasValidPose() ||
+           !floating_base_state_in.hasValidTwist() ||
+           !floating_base_state_in.hasValidAcceleration()){
+           LOG_ERROR("Invalid status of floating base given! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion)");
+           throw std::runtime_error("Invalid floating base status");
+        }
+        if(floating_base_state_in.time.isNull()){
+            LOG_ERROR("Floating base state does not have a valid timestamp. Or do we have 1970?");
+            throw std::runtime_error("Invalid call to update()");
+        }
+
+        // Pinocchio expects the floating base twist/acceleration in local coordinates. However, we
+        // want to give the linear part in world coordinates and the angular part in local coordinates
         floating_base_state = floating_base_state_in;
+        base::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
 
-        // Transform the linear parts of spatial velocity and acceleration to local coordinates to
-        // match the pinocchio convention (see here https://sites.google.com/site/xinsongyan/researches/rbdl-pinnochio)
-        // TODO: Is this correct?
-        base::Pose tf;
-        tf.fromTransform(floating_base_state.pose.toTransform().inverse());
-        base::Twist twist_linear_local;
-        base::Acceleration acc_linear_local;
-        twist_linear_local.linear = tf.orientation.inverse() * floating_base_state.twist.linear;
-        acc_linear_local.linear   = tf.orientation.inverse() * floating_base_state.acceleration.linear;
+        base::Twist fb_twist = floating_base_state.twist;
+        fb_twist.linear = fb_rot.transpose() * floating_base_state.twist.linear;
+
+        base::Acceleration fb_acc = floating_base_state.acceleration;
+        fb_acc.linear = fb_rot.transpose() * floating_base_state.acceleration.linear;
 
         for(int i = 0; i < 3; i++){
             q[i] = floating_base_state.pose.position[i];
-            qd[i] = twist_linear_local.linear[i];
-            qd[i+3] = floating_base_state.twist.angular[i];
-            qdd[i] = acc_linear_local.linear[i];
-            qdd[i+3] = floating_base_state.acceleration.angular[i];
+            qd[i] = fb_twist.linear[i];
+            qd[i+3] = fb_twist.angular[i];
+            qdd[i] = fb_acc.linear[i];
+            qdd[i+3] = fb_acc.angular[i];
         }
         q[3] = floating_base_state.pose.orientation.x();
         q[4] = floating_base_state.pose.orientation.y();
         q[5] = floating_base_state.pose.orientation.z();
         q[6] = floating_base_state.pose.orientation.w();
-    }
 
-    for(size_t i = 0; i < noOfActuatedJoints(); i++){
-        const std::string& name = actuated_joint_names[i];
-        std::size_t idx;
-        try{
-            idx = joint_state_in.mapNameToIndex(name);
-        }
-        catch(base::samples::Joints::InvalidName e){
-            LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint state vector"<<std::endl;
-            throw e;
-        }
-        joint_state[name] = joint_state_in[idx];
-    }
-    joint_state.time = joint_state_in.time;
-
-    // Joint IDs in Pinocchio:
-    //
-    // Floating base
-    // universe,root_joint,joint_names
-    //
-    // Fixed base
-    // universe,joint_names
-    for(auto name : joint_names){
-        base::JointState state = joint_state[name];
-        if(has_floating_base){
-            // Subtract 2 due to universe & root_joint
+        // Subtract 2 due to universe & root_joint
+        for(auto name : actuated_joint_names){
+            if(!hasJoint(name)){
+                LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the KDL Tree, but it is not in the joint state vector."
+                            << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
+                throw std::runtime_error("Incomplete Joint State");
+            }
+            base::JointState state = joint_state[name];
             q[model.getJointId(name)-2+7]   = state.position;     // first 7 elements in q are floating base pose
             qd[model.getJointId(name)-2+6]  = state.speed;        // first 6 elements in q are floating base twist
             qdd[model.getJointId(name)-2+6] = state.acceleration; // first 6 elements in q are floating base acceleration
         }
-        else{
+    }
+    else{
+        for(auto name : actuated_joint_names){
+            if(!hasJoint(name)){
+                LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the KDL Tree, but it is not in the joint state vector."
+                            << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
+                throw std::runtime_error("Incomplete Joint State");
+            }
+            base::JointState state = joint_state[name];
             q[model.getJointId(name)-1]   = state.position;
             qd[model.getJointId(name)-1]  = state.speed;
             qdd[model.getJointId(name)-1] = state.acceleration;
         }
     }
+
+}
+
+void RobotModelPinocchio::systemState(base::VectorXd &_q, base::VectorXd &_qd, base::VectorXd &_qdd){
+    _q = q;
+    _qd = qd;
+    _qdd = qdd;
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelPinocchio::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
@@ -220,8 +227,8 @@ const base::samples::RigidBodyStateSE3 &RobotModelPinocchio::rigidBodyState(cons
     // but with axes aligned with the frame of the Universe. This a MIXED representation betwenn the LOCAL and the WORLD conventions.
     rbs.twist.linear = pinocchio::getFrameVelocity(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
     rbs.twist.angular = pinocchio::getFrameVelocity(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
-    rbs.acceleration.linear = pinocchio::getFrameAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.acceleration.angular = pinocchio::getFrameAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
+    rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
     return rbs;
 }
 
@@ -353,9 +360,13 @@ void RobotModelPinocchio::computeInverseDynamics(base::commands::Joints &solver_
     // TODO: Add external wrenches here
     pinocchio::rnea(model, *data, q, qd, qdd);
 
+    uint start_idx = 0;
+    if(has_floating_base)
+        start_idx = 6;
+
     for(uint i = 0; i < noOfJoints(); i++){
-        const std::string &name = jointNames()[i];
-        solver_output[name].effort = data->tau[i];
+        const std::string &name = actuatedJointNames()[i];
+        solver_output[name].effort = data->tau[i+start_idx];
     }
 }
 

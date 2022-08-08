@@ -21,9 +21,6 @@ std::vector<std::string> operator+(std::vector<std::string> a, std::vector<std::
  */
 class RobotModel{
 protected:
-    void updateFloatingBase(const base::samples::RigidBodyStateSE3& rbs,
-                            const std::vector<std::string> &floating_base_virtual_joint_names,
-                            base::samples::Joints& joint_state);
     void clear();
 
     /** ID of kinematic chain given root and tip*/
@@ -81,6 +78,9 @@ public:
 
     /** Returns the current status of the given joint names */
     const base::samples::Joints& jointState(const std::vector<std::string> &joint_names);
+
+    /** Return entire system state*/
+    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd) = 0;
 
     /** Returns the pose, twist and spatial acceleration between the two given frames. All quantities are defined in root_frame coordinates*/
     virtual const base::samples::RigidBodyStateSE3 &rigidBodyState(const std::string &root_frame, const std::string &tip_frame) = 0;
@@ -194,6 +194,9 @@ public:
 
     /** @brief Get current robot model config*/
     const RobotModelConfig& getRobotModelConfig(){return robot_model_config;}
+
+    /** @brief Is floating base robot?*/
+    bool hasFloatingBase(){return has_floating_base;}
 
 };
 typedef std::shared_ptr<RobotModel> RobotModelPtr;

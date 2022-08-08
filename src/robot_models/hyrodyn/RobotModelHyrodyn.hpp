@@ -43,6 +43,9 @@ public:
     virtual void update(const base::samples::Joints& joint_state,
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
 
+    /** Return entire system state*/
+    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd);
+
     /**
      * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
      *  This will create a kinematic chain between root and tip frame, if called for the first time with the given arguments.

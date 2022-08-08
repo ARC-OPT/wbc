@@ -19,21 +19,21 @@ class KinematicChainKDL;
  *  and will be appropriately concatenated. This way you can describe e.g. geometric robot-object relationships or create multi-robot scenarios.
  */
 class RobotModelKDL : public RobotModel{
-private:
+protected:
 
     static RobotModelRegistry<RobotModelKDL> reg;
 
     typedef std::shared_ptr<KinematicChainKDL> KinematicChainKDLPtr;
     typedef std::map<std::string, KinematicChainKDLPtr> KinematicChainKDLMap;
 
-    KDL::JntArray q,qdot,qdotdot,tau,zero;
+    KDL::JntArray q,qd,qdd,tau,zero;
     base::VectorXd qdot_tmp;
     base::VectorXd tmp_acc;
 
-protected:
     KDL::Tree full_tree;                          /** Overall kinematic tree*/
     std::map<std::string,int> joint_idx_map_kdl;
     KinematicChainKDLMap kdl_chain_map;           /** Map of KDL Chains*/
+
     /**
      * @brief Create a KDL chain and add it to the KDL Chain map. Throws an exception if chain cannot be extracted from KDL Tree
      * @param root_frame Root frame of the chain
@@ -64,7 +64,7 @@ protected:
      * @param status Current joint state
      */
     void recursiveCOM( const KDL::SegmentMap::const_iterator& currentSegment,
-                       const base::samples::Joints& status, const KDL::Frame& frame,
+                       const KDL::Frame& frame,
                        double& mass, KDL::Vector& cog);
 
     /** @brief Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
@@ -101,6 +101,9 @@ public:
      */
     virtual void update(const base::samples::Joints& joint_state,
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
+
+    /** Return entire system state*/
+    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd);
 
     /**
      * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.

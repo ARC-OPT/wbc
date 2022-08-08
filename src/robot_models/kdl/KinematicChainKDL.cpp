@@ -43,26 +43,27 @@ const base::samples::RigidBodyStateSE3 &KinematicChainKDL::rigidBodyState(){
     cartesian_state.twist.angular << twist_kdl.rot(0), twist_kdl.rot(1), twist_kdl.rot(2);
     cartesian_state.acceleration.linear = acc.segment(0,3);
     cartesian_state.acceleration.angular = acc.segment(3,3);
-    cartesian_state.time = stamp;
     return cartesian_state;
 }
 
-void KinematicChainKDL::update(const base::samples::Joints &joint_state){
+void KinematicChainKDL::update(const KDL::JntArray& q, const KDL::JntArray& qd, const KDL::JntArray& qdd, std::map<std::string,int> joint_idx_map){
 
     //// update Joints
-    stamp = joint_state.time;
-    for(size_t i = 0; i < joint_names.size(); i++)
-        try{
-            const base::JointState &js = joint_state.getElementByName(joint_names[i]);
-            jnt_array_vel.q(i)       = jnt_array_acc.q(i)    = js.position;
-            jnt_array_vel.qdot(i)    = jnt_array_acc.qdot(i) = js.speed;
-            jnt_array_acc.qdotdot(i) = js.acceleration;
-        }
-        catch(std::exception e){
+    for(size_t i = 0; i < joint_names.size(); i++){
+        const std::string& name = joint_names[i];
+        if(joint_idx_map.count(name) == 0){
             LOG_ERROR("Kinematic Chain %s to %s contains joint %s, but this joint is not in joint state vector",
                       chain.getSegment(0).getName().c_str(), chain.getSegment(chain.getNrOfSegments()-1).getName().c_str(), joint_names[i].c_str());
             throw std::invalid_argument("Invalid joint state");
         }
+
+        uint idx = joint_idx_map[name];
+
+        jnt_array_vel.q(i)       = jnt_array_acc.q(i)    = q(idx);
+        jnt_array_vel.qdot(i)    = jnt_array_acc.qdot(i) = qd(idx);
+        jnt_array_acc.qdotdot(i) = qdd(idx);
+    }
+
     space_jacobian_is_up_to_date = body_jacobian_is_up_to_date = jac_dot_is_up_to_date = fk_is_up_to_date = false;
 }
 

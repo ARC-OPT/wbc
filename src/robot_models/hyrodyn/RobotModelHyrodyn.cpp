@@ -26,13 +26,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
 
     // 1. Load Robot Model
 
-    if(!cfg.joint_names.empty())
-        LOG_WARN("Configured joint names will be ignored! The Hyrodyn based model will get the joint names from submechanism file");
-    if(!cfg.actuated_joint_names.empty())
-        LOG_WARN("Configured actuated joint names will be ignored! The Hyrodyn based model will get the actuated joint names from submechanism file");
-
     robot_model_config = cfg;
-
     robot_urdf = urdf::parseURDFFile(cfg.file);
     if(!robot_urdf){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
@@ -40,25 +34,22 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     }
     base_frame = robot_urdf->getRoot()->name;
 
-    // Blacklist not required joints
-    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
-        return false;
-
     // Add floating base
-    world_frame = base_frame;
     has_floating_base = cfg.floating_base;
+    world_frame = base_frame;
     if(has_floating_base){
-        joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
+        joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf);
         world_frame = robot_urdf->getRoot()->name;
     }
 
+    // Read Joint Limits
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
     TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
     std::string robot_urdf_file = "/tmp/floating_base_model.urdf";
     doc->SaveFile(robot_urdf_file);
     try{
-        hyrodyn.load_robotmodel(robot_urdf_file, cfg.submechanism_file);
+        hyrodyn.load_robotmodel(robot_urdf_file, cfg.submechanism_file, false);
     }
     catch(std::exception e){
         LOG_ERROR_S << "Failed to load hyrodyn model from URDF " << robot_urdf_file <<
@@ -66,7 +57,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
         return false;
     }
 
-    joint_state.names =hyrodyn.jointnames_spanningtree;
+    joint_state.names = hyrodyn.jointnames_spanningtree;
     joint_state.elements.resize(hyrodyn.jointnames_spanningtree.size());
 
     joint_names = joint_names_floating_base + hyrodyn.jointnames_active;
@@ -74,8 +65,6 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     independent_joint_names = hyrodyn.jointnames_independent;
 
     // 2. Verify consistency of URDF and configurdf_model
-
-    // This is mostly being done internally in hyrodyn
 
     // All contact point have to be a valid link in the robot URDF
     for(auto c : cfg.contact_points.names){
@@ -85,36 +74,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
         }
     }
 
-    // 3. Set initial floating base state
-
-    /*if(hyrodyn.floating_base_robot){
-        if(cfg.floating_base_state.hasValidPose()){
-            base::samples::RigidBodyStateSE3 rbs;
-            rbs.pose = cfg.floating_base_state.pose;
-            if(cfg.floating_base_state.hasValidTwist())
-                rbs.twist = cfg.floating_base_state.twist;
-            else
-                rbs.twist.setZero();
-            if(cfg.floating_base_state.hasValidAcceleration())
-                rbs.acceleration = cfg.floating_base_state.acceleration;
-            else
-                rbs.acceleration.setZero();
-            rbs.time = base::Time::now();
-            rbs.frame_id = cfg.world_frame_id;
-            try{
-                updateFloatingBase(rbs, joint_names_floating_base, joint_state);
-            }
-            catch(std::runtime_error e){
-                return false;
-            }
-        }
-        else{
-            LOG_ERROR("If you set floating_base to true, you have to provide a valid floating_base_state (at least a position/orientation)");
-            return false;
-        }
-    }*/
-
-    // 4. Create data structures
+    // 3. Create data structures
 
     active_contacts = cfg.contact_points;
     joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
@@ -124,17 +84,9 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     for(int i = 0; i < hyrodyn.jointnames_active.size(); i++)
         selection_matrix(i, jointIndex(hyrodyn.jointnames_active[i])) = 1.0;
 
-    // 5. Print some debug info
-
     LOG_DEBUG("------------------- WBC RobotModelHyrodyn -----------------");
     LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
     LOG_DEBUG_S << "Floating base robot: " << hyrodyn.floating_base_robot << std::endl;
-    if(hyrodyn.floating_base_robot){
-        LOG_DEBUG_S << "Floating base pose: " << std::endl;
-        LOG_DEBUG_S << "Pos: " << cfg.floating_base_state.pose.position.transpose() << std::endl;
-        LOG_DEBUG_S << "Ori: " << cfg.floating_base_state.pose.orientation.coeffs().transpose() << std::endl;
-        LOG_DEBUG_S << "World frame: " << cfg.world_frame_id << std::endl;
-    }
     LOG_DEBUG("Joint Names");
     for(auto n : jointNames())
         LOG_DEBUG_S << n << std::endl;
@@ -167,6 +119,8 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
 
     if(has_floating_base){
 
+        floating_base_state = _floating_base_state;
+
         // Transformation from fb body linear acceleration to fb joint linear acceleration
         // look at RobotModelRBDL for description
         Eigen::Matrix3d fb_rot = _floating_base_state.pose.orientation.toRotationMatrix();
@@ -190,12 +144,12 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         hyrodyn.floating_robot_accn.segment(0,3) = fb_acc.angular;
         hyrodyn.floating_robot_accn.segment(3,3) = fb_acc.linear;
 
-        for( unsigned int i = 0; i < hyrodyn.jointnames_active.size(); ++i){
-            const std::string& name =  hyrodyn.jointnames_active[i];
+        for( unsigned int i = 6; i < hyrodyn.jointnames_independent.size(); ++i){
+            const std::string& name =  hyrodyn.jointnames_independent[i];
             try{
-                hyrodyn.y_robot[i]   = joint_state_in[name].position;
-                hyrodyn.yd_robot[i]  = joint_state_in[name].speed;
-                hyrodyn.ydd_robot[i] = joint_state_in[name].acceleration;
+                hyrodyn.y_robot[i-6]   = joint_state_in[name].position;
+                hyrodyn.yd_robot[i-6]  = joint_state_in[name].speed;
+                hyrodyn.ydd_robot[i-6] = joint_state_in[name].acceleration;
             }
             catch(base::samples::Joints::InvalidName e){
                 LOG_ERROR_S << "Joint " << name << " is in independent joints of Hyrodyn model, but it is not given in joint state vector" << std::endl;
@@ -205,8 +159,8 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         hyrodyn.update_all_independent_coordinates();
     }
     else{
-        for( unsigned int i = 0; i < hyrodyn.jointnames_active.size(); ++i){
-            const std::string& name =  hyrodyn.jointnames_active[i];
+        for( unsigned int i = 0; i < hyrodyn.jointnames_independent.size(); ++i){
+            const std::string& name =  hyrodyn.jointnames_independent[i];
             try{
                 hyrodyn.y[i]   = joint_state_in[name].position;
                 hyrodyn.yd[i]  = joint_state_in[name].speed;
@@ -229,6 +183,12 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
         joint_state[name].acceleration = hyrodyn.QDDot[i];
     }
     joint_state.time = joint_state_in.time;
+}
+
+void RobotModelHyrodyn::systemState(base::VectorXd &_q, base::VectorXd &_qd, base::VectorXd &_qdd){
+    _q = hyrodyn.y;
+    _qd = hyrodyn.yd;
+    _qdd = hyrodyn.ydd;
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){

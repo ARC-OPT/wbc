@@ -1,6 +1,7 @@
 #ifndef ROBOT_MODEL_PINOCCHIO_HPP
 #define ROBOT_MODEL_PINOCCHIO_HPP
 
+#include "../../core/RobotModelFactory.hpp"
 #include "../../core/RobotModel.hpp"
 #include <pinocchio/multibody/fwd.hpp>
 #include <pinocchio/parsers/urdf.hpp>
@@ -9,6 +10,8 @@ namespace wbc {
 
 class RobotModelPinocchio : public RobotModel{
 protected:
+    static RobotModelRegistry<RobotModelPinocchio> reg;
+
     Eigen::VectorXd q, qd, qdd;
     pinocchio::Model model;
     typedef std::shared_ptr<pinocchio::Data> DataPtr;
@@ -34,6 +37,9 @@ public:
      */
     virtual void update(const base::samples::Joints& joint_state,
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
+
+    /** Return entire system state*/
+    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd);
 
     /** Returns the pose, twist and spatial acceleration between the two given frames. All quantities are defined in root_frame coordinates*/
     virtual const base::samples::RigidBodyStateSE3 &rigidBodyState(const std::string &root_frame, const std::string &tip_frame);

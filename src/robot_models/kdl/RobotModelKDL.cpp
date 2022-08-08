@@ -4,11 +4,9 @@
 #include <base-logging/Logging.hpp>
 #include "../../core/RobotModelConfig.hpp"
 #include <kdl/treeidsolver_recursive_newton_euler.hpp>
-#include <kdl/treejnttojacsolver.hpp>
 #include <algorithm>
 #include <tools/URDFTools.hpp>
 #include <kdl/chaindynparam.hpp>
-#include <fstream>
 
 namespace wbc{
 
@@ -35,18 +33,6 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     // 1. Load Robot Model
 
     robot_model_config = cfg;
-
-    if(!cfg.submechanism_file.empty()){
-        LOG_ERROR("You passed a submechanism file, but RobotModelKDL does not support submechanisms. Use RobotModelHyrodyn instead!");
-        return false;
-    }
-
-    std::ifstream stream(cfg.file.c_str());
-    if (!stream){
-        LOG_ERROR("File %s does not exist", cfg.file.c_str());
-        return false;
-    }
-
     robot_urdf = urdf::parseURDFFile(cfg.file);
     if(!robot_urdf){
         LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
@@ -54,41 +40,19 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     }
     base_frame =  robot_urdf->getRoot()->name;
 
-    // Blacklist not required joints
-    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
-        return false;
-
-    // Joint names from URDF without floating base and without blacklisted joints
+    // Joint names from URDF without floating base
     std::vector<std::string> joint_names_urdf = URDFTools::jointNamesFromURDF(robot_urdf);
 
     // Add floating base
     has_floating_base = cfg.floating_base;
     world_frame = base_frame;
     if(cfg.floating_base){
-        joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf, cfg.world_frame_id);
+        joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf);
         world_frame = robot_urdf->getRoot()->name;
     }
 
     // Read Joint Limits
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
-
-    // If joint names is empty in config, use all joints from URDF
-    independent_joint_names = cfg.joint_names;
-    if(independent_joint_names.empty())
-        independent_joint_names = joint_names_floating_base + joint_names_urdf;
-
-    // If actuated joint names is empty in config, assume that all joints are actuated
-    actuated_joint_names = cfg.actuated_joint_names;
-    if(actuated_joint_names.empty()){
-        if(cfg.joint_names.empty())
-            actuated_joint_names = joint_names_urdf;
-        else
-            actuated_joint_names = cfg.joint_names;
-    }
-
-    joint_names = independent_joint_names;
-    joint_state.elements.resize(independent_joint_names.size());
-    joint_state.names = independent_joint_names;
 
     // Parse KDL Tree
     if(!kdl_parser::treeFromUrdfModel(*robot_urdf, full_tree)){
@@ -96,41 +60,13 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
         return false;
     }
 
+    joint_names = independent_joint_names = joint_names_floating_base + joint_names_urdf;
+    actuated_joint_names = joint_names_urdf;
+    joint_state.elements.resize(actuated_joint_names.size());
+    joint_state.names = actuated_joint_names;
+
     // 2. Verify consistency of URDF and config
 
-    // Check correct floating base names first, if a floating base is available
-    if(has_floating_base){
-        for(size_t i = 0; i < 6; i++){
-            if(jointNames()[i] != joint_names_floating_base[i]){
-                LOG_ERROR_S << "If you set 'floating_base' to 'true', the first six entries in joint_names have to be: \n"
-                            << "   floating_base_trans_x, floating_base_trans_y, floating_base_trans_z\n"
-                            << "   floating_base_rot_x,   floating_base_rot_y,   floating_base_rot_z\n"
-                            << "Alternatively you can leave joint_names empty, in which case the joint names will be taken from URDF";
-                return false;
-            }
-        }
-    }
-    // All non-fixed URDF joint names have to be configured in cfg.joint_names and vice versa
-    joint_names_urdf = URDFTools::jointNamesFromURDF(robot_urdf);
-    for(const std::string& n : jointNames()){
-        if(std::find(joint_names_urdf.begin(), joint_names_urdf.end(), n) == joint_names_urdf.end()){
-            LOG_ERROR_S << "Joint " << n << " has been configured in joint_names, but is not a non-fixed joint in the robot URDF"<<std::endl;
-            return false;
-        }
-    }
-    for(const std::string& n : joint_names_urdf){
-        if(!hasJoint(n)){
-            LOG_ERROR_S << "Joint " << n << " is a non-fixed joint in the URDF model, but has not been configured in joint names"<<std::endl;
-            return false;
-        }
-    }
-    // All actuated joint names have to exists in robot model
-    for(const std::string& n : actuated_joint_names){
-        if(!hasJoint(n)){
-            LOG_ERROR_S << "Joint " << n << " has been configured in actuated_joint_names, but is not a non-fixed joint in the robot URDF"<<std::endl;
-            return false;
-        }
-    }
     // All contact point have to be a valid link in the robot URDF
     for(auto c : cfg.contact_points.names){
         if(!hasLink(c)){
@@ -139,39 +75,11 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
         }
     }
 
-    // 3. Set initial floating base state
-    if(has_floating_base){
-        if(cfg.floating_base_state.hasValidPose()){
-            base::samples::RigidBodyStateSE3 rbs;
-            rbs.pose = cfg.floating_base_state.pose;
-            if(cfg.floating_base_state.hasValidTwist())
-                rbs.twist = cfg.floating_base_state.twist;
-            else
-                rbs.twist.setZero();
-            if(cfg.floating_base_state.hasValidAcceleration())
-                rbs.acceleration = cfg.floating_base_state.acceleration;
-            else
-                rbs.acceleration.setZero();
-            rbs.time = base::Time::now();
-            rbs.frame_id = cfg.world_frame_id;
-            try{
-                updateFloatingBase(rbs, joint_names_floating_base, joint_state);
-            }
-            catch(std::runtime_error e){
-                return false;
-            }
-        }
-        else{
-            LOG_ERROR("If you set floating_base to true, you have to provide a valid floating_base_state (at least a position/orientation)");
-            return false;
-        }
-    }
-
-    // 4. Create data structures
+    // 3. Create data structures
 
     q.resize(noOfJoints());
-    qdot.resize(noOfJoints());
-    qdotdot.resize(noOfJoints());
+    qd.resize(noOfJoints());
+    qdd.resize(noOfJoints());
     tau.resize(noOfJoints());
     zero.resize(noOfJoints());
     zero.data.setZero();
@@ -195,12 +103,6 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     LOG_DEBUG("------------------- WBC RobotModelKDL -----------------");
     LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
     LOG_DEBUG_S << "Floating base robot: " << has_floating_base << std::endl;
-    if(has_floating_base){
-        LOG_DEBUG_S << "Floating base pose: " << std::endl;
-        LOG_DEBUG_S << "Pos: " << cfg.floating_base_state.pose.position.transpose() << std::endl;
-        LOG_DEBUG_S << "Ori: " << cfg.floating_base_state.pose.orientation.coeffs().transpose() << std::endl;
-        LOG_DEBUG_S << "World frame: " << cfg.world_frame_id << std::endl;
-    }
     LOG_DEBUG("Joint Names");
     for(auto n : jointNames())
         LOG_DEBUG_S << n << std::endl;
@@ -232,7 +134,7 @@ void RobotModelKDL::createChain(const KDL::Tree& tree, const std::string &root_f
     const std::string chain_id = chainID(root_frame, tip_frame);
 
     KinematicChainKDLPtr kin_chain = std::make_shared<KinematicChainKDL>(chain, root_frame, tip_frame);
-    kin_chain->update(joint_state);
+    kin_chain->update(q,qd,qdd,joint_idx_map_kdl);
     kdl_chain_map[chain_id] = kin_chain;
 
     LOG_INFO_S<<"Added chain "<<root_frame<<" --> "<<tip_frame<<std::endl;
@@ -251,43 +153,63 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
-    for(size_t i = 0; i < noOfActuatedJoints(); i++){
-        const std::string& name = actuated_joint_names[i];
-        std::size_t idx;
-        try{
-            idx = joint_state_in.mapNameToIndex(name);
+    // Update floating base if available
+    if(has_floating_base){
+        if(!_floating_base_state.hasValidPose() ||
+           !_floating_base_state.hasValidTwist() ||
+           !_floating_base_state.hasValidAcceleration()){
+           LOG_ERROR("Invalid status of floating base given! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion)");
+           throw std::runtime_error("Invalid floating base status");
         }
-        catch(base::samples::Joints::InvalidName e){
-            LOG_ERROR_S<<"Robot model contains joint "<<name<<" but this joint is not in joint state vector"<<std::endl;
-            throw e;
+        if(_floating_base_state.time.isNull()){
+            LOG_ERROR("Floating base state does not have a valid timestamp. Or do we have 1970?");
+            throw std::runtime_error("Invalid call to update()");
         }
-        joint_state[name] = joint_state_in[idx];
+        floating_base_state = _floating_base_state;
+        base::Vector3d euler = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
+        for(int i = 0; i < 3; i++){
+            q(i) = floating_base_state.pose.position(i);
+            qd(i) = floating_base_state.twist.linear(i);
+            qdd(i) = floating_base_state.acceleration.linear(i);
+
+            q(i+3) = euler(i);
+            qd(i+3) = floating_base_state.twist.angular(i);
+            qdd(i+3) = floating_base_state.acceleration.angular(i);
+        }
     }
-    joint_state.time = joint_state_in.time;
-    // Convert floating base to joint state
-    if(has_floating_base)
-        updateFloatingBase(_floating_base_state, joint_names_floating_base, joint_state);
+
+    // Update actuated joints
+    for(size_t i = 0; i < noOfActuatedJoints(); i++){
+        const std::string &name = actuated_joint_names[i];
+        if(!hasJoint(name)){
+            LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the KDL Tree, but it is not in the joint state vector."
+                        << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
+            throw std::runtime_error("Incomplete Joint State");
+        }
+        const base::JointState &state = joint_state_in[name];
+        uint idx = joint_idx_map_kdl[name];
+        q(idx) = state.position;
+        qd(idx) = state.speed;
+        qdd(idx) = state.acceleration;
+    }
+
+    joint_state = joint_state_in;
 
     for(auto c : kdl_chain_map)
-        c.second->update(joint_state);
+        c.second->update(q,qd,qdd,joint_idx_map_kdl);
+}
 
-    // Update KDL data types
-    for(const auto &it : full_tree.getSegments()){
-        const KDL::Joint& jnt = it.second.segment.getJoint();
-        if(jnt.getType() != KDL::Joint::None){
-            uint idx = GetTreeElementQNr(it.second);
-            const std::string& name = jnt.getName();
+void RobotModelKDL::systemState(base::VectorXd &_q, base::VectorXd &_qd, base::VectorXd &_qdd){
+    _q.resize(noOfJoints());
+    _qd.resize(noOfJoints());
+    _qdd.resize(noOfJoints());
 
-            if(!hasJoint(name)){
-                LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the KDL Tree, but it is not in the joint state vector."
-                            << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
-                throw std::runtime_error("Incomplete Joint State");
-            }
-
-            q(idx)       = joint_state[name].position;
-            qdot(idx)    = joint_state[name].speed;
-            qdotdot(idx) = joint_state[name].acceleration;
-        }
+    for(int i = 0; i < noOfJoints(); i++){
+        const std::string& name = jointNames()[i];
+        uint idx = joint_idx_map_kdl[name];
+        _q[i] = q(idx);
+        _qd[i] = qd(idx);
+        _qdd[i] = qdd(idx);
     }
 }
 
@@ -313,7 +235,6 @@ const base::samples::RigidBodyStateSE3 &RobotModelKDL::rigidBodyState(const std:
 const base::MatrixXd& RobotModelKDL::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
     return spaceJacobianFromTree(full_tree, root_frame, tip_frame);
 }
-
 
 const base::MatrixXd& RobotModelKDL::spaceJacobianFromTree(const KDL::Tree& tree, const std::string &root_frame, const std::string &tip_frame){
 
@@ -384,6 +305,9 @@ const base::MatrixXd &RobotModelKDL::comJacobian(){
     {
         auto segment = segment_it.second.segment;
         std::string segmentName = segment.getName();
+        // Skip root segment! To get consistent results with RBDL, Pinocchio, etc. we have to start with the first child of Root segment! Why?
+        if(segmentName == full_tree.getRootSegment()->second.segment.getName())
+            continue;
         std::string segmentNameCOG = segmentName + "_COG";
         
         KDL::Vector segmentCOG = segment.getInertia().getCOG();
@@ -435,8 +359,9 @@ const base::MatrixXd &RobotModelKDL::jacobianDot(const std::string &root_frame, 
 
 const base::Acceleration &RobotModelKDL::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
     qdot_tmp.resize(noOfJoints());
-    for(int i = 0; i < noOfJoints(); i++)
-        qdot_tmp[i] = joint_state[i].speed;
+    tmp_acc.resize(6);
+    for(int i = 0; i < joint_names.size(); i++)
+        qdot_tmp[i] = qd(joint_idx_map_kdl[joint_names[i]]);
     tmp_acc = jacobianDot(root_frame, tip_frame)*qdot_tmp;
     spatial_acc_bias = base::Acceleration(tmp_acc.segment(0,3), tmp_acc.segment(3,3));
     return spatial_acc_bias;
@@ -451,15 +376,12 @@ const base::VectorXd &RobotModelKDL::biasForces(){
 
     // Use ID solver with zero joint accelerations and zero external wrenches to get bias forces/torques
     KDL::TreeIdSolver_RNE solver(full_tree, KDL::Vector(gravity(0), gravity(1), gravity(2)));
-    solver.CartToJnt(q, qdot, zero, std::map<std::string,KDL::Wrench>(), tau);
+    solver.CartToJnt(q, qd, zero, std::map<std::string,KDL::Wrench>(), tau);
 
-    for(const auto &it : full_tree.getSegments()){
-        const KDL::Joint& jnt = it.second.segment.getJoint();
-        if(jnt.getType() != KDL::Joint::None){
-            const std::string& name = jnt.getName();
-            uint idx = GetTreeElementQNr(it.second);
-            bias_forces[joint_state.mapNameToIndex(name)] = tau(idx);
-        }
+    for(uint i = 0; i < joint_names.size(); i++){
+        const std::string &name = joint_names[i];
+        uint idx = joint_idx_map_kdl[name];
+        bias_forces[i] = tau(idx);
     }
     return bias_forces;
 }
@@ -476,29 +398,23 @@ const base::MatrixXd& RobotModelKDL::jointSpaceInertiaMatrix(){
     // Use ID solver with zero bias and external wrenches to compute joint space inertia matrix column by column.
     // TODO: Switch to more efficient method!
     KDL::TreeIdSolver_RNE solver(full_tree, KDL::Vector::Zero());
-    for(const auto &it : full_tree.getSegments()){
-        const KDL::Joint& jnt = it.second.segment.getJoint();
-        if(jnt.getType() != KDL::Joint::None){
-            const std::string& name = jnt.getName();
-            qdotdot.data.setZero();
-            qdotdot(joint_idx_map_kdl[name]) = 1;
-            int ret = solver.CartToJnt(q, zero, qdotdot, std::map<std::string,KDL::Wrench>(), tau);
-            if(ret != 0)
-                throw(std::runtime_error("Unable to compute Tree Inverse Dynamics in joint space inertia matrix computation. Error Code is " + std::to_string(ret)));
-            uint idx_col = joint_state.mapNameToIndex(name);
-            for(int j = 0; j < noOfJoints(); j++){
-                uint idx_row = joint_state.mapNameToIndex(joint_state.names[j]);
-                joint_space_inertia_mat(idx_row, idx_col) = tau(joint_idx_map_kdl[joint_state.names[j]]);
-            }
+    for(uint i = 0; i < joint_names.size(); i++){
+        const std::string& name = joint_names[i];
+        qdd.data.setZero();
+        qdd(joint_idx_map_kdl[name]) = 1;
+        int ret = solver.CartToJnt(q, zero, qdd, std::map<std::string,KDL::Wrench>(), tau);
+        if(ret != 0)
+            throw(std::runtime_error("Unable to compute Tree Inverse Dynamics in joint space inertia matrix computation. Error Code is " + std::to_string(ret)));
+        for(int j = 0; j < joint_names.size(); j++){
+            const std::string& _name = joint_names[j];
+            joint_space_inertia_mat(j, i) = tau(joint_idx_map_kdl[_name]);
         }
     }
     return joint_space_inertia_mat;
 }
 
 
-void RobotModelKDL::recursiveCOM( const KDL::SegmentMap::const_iterator& currentSegment,
-                                  const base::samples::Joints& status, const KDL::Frame& frame,
-                                  double& mass, KDL::Vector& cog)
+void RobotModelKDL::recursiveCOM(const KDL::SegmentMap::const_iterator& currentSegment, const KDL::Frame& frame, double& mass, KDL::Vector& cog)
 {
     double jointPosition = 0.0; // Joint position of the current joint
 #ifdef KDL_USE_NEW_TREE_INTERFACE
@@ -507,13 +423,14 @@ void RobotModelKDL::recursiveCOM( const KDL::SegmentMap::const_iterator& current
     KDL::Segment segment = currentSegment->second.segment;
 #endif
     // If the segment has a real joint, get the joint position
-    if( segment.getJoint().getType() != KDL::Joint::None ) {
-        try {
-            jointPosition = status[segment.getJoint().getName() ].position;
-        } catch (const std::runtime_error& error)
-        {
-            LOG_WARN("There is not information for this joint: ", segment.getJoint().getName().c_str());
+    if( segment.getJoint().getType() != KDL::Joint::None ) {        
+        const std::string name = segment.getJoint().getName();
+        if(joint_idx_map_kdl.count(name)==0){
+            LOG_ERROR_S  << "recursiveCOM: KDL tree contains joint " << name << " but this joint does not exist in joint idx map" << std::endl;
+            throw std::runtime_error("Problem with model configuration");
         }
+        uint idx = joint_idx_map_kdl[name];
+        jointPosition = q(idx);
     }
 
     // Transform to the frame of the current segment
@@ -540,7 +457,7 @@ void RobotModelKDL::recursiveCOM( const KDL::SegmentMap::const_iterator& current
             ++childSegment)
     {
         // Calls this functiion again with the child segment
-        recursiveCOM( *childSegment, status, currentFrame, mass, cog );
+        recursiveCOM( *childSegment, currentFrame, mass, cog );
     }
 }
 
@@ -556,7 +473,8 @@ const base::samples::RigidBodyStateSE3& RobotModelKDL::centerOfMass(){
 
     // Computes the COG of the complete robot
     KDL::Vector cog_pos;
-    recursiveCOM( full_tree.getRootSegment(), joint_state, frame, mass, cog_pos );
+    // To get consistent results with RBDL, Pinocchio, etc. we have to start with the first child of Root link! Why?
+    recursiveCOM( full_tree.getRootSegment()->second.children[0], frame, mass, cog_pos );
 
     // Returns the COG
     com_rbs.frame_id = world_frame;
@@ -581,7 +499,7 @@ void RobotModelKDL::computeInverseDynamics(base::commands::Joints &solver_output
                                KDL::Vector(contact_wrenches[n].torque[0],
                                            contact_wrenches[n].torque[1],
                                            contact_wrenches[n].torque[2]));
-    int ret = solver.CartToJnt(q, qdot, qdotdot, w_map, tau);
+    int ret = solver.CartToJnt(q, qd, qdd, w_map, tau);
     if(ret != 0)
         throw(std::runtime_error("Unable to compute Tree Inverse Dynamics. Error Code is " + std::to_string(ret)));
 

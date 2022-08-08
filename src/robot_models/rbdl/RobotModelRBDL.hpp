@@ -1,19 +1,23 @@
 #ifndef ROBOT_MODEL_RBDL_HPP
 #define ROBOT_MODEL_RBDL_HPP
 
+#include "../../core/RobotModelFactory.hpp"
 #include "core/RobotModel.hpp"
 #include <rbdl/rbdl.h>
 
 namespace wbc {
 
 class RobotModelRBDL : public RobotModel{
-public:
+protected:
+    static RobotModelRegistry<RobotModelRBDL> reg;
+
     std::shared_ptr<RigidBodyDynamics::Model> rbdl_model;
     Eigen::VectorXd q, qd, qdd, tau;
     RigidBodyDynamics::Math::MatrixNd J, H_q;
 
     std::vector<std::string> jointNamesInRBDLOrder(const std::string &urdf_file);
     void updateFloatingBase(const base::samples::RigidBodyStateSE3& floating_base_state_in);
+    void clear();
 
 public:
     RobotModelRBDL();
@@ -40,6 +44,9 @@ public:
      */
     virtual void update(const base::samples::Joints& joint_state,
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
+
+    /** Return entire system state*/
+    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd);
 
     /**
      * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
