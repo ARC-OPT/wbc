@@ -2,9 +2,14 @@
 #include <scenes/VelocitySceneQuadraticCost.hpp>
 #include <scenes/AccelerationSceneTSID.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
+#include <solvers/eiquadprog/EiquadprogSolver.hpp>
+#include <solvers/qpswift/QPSwiftSolver.hpp>
+#include <robot_models/kdl/RobotModelKDL.hpp>
+#include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
+#include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <boost/filesystem.hpp>
 #include "../benchmarks_common.hpp"
-#include "../robot_models_common.hpp"
 
 using namespace wbc;
 using namespace std;
@@ -14,190 +19,181 @@ void printResults(map<string,base::VectorXd> results){
     cout << "Scene Solve      " << results["scene_solve"].mean() << " ms +/- " << stdDev(results["scene_solve"]) << endl;
 }
 
-map<string,base::VectorXd> evaluateVelocitySceneQuadraticCost(RobotModelPtr robot_model, const std::string &root, const std::string &tip, int n_samples){
-    QPSolverPtr solver = std::make_shared<QPOASESSolver>();
-
+void evaluateVelocitySceneQuadraticCost(map<string,RobotModelPtr> robot_models, map<string,QPSolverPtr> solvers,
+                                        const string &root, const string &tip,
+                                        int n_samples, string robot_name){
     ConstraintConfig cart_constraint("cart_pos_ctrl",0,root,tip,root,1);
-    WbcScenePtr scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
-    if(!scene->configure({cart_constraint}))
-        throw std::runtime_error("Failed to configure VelocitySceneQuadraticCost");
-    return evaluateWBCSceneRandom(scene, n_samples);
+    for(auto it : robot_models){
+        for(auto itt : solvers){
+            WbcScenePtr scene = make_shared<VelocitySceneQuadraticCost>(it.second, itt.second);
+            if(!scene->configure({cart_constraint}))
+                throw runtime_error("Failed to configure VelocitySceneQuadraticCost");
+            map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
+            toCSV(results, "results/" + robot_name + "_vel_" + it.first + "_" + itt.first + ".csv");
+            cout << " ----------- Results VelocitySceneQuadraticCost (" + it.first + "," + itt.first + ") -----------" << endl;
+            printResults(results);
+        }
+    }
 }
 
-map<string,base::VectorXd> evaluateAccelerationSceneTSID(RobotModelPtr robot_model, const std::string &root, const std::string &tip, int n_samples){
-    QPSolverPtr solver = std::make_shared<QPOASESSolver>();
-
+void evaluateAccelerationSceneTSID(map<string,RobotModelPtr> robot_models, map<string,QPSolverPtr> solvers,
+                                   const string &root, const string &tip,
+                                   int n_samples, string robot_name){
     ConstraintConfig cart_constraint("cart_pos_ctrl",0,root,tip,root,1);
-    WbcScenePtr scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
-    if(!scene->configure({cart_constraint}))
-        throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
-    return evaluateWBCSceneRandom(scene, n_samples);
+    for(auto it : robot_models){
+        for(auto itt : solvers){
+            WbcScenePtr scene = make_shared<AccelerationSceneTSID>(it.second, itt.second);
+            if(!scene->configure({cart_constraint}))
+                throw runtime_error("Failed to configure AccelerationSceneTSID");
+            map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
+            toCSV(results, "results/" + robot_name + "_acc_" + it.first + "_" + itt.first + ".csv");
+            cout << " ----------- Results AccelerationSceneTSID (" + it.first + "," + itt.first + ") -----------" << endl;
+            printResults(results);
+        }
+    }
 }
 
 void runKUKAIiwaBenchmarks(int n_samples){
     cout << " ----------- Evaluating KUKA iiwa model -----------" << endl;
-    RobotModelPtr robot_model_kdl = makeRobotModelKUKAIiwa("kdl");
-    RobotModelPtr robot_model_hyrodyn = makeRobotModelKUKAIiwa("hyrodyn");
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    cfg.submechanism_file = "../../../models/kuka/hyrodyn/kuka_iiwa.yml";
+    const string root = "kuka_lbr_l_link_0", tip = "kuka_lbr_l_tcp";
 
-    const std::string root = "kuka_lbr_l_link_0", tip = "kuka_lbr_l_tcp";
-    map<string,base::VectorXd> results_kdl_vel = evaluateVelocitySceneQuadraticCost(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_kdl_acc = evaluateAccelerationSceneTSID(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn, root, tip, n_samples);
+    map<string,RobotModelPtr> robot_models;
+    robot_models["kdl"] =  make_shared<RobotModelKDL>();
+    robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
+    robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
+    robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
+    for(auto it : robot_models)
+        if(!it.second->configure(cfg))
+            abort();
 
-    toCSV(results_kdl_vel, "results/kuka_iiwa_vel_kdl.csv");
-    toCSV(results_hyrodyn_vel, "results/kuka_iiwa_vel_hyrodyn.csv");
-    toCSV(results_kdl_acc, "results/kuka_iiwa_acc_kdl.csv");
-    toCSV(results_hyrodyn_acc, "results/kuka_iiwa_acc_hyrodyn.csv");
+    map<string,QPSolverPtr> solvers;
+    solvers["qpoases"] = make_shared<QPOASESSolver>();
+    solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
+    solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_vel);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_acc);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_acc);
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "kuka_iiwa");
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "kuka_iiwa");
 }
 
 void runRH5SingleLegBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Single Leg model -----------" << endl;
-    RobotModelPtr robot_model_kdl = makeRobotModelRH5SingleLeg("kdl");
-    RobotModelPtr robot_model_hyrodyn = makeRobotModelRH5SingleLeg("hyrodyn");
-    RobotModelPtr robot_model_hyrodyn_hybrid = makeRobotModelRH5SingleLeg("hyrodyn", true);
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
 
-    const std::string root = "RH5_Root_Link", tip = "LLAnkle_FT";
-    map<string,base::VectorXd> results_kdl_vel = evaluateVelocitySceneQuadraticCost(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn_hybrid, root, tip, n_samples);
-    map<string,base::VectorXd> results_kdl_acc = evaluateAccelerationSceneTSID(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn_hybrid, root, tip, n_samples);
+    map<string,RobotModelPtr> robot_models;
+    robot_models["kdl"] =  make_shared<RobotModelKDL>();
+    robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
+    robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
+    robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
+    for(auto it : robot_models){
+        if(!it.second->configure(cfg)) abort();
+    }
+    robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
+    cfg.file = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
+    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
 
-    toCSV(results_kdl_vel, "results/rh5_single_leg_vel_kdl.csv");
-    toCSV(results_hyrodyn_vel, "results/rh5_single_leg_vel_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_vel, "results/rh5_single_leg_vel_hyrodyn_hybrid.csv");
-    toCSV(results_kdl_acc, "results/rh5_single_leg_acc_kdl.csv");
-    toCSV(results_hyrodyn_acc, "results/rh5_single_leg_acc_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_acc, "results/rh5_single_leg_acc_hyrodyn_hybrid.csv");
+    map<string,QPSolverPtr> solvers;
+    solvers["qpoases"] = make_shared<QPOASESSolver>();
+    solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
+    solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_acc);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_acc);
-    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_acc);
+    const string root = "RH5_Root_Link", tip = "LLAnkle_FT";
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5_single_leg");
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5_single_leg");
 }
 
 void runRH5LegsBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Legs Model -----------" << endl;
-    RobotModelPtr robot_model_kdl = makeRobotModelRH5Legs("kdl");
-    RobotModelPtr robot_model_hyrodyn = makeRobotModelRH5Legs("hyrodyn");
-    RobotModelPtr robot_model_hyrodyn_hybrid = makeRobotModelRH5Legs("hyrodyn", true);
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
+    cfg.floating_base = true;
 
-    const std::string root = "world", tip = "LLAnkle_FT";
-    map<string,base::VectorXd> results_kdl_vel = evaluateVelocitySceneQuadraticCost(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn_hybrid, root, tip, n_samples);
-    map<string,base::VectorXd> results_kdl_acc = evaluateAccelerationSceneTSID(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn_hybrid, root, tip, n_samples);
+    map<string,RobotModelPtr> robot_models;
+    robot_models["kdl"] =  make_shared<RobotModelKDL>();
+    robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
+    robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
+    robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
+    for(auto it : robot_models){
+        if(!it.second->configure(cfg)) abort();
+    }
+    robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
+    cfg.file = "../../../models/rh5/urdf/rh5_legs_hybrid.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs_hybrid.yml";
+    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
 
-    toCSV(results_kdl_vel, "results/rh5_legs_vel_kdl.csv");
-    toCSV(results_hyrodyn_vel, "results/rh5_legs_vel_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_vel, "results/rh5_legs_vel_hyrodyn_hybrid.csv");
-    toCSV(results_kdl_acc, "results/rh5_legs_acc_kdl.csv");
-    toCSV(results_hyrodyn_acc, "results/rh5_legs_acc_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_acc, "results/rh5_legs_acc_hyrodyn_hybrid.csv");
+    map<string,QPSolverPtr> solvers;
+    solvers["qpoases"] = make_shared<QPOASESSolver>();
+    solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
+    solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_acc);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_acc);
-    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_acc);
+    const string root = "world", tip = "LLAnkle_FT";
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5_legs");
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5_legs");
 }
 
 void runRH5Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Model -----------" << endl;
-    RobotModelPtr robot_model_kdl = makeRobotModelRH5("kdl");
-    RobotModelPtr robot_model_hyrodyn = makeRobotModelRH5("hyrodyn");
-    RobotModelPtr robot_model_hyrodyn_hybrid = makeRobotModelRH5("hyrodyn", true);
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5/urdf/rh5.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
+    cfg.floating_base = true;
 
-    const std::string root = "world", tip = "LLAnkle_FT";
-    map<string,base::VectorXd> results_kdl_vel = evaluateVelocitySceneQuadraticCost(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn_hybrid, root, tip, n_samples);
-    map<string,base::VectorXd> results_kdl_acc = evaluateAccelerationSceneTSID(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn_hybrid, root, tip, n_samples);
+    map<string,RobotModelPtr> robot_models;
+    robot_models["kdl"] =  make_shared<RobotModelKDL>();
+    robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
+    robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
+    robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
+    for(auto it : robot_models){
+        if(!it.second->configure(cfg)) abort();
+    }
+    robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
+    cfg.file = "../../../models/rh5/urdf/rh5_hybrid.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_hybrid.yml";
+    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
 
-    toCSV(results_kdl_vel, "results/rh5_vel_kdl.csv");
-    toCSV(results_hyrodyn_vel, "results/rh5_vel_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_vel, "results/rh5_vel_hyrodyn_hybrid.csv");
-    toCSV(results_kdl_acc, "results/rh5_acc_kdl.csv");
-    toCSV(results_hyrodyn_acc, "results/rh5_acc_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_acc, "results/rh5_acc_hyrodyn_hybrid.csv");
+    map<string,QPSolverPtr> solvers;
+    solvers["qpoases"] = make_shared<QPOASESSolver>();
+    solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
+    solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_acc);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_acc);
-    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_acc);
+    const string root = "world", tip = "LLAnkle_FT";
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5");
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5");
 }
 
 void runRH5v2Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5v2 model -----------" << endl;
-    RobotModelPtr robot_model_kdl = makeRobotModelRH5v2("kdl");
-    RobotModelPtr robot_model_hyrodyn = makeRobotModelRH5v2("hyrodyn");
-    RobotModelPtr robot_model_hyrodyn_hybrid = makeRobotModelRH5v2("hyrodyn", true);
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
+    cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
 
-    const std::string root = "RH5v2_Root_Link", tip = "ALWristFT_Link";
-    map<string,base::VectorXd> results_kdl_vel = evaluateVelocitySceneQuadraticCost(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_vel = evaluateVelocitySceneQuadraticCost(robot_model_hyrodyn_hybrid, root, tip, n_samples);
-    map<string,base::VectorXd> results_kdl_acc = evaluateAccelerationSceneTSID(robot_model_kdl, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn, root, tip, n_samples);
-    map<string,base::VectorXd> results_hyrodyn_hybrid_acc = evaluateAccelerationSceneTSID(robot_model_hyrodyn_hybrid, root, tip, n_samples);
+    map<string,RobotModelPtr> robot_models;
+    robot_models["kdl"] =  make_shared<RobotModelKDL>();
+    robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
+    robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
+    robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
+    for(auto it : robot_models){
+        if(!it.second->configure(cfg)) abort();
+    }
+    robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
+    cfg.file = "../../../models/rh5v2/urdf/rh5v2_hybrid.urdf";
+    cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2_hybrid.yml";
+    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
 
-    toCSV(results_kdl_vel, "results/rh5v2_vel_kdl.csv");
-    toCSV(results_hyrodyn_vel, "results/rh5v2_vel_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_vel, "results/rh5v2_vel_hyrodyn_hybrid.csv");
-    toCSV(results_kdl_acc, "results/rh5v2_acc_kdl.csv");
-    toCSV(results_hyrodyn_acc, "results/rh5v2_acc_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid_acc, "results/rh5v2_acc_hyrodyn_hybrid.csv");
+    map<string,QPSolverPtr> solvers;
+    solvers["qpoases"] = make_shared<QPOASESSolver>();
+    solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
+    solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_vel);
-    cout << " ----------- Results VelocitySceneQuadraticCost Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_vel);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelKDL) -----------" << endl;
-    printResults(results_kdl_acc);
-    cout << " ----------- Results AccelerationSceneTSID (RobotModelHyrodyn) -----------" << endl;
-    printResults(results_hyrodyn_acc);
-    cout << " ----------- Results AccelerationSceneTSID Hybrid (RobotModelHyrodyn Hybrid) -----------" << endl;
-    printResults(results_hyrodyn_hybrid_acc);
+    const string root = "RH5v2_Root_Link", tip = "ALWristFT_Link";
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5");
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5");
 }
 
 void runBenchmarks(int n_samples){
@@ -212,6 +208,6 @@ void runBenchmarks(int n_samples){
 
 int main(){
     srand(time(NULL));
-    int n_samples = 100;
+    int n_samples = 10;
     runBenchmarks(n_samples);
 }

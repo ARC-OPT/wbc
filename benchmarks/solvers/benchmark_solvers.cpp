@@ -7,7 +7,6 @@
 #include <solvers/qpswift/QPSwiftSolver.hpp>
 #include <solvers/eiquadprog/EiquadprogSolver.hpp>
 #include "../benchmarks_common.hpp"
-#include "../robot_models_common.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -52,7 +51,11 @@ map<string, base::VectorXd> evaluateEiquadprog(RobotModelPtr robot_model, string
 
 void runKUKAIiwaBenchmarks(int n_samples){
     cout << " ----------- Evaluating KUKA iiwa model -----------" << endl;
-    RobotModelPtr robot_model = makeRobotModelKUKAIiwa("hyrodyn");
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    cfg.submechanism_file = "../../../models/kuka/hyrodyn/kuka_iiwa.yml";
+    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    if(!robot_model->configure(cfg))abort();
 
     map<string,base::VectorXd> results_qp_oases   = evaluateQPOases(robot_model, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", n_samples);
     map<string,base::VectorXd> results_qp_swift   = evaluateQPSwift(robot_model, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", n_samples);
@@ -72,7 +75,11 @@ void runKUKAIiwaBenchmarks(int n_samples){
 
 void runRH5SingleLegBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Single Leg model -----------" << endl;
-    RobotModelPtr robot_model = makeRobotModelRH5SingleLeg("hyrodyn");
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
+    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    if(!robot_model->configure(cfg))abort();
 
     map<string,base::VectorXd> results_qp_oases = evaluateQPOases(robot_model, "RH5_Root_Link", "LLAnkle_FT", n_samples);
     map<string,base::VectorXd> results_qp_swift = evaluateQPSwift(robot_model, "RH5_Root_Link", "LLAnkle_FT", n_samples);
@@ -92,7 +99,12 @@ void runRH5SingleLegBenchmarks(int n_samples){
 
 void runRH5LegsBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Legs model -----------" << endl;
-    RobotModelPtr robot_model = makeRobotModelRH5Legs("hyrodyn");
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
+    cfg.floating_base = true;
+    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    if(!robot_model->configure(cfg))abort();
 
     map<string,base::VectorXd> results_qp_oases = evaluateQPOases(robot_model, "world", "LLAnkle_FT", n_samples);
     map<string,base::VectorXd> results_qp_swift = evaluateQPSwift(robot_model, "world", "LLAnkle_FT", n_samples);
@@ -112,7 +124,12 @@ void runRH5LegsBenchmarks(int n_samples){
 
 void runRH5Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 model -----------" << endl;
-    RobotModelPtr robot_model = makeRobotModelRH5("hyrodyn");
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5/urdf/rh5.urdf";
+    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
+    cfg.floating_base = true;
+    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    if(!robot_model->configure(cfg))abort();
 
     map<string,base::VectorXd> results_qp_oases = evaluateQPOases(robot_model, "world", "LLAnkle_FT", n_samples);
     map<string,base::VectorXd> results_qp_swift = evaluateQPSwift(robot_model, "world", "LLAnkle_FT", n_samples);
@@ -132,7 +149,11 @@ void runRH5Benchmarks(int n_samples){
 
 void runRH5v2Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5v2 model -----------" << endl;
-    RobotModelPtr robot_model = makeRobotModelRH5v2("hyrodyn");
+    RobotModelConfig cfg;
+    cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
+    cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
+    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    if(!robot_model->configure(cfg))abort();
 
     map<string,base::VectorXd> results_qp_oases = evaluateQPOases(robot_model, "RH5v2_Root_Link", "ALWristFT_Link", n_samples);
     map<string,base::VectorXd> results_qp_swift = evaluateQPSwift(robot_model, "RH5v2_Root_Link", "ALWristFT_Link", n_samples);
@@ -163,6 +184,6 @@ void runBenchmarks(int n_samples){
 
 int main(){
     srand(time(NULL));
-    int n_samples = 100;
+    int n_samples = 10;
     runBenchmarks(n_samples);
 }

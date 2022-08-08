@@ -34,17 +34,18 @@ base::samples::Joints randomJointState(const vector<string>& joint_names, const 
     return joint_state;
 }
 
-base::samples::RigidBodyStateSE3 randomFloatingBaseState(const base::RigidBodyStateSE3 &initial_state){
+base::samples::RigidBodyStateSE3 randomFloatingBaseState(){
     base::samples::RigidBodyStateSE3 floating_base_state;
-    floating_base_state.pose = initial_state.pose;
-    for(int i = 0; i < 3; i++){
-        floating_base_state.pose.position[i] += whiteNoise(1e-4);
-        floating_base_state.twist.linear[i] = whiteNoise(1e-4);
-        floating_base_state.twist.angular[i] = whiteNoise(1e-4);
-        floating_base_state.acceleration.linear[i] = whiteNoise(1e-4);
-        floating_base_state.acceleration.angular[i] = whiteNoise(1e-4);
-    }
+    floating_base_state.pose.position = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.pose.orientation = Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitX())
+                                         * Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitY())
+                                         * Eigen::AngleAxisd((double)rand()/RAND_MAX, Eigen::Vector3d::UnitZ());
+    floating_base_state.twist.linear  = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.acceleration.linear  = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.twist.angular = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
+    floating_base_state.acceleration.angular = base::Vector3d((double)rand()/RAND_MAX, (double)rand()/RAND_MAX, (double)rand()/RAND_MAX);
     floating_base_state.time = base::Time::now();
+    floating_base_state.frame_id = "world";
     return floating_base_state;
 }
 
@@ -70,7 +71,7 @@ map<string, base::VectorXd> evaluateWBCSceneRandom(WbcScenePtr scene, int n_samp
             scene->setReference(w.name, randomConstraintReference());
 
         base::samples::Joints joint_state = randomJointState(scene->getRobotModel()->independentJointNames(), scene->getRobotModel()->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(scene->getRobotModel()->getRobotModelConfig().floating_base_state);
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
         scene->getRobotModel()->update(joint_state, floating_base_state);
 
         base::Time start = base::Time::now();
