@@ -131,16 +131,50 @@ std::vector<std::string> URDFTools::addFloatingBaseToURDF(urdf::ModelInterfaceSh
     std::string floating_base = std::string("  <link name='" + world_frame_id + "'>\n")   +
             "    <inertial>" +
             "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
-            "      <mass value='0'/>" +
+            "      <mass value='0.001'/>" +
             "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
             "    </inertial>" +
             "  </link>" +
 
-            "  <link name='link_floating_base_trans_x'/>\n"   +
-            "  <link name='link_floating_base_trans_y'/>\n"   +
-            "  <link name='link_floating_base_trans_z'/>\n"   +
-            "  <link name='link_floating_base_rot_x'/>\n"   +
-            "  <link name='link_floating_base_rot_y'/>\n"   +
+            "  <link name='link_floating_base_trans_x'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_trans_y'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_trans_z'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_rot_x'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_rot_y'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
 
            "  <joint name='floating_base_trans_x' type='prismatic'>\n"   +
              "  <parent link='" + world_frame_id + "'/>\n"   +
