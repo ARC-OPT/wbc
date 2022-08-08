@@ -7,7 +7,7 @@ pkg_search_module(base-types REQUIRED base-types)
 include_directories(${rbdl_INCLUDE_DIRS} ${base-types_INCLUDE_DIRS})
 link_directories(${rbdl_LIBRARY_DIRS} ${base-types_LIBRARY_DIRS})
 
-add_executable(test_robot_model_rbdl test_robot_model_rbdl.cpp ../../suite.cpp)
+add_executable(test_robot_model_rbdl test_robot_model_rbdl.cpp ../../suite.cpp ../test_robot_model.cpp)
 target_link_libraries(test_robot_model_rbdl
                       wbc-robot_models-rbdl
                       wbc-tools

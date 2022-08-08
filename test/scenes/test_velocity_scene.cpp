@@ -52,10 +52,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
 
     vector<string> joint_names = URDFTools::jointNamesFromURDF(config.file);
-    config.joint_names = config.actuated_joint_names = joint_names;
-    bool configured;
-    BOOST_CHECK_NO_THROW(configured = robot_model->configure(config));
-    BOOST_CHECK(configured);
+    BOOST_CHECK(robot_model->configure(config));
 
     base::samples::Joints joint_state;
     joint_state.names = robot_model->jointNames();
