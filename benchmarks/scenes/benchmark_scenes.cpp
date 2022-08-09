@@ -43,7 +43,6 @@ void evaluateAccelerationSceneTSID(map<string,RobotModelPtr> robot_models, map<s
     for(auto it : robot_models){
         for(auto itt : solvers){
             WbcScenePtr scene = make_shared<AccelerationSceneTSID>(it.second, itt.second);
-            dynamic_pointer_cast<AccelerationSceneTSID>(scene)->setHessianRegularizer(1e-1);
             if(!scene->configure({cart_constraint}))
                 throw runtime_error("Failed to configure AccelerationSceneTSID");
             map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
