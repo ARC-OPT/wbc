@@ -122,6 +122,8 @@ void runRH5LegsBenchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
     cfg.floating_base = true;
+    cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    cfg.contact_points.elements = {1,1};
 
     map<string,RobotModelPtr> robot_models;
     robot_models["kdl"] =  make_shared<RobotModelKDL>();
@@ -137,9 +139,14 @@ void runRH5LegsBenchmarks(int n_samples){
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
     for(auto it : robot_models){
         base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
-        base::samples::RigidBodyStateSE3 rbs = randomFloatingBaseState();
+        base::samples::RigidBodyStateSE3 floating_base_state;
+        floating_base_state.pose.position = base::Vector3d(-0.0, 0.0, 0.87);
+        floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
+        floating_base_state.twist.setZero();
+        floating_base_state.acceleration.setZero();
+        floating_base_state.time = base::Time::now();
         joint_state.time = base::Time::now();
-        it.second->update(joint_state, rbs);
+        it.second->update(joint_state, floating_base_state);
     }
 
     map<string,QPSolverPtr> solvers;
@@ -158,6 +165,8 @@ void runRH5Benchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
+    cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    cfg.contact_points.elements = {1,1};
 
     map<string,RobotModelPtr> robot_models;
     robot_models["kdl"] =  make_shared<RobotModelKDL>();
@@ -173,9 +182,14 @@ void runRH5Benchmarks(int n_samples){
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
     for(auto it : robot_models){
         base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
-        base::samples::RigidBodyStateSE3 rbs = randomFloatingBaseState();
+        base::samples::RigidBodyStateSE3 floating_base_state;
+        floating_base_state.pose.position = base::Vector3d(-0.0, 0.0, 0.87);
+        floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
+        floating_base_state.twist.setZero();
+        floating_base_state.acceleration.setZero();
+        floating_base_state.time = base::Time::now();
         joint_state.time = base::Time::now();
-        it.second->update(joint_state, rbs);
+        it.second->update(joint_state, floating_base_state);
     }
 
 
