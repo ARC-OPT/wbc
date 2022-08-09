@@ -181,10 +181,14 @@ const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP&
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
-        if(base::isNaN(solver_output[idx]))
+        if(base::isNaN(solver_output[idx])){
+            hqp[0].print();
             throw std::runtime_error("Solver output (acceleration) for joint " + name + " is NaN");
-        if(base::isNaN(solver_output[idx+nj]))
+        }
+        if(base::isNaN(solver_output[idx+nj])){
+            hqp[0].print();
             throw std::runtime_error("Solver output (force/torque) for joint " + name + " is NaN");
+        }
         solver_output_joints[name].acceleration = solver_output[idx];
         solver_output_joints[name].effort = solver_output[idx+nj];
     }
