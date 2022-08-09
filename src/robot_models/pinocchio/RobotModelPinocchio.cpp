@@ -200,35 +200,39 @@ void RobotModelPinocchio::systemState(base::VectorXd &_q, base::VectorXd &_qd, b
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelPinocchio::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
-
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
-
     if(root_frame != world_frame){
         LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but the pinocchio robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid root frame");
     }
 
-    if(!hasLink(tip_frame)){
-        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<tip_frame<<" but this frame does not exist in robot model"<<std::endl;
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "universe";
+
+    uint idx = model.getFrameId(use_tip_frame);
+    if(idx == model.frames.size()){
+        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
         throw std::runtime_error("Invalid tip frame");
     }
 
     pinocchio::forwardKinematics(model,*data,q,qd,qdd);
-    pinocchio::updateFramePlacement(model,*data,model.getFrameId(tip_frame));
+    pinocchio::updateFramePlacement(model,*data,idx);
 
     rbs.time = joint_state.time;
     rbs.frame_id = root_frame;
-    rbs.pose.position = data->oMf[model.getFrameId(tip_frame)].translation();
-    rbs.pose.orientation = base::Quaterniond(data->oMf[model.getFrameId(tip_frame)].rotation());
+    rbs.pose.position = data->oMf[idx].translation();
+    rbs.pose.orientation = base::Quaterniond(data->oMf[idx].rotation());
     // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
     // but with axes aligned with the frame of the Universe. This a MIXED representation betwenn the LOCAL and the WORLD conventions.
-    rbs.twist.linear = pinocchio::getFrameVelocity(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.twist.angular = pinocchio::getFrameVelocity(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
-    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    rbs.twist.linear = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+    rbs.twist.angular = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+    rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+
     return rbs;
 }
 
@@ -244,14 +248,20 @@ const base::MatrixXd &RobotModelPinocchio::spaceJacobian(const std::string &root
         throw std::runtime_error("Invalid root frame");
     }
 
-    if(!hasLink(tip_frame)){
-        LOG_ERROR_S<<"Requested space Jacobian for tip frame "<<tip_frame<<" but this frame does not exist in robot model"<<std::endl;
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "universe";
+
+    uint idx = model.getFrameId(use_tip_frame);
+    if(idx == model.frames.size()){
+        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
         throw std::runtime_error("Invalid tip frame");
     }
+
     std::string chain_id = chainID(root_frame, tip_frame);
     space_jac_map[chain_id].resize(6,model.nv);
     space_jac_map[chain_id].setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED, space_jac_map[chain_id]);
+    pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL_WORLD_ALIGNED, space_jac_map[chain_id]);
 
     return space_jac_map[chain_id];
 }
@@ -268,14 +278,20 @@ const base::MatrixXd &RobotModelPinocchio::bodyJacobian(const std::string &root_
         throw std::runtime_error("Invalid root frame");
     }
 
-    if(!hasLink(tip_frame)){
-        LOG_ERROR_S<<"Requested space Jacobian for tip frame "<<tip_frame<<" but this frame does not exist in robot model"<<std::endl;
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "universe";
+
+    uint idx = model.getFrameId(use_tip_frame);
+    if(idx == model.frames.size()){
+        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
         throw std::runtime_error("Invalid tip frame");
     }
+
     std::string chain_id = chainID(root_frame, tip_frame);
     body_jac_map[chain_id].resize(6,model.nv);
     body_jac_map[chain_id].setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, model.getFrameId(tip_frame), pinocchio::LOCAL, body_jac_map[chain_id]);
+    pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL, body_jac_map[chain_id]);
 
     return body_jac_map[chain_id];
 }
@@ -294,9 +310,29 @@ const base::MatrixXd &RobotModelPinocchio::comJacobian(){
 }
 
 const base::Acceleration &RobotModelPinocchio::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
+
+    if(joint_state.time.isNull()){
+        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
+        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    }
+
+    if(root_frame != world_frame){
+        LOG_ERROR_S<<"Requested space Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but the pinocchio robot model always requires the root frame to be the root of the full model"<<std::endl;
+        throw std::runtime_error("Invalid root frame");
+    }
+
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "universe";
+
+    uint idx = model.getFrameId(use_tip_frame);
+    if(idx == model.frames.size()){
+        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
+        throw std::runtime_error("Invalid tip frame");
+    }
     pinocchio::forwardKinematics(model,*data,q,qd,base::VectorXd::Zero(model.nv));
-    spatial_acc_bias.linear = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    spatial_acc_bias.angular = pinocchio::getFrameClassicalAcceleration(model, *data, model.getFrameId(tip_frame), pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    spatial_acc_bias.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+    spatial_acc_bias.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
     return spatial_acc_bias;
 }
 

@@ -156,16 +156,21 @@ const base::samples::RigidBodyStateSE3 &RobotModelRBDL::rigidBodyState(const std
         LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to rigidBodyState()");
     }
-    if(!hasLink(tip_frame)){
-        LOG_ERROR_S << "Request rigidBodyState for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
-        throw std::runtime_error("Invalid call to rigidBodyState()");
-    }
     if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but RBDL robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid call to rigidBodyState()");
     }
 
-    int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "ROOT";
+
+    uint body_id = rbdl_model->GetBodyId(use_tip_frame.c_str());
+    if(body_id == std::numeric_limits<unsigned int>::max()){
+        LOG_ERROR_S << "Request rigidBodyState for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to rigidBodyState()");
+    }
+
     rbs.pose.position = CalcBodyToBaseCoordinates(*rbdl_model,q,body_id,base::Vector3d(0,0,0));
     rbs.pose.orientation = base::Quaterniond(CalcBodyWorldOrientation(*rbdl_model,q,body_id).inverse());
     Math::SpatialVector twist_rbdl = CalcPointVelocity6D(*rbdl_model,q,qd,body_id,base::Vector3d(0,0,0));
@@ -185,13 +190,18 @@ const base::MatrixXd &RobotModelRBDL::spaceJacobian(const std::string &root_fram
         LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to spaceJacobian()");
     }
-    if(!hasLink(tip_frame)){
-        LOG_ERROR_S << "Request jacobian for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+    if(root_frame != world_frame){
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but RBDL robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid call to spaceJacobian()");
     }
-    if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
-        throw std::runtime_error("Invalid call to spaceJacobian()");
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "ROOT";
+
+    uint body_id = rbdl_model->GetBodyId(use_tip_frame.c_str());
+    if(body_id == std::numeric_limits<unsigned int>::max()){
+        LOG_ERROR_S << "Request rigidBodyState for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to rigidBodyState()");
     }
 
     std::string chain_id = chainID(root_frame,tip_frame);
@@ -203,7 +213,6 @@ const base::MatrixXd &RobotModelRBDL::spaceJacobian(const std::string &root_fram
     base::Vector3d point_position;
     point_position.setZero();
     J.setZero(6, nj);
-    int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
     CalcPointJacobian6D(*rbdl_model,q,body_id,point_position,J);
 
     space_jac_map[chain_id].block(0,0,3,nj) = J.block(3,0,3,nj);
@@ -217,13 +226,18 @@ const base::MatrixXd &RobotModelRBDL::bodyJacobian(const std::string &root_frame
         LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to bodyJacobian()");
     }
-    if(!hasLink(tip_frame)){
-        LOG_ERROR_S << "Request jacobian for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+    if(root_frame != world_frame){
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but RBDL robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid call to bodyJacobian()");
     }
-    if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
-        throw std::runtime_error("Invalid call to bodyJacobian()");
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "ROOT";
+
+    uint body_id = rbdl_model->GetBodyId(use_tip_frame.c_str());
+    if(body_id == std::numeric_limits<unsigned int>::max()){
+        LOG_ERROR_S << "Request rigidBodyState for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to rigidBodyState()");
     }
 
     std::string chain_id = chainID(root_frame,tip_frame);
@@ -233,7 +247,6 @@ const base::MatrixXd &RobotModelRBDL::bodyJacobian(const std::string &root_frame
     body_jac_map[chain_id].setZero();
 
     J.setZero(6, nj);
-    int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
     CalcBodySpatialJacobian(*rbdl_model,q,body_id,J);
 
     body_jac_map[chain_id].block(0,0,3,nj) = J.block(3,0,3,nj);
@@ -274,17 +287,22 @@ const base::Acceleration &RobotModelRBDL::spatialAccelerationBias(const std::str
         LOG_ERROR("You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
         throw std::runtime_error(" Invalid call to spatialAccelerationBias()");
     }
-    if(!hasLink(tip_frame)){
-        LOG_ERROR_S << "Request jacobian for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
-        throw std::runtime_error("Invalid call to spatialAccelerationBias()");
-    }
     if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but hyrodyn robot model always requires the root frame to be the root of the full model"<<std::endl;
+        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but RBDL robot model always requires the root frame to be the root of the full model"<<std::endl;
         throw std::runtime_error("Invalid call to spatialAccelerationBias()");
     }
+    std::string use_tip_frame = tip_frame;
+    if(use_tip_frame == "world")
+        use_tip_frame = "ROOT";
+
+    uint body_id = rbdl_model->GetBodyId(use_tip_frame.c_str());
+    if(body_id == std::numeric_limits<unsigned int>::max()){
+        LOG_ERROR_S << "Request rigidBodyState for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
+        throw std::runtime_error("Invalid call to rigidBodyState()");
+    }
+
     base::Vector3d point_position;
     point_position.setZero();
-    unsigned int body_id = rbdl_model->GetBodyId(tip_frame.c_str());
     Math::SpatialVector spatial_acceleration = CalcPointAcceleration6D(*rbdl_model, q, qd, Math::VectorNd::Zero(rbdl_model->dof_count), body_id, point_position);
     spatial_acc_bias = base::Acceleration(spatial_acceleration.segment(3,3), spatial_acceleration.segment(0,3));
     return spatial_acc_bias;
