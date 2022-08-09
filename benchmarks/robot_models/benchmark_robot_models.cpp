@@ -12,8 +12,8 @@ using namespace std;
 base::VectorXd evalBodyJacobian(RobotModelPtr robot_model,  const string &root, const string &tip, int n_samples){
     base::VectorXd results(n_samples);
     for(int i = 0; i < n_samples; i++){
-        base::samples::Joints joint_state = randomJointState(robot_model->independentJointNames(), robot_model->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(robot_model->floatingBaseState());
         robot_model->update(joint_state, floating_base_state);
         base::Time start = base::Time::now();
         robot_model->bodyJacobian(root, tip);
@@ -26,8 +26,8 @@ base::VectorXd evalBodyJacobian(RobotModelPtr robot_model,  const string &root, 
 base::VectorXd evalSpaceJacobian(RobotModelPtr robot_model,  const string &root, const string &tip, int n_samples){
     base::VectorXd results(n_samples);
     for(int i = 0; i < n_samples; i++){
-        base::samples::Joints joint_state = randomJointState(robot_model->independentJointNames(), robot_model->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(robot_model->floatingBaseState());
         robot_model->update(joint_state, floating_base_state);
         base::Time start = base::Time::now();
         robot_model->spaceJacobian(root, tip);
@@ -40,8 +40,8 @@ base::VectorXd evalSpaceJacobian(RobotModelPtr robot_model,  const string &root,
 base::VectorXd evalFK(RobotModelPtr robot_model,  const string &root, const string &tip, int n_samples){
     base::VectorXd results(n_samples);
     for(int i = 0; i < n_samples; i++){
-        base::samples::Joints joint_state = randomJointState(robot_model->independentJointNames(), robot_model->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(robot_model->floatingBaseState());
         robot_model->update(joint_state, floating_base_state);
         base::Time start = base::Time::now();
         robot_model->rigidBodyState(root, tip);
@@ -54,8 +54,8 @@ base::VectorXd evalFK(RobotModelPtr robot_model,  const string &root, const stri
 base::VectorXd evalBiasForces(RobotModelPtr robot_model, int n_samples){
     base::VectorXd results(n_samples);
     for(int i = 0; i < n_samples; i++){
-        base::samples::Joints joint_state = randomJointState(robot_model->independentJointNames(), robot_model->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(robot_model->floatingBaseState());
         robot_model->update(joint_state, floating_base_state);
         base::Time start = base::Time::now();
         robot_model->biasForces();
@@ -68,8 +68,8 @@ base::VectorXd evalBiasForces(RobotModelPtr robot_model, int n_samples){
 base::VectorXd evalJointSpaceInertiaMat(RobotModelPtr robot_model, int n_samples){
     base::VectorXd results(n_samples);
     for(int i = 0; i < n_samples; i++){
-        base::samples::Joints joint_state = randomJointState(robot_model->independentJointNames(), robot_model->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(robot_model->floatingBaseState());
         robot_model->update(joint_state, floating_base_state);
         base::Time start = base::Time::now();
         robot_model->jointSpaceInertiaMatrix();
@@ -82,8 +82,8 @@ base::VectorXd evalJointSpaceInertiaMat(RobotModelPtr robot_model, int n_samples
 base::VectorXd evalSpatialAccelerationBias(RobotModelPtr robot_model,  const string &root, const string &tip, int n_samples){
     base::VectorXd results(n_samples);
     for(int i = 0; i < n_samples; i++){
-        base::samples::Joints joint_state = randomJointState(robot_model->independentJointNames(), robot_model->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(robot_model->floatingBaseState());
         robot_model->update(joint_state, floating_base_state);
         base::Time start = base::Time::now();
         robot_model->spatialAccelerationBias(root, tip);
@@ -96,8 +96,8 @@ base::VectorXd evalSpatialAccelerationBias(RobotModelPtr robot_model,  const str
 base::VectorXd evalCoM(RobotModelPtr robot_model, int n_samples){
     base::VectorXd results(n_samples);
     for(int i = 0; i < n_samples; i++){
-        base::samples::Joints joint_state = randomJointState(robot_model->independentJointNames(), robot_model->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(robot_model->floatingBaseState());
         robot_model->update(joint_state, floating_base_state);
         base::Time start = base::Time::now();
         robot_model->centerOfMass();

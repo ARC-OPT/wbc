@@ -43,6 +43,7 @@ void evaluateAccelerationSceneTSID(map<string,RobotModelPtr> robot_models, map<s
     for(auto it : robot_models){
         for(auto itt : solvers){
             WbcScenePtr scene = make_shared<AccelerationSceneTSID>(it.second, itt.second);
+            dynamic_pointer_cast<AccelerationSceneTSID>(scene)->setHessianRegularizer(1e-1);
             if(!scene->configure({cart_constraint}))
                 throw runtime_error("Failed to configure AccelerationSceneTSID");
             map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
@@ -65,9 +66,12 @@ void runKUKAIiwaBenchmarks(int n_samples){
     robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
     robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
     robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
-    for(auto it : robot_models)
+    for(auto it : robot_models){
         if(!it.second->configure(cfg))
             abort();
+        base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
+        it.second->update(joint_state);
+    }
 
     map<string,QPSolverPtr> solvers;
     solvers["qpoases"] = make_shared<QPOASESSolver>();
@@ -90,12 +94,18 @@ void runRH5SingleLegBenchmarks(int n_samples){
     robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
     robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
     for(auto it : robot_models){
-        if(!it.second->configure(cfg)) abort();
+        if(!it.second->configure(cfg))
+            abort();
     }
     robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
     cfg.file = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
+    for(auto it : robot_models){
+        base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
+        joint_state.time = base::Time::now();
+        it.second->update(joint_state);
+    }
 
     map<string,QPSolverPtr> solvers;
     solvers["qpoases"] = make_shared<QPOASESSolver>();
@@ -126,6 +136,12 @@ void runRH5LegsBenchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5_legs_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
+    for(auto it : robot_models){
+        base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
+        base::samples::RigidBodyStateSE3 rbs = randomFloatingBaseState();
+        joint_state.time = base::Time::now();
+        it.second->update(joint_state, rbs);
+    }
 
     map<string,QPSolverPtr> solvers;
     solvers["qpoases"] = make_shared<QPOASESSolver>();
@@ -156,6 +172,13 @@ void runRH5Benchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
+    for(auto it : robot_models){
+        base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
+        base::samples::RigidBodyStateSE3 rbs = randomFloatingBaseState();
+        joint_state.time = base::Time::now();
+        it.second->update(joint_state, rbs);
+    }
+
 
     map<string,QPSolverPtr> solvers;
     solvers["qpoases"] = make_shared<QPOASESSolver>();
@@ -185,6 +208,12 @@ void runRH5v2Benchmarks(int n_samples){
     cfg.file = "../../../models/rh5v2/urdf/rh5v2_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
+    for(auto it : robot_models){
+        base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
+        base::samples::RigidBodyStateSE3 rbs = randomFloatingBaseState();
+        joint_state.time = base::Time::now();
+        it.second->update(joint_state, rbs);
+    }
 
     map<string,QPSolverPtr> solvers;
     solvers["qpoases"] = make_shared<QPOASESSolver>();
@@ -208,6 +237,6 @@ void runBenchmarks(int n_samples){
 
 int main(){
     srand(time(NULL));
-    int n_samples = 10;
+    int n_samples = 100;
     runBenchmarks(n_samples);
 }
