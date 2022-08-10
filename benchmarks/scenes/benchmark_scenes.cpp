@@ -29,7 +29,8 @@ void evaluateVelocitySceneQuadraticCost(map<string,RobotModelPtr> robot_models, 
             if(!scene->configure({cart_constraint}))
                 throw runtime_error("Failed to configure VelocitySceneQuadraticCost");
             map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
-            toCSV(results, "results/" + robot_name + "_vel_" + it.first + "_" + itt.first + ".csv");
+            string filename = "results/" + robot_name + "_vel_" + it.first + "_" + itt.first + ".csv";
+            toCSV(results, filename);
             cout << " ----------- Results VelocitySceneQuadraticCost (" + it.first + "," + itt.first + ") -----------" << endl;
             printResults(results);
         }
@@ -59,6 +60,7 @@ void runKUKAIiwaBenchmarks(int n_samples){
     cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     cfg.submechanism_file = "../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     const string root = "kuka_lbr_l_link_0", tip = "kuka_lbr_l_tcp";
+    const string robot = "kuka_iiwa";
 
     map<string,RobotModelPtr> robot_models;
     robot_models["kdl"] =  make_shared<RobotModelKDL>();
@@ -77,8 +79,8 @@ void runKUKAIiwaBenchmarks(int n_samples){
     solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
-    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "kuka_iiwa");
-    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "kuka_iiwa");
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5SingleLegBenchmarks(int n_samples){
@@ -86,6 +88,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
+    const string robot = "rh5_single_leg";
 
     map<string,RobotModelPtr> robot_models;
     robot_models["kdl"] =  make_shared<RobotModelKDL>();
@@ -112,8 +115,8 @@ void runRH5SingleLegBenchmarks(int n_samples){
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
     const string root = "RH5_Root_Link", tip = "LLAnkle_FT";
-    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5_single_leg");
-    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5_single_leg");
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5LegsBenchmarks(int n_samples){
@@ -124,6 +127,7 @@ void runRH5LegsBenchmarks(int n_samples){
     cfg.floating_base = true;
     cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
     cfg.contact_points.elements = {1,1};
+    const string robot = "rh5_legs";
 
     map<string,RobotModelPtr> robot_models;
     robot_models["kdl"] =  make_shared<RobotModelKDL>();
@@ -155,8 +159,8 @@ void runRH5LegsBenchmarks(int n_samples){
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
     const string root = "world", tip = "LLAnkle_FT";
-    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5_legs");
-    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5_legs");
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5Benchmarks(int n_samples){
@@ -165,21 +169,22 @@ void runRH5Benchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
-    cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    cfg.contact_points.elements = {1,1};
+    //cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    //cfg.contact_points.elements = {1,1};
+    const string robot = "rh5";
 
     map<string,RobotModelPtr> robot_models;
-    robot_models["kdl"] =  make_shared<RobotModelKDL>();
-    robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
-    robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
+    //robot_models["kdl"] =  make_shared<RobotModelKDL>();
+    //robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
+    //robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
     robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
     for(auto it : robot_models){
         if(!it.second->configure(cfg)) abort();
     }
-    robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
+    /*robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
     cfg.file = "../../../models/rh5/urdf/rh5_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_hybrid.yml";
-    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
+    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();*/
     for(auto it : robot_models){
         base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
         base::samples::RigidBodyStateSE3 floating_base_state;
@@ -199,8 +204,8 @@ void runRH5Benchmarks(int n_samples){
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
     const string root = "world", tip = "LLAnkle_FT";
-    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5");
-    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5");
+    //evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5v2Benchmarks(int n_samples){
@@ -208,6 +213,7 @@ void runRH5v2Benchmarks(int n_samples){
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
     cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
+    const string robot = "rh5v2";
 
     map<string,RobotModelPtr> robot_models;
     robot_models["kdl"] =  make_shared<RobotModelKDL>();
@@ -234,22 +240,24 @@ void runRH5v2Benchmarks(int n_samples){
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
 
     const string root = "RH5v2_Root_Link", tip = "ALWristFT_Link";
-    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, "rh5");
-    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, "rh5");
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runBenchmarks(int n_samples){
     boost::filesystem::create_directory("results");
 
-    runKUKAIiwaBenchmarks(n_samples);
-    runRH5SingleLegBenchmarks(n_samples);
-    runRH5LegsBenchmarks(n_samples);
+    //runRH5LegsBenchmarks(n_samples);
     runRH5Benchmarks(n_samples);
-    runRH5v2Benchmarks(n_samples);
+    //runKUKAIiwaBenchmarks(n_samples);
+    //runRH5SingleLegBenchmarks(n_samples);
+    //runRH5v2Benchmarks(n_samples);
 }
 
-int main(){
+int
+main(){
+
     srand(time(NULL));
-    int n_samples = 100;
+    int n_samples = 1000;
     runBenchmarks(n_samples);
 }
