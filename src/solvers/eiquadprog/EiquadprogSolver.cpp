@@ -10,7 +10,7 @@ QPSolverRegistry<EiquadprogSolver> EiquadprogSolver::reg("eiquadprog");
 
 EiquadprogSolver::EiquadprogSolver()
 {
-    _n_iter = 1000;
+    _n_iter = 100;
 }
 
 EiquadprogSolver::~EiquadprogSolver()

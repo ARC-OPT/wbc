@@ -25,7 +25,7 @@ base::samples::Joints randomJointState(base::samples::Joints joint_state_in){
     joint_state.resize(joint_state_in.size());
     joint_state.names = joint_state_in.names;
     for(auto n : joint_state.names){
-        joint_state[n].position = joint_state_in[n].position + whiteNoise(1e-4);//double(rand())/RAND_MAX)* (limits[n].max.position - limits[n].min.position) + limits[n].min.position;
+        joint_state[n].position = joint_state_in[n].position + whiteNoise(1e-4);
         joint_state[n].speed = whiteNoise(1e-4);
         joint_state[n].acceleration = whiteNoise(1e-4);
     }
@@ -120,9 +120,9 @@ map<string, base::VectorXd> evaluateWBCSceneRandom(WbcScenePtr scene, int n_samp
         HierarchicalQP qp = scene->update();
         time_scene_update[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
 
-            start = base::Time::now();
-            scene->solve(qp);
-            time_scene_solve[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
+        start = base::Time::now();
+        scene->solve(qp);
+        time_scene_solve[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
 
         usleep(0.01*1e6);
     }

@@ -18,7 +18,7 @@ base::VectorXd evalBodyJacobian(RobotModelPtr robot_model,  const string &root, 
         base::Time start = base::Time::now();
         robot_model->bodyJacobian(root, tip);
         results[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        usleep(0.01*1e6);
+        usleep(0.001*1e6);
     }
     return results;
 }
@@ -32,7 +32,7 @@ base::VectorXd evalSpaceJacobian(RobotModelPtr robot_model,  const string &root,
         base::Time start = base::Time::now();
         robot_model->spaceJacobian(root, tip);
         results[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        usleep(0.01*1e6);
+        usleep(0.001*1e6);
     }
     return results;
 }
@@ -46,7 +46,7 @@ base::VectorXd evalFK(RobotModelPtr robot_model,  const string &root, const stri
         base::Time start = base::Time::now();
         robot_model->rigidBodyState(root, tip);
         results[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        usleep(0.01*1e6);
+        usleep(0.001*1e6);
     }
     return results;
 }
@@ -60,7 +60,7 @@ base::VectorXd evalBiasForces(RobotModelPtr robot_model, int n_samples){
         base::Time start = base::Time::now();
         robot_model->biasForces();
         results[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        usleep(0.01*1e6);
+        usleep(0.001*1e6);
     }
     return results;
 }
@@ -74,7 +74,7 @@ base::VectorXd evalJointSpaceInertiaMat(RobotModelPtr robot_model, int n_samples
         base::Time start = base::Time::now();
         robot_model->jointSpaceInertiaMatrix();
         results[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        usleep(0.01*1e6);
+        usleep(0.001*1e6);
     }
     return results;
 }
@@ -88,7 +88,7 @@ base::VectorXd evalSpatialAccelerationBias(RobotModelPtr robot_model,  const str
         base::Time start = base::Time::now();
         robot_model->spatialAccelerationBias(root, tip);
         results[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        usleep(0.01*1e6);
+        usleep(0.001*1e6);
     }
     return results;
 }
@@ -102,7 +102,7 @@ base::VectorXd evalCoM(RobotModelPtr robot_model, int n_samples){
         base::Time start = base::Time::now();
         robot_model->centerOfMass();
         results[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        usleep(0.01*1e6);
+        usleep(0.001*1e6);
     }
     return results;
 }
@@ -362,6 +362,6 @@ void runBenchmarks(int n_samples){
 
 int main(){
     srand(time(NULL));
-    int n_samples = 10;
+    int n_samples = 1000;
     runBenchmarks(n_samples);
 }
