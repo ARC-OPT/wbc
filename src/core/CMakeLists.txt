@@ -3,19 +3,13 @@ set(TARGET_NAME wbc-core)
 file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/core "*.cpp")
 file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/core "*.hpp")
 
-pkg_search_module(base-types REQUIRED base-types)
-
-list(APPEND PKGCONFIG_REQUIRES base-types)
+list(APPEND PKGCONFIG_REQUIRES wbc-tools)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
-include_directories(${base-types_INCLUDE_DIRS})
-link_directories(${base-types_LIBRARY_DIRS})
-
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PUBLIC
                       wbc-tools
-                      dl
-                      ${base-types_LIBRARIES})
+                      dl)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
