@@ -6,7 +6,8 @@ target_link_libraries(scenes PUBLIC
 	wbc-robot_models-kdl
 	wbc-solvers-hls
         wbc-solvers-qpoases
-        Boost::python3)
+        Boost::python3
+        Boost::numpy3)
 
 target_include_directories(scenes PUBLIC
 	${PYTHON_INCLUDE_DIRS})
