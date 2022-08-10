@@ -143,6 +143,8 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
         qdd[i+start_idx] = state.acceleration;
     }
     joint_state = joint_state_in;
+
+    UpdateKinematics(*rbdl_model, q, qd, qdd); // update bodies kinematics once
 }
 
 void RobotModelRBDL::systemState(base::VectorXd &_q, base::VectorXd &_qd, base::VectorXd &_qdd){
@@ -171,10 +173,11 @@ const base::samples::RigidBodyStateSE3 &RobotModelRBDL::rigidBodyState(const std
         throw std::runtime_error("Invalid call to rigidBodyState()");
     }
 
-    rbs.pose.position = CalcBodyToBaseCoordinates(*rbdl_model,q,body_id,base::Vector3d(0,0,0));
-    rbs.pose.orientation = base::Quaterniond(CalcBodyWorldOrientation(*rbdl_model,q,body_id).inverse());
-    Math::SpatialVector twist_rbdl = CalcPointVelocity6D(*rbdl_model,q,qd,body_id,base::Vector3d(0,0,0));
-    Math::SpatialVector acc_rbdl = CalcPointAcceleration6D(*rbdl_model,q,qd,qdd,body_id,base::Vector3d(0,0,0));
+
+    rbs.pose.position = CalcBodyToBaseCoordinates(*rbdl_model, q,body_id, base::Vector3d(0,0,0), false);
+    rbs.pose.orientation = base::Quaterniond(CalcBodyWorldOrientation(*rbdl_model, q, body_id, false).inverse());
+    Math::SpatialVector twist_rbdl = CalcPointVelocity6D(*rbdl_model, q, qd, body_id, base::Vector3d(0,0,0), false);
+    Math::SpatialVector acc_rbdl = CalcPointAcceleration6D(*rbdl_model, q, qd, qdd, body_id, base::Vector3d(0,0,0), false);
     rbs.twist.linear = twist_rbdl.segment(3,3);
     rbs.twist.angular = twist_rbdl.segment(0,3);
     rbs.acceleration.linear = acc_rbdl.segment(3,3);
@@ -213,7 +216,7 @@ const base::MatrixXd &RobotModelRBDL::spaceJacobian(const std::string &root_fram
     base::Vector3d point_position;
     point_position.setZero();
     J.setZero(6, nj);
-    CalcPointJacobian6D(*rbdl_model,q,body_id,point_position,J);
+    CalcPointJacobian6D(*rbdl_model, q, body_id, point_position, J, false);
 
     space_jac_map[chain_id].block(0,0,3,nj) = J.block(3,0,3,nj);
     space_jac_map[chain_id].block(3,0,3,nj) = J.block(0,0,3,nj);
@@ -247,7 +250,7 @@ const base::MatrixXd &RobotModelRBDL::bodyJacobian(const std::string &root_frame
     body_jac_map[chain_id].setZero();
 
     J.setZero(6, nj);
-    CalcBodySpatialJacobian(*rbdl_model,q,body_id,J);
+    CalcBodySpatialJacobian(*rbdl_model, q, body_id, J, false);
 
     body_jac_map[chain_id].block(0,0,3,nj) = J.block(3,0,3,nj);
     body_jac_map[chain_id].block(3,0,3,nj) = J.block(0,0,3,nj);
@@ -268,7 +271,7 @@ const base::MatrixXd &RobotModelRBDL::comJacobian(){
         const Body& body = rbdl_model->mBodies.at(i);
         Math::MatrixNd com_jac_body_i;
         com_jac_body_i.setZero(3, rbdl_model->dof_count);
-        CalcPointJacobian(*rbdl_model, q, i, body.mCenterOfMass, com_jac_body_i, true);
+        CalcPointJacobian(*rbdl_model, q, i, body.mCenterOfMass, com_jac_body_i, false);
 
         com_jac = com_jac + body.mMass * com_jac_body_i;
         total_mass = total_mass + body.mMass;
@@ -303,7 +306,7 @@ const base::Acceleration &RobotModelRBDL::spatialAccelerationBias(const std::str
 
     base::Vector3d point_position;
     point_position.setZero();
-    Math::SpatialVector spatial_acceleration = CalcPointAcceleration6D(*rbdl_model, q, qd, Math::VectorNd::Zero(rbdl_model->dof_count), body_id, point_position);
+    Math::SpatialVector spatial_acceleration = CalcPointAcceleration6D(*rbdl_model, q, qd, Math::VectorNd::Zero(rbdl_model->dof_count), body_id, point_position, false);
     spatial_acc_bias = base::Acceleration(spatial_acceleration.segment(3,3), spatial_acceleration.segment(0,3));
     return spatial_acc_bias;
 }
@@ -314,7 +317,7 @@ const base::MatrixXd &RobotModelRBDL::jointSpaceInertiaMatrix(){
         throw std::runtime_error(" Invalid call to jointSpaceInertiaMatrix()");
     }
     H_q.setZero(rbdl_model->dof_count, rbdl_model->dof_count);
-    CompositeRigidBodyAlgorithm(*rbdl_model, q, H_q);
+    CompositeRigidBodyAlgorithm(*rbdl_model, q, H_q, false);
     joint_space_inertia_mat = H_q;
     return joint_space_inertia_mat;
 }
@@ -338,7 +341,7 @@ const base::samples::RigidBodyStateSE3& RobotModelRBDL::centerOfMass(){
 
     double mass;
     Math::Vector3d com_pos, com_vel, com_acc;
-    Utils::CalcCenterOfMass(*rbdl_model, q, qd, &qdd, mass, com_pos, &com_vel, &com_acc);
+    Utils::CalcCenterOfMass(*rbdl_model, q, qd, &qdd, mass, com_pos, &com_vel, &com_acc, nullptr, nullptr, false);
 
     com_rbs.frame_id = world_frame;
     com_rbs.pose.position = com_pos;
