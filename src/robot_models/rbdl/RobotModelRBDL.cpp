@@ -301,12 +301,13 @@ const base::Acceleration &RobotModelRBDL::spatialAccelerationBias(const std::str
     uint body_id = rbdl_model->GetBodyId(use_tip_frame.c_str());
     if(body_id == std::numeric_limits<unsigned int>::max()){
         LOG_ERROR_S << "Request rigidBodyState for " << root_frame << " -> " << tip_frame << " but link " << tip_frame << " does not exist in robot model" << std::endl;
-        throw std::runtime_error("Invalid call to rigidBodyState()");
+        throw std::runtime_error("Invalid call to spatialAccelerationBias()");
     }
 
     base::Vector3d point_position;
     point_position.setZero();
-    Math::SpatialVector spatial_acceleration = CalcPointAcceleration6D(*rbdl_model, q, qd, Math::VectorNd::Zero(rbdl_model->dof_count), body_id, point_position, false);
+    Math::SpatialVector spatial_acceleration = CalcPointAcceleration6D(*rbdl_model, q, qd, Math::VectorNd::Zero(rbdl_model->dof_count), body_id, point_position, true);
+    UpdateKinematics(*rbdl_model, q, qd, qdd);
     spatial_acc_bias = base::Acceleration(spatial_acceleration.segment(3,3), spatial_acceleration.segment(0,3));
     return spatial_acc_bias;
 }
