@@ -169,22 +169,22 @@ void runRH5Benchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
-    //cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    //cfg.contact_points.elements = {1,1};
+    cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    cfg.contact_points.elements = {1,1};
     const string robot = "rh5";
 
     map<string,RobotModelPtr> robot_models;
-    //robot_models["kdl"] =  make_shared<RobotModelKDL>();
-    //robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
-    //robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
+    robot_models["kdl"] =  make_shared<RobotModelKDL>();
+    robot_models["hyrodyn"] =  make_shared<RobotModelHyrodyn>();
+    robot_models["pinocchio"] =  make_shared<RobotModelPinocchio>();
     robot_models["rbdl"] =  make_shared<RobotModelRBDL>();
     for(auto it : robot_models){
         if(!it.second->configure(cfg)) abort();
     }
-    /*robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
+    robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
     cfg.file = "../../../models/rh5/urdf/rh5_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_hybrid.yml";
-    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();*/
+    if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
     for(auto it : robot_models){
         base::samples::Joints joint_state = randomJointState(it.second->jointLimits());
         base::samples::RigidBodyStateSE3 floating_base_state;
@@ -247,17 +247,17 @@ void runRH5v2Benchmarks(int n_samples){
 void runBenchmarks(int n_samples){
     boost::filesystem::create_directory("results");
 
-    //runRH5LegsBenchmarks(n_samples);
+    runRH5LegsBenchmarks(n_samples);
     runRH5Benchmarks(n_samples);
-    //runKUKAIiwaBenchmarks(n_samples);
-    //runRH5SingleLegBenchmarks(n_samples);
-    //runRH5v2Benchmarks(n_samples);
+    runKUKAIiwaBenchmarks(n_samples);
+    runRH5SingleLegBenchmarks(n_samples);
+    runRH5v2Benchmarks(n_samples);
 }
 
 int
 main(){
 
     srand(time(NULL));
-    int n_samples = 1000;
+    int n_samples = 10;
     runBenchmarks(n_samples);
 }
