@@ -49,7 +49,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     std::string robot_urdf_file = "/tmp/floating_base_model.urdf";
     doc->SaveFile(robot_urdf_file);
     try{
-        hyrodyn.load_robotmodel(robot_urdf_file, cfg.submechanism_file, false);
+        hyrodyn.load_robotmodel(robot_urdf_file, cfg.submechanism_file);
     }
     catch(std::exception e){
         LOG_ERROR_S << "Failed to load hyrodyn model from URDF " << robot_urdf_file <<
