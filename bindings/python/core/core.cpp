@@ -1,5 +1,6 @@
 #include "../eigen_conversion.h"
 #include "../std_vector_conversion.h"
+#include "../wbc_types_conversions.h"
 #include "core/RobotModelConfig.hpp"
 #include "core/ConstraintConfig.hpp"
 #include "core/ConstraintStatus.hpp"
@@ -117,24 +118,12 @@ BOOST_PYTHON_MODULE(core){
                 py::make_getter(&base::NamedVector<base::JointLimitRange>::elements, py::return_value_policy<py::copy_non_const_reference>()),
                 py::make_setter(&base::NamedVector<base::JointLimitRange>::elements));
 
-   py::class_<wbc::RobotModelConfig>("RobotModelConfig")
+   py::class_<wbc_py::RobotModelConfig>("RobotModelConfig")
             .def_readwrite("file",                 &wbc::RobotModelConfig::file)
             .def_readwrite("submechanism_file",    &wbc::RobotModelConfig::submechanism_file)
-            .add_property("joint_names",
-                py::make_getter(&wbc::RobotModelConfig::joint_names, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::RobotModelConfig::joint_names))
-            .add_property("actuated_joint_names",
-                py::make_getter(&wbc::RobotModelConfig::actuated_joint_names, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::RobotModelConfig::actuated_joint_names))
             .def_readwrite("floating_base",        &wbc::RobotModelConfig::floating_base)
-            .def_readwrite("world_frame_id",       &wbc::RobotModelConfig::world_frame_id)
-            .def_readwrite("floating_base_state",  &wbc::RobotModelConfig::floating_base_state)
-            .add_property("contact_points",
-                py::make_getter(&wbc::RobotModelConfig::contact_points, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::RobotModelConfig::contact_points))
-            .add_property("joint_blacklist",
-                py::make_getter(&wbc::RobotModelConfig::joint_blacklist, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::RobotModelConfig::joint_blacklist));
+            .def_readwrite("floating_base",        &wbc::RobotModelConfig::floating_base)
+            .add_property("contact_points",        &wbc_py::RobotModelConfig::getActiveContacts, &wbc_py::RobotModelConfig::setActiveContacts);
 
    py::enum_<wbc::ConstraintType>("ConstraintType")
        .value("unset", wbc::ConstraintType::unset)
@@ -205,11 +194,11 @@ BOOST_PYTHON_MODULE(core){
 
    py::class_<base::NamedVector<int>>("ActiveContacts")
        .add_property("names",
-           py::make_getter(&wbc::ActiveContacts::names, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&wbc::ActiveContacts::names))
+           py::make_getter(&base::NamedVector<int>::names, py::return_value_policy<py::copy_non_const_reference>()),
+           py::make_setter(&base::NamedVector<int>::names))
        .add_property("elements",
-           py::make_getter(&wbc::ActiveContacts::elements, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&wbc::ActiveContacts::elements));
+           py::make_getter(&base::NamedVector<int>::elements, py::return_value_policy<py::copy_non_const_reference>()),
+           py::make_setter(&base::NamedVector<int>::elements));
 
    py::class_<wbc::ConstraintStatus>("ConstraintStatus")
        .def_readwrite("config",  &wbc::ConstraintStatus::config)
