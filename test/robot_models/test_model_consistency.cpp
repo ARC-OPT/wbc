@@ -301,7 +301,7 @@ BOOST_AUTO_TEST_CASE(fixed_base){
                                    "../../../models/kuka/hyrodyn/kuka_iiwa.yml",
                                    "../../../models/rh5v2/hyrodyn/rh5v2.yml"};
     vector<string> tip_frames = {"LLAnkle_FT", "kuka_lbr_l_tcp", "ALWristFT_Link"};
-    bool verbose = true;
+    bool verbose = false;
 
     for(int i = 0; i < urdf_files.size(); i++){
 
@@ -321,7 +321,7 @@ BOOST_AUTO_TEST_CASE(floating_base){
     string urdf_file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     string sub_mec_file = "../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     string tip_frame = "kuka_lbr_l_tcp";
-    bool verbose = true;
+    bool verbose = false;
 
     RobotModelConfig cfg(urdf_file);
     cfg.submechanism_file = sub_mec_file;
