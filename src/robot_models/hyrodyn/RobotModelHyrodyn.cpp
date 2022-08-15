@@ -118,6 +118,16 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
     }
 
     if(has_floating_base){
+        if(!_floating_base_state.hasValidPose() ||
+           !_floating_base_state.hasValidTwist() ||
+           !_floating_base_state.hasValidAcceleration()){
+           LOG_ERROR("Invalid status of floating base given! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion)");
+           throw std::runtime_error("Invalid floating base status");
+        }
+        if(_floating_base_state.time.isNull()){
+            LOG_ERROR("Floating base state does not have a valid timestamp. Or do we have 1970?");
+            throw std::runtime_error("Invalid call to update()");
+        }
 
         floating_base_state = _floating_base_state;
 

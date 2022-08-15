@@ -95,6 +95,16 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
 
     uint start_idx = 0;
     if(has_floating_base){
+        if(!floating_base_state_in.hasValidPose() ||
+           !floating_base_state_in.hasValidTwist() ||
+           !floating_base_state_in.hasValidAcceleration()){
+           LOG_ERROR("Invalid status of floating base given! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion)");
+           throw std::runtime_error("Invalid floating base status");
+        }
+        if(floating_base_state_in.time.isNull()){
+            LOG_ERROR("Floating base state does not have a valid timestamp. Or do we have 1970?");
+            throw std::runtime_error("Invalid call to update()");
+        }
         floating_base_state = floating_base_state_in;
         start_idx = 6;
 
