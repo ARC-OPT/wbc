@@ -78,17 +78,17 @@ int main(){
     // Configure Scene, we have to use VelocitySceneQuadraticCost here, since it implements
     // rigid contact constraints for the feet contacts. Create a task for controlling the root link in
     // world coordinates
-    ConstraintConfig cart_constraint;
-    cart_constraint.name = "com_position";
-    cart_constraint.type = cart;
-    cart_constraint.priority = 0;
-    cart_constraint.root = "world";
-    cart_constraint.tip = "RH5_Root_Link";
-    cart_constraint.ref_frame = "world";
-    cart_constraint.activation = 1;
-    cart_constraint.weights = vector<double>(6,1);
+    TaskConfig cart_task;
+    cart_task.name = "com_position";
+    cart_task.type = cart;
+    cart_task.priority = 0;
+    cart_task.root = "world";
+    cart_task.tip = "RH5_Root_Link";
+    cart_task.ref_frame = "world";
+    cart_task.activation = 1;
+    cart_task.weights = vector<double>(6,1);
     VelocitySceneQuadraticCost scene(robot_model, solver, dt);
-    if(!scene.configure({cart_constraint}))
+    if(!scene.configure({cart_task}))
         return -1;
 
     // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:
@@ -113,8 +113,8 @@ int main(){
     }
     joint_state.time = base::Time::now();
 
-    // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
-    // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
+    // Choose a valid reference pose x_r, which is defined in cart_task.ref_frame and defines the desired pose of
+    // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
     setpoint.pose.position = base::Vector3d(-0.0,0,0.6);
     setpoint.pose.orientation = base::Quaterniond(1,0,0,0);
@@ -131,12 +131,12 @@ int main(){
         robot_model->update(joint_state, floating_base_state);
 
         // Update controller. The feedback is the pose of the tip link described in ref_frame link
-        feedback = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
+        feedback = robot_model->rigidBodyState(cart_task.root, cart_task.tip);
         ctrl_output = controller.update(setpoint, feedback);
 
         // Update constraints. Pass the control output of the controller to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
-        scene.setReference(cart_constraint.name, ctrl_output);
+        scene.setReference(cart_task.name, ctrl_output);
 
         // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();

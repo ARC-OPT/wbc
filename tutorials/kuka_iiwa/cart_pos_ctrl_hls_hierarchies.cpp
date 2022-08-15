@@ -39,33 +39,33 @@ int main(int argc, char** argv){
     // Here, we consider two tasks:  joint position control of joint 5 on the highest priority
     // and Cartesian position control of the end effector on the lower priority.
 
-    ConstraintConfig jnt_constraint;
-    jnt_constraint.name        = "jnt_pos_ctrl_elbow";   // Unique identifier
-    jnt_constraint.type        = jnt;                    // Cartesian or joint space task?
-    jnt_constraint.priority    = 0;                      // Priority, 0 - highest prio
-    jnt_constraint.joint_names = {"kuka_lbr_l_joint_5"}; // Joint names involved in the task
-    jnt_constraint.activation = 1;                       // (0..1) initial task activation. 1 - Task should be active initially
-    jnt_constraint.weights    = vector<double>(1,1);     // Task weights. Can be used to balance the relativ importance of the task variables
+    TaskConfig jnt_task;
+    jnt_task.name        = "jnt_pos_ctrl_elbow";   // Unique identifier
+    jnt_task.type        = jnt;                    // Cartesian or joint space task?
+    jnt_task.priority    = 0;                      // Priority, 0 - highest prio
+    jnt_task.joint_names = {"kuka_lbr_l_joint_5"}; // Joint names involved in the task
+    jnt_task.activation = 1;                       // (0..1) initial task activation. 1 - Task should be active initially
+    jnt_task.weights    = vector<double>(1,1);     // Task weights. Can be used to balance the relativ importance of the task variables
 
-    ConstraintConfig cart_constraint;
-    cart_constraint.name       = "cart_pos_ctrl_left"; // Unique identifier
-    cart_constraint.type       = cart;                 // Cartesian or joint space task?
-    cart_constraint.priority   = 1;                    // Priority, 0 - highest prio
-    cart_constraint.root       = "kuka_lbr_l_link_0";  // Root link of the kinematic chain to consider for this task
-    cart_constraint.tip        = "kuka_lbr_l_tcp";     // Tip link of the kinematic chain to consider for this task
-    cart_constraint.ref_frame  = "kuka_lbr_l_link_0";  // In what frame is the task specified?
-    cart_constraint.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
-    cart_constraint.weights    = vector<double>(6,1);  // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
+    TaskConfig cart_task;
+    cart_task.name       = "cart_pos_ctrl_left"; // Unique identifier
+    cart_task.type       = cart;                 // Cartesian or joint space task?
+    cart_task.priority   = 1;                    // Priority, 0 - highest prio
+    cart_task.root       = "kuka_lbr_l_link_0";  // Root link of the kinematic chain to consider for this task
+    cart_task.tip        = "kuka_lbr_l_tcp";     // Tip link of the kinematic chain to consider for this task
+    cart_task.ref_frame  = "kuka_lbr_l_link_0";  // In what frame is the task specified?
+    cart_task.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
+    cart_task.weights    = vector<double>(6,1);  // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
 
     VelocityScene scene(robot_model, solver);
 
-    if(!scene.configure({cart_constraint, jnt_constraint}))
+    if(!scene.configure({cart_task, jnt_task}))
         return -1;
 
     // Configure the controllers, one Cartesian position controller, one joint Position controller
     ctrl_lib::CartesianPosPDController cart_controller;
     cart_controller.setPGain(base::Vector6d::Constant(1)); // Set kp
-    ctrl_lib::JointPosPDController jnt_controller(jnt_constraint.joint_names);
+    ctrl_lib::JointPosPDController jnt_controller(jnt_task.joint_names);
     base::VectorXd p_gain(1);
     p_gain.setConstant(1);
     jnt_controller.setPGain(p_gain);
@@ -79,17 +79,17 @@ int main(int argc, char** argv){
         joint_state[i].position = 0.1;
     joint_state.time = base::Time::now(); // Set a valid timestamp, otherwise the robot model will throw an error
 
-    // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
-    // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
+    // Choose a valid reference pose x_r, which is defined in cart_task.ref_frame and defines the desired pose of
+    // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint_cart, ctrl_output_cart, feedback_cart;
     base::samples::Joints setpoint_jnt, ctrl_output_jnt, feedback_jnt;
     setpoint_cart.pose.position = base::Vector3d(0.0, 0.0, 0.8);
-    setpoint_cart.frame_id = cart_constraint.ref_frame;
+    setpoint_cart.frame_id = cart_task.ref_frame;
     setpoint_cart.pose.orientation.setIdentity();
     feedback_cart.pose.position.setZero();
     feedback_cart.pose.orientation.setIdentity();
-    setpoint_jnt.resize(jnt_constraint.joint_names.size());
-    setpoint_jnt.names = jnt_constraint.joint_names;
+    setpoint_jnt.resize(jnt_task.joint_names.size());
+    setpoint_jnt.names = jnt_task.joint_names;
     setpoint_jnt[0].position = 0.1;
 
     // Run control loop
@@ -101,17 +101,17 @@ int main(int argc, char** argv){
         robot_model->update(joint_state);
 
         // Update cart controller. The feedback is the pose of the tip link described in ref_frame link
-        feedback_cart    = robot_model->rigidBodyState(cart_constraint.ref_frame, cart_constraint.tip);
+        feedback_cart    = robot_model->rigidBodyState(cart_task.ref_frame, cart_task.tip);
         ctrl_output_cart = cart_controller.update(setpoint_cart, feedback_cart);
 
         // Update jnt controller. The feedback are the joint positions of the related joints
-        feedback_jnt    = robot_model->jointState(jnt_constraint.joint_names);
+        feedback_jnt    = robot_model->jointState(jnt_task.joint_names);
         ctrl_output_jnt = jnt_controller.update(setpoint_jnt, feedback_jnt);
 
         // Update constraints. Pass the control output of the solver to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
-        scene.setReference(cart_constraint.name, ctrl_output_cart);
-        scene.setReference(jnt_constraint.name, ctrl_output_jnt);
+        scene.setReference(cart_task.name, ctrl_output_cart);
+        scene.setReference(jnt_task.name, ctrl_output_jnt);
 
         // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();

@@ -3,7 +3,7 @@
 
 namespace wbc{
 
-ConstraintConfig::ConstraintConfig() :
+TaskConfig::TaskConfig() :
     activation(0),
     timeout(0),
     priority(-1),
@@ -11,7 +11,7 @@ ConstraintConfig::ConstraintConfig() :
 
 }
 
-ConstraintConfig::ConstraintConfig(const std::string &name,
+TaskConfig::TaskConfig(const std::string &name,
                                    const int priority,
                                    const std::string root,
                                    const std::string tip,
@@ -30,7 +30,7 @@ ConstraintConfig::ConstraintConfig(const std::string &name,
     ref_frame(ref_frame){
 }
 
-ConstraintConfig::ConstraintConfig(const std::string &name,
+TaskConfig::TaskConfig(const std::string &name,
                                    const int priority,
                                    const std::vector<std::string> joint_names,
                                    const std::vector<double> weights,
@@ -45,7 +45,7 @@ ConstraintConfig::ConstraintConfig(const std::string &name,
     timeout(timeout){
 }
 
-ConstraintConfig::ConstraintConfig(const std::string &name,
+TaskConfig::TaskConfig(const std::string &name,
                                    const int priority,
                                    const std::vector<double> weights,
                                    const double activation,
@@ -58,10 +58,10 @@ ConstraintConfig::ConstraintConfig(const std::string &name,
     timeout(timeout){
 }
 
-ConstraintConfig::~ConstraintConfig(){
+TaskConfig::~TaskConfig(){
 }
 
-void ConstraintConfig::validate() const{
+void TaskConfig::validate() const{
     if(name.empty()){
         LOG_ERROR("TaskConfig: task name must not be empty!");
         throw std::invalid_argument("Invalid task config");}
@@ -109,7 +109,7 @@ void ConstraintConfig::validate() const{
             throw std::invalid_argument("Invalid task config");}
 }
 
-unsigned int ConstraintConfig::nVariables() const{
+unsigned int TaskConfig::nVariables() const{
     if(type == cart)
         return 6;
     else if(type == com)

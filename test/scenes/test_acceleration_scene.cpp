@@ -18,19 +18,19 @@ BOOST_AUTO_TEST_CASE(simple_test){
         joint_names.push_back("kuka_lbr_l_joint_" + to_string(i+1));
 
     // Create WBC config
-    vector<ConstraintConfig> wbc_config;
+    vector<TaskConfig> wbc_config;
 
     // Constraint for Cartesian Position Control
-    ConstraintConfig cart_constraint;
-    cart_constraint.name       = "cart_pos_ctrl_left";
-    cart_constraint.type       = cart;
-    cart_constraint.priority   = 0;
-    cart_constraint.root       = "kuka_lbr_l_link_0";
-    cart_constraint.tip        = "kuka_lbr_l_tcp";
-    cart_constraint.ref_frame  = "kuka_lbr_l_link_0";
-    cart_constraint.activation = 1;
-    cart_constraint.weights    = vector<double>(6,1);
-    wbc_config.push_back(cart_constraint);
+    TaskConfig cart_task;
+    cart_task.name       = "cart_pos_ctrl_left";
+    cart_task.type       = cart;
+    cart_task.priority   = 0;
+    cart_task.root       = "kuka_lbr_l_link_0";
+    cart_task.tip        = "kuka_lbr_l_tcp";
+    cart_task.ref_frame  = "kuka_lbr_l_link_0";
+    cart_task.activation = 1;
+    cart_task.weights    = vector<double>(6,1);
+    wbc_config.push_back(cart_task);
 
     // Configure Robot model
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
@@ -66,7 +66,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
         ref.acceleration.angular[i] =((double)rand())/RAND_MAX;
     }
 
-    BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_constraint.name, ref));
+    BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_task.name, ref));
 
     // Solve
     BOOST_CHECK_NO_THROW(wbc_scene.update());
@@ -83,8 +83,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
         qd[i] = robot_model->jointState(robot_model->jointNames())[i].speed;
         qdd[i] = solver_output[i].acceleration;
     }
-    base::MatrixXd jac = robot_model->spaceJacobian(cart_constraint.ref_frame, cart_constraint.tip);
-    base::MatrixXd jac_dot = robot_model->jacobianDot(cart_constraint.ref_frame, cart_constraint.tip);
+    base::MatrixXd jac = robot_model->spaceJacobian(cart_task.ref_frame, cart_task.tip);
+    base::MatrixXd jac_dot = robot_model->jacobianDot(cart_task.ref_frame, cart_task.tip);
     base::VectorXd ydd = jac*qdd + jac_dot*qd;
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(ydd[i] - ref.acceleration.linear[i]) < 1e-5);

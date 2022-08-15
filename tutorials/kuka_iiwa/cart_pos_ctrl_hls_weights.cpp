@@ -36,20 +36,20 @@ int main(int argc, char** argv){
     // Configure the WBC Scene by passing the WBC config. Each entry in this vector corresponds to a task. Multiple tasks can be
     // configured by passing multiple task configurations and assigning them a corresponding priority. Here, we consider only
     // a single Cartesian task. The most important entries here are root/tip and reference frame, any of which has to be a valid
-    // link in the URDF model. For all configuration options, check core/ConstraintConfig.hpp
-    ConstraintConfig cart_constraint;
-    cart_constraint.name       = "cart_pos_ctrl_left"; // Unique identifier
-    cart_constraint.type       = cart;                 // Cartesian or joint space task?
-    cart_constraint.priority   = 0;                    // Priority, 0 - highest prio
-    cart_constraint.root       = "kuka_lbr_l_link_0";  // Root link of the kinematic chain to consider for this task
-    cart_constraint.tip        = "kuka_lbr_l_tcp";     // Tip link of the kinematic chain to consider for this task
-    cart_constraint.ref_frame  = "kuka_lbr_l_link_0";  // In what frame is the task specified?
-    cart_constraint.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
+    // link in the URDF model. For all configuration options, check core/TaskConfig.hpp
+    TaskConfig cart_task;
+    cart_task.name       = "cart_pos_ctrl_left"; // Unique identifier
+    cart_task.type       = cart;                 // Cartesian or joint space task?
+    cart_task.priority   = 0;                    // Priority, 0 - highest prio
+    cart_task.root       = "kuka_lbr_l_link_0";  // Root link of the kinematic chain to consider for this task
+    cart_task.tip        = "kuka_lbr_l_tcp";     // Tip link of the kinematic chain to consider for this task
+    cart_task.ref_frame  = "kuka_lbr_l_link_0";  // In what frame is the task specified?
+    cart_task.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
 
     // Set the task weights for the orientation dof to zero! As a result, the orientation will be arbitrary, only the position will be tracked!
-    cart_constraint.weights    = {1,1,1,0,0,0};
+    cart_task.weights    = {1,1,1,0,0,0};
     VelocityScene scene(robot_model, solver);
-    if(!scene.configure({cart_constraint}))
+    if(!scene.configure({cart_task}))
         return -1;
 
     // Set the joint weights. Set the weight to the elbow joint to zero! As a result the elbow joint
@@ -76,11 +76,11 @@ int main(int argc, char** argv){
         joint_state[i].position = 0.1;
     joint_state.time = base::Time::now(); // Set a valid timestamp, otherwise the robot model will throw an error
 
-    // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
-    // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
+    // Choose a valid reference pose x_r, which is defined in cart_task.ref_frame and defines the desired pose of
+    // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, ctrl_output, feedback;
     setpoint.pose.position = base::Vector3d(0.0, 0.0, 0.8);
-    setpoint.frame_id = cart_constraint.ref_frame;
+    setpoint.frame_id = cart_task.ref_frame;
     setpoint.pose.orientation.setIdentity();
     feedback.pose.position.setZero();
     feedback.pose.orientation.setIdentity();
@@ -94,12 +94,12 @@ int main(int argc, char** argv){
         robot_model->update(joint_state);
 
         // Update controller. The feedback is the pose of the tip link described in ref_frame link
-        feedback = robot_model->rigidBodyState(cart_constraint.ref_frame, cart_constraint.tip);
+        feedback = robot_model->rigidBodyState(cart_task.ref_frame, cart_task.tip);
         ctrl_output = controller.update(setpoint, feedback);
 
         // Update constraints. Pass the control output of the solver to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
-        scene.setReference(cart_constraint.name, ctrl_output);
+        scene.setReference(cart_task.name, ctrl_output);
 
         // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();
