@@ -17,10 +17,10 @@ AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolver
     hessian_regularizer(1e-8){
     
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
-    hard_constraints.resize(1);
-    hard_constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>());
-    hard_constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>());
-    hard_constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt));
+    constraints.resize(1);
+    constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>());
+    constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>());
+    constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt));
 
 }
 
@@ -91,43 +91,43 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     ///////// Constraints
 
     size_t total_eqs = 0;
-    for(auto hard_contraint : hard_constraints[prio]) {
-        hard_contraint->update(robot_model);
-        if(hard_contraint->type() != Constraint::bounds)
-            total_eqs += hard_contraint->size();
+    for(auto contraint : constraints[prio]) {
+        contraint->update(robot_model);
+        if(contraint->type() != Constraint::bounds)
+            total_eqs += contraint->size();
     }
 
     // Note already performed at the beginning of the update (but does not consider additional constraints)
     tasks_prio[prio].A.resize(total_eqs, nj+na+ncp*6);
     tasks_prio[prio].lower_x.resize(nj+na+ncp*6);
-    tasks_prio[prio].upper_y.resize(nj+na+ncp*6);
+    tasks_prio[prio].upper_x.resize(nj+na+ncp*6);
     tasks_prio[prio].lower_y.resize(total_eqs);
     tasks_prio[prio].upper_y.resize(total_eqs);
 
     tasks_prio[prio].A.setZero();
-    tasks_prio[prio].lower_y.setConstant(-99999);
-    tasks_prio[prio].upper_y.setConstant(+99999);
-    tasks_prio[prio].lower_x.setConstant(-99999);
-    tasks_prio[prio].upper_x.setConstant(+99999);
+    tasks_prio[prio].lower_x.setConstant(-10000);   // bounds
+    tasks_prio[prio].upper_x.setConstant(+10000);   // bounds
+    tasks_prio[prio].lower_y.setZero(); // inequalities
+    tasks_prio[prio].upper_y.setZero(); // inequalities
 
     total_eqs = 0;
-    for(uint i = 0; i < hard_constraints[prio].size(); i++) {
-        Constraint::Type type = hard_constraints[prio][i]->type();
-        size_t c_size = hard_constraints[prio][i]->size();
+    for(uint i = 0; i < constraints[prio].size(); i++) {
+        Constraint::Type type = constraints[prio][i]->type();
+        size_t c_size = constraints[prio][i]->size();
 
         if(type == Constraint::bounds) {
-            tasks_prio[prio].lower_x = hard_constraints[prio][i]->lb();
-            tasks_prio[prio].upper_x = hard_constraints[prio][i]->ub();
+            tasks_prio[prio].lower_x = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_x = constraints[prio][i]->ub();
         }
         else if (type == Constraint::equality) {
-            tasks_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
+            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
         }
         else if (type == Constraint::inequality) {
-            tasks_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->lb();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->ub();
+            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
         }
 
         total_eqs += c_size;

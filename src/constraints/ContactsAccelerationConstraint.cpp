@@ -13,7 +13,10 @@ namespace wbc{
         uint nv = nj + na + nc*6;
 
         A_mtx.resize(nc*6, nv);
-        b_vec.resize(nv);
+        b_vec.resize(nc*6);
+
+        A_mtx.setZero();
+        b_vec.setZero();
 
         for(int i = 0; i < contacts.size(); i++){
             base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contacts.names[i]);
@@ -22,7 +25,7 @@ namespace wbc{
             acc.segment(3,3) = a.angular;
 
             b_vec.segment(i*6, 6) = -acc;
-            A_mtx.block(i*6,  0, 6, nv) = robot_model->spaceJacobian(robot_model->baseFrame(), contacts.names[i]);
+            A_mtx.block(i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contacts.names[i]);
         }
     }
 

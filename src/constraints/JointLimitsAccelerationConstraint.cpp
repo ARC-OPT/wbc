@@ -19,9 +19,12 @@ namespace wbc{
         lb_vec.resize(nj+na+6*nc);
         ub_vec.resize(nj+na+6*nc);
 
-        lb_vec.setConstant(-999999);
-        ub_vec.setConstant(+999999);
+        lb_vec.setConstant(-10000);
+        ub_vec.setConstant(+10000);
 
+        bool check_accelerations = false;
+        bool check_velocities = false;
+        bool check_positions = false;
         
         auto state = robot_model->jointState(robot_model->actuatedJointNames());
 
@@ -42,11 +45,22 @@ namespace wbc{
             double vel = state[n].speed;
 
             // enforce joint acceleration and velocity limit
-            lb_vec(idx) = std::max(check_number(range.min.acceleration, -999999), (range.min.speed - vel) / dt);
-            ub_vec(idx) = std::min(check_number(range.max.acceleration, +999999), (range.max.speed - vel) / dt);
+            if(check_accelerations)
+            {
+                lb_vec(idx) = check_number(range.min.acceleration, -10000);
+                ub_vec(idx) = check_number(range.max.acceleration, +10000);
+            }
+            if(check_velocities)
+            {
+                lb_vec(idx) = std::max(lb_vec(idx), (range.min.speed - vel) / dt);
+                ub_vec(idx) = std::min(ub_vec(idx), (range.max.speed - vel) / dt);
+            }
             // enforce joint position limit
-            lb_vec(idx) = std::max(lb_vec(idx), 2*(range.min.position - pos - dt*vel) / (dt*dt));
-            ub_vec(idx) = std::min(ub_vec(idx), 2*(range.max.position - pos - dt*vel) / (dt*dt));
+            if(check_positions)
+            {
+                lb_vec(idx) = std::max(lb_vec(idx), 2*(range.min.position - pos - dt*vel) / (dt*dt));
+                ub_vec(idx) = std::min(ub_vec(idx), 2*(range.max.position - pos - dt*vel) / (dt*dt));
+            }
         }
 
         // enforce joint effort limits

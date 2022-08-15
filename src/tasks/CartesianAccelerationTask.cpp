@@ -25,10 +25,6 @@ void CartesianAccelerationTask::update(RobotModelPtr robot_model){
     A = robot_model->spaceJacobian(config.root, config.tip);
 
     // Desired task space acceleration: y_r = y_d - Jdot*qdot
-    base::samples::Joints joint_state = robot_model->jointState(robot_model->jointNames());
-    base::VectorXd q_dot(robot_model->noOfJoints());
-    for(size_t j = 0; j < joint_state.size(); j++)
-        q_dot(j) = joint_state[j].speed;
     y_ref = y_ref - robot_model->spatialAccelerationBias(config.root, config.tip);
 
     // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
