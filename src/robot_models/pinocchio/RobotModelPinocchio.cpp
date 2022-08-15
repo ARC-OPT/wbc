@@ -63,14 +63,24 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
         world_frame = robot_urdf->getRoot()->name;
     }
 
-    // 4. Create data structures
-
     joint_names = model.names;
     joint_names.erase(joint_names.begin()); // Erase global joint 'universe' which is added by Pinocchio
     if(has_floating_base)
         joint_names.erase(joint_names.begin()); // Erase 'floating_base' root joint
     actuated_joint_names = joint_names;
     joint_names = independent_joint_names = joint_names_floating_base + joint_names;
+
+    // 2. Verify consistency of URDF and config
+
+    // All contact point have to be a valid link in the robot URDF
+    for(auto c : cfg.contact_points.names){
+        if(!hasLink(c)){
+            LOG_ERROR("Contact point %s is not a valid link in the robot model", c.c_str());
+            return false;
+        }
+    }
+
+    // 3. Create data structures
 
     // Joint order in q,qd,qdd:
     //
@@ -94,6 +104,11 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
 
     selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
     selection_matrix.setZero();
+    for(int i = 0; i < actuated_joint_names.size(); i++)
+        selection_matrix(i, jointIndex(actuated_joint_names[i])) = 1.0;
+
+    contact_points = cfg.contact_points.names;
+    active_contacts = cfg.contact_points;
 
     LOG_DEBUG("------------------- WBC RobotModelPinocchio -----------------");
     LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;

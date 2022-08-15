@@ -61,6 +61,16 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
     // Read Joint Limits
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);    
 
+    // 2. Verify consistency of URDF and config
+
+    // All contact point have to be a valid link in the robot URDF
+    for(auto c : cfg.contact_points.names){
+        if(!hasLink(c)){
+            LOG_ERROR("Contact point %s is not a valid link in the robot model", c.c_str());
+            return false;
+        }
+    }
+
     // 3. Create data structures
 
     joint_state.resize(joint_names.size());
@@ -74,6 +84,28 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
 
     selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
     selection_matrix.setZero();
+    for(int i = 0; i < actuated_joint_names.size(); i++)
+        selection_matrix(i, jointIndex(actuated_joint_names[i])) = 1.0;
+
+    contact_points = cfg.contact_points.names;
+    active_contacts = cfg.contact_points;
+
+    LOG_DEBUG("------------------- WBC RobotModelRBDL -----------------");
+    LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
+    LOG_DEBUG_S << "Floating base robot: " << has_floating_base << std::endl;
+    LOG_DEBUG("Joint Names");
+    for(auto n : jointNames())
+        LOG_DEBUG_S << n << std::endl;
+    LOG_DEBUG("Actuated Joint Names");
+    for(auto n : actuatedJointNames())
+        LOG_DEBUG_S << n << std::endl;
+    LOG_DEBUG("Joint Limits");
+    for(auto n : joint_limits.names)
+        LOG_DEBUG_S << n << ": Max. Pos: " << joint_limits[n].max.position << ", "
+                         << "  Min. Pos: " << joint_limits[n].min.position << ", "
+                         << "  Max. Vel: " << joint_limits[n].max.speed    << ", "
+                         << "  Max. Eff: " << joint_limits[n].max.effort   << std::endl;
+    LOG_DEBUG("------------------------------------------------------------");
 
     return true;
 }
