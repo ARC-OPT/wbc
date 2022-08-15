@@ -17,7 +17,7 @@ class RigidbodyDynamicsConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    RigidbodyDynamicsConstraint() = default;
+    RigidbodyDynamicsConstraint() : Constraint(Constraint::equality) { }
 
     virtual ~RigidbodyDynamicsConstraint() = default;
 

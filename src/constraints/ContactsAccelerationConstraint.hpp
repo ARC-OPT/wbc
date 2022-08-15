@@ -17,7 +17,7 @@ class ContactsAccelerationConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    ContactsAccelerationConstraint() = default;
+    ContactsAccelerationConstraint() : Constraint(Constraint::equality) { }
 
     virtual ~ContactsAccelerationConstraint() = default;
 

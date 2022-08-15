@@ -19,7 +19,7 @@ namespace wbc{
         A_mtx.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
         A_mtx.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
         for(int i = 0; i < contacts.size(); i++)
-            A_mtx.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->baseFrame(), contacts.names[i]).transpose();
+            A_mtx.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose();
         b_vec = -robot_model->biasForces();// + robot_model->bodyJacobian(world_link, contact_link).transpose() * f_ext;
 
     }

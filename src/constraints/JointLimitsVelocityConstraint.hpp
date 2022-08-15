@@ -17,7 +17,7 @@ class JointLimitsVelocityConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    JointLimitsVelocityConstraint() = default;
+    JointLimitsVelocityConstraint() : Constraint(Constraint::bounds) { }
 
     JointLimitsVelocityConstraint(double dt);
 

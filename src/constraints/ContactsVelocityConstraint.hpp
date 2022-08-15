@@ -17,7 +17,7 @@ class ContactsVelocityConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    ContactsVelocityConstraint() = default;
+    ContactsVelocityConstraint() : Constraint(Constraint::equality) { }
 
     virtual ~ContactsVelocityConstraint() = default;
 

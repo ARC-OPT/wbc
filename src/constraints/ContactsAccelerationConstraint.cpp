@@ -19,13 +19,13 @@ namespace wbc{
         b_vec.setZero();
 
         for(int i = 0; i < contacts.size(); i++){
-            base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->baseFrame(), contacts.names[i]);
+            base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->worldFrame(), contacts.names[i]);
             base::Vector6d acc;
             acc.segment(0,3) = a.linear;
             acc.segment(3,3) = a.angular;
 
             b_vec.segment(i*6, 6) = -acc;
-            A_mtx.block(i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->baseFrame(), contacts.names[i]);
+            A_mtx.block(i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->worldFrame(), contacts.names[i]);
         }
     }
 
