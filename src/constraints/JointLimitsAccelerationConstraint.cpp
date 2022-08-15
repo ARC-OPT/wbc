@@ -1,15 +1,15 @@
-#include "JointLimitsAccelerationHardConstraint.hpp"
+#include "JointLimitsAccelerationConstraint.hpp"
 
 namespace wbc{
 
-    JointLimitsAccelerationHardConstraint::JointLimitsAccelerationHardConstraint(double dt) 
-    :   HardConstraint(HardConstraint::bounds),
+    JointLimitsAccelerationConstraint::JointLimitsAccelerationConstraint(double dt) 
+    :   Constraint(Constraint::bounds),
         dt(dt)
     {
 
     }
 
-    void JointLimitsAccelerationHardConstraint::update(RobotModelPtr robot_model) {
+    void JointLimitsAccelerationConstraint::update(RobotModelPtr robot_model) {
         
         uint nj = robot_model->noOfJoints();
         uint na = robot_model->noOfActuatedJoints();

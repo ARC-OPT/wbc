@@ -6,9 +6,9 @@
 #include "../tasks/CartesianAccelerationTask.hpp"
 #include "../tasks/CoMAccelerationTask.hpp"
 
-#include "../constraints/RigidbodyDynamicsHardConstraint.hpp"
-#include "../constraints/ContactsAccelerationHardConstraint.hpp"
-#include "../constraints/JointLimitsAccelerationHardConstraint.hpp"
+#include "../constraints/RigidbodyDynamicsConstraint.hpp"
+#include "../constraints/ContactsAccelerationConstraint.hpp"
+#include "../constraints/JointLimitsAccelerationConstraint.hpp"
 
 namespace wbc {
 
@@ -18,9 +18,9 @@ AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolver
     
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
     hard_constraints.resize(1);
-    hard_constraints[0].push_back(std::make_shared<RigidbodyDynamicsHardConstraint>());
-    hard_constraints[0].push_back(std::make_shared<ContactsAccelerationHardConstraint>());
-    hard_constraints[0].push_back(std::make_shared<JointLimitsAccelerationHardConstraint>(dt));
+    hard_constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>());
+    hard_constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>());
+    hard_constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt));
 
 }
 
@@ -93,7 +93,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     size_t total_eqs = 0;
     for(auto hard_contraint : hard_constraints[prio]) {
         hard_contraint->update(robot_model);
-        if(hard_contraint->type() != HardConstraint::bounds)
+        if(hard_contraint->type() != Constraint::bounds)
             total_eqs += hard_contraint->size();
     }
 
@@ -112,19 +112,19 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     total_eqs = 0;
     for(uint i = 0; i < hard_constraints[prio].size(); i++) {
-        HardConstraint::Type type = hard_constraints[prio][i]->type();
+        Constraint::Type type = hard_constraints[prio][i]->type();
         size_t c_size = hard_constraints[prio][i]->size();
 
-        if(type == HardConstraint::bounds) {
+        if(type == Constraint::bounds) {
             tasks_prio[prio].lower_x = hard_constraints[prio][i]->lb();
             tasks_prio[prio].upper_x = hard_constraints[prio][i]->ub();
         }
-        else if (type == HardConstraint::equality) {
+        else if (type == Constraint::equality) {
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
             tasks_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
             tasks_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
         }
-        else if (type == HardConstraint::inequality) {
+        else if (type == Constraint::inequality) {
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
             tasks_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->lb();
             tasks_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->ub();

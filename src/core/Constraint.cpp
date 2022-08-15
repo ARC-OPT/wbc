@@ -1,51 +1,51 @@
-#include "HardConstraint.hpp"
+#include "Constraint.hpp"
 #include <base-logging/Logging.hpp>
 #include <base/Float.hpp>
 
 namespace wbc{
 
-HardConstraint::HardConstraint(){
+Constraint::Constraint(){
 
 }
 
-HardConstraint::HardConstraint(Type type)
+Constraint::Constraint(Type type)
     : c_type(type)
 {
  
 }
 
-HardConstraint::Type HardConstraint::type() {
+Constraint::Type Constraint::type() {
     return c_type;
 } 
 
-const base::MatrixXd& HardConstraint::A() {
+const base::MatrixXd& Constraint::A() {
     return A_mtx;
 }
 
-const base::VectorXd& HardConstraint::b() {
+const base::VectorXd& Constraint::b() {
     return b_vec;
 }
 
-const base::VectorXd& HardConstraint::lb() {
+const base::VectorXd& Constraint::lb() {
     return lb_vec;
 }
 
-const base::VectorXd& HardConstraint::ub() {
+const base::VectorXd& Constraint::ub() {
     return ub_vec;
 }
 
-uint HardConstraint::size() {
+uint Constraint::size() {
     switch(c_type) {
-        case HardConstraint::equality:
-        case HardConstraint::inequality:
+        case Constraint::equality:
+        case Constraint::inequality:
             return A_mtx.rows();
-        case HardConstraint::bounds:
+        case Constraint::bounds:
             return lb_vec.rows();
     }
     return 0;
 }
 
-// void HardConstraint::setMask(const base::VectorXi& mask){
+// void Constraint::setMask(const base::VectorXi& mask){
 //     if(config.nVariables() != mask.size()){
 //         LOG_ERROR("Constraint %s: Size of mask vector should be %i but is %i", config.name.c_str(), config.nVariables(), weights.size())
 //         throw std::invalid_argument("Invalid constraint weights");

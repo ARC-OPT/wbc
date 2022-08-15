@@ -1,7 +1,7 @@
-#ifndef JOINT_LIMIT_VELOCITY_HARD_CONSTRAINT_HPP
-#define JOINT_LIMIT_VELOCITY_HARD_CONSTRAINT_HPP
+#ifndef JOINT_LIMIT_VELOCITY_CONSTRAINT_HPP
+#define JOINT_LIMIT_VELOCITY_CONSTRAINT_HPP
 
-#include "../core/HardConstraint.hpp"
+#include "../core/Constraint.hpp"
 
 #include <base/Eigen.hpp>
 #include <base/Time.hpp>
@@ -13,15 +13,15 @@ namespace wbc{
 /**
  * @brief Abstract class to represent a generic hard constraint for a WBC optimization problem.
  */
-class JointLimitsVelocityHardConstraint : public HardConstraint {
+class JointLimitsVelocityConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    JointLimitsVelocityHardConstraint() = default;
+    JointLimitsVelocityConstraint() = default;
 
-    JointLimitsVelocityHardConstraint(double dt);
+    JointLimitsVelocityConstraint(double dt);
 
-    virtual ~JointLimitsVelocityHardConstraint() = default;
+    virtual ~JointLimitsVelocityConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) override;
 
@@ -31,7 +31,7 @@ protected:
     double dt;
 
 };
-typedef std::shared_ptr<JointLimitsVelocityHardConstraint> JointLimitsVelocityHardConstraintPtr;
+typedef std::shared_ptr<JointLimitsVelocityConstraint> JointLimitsVelocityConstraintPtr;
 
 } // namespace wbc
 #endif

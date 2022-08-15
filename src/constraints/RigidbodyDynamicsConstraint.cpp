@@ -1,8 +1,8 @@
-#include "RigidbodyDynamicsHardConstraint.hpp"
+#include "RigidbodyDynamicsConstraint.hpp"
 
 namespace wbc{
 
-    void RigidbodyDynamicsHardConstraint::update(RobotModelPtr robot_model) {
+    void RigidbodyDynamicsConstraint::update(RobotModelPtr robot_model) {
         
         const ActiveContacts& contacts = robot_model->getActiveContacts();
 

@@ -7,8 +7,8 @@
 #include "../tasks/JointVelocityTask.hpp"
 #include "../tasks/CoMVelocityTask.hpp"
 
-#include "../constraints/ContactsVelocityHardConstraint.hpp"
-#include "../constraints/JointLimitsVelocityHardConstraint.hpp"
+#include "../constraints/ContactsVelocityConstraint.hpp"
+#include "../constraints/JointLimitsVelocityConstraint.hpp"
 
 
 namespace wbc{
@@ -19,8 +19,8 @@ VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
     hard_constraints.resize(1);
-    hard_constraints[0].push_back(std::make_shared<ContactsVelocityHardConstraint>());
-    hard_constraints[0].push_back(std::make_shared<JointLimitsVelocityHardConstraint>(dt));
+    hard_constraints[0].push_back(std::make_shared<ContactsVelocityConstraint>());
+    hard_constraints[0].push_back(std::make_shared<JointLimitsVelocityConstraint>(dt));
 
 }
 
@@ -82,7 +82,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     size_t total_eqs = 0;
     for(auto hard_constraint : hard_constraints[prio]) {
         hard_constraint->update(robot_model);
-        if(hard_constraint->type() != HardConstraint::bounds)
+        if(hard_constraint->type() != Constraint::bounds)
             total_eqs += hard_constraint->size();
     }
 
@@ -101,19 +101,19 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
     total_eqs = 0;
     for(uint i = 0; i < hard_constraints[prio].size(); i++) {
-        HardConstraint::Type type = hard_constraints[prio][i]->type();
+        Constraint::Type type = hard_constraints[prio][i]->type();
         size_t c_size = hard_constraints[prio][i]->size();
 
-        if(type == HardConstraint::bounds) {
+        if(type == Constraint::bounds) {
             tasks_prio[prio].lower_x = hard_constraints[prio][i]->lb();
             tasks_prio[prio].upper_x = hard_constraints[prio][i]->ub();
         }
-        else if (type == HardConstraint::equality) {
+        else if (type == Constraint::equality) {
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
             tasks_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
             tasks_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->b();
         }
-        else if (type == HardConstraint::inequality) {
+        else if (type == Constraint::inequality) {
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = hard_constraints[prio][i]->A();
             tasks_prio[prio].lower_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->lb();
             tasks_prio[prio].upper_y.segment(total_eqs, c_size) = hard_constraints[prio][i]->ub();

@@ -1,8 +1,8 @@
-#include "ContactsVelocityHardConstraint.hpp"
+#include "ContactsVelocityConstraint.hpp"
 
 namespace wbc{
 
-    void ContactsVelocityHardConstraint::update(RobotModelPtr robot_model) {
+    void ContactsVelocityConstraint::update(RobotModelPtr robot_model) {
         
         const ActiveContacts& contacts = robot_model->getActiveContacts();
 

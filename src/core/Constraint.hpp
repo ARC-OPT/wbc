@@ -1,5 +1,5 @@
-#ifndef HARD_CONSTRAINT_HPP
-#define HARD_CONSTRAINT_HPP
+#ifndef CONSTRAINT_HPP
+#define CONSTRAINT_HPP
 
 #include "RobotModel.hpp"
 #include <base/Eigen.hpp>
@@ -16,7 +16,7 @@ namespace wbc{
  * inequality lb <= Ax <= ub
  * bounds lb <= x <= ub
  */
-class HardConstraint{
+class Constraint{
 public:
 
     enum Type {
@@ -25,7 +25,7 @@ public:
       bounds = 2
     };
 
-    virtual ~HardConstraint() = default;
+    virtual ~Constraint() = default;
 
     /** @brief Update constraint matrix and vectors, depending on the type. Abstract method. */
     virtual void update(RobotModelPtr robot_model) = 0;
@@ -51,10 +51,10 @@ public:
 protected:
 
     /** @brief Default constructor */
-    HardConstraint();
+    Constraint();
 
     /** @brief Constructor. Initialiye the type of this constraint */
-    HardConstraint(Type type);
+    Constraint(Type type);
 
     Type c_type;
 
@@ -71,7 +71,7 @@ protected:
     base::VectorXd ub_vec;
 
 };
-typedef std::shared_ptr<HardConstraint> HardConstraintPtr;
+typedef std::shared_ptr<Constraint> ConstraintPtr;
 
 } // namespace wbc
 #endif
