@@ -19,8 +19,8 @@ base::NamedVector<double> toNamedVector(const wbc::JointWeights &weights){
     return weights_out;
 }
 
-base::NamedVector<wbc::ConstraintStatus> toNamedVector(const wbc::ConstraintsStatus& status_in){
-    base::NamedVector<wbc::ConstraintStatus> status_out;
+base::NamedVector<wbc::TaskStatus> toNamedVector(const wbc::ConstraintsStatus& status_in){
+    base::NamedVector<wbc::TaskStatus> status_out;
     status_out.elements = status_in.elements;
     status_out.names = status_in.names;
     return status_out;
@@ -57,7 +57,7 @@ base::NamedVector<double> VelocityScene::getActuatedJointWeights2(){
 base::NamedVector<base::JointState> VelocityScene::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::VelocityScene::solve(hqp));
 }
-base::NamedVector<wbc::ConstraintStatus> VelocityScene::updateConstraintsStatus2(){
+base::NamedVector<wbc::TaskStatus> VelocityScene::updateConstraintsStatus2(){
     return toNamedVector(wbc::VelocityScene::updateConstraintsStatus());
 }
 
@@ -82,7 +82,7 @@ base::NamedVector<double> VelocitySceneQuadraticCost::getActuatedJointWeights2()
 base::NamedVector<base::JointState> VelocitySceneQuadraticCost::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::VelocitySceneQuadraticCost::solve(hqp));
 }
-base::NamedVector<wbc::ConstraintStatus> VelocitySceneQuadraticCost::updateConstraintsStatus2(){
+base::NamedVector<wbc::TaskStatus> VelocitySceneQuadraticCost::updateConstraintsStatus2(){
     return toNamedVector(wbc::VelocitySceneQuadraticCost::updateConstraintsStatus());
 }
 
@@ -107,7 +107,7 @@ base::NamedVector<double> AccelerationSceneTSID::getActuatedJointWeights2(){
 base::NamedVector<base::JointState> AccelerationSceneTSID::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::AccelerationSceneTSID::solve(hqp));
 }
-base::NamedVector<wbc::ConstraintStatus> AccelerationSceneTSID::updateConstraintsStatus2(){
+base::NamedVector<wbc::TaskStatus> AccelerationSceneTSID::updateConstraintsStatus2(){
     return toNamedVector(wbc::AccelerationSceneTSID::updateConstraintsStatus());
 }
 base::NamedVector<base::Wrench> AccelerationSceneTSID::getContactWrenches(){

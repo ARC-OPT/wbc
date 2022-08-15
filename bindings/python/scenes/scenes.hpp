@@ -23,7 +23,7 @@ public:
     base::NamedVector<double> getJointWeights2();
     base::NamedVector<double> getActuatedJointWeights2();
     base::NamedVector<base::JointState> solve2(const wbc::HierarchicalQP &hqp);
-    base::NamedVector<wbc::ConstraintStatus> updateConstraintsStatus2();
+    base::NamedVector<wbc::TaskStatus> updateConstraintsStatus2();
 };
 
 class VelocitySceneQuadraticCost : public wbc::VelocitySceneQuadraticCost{
@@ -35,7 +35,7 @@ public:
     base::NamedVector<double> getJointWeights2();
     base::NamedVector<double> getActuatedJointWeights2();
     base::NamedVector<base::JointState> solve2(const wbc::HierarchicalQP &hqp);
-    base::NamedVector<wbc::ConstraintStatus> updateConstraintsStatus2();
+    base::NamedVector<wbc::TaskStatus> updateConstraintsStatus2();
 };
 
 class AccelerationSceneTSID : public wbc::AccelerationSceneTSID{
@@ -47,7 +47,7 @@ public:
     base::NamedVector<double> getJointWeights2();
     base::NamedVector<double> getActuatedJointWeights2();
     base::NamedVector<base::JointState> solve2(const wbc::HierarchicalQP &hqp);
-    base::NamedVector<wbc::ConstraintStatus> updateConstraintsStatus2();
+    base::NamedVector<wbc::TaskStatus> updateConstraintsStatus2();
     base::NamedVector<base::Wrench> getContactWrenches();
 };
 
