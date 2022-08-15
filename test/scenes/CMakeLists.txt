@@ -19,3 +19,12 @@ target_link_libraries(test_acceleration_scene
                       wbc-solvers-qpoases
                       ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 
+add_executable(test_acceleration_scene_tsid test_acceleration_scene_tsid.cpp ../suite.cpp)
+target_link_libraries(test_acceleration_scene_tsid
+                      wbc-scenes
+                      wbc-robot_models-kdl
+                      wbc-solvers-qpoases
+                      ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
+
+
+

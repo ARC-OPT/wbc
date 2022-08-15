@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "robot_models/kdl/RobotModelKDL.hpp"
-#include "scenes/VelocitySceneQuadraticCost.hpp"
+#include "scenes/AccelerationSceneTSID.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
 
 using namespace std;
@@ -9,7 +9,7 @@ using namespace wbc;
 BOOST_AUTO_TEST_CASE(simple_test){
 
     /**
-     * Check if the WBC scene computes the correct result, i.e., if the reference spatial velocity matches the solver output, back-projected to Cartesian space
+     * Check if the WBC scene computes the correct result, i.e., if the reference spatial acceleration matches the solver output, back-projected to Cartesian space
      */
 
     // Configure Robot model
@@ -60,23 +60,21 @@ BOOST_AUTO_TEST_CASE(simple_test){
     cart_constraint.weights = {1,1,1,1,1,1};
     cart_constraint.priority = 0;
     cart_constraint.activation = 1;
-    VelocitySceneQuadraticCost wbc_scene(robot_model, solver);
+    AccelerationSceneTSID wbc_scene(robot_model, solver);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), true);
 
     // Set random Reference
     base::samples::RigidBodyStateSE3 ref;
     srand (time(NULL));
-    ref.twist.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
-    ref.twist.angular = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
+    ref.acceleration.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
+    ref.acceleration.angular = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
     BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_constraint.name, ref));
 
     // Solve
     BOOST_CHECK_NO_THROW(wbc_scene.update());
     HierarchicalQP qp;
     wbc_scene.getHierarchicalQP(qp);
-    qp[0].lower_x.resize(0);
-    qp[0].upper_x.resize(0);
-    BOOST_CHECK_NO_THROW(wbc_scene.solve(qp));
+    wbc_scene.solve(qp);
     base::commands::Joints solver_output = wbc_scene.getSolverOutput();
 
     // Check
@@ -84,6 +82,6 @@ BOOST_AUTO_TEST_CASE(simple_test){
     ConstraintsStatus status = wbc_scene.getConstraintsStatus();
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-3);
-        BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i+3]) < 1e-3);
+        BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i]) < 1e3);
     }
 }
