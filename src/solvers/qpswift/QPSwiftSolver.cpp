@@ -8,7 +8,7 @@ QPSolverRegistry<QPSwiftSolver> QPSwiftSolver::reg("qpswift");
 
 QPSwiftSolver::QPSwiftSolver(){
     my_qp = 0;
-    max_iter = 100;
+    max_iter = 1000;
     rel_tol = 1e-6;
     abs_tol = 1e-6;
     sigma = 100;

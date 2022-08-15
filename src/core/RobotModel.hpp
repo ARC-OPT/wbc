@@ -10,6 +10,7 @@
 #include <base/samples/Wrenches.hpp>
 #include <base/commands/Joints.hpp>
 #include "RobotModelConfig.hpp"
+#include <urdf_world/world.h>
 
 namespace wbc{
 
@@ -20,9 +21,10 @@ std::vector<std::string> operator+(std::vector<std::string> a, std::vector<std::
  */
 class RobotModel{
 protected:
-    void updateFloatingBase(const base::samples::RigidBodyStateSE3& rbs,
-                            const std::vector<std::string> &floating_base_virtual_joint_names,
-                            base::samples::Joints& joint_state);
+    void clear();
+
+    /** ID of kinematic chain given root and tip*/
+    const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
     std::vector<std::string> contact_points;
     ActiveContacts active_contacts;
@@ -31,6 +33,29 @@ protected:
     base::samples::Wrenches contact_wrenches;
     RobotModelConfig robot_model_config;
     std::string world_frame, base_frame;
+    base::JointLimits joint_limits;
+    std::vector<std::string> actuated_joint_names;
+    std::vector<std::string> independent_joint_names;
+    std::vector<std::string> joint_names;
+    std::vector<std::string> joint_names_floating_base;
+    urdf::ModelInterfaceSharedPtr robot_urdf;
+    bool has_floating_base;
+    base::samples::Joints joint_state;
+    base::MatrixXd joint_space_inertia_mat;
+    base::MatrixXd com_jac;
+    base::VectorXd bias_forces;
+    base::Acceleration spatial_acc_bias;
+    base::MatrixXd selection_matrix;
+    base::samples::RigidBodyStateSE3 com_rbs;
+    base::samples::RigidBodyStateSE3 rbs;
+
+    typedef std::map<std::string, base::MatrixXd > JacobianMap;
+    JacobianMap space_jac_map;
+    JacobianMap body_jac_map;
+    JacobianMap jac_dot_map;
+
+    // Helper
+    base::samples::Joints joint_state_out;
 
 public:
     RobotModel();
@@ -52,7 +77,10 @@ public:
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3()) = 0;
 
     /** Returns the current status of the given joint names */
-    virtual const base::samples::Joints& jointState(const std::vector<std::string> &joint_names) = 0;
+    const base::samples::Joints& jointState(const std::vector<std::string> &joint_names);
+
+    /** Return entire system state*/
+    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd) = 0;
 
     /** Returns the pose, twist and spatial acceleration between the two given frames. All quantities are defined in root_frame coordinates*/
     virtual const base::samples::RigidBodyStateSE3 &rigidBodyState(const std::string &root_frame, const std::string &tip_frame) = 0;
@@ -103,39 +131,39 @@ public:
     virtual const base::VectorXd &biasForces() = 0;
 
     /** @brief Return all joint names*/
-    virtual const std::vector<std::string>& jointNames() = 0;
+    const std::vector<std::string>& jointNames(){return joint_names;}
 
     /** @brief Return only actuated joint names*/
-    virtual  const std::vector<std::string>& actuatedJointNames() = 0;
+    const std::vector<std::string>& actuatedJointNames(){return actuated_joint_names;}
 
     /** @brief Return only independent joint names*/
-    virtual  const std::vector<std::string>& independentJointNames() = 0;
+    const std::vector<std::string>& independentJointNames(){return independent_joint_names;}
 
     /** @brief Get index of joint name*/
-    virtual uint jointIndex(const std::string &joint_name) = 0;
+    uint jointIndex(const std::string &joint_name);
 
     /** @brief Get the base frame of the robot*/
-    virtual const std::string& baseFrame(){return base_frame;}
+    const std::string& baseFrame(){return base_frame;}
 
     /** @brief Get the world frame id*/
-    virtual const std::string& worldFrame(){return world_frame;}
+    const std::string& worldFrame(){return world_frame;}
 
     /** @brief Return current joint limits*/
-    virtual const base::JointLimits& jointLimits() = 0;
+    const base::JointLimits& jointLimits(){return joint_limits;}
+
+    /** @brief Return True if given link name is available in robot model, false otherwise*/
+    bool hasLink(const std::string& link_name);
+
+    /** @brief Return True if given joint name is available in robot model, false otherwise*/
+    bool hasJoint(const std::string& joint_name);
+
+    /** @brief Return True if given joint name is an actuated joint in robot model, false otherwise*/
+    bool hasActuatedJoint(const std::string& joint_name);
 
     /** @brief Return current selection matrix S that maps complete joint vector to actuated joint vector: q_a = S * q. The matrix
       * consists of only zeros and ones. Size is na x nq, where na is the number of actuated joints and
       * nq the total number of joints. */
-    virtual const base::MatrixXd& selectionMatrix() = 0;
-
-    /** @brief Return True if given link name is available in robot model, false otherwise*/
-    virtual bool hasLink(const std::string& link_name) = 0;
-
-    /** @brief Return True if given joint name is available in robot model, false otherwise*/
-    virtual bool hasJoint(const std::string& joint_name) = 0;
-
-    /** @brief Return True if given joint name is an actuated joint in robot model, false otherwise*/
-    virtual bool hasActuatedJoint(const std::string& joint_name) = 0;
+    const base::MatrixXd& selectionMatrix(){return selection_matrix;}
 
     /** @brief Compute and return center of mass expressed in base frame*/
     virtual const base::samples::RigidBodyStateSE3& centerOfMass() = 0;
@@ -166,6 +194,9 @@ public:
 
     /** @brief Get current robot model config*/
     const RobotModelConfig& getRobotModelConfig(){return robot_model_config;}
+
+    /** @brief Is floating base robot?*/
+    bool hasFloatingBase(){return has_floating_base;}
 
 };
 typedef std::shared_ptr<RobotModel> RobotModelPtr;

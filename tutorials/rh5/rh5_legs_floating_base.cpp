@@ -58,15 +58,7 @@ int main(){
     floating_base_state.time = base::Time::now();
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
-    config.joint_names = {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
-                          "floating_base_rot_x",   "floating_base_rot_y",   "floating_base_rot_z",
-                          "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch",
-                          "LRHip1", "LRHip2", "LRHip3", "LRKnee", "LRAnkleRoll", "LRAnklePitch"};
-    config.actuated_joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch",
-                                   "LRHip1", "LRHip2", "LRHip3", "LRKnee", "LRAnkleRoll", "LRAnklePitch"};
     config.floating_base = true;
-    config.world_frame_id = "world";
-    config.floating_base_state = floating_base_state;
     config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
     config.contact_points.elements = {1,1};
     if(!robot_model->configure(config))

@@ -12,6 +12,7 @@
 #include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
 #include <kdl/chainjnttojacdotsolver.hpp>
+#include <map>
 
 namespace base{
     namespace samples{
@@ -35,7 +36,7 @@ public:
      * @brief Update all joints of the kinematic chain
      * @param joint_state Has to contain at least all joints that are included in the kinematic chain. Each entry has to have a valid position, velocity and acceleration
      */
-    void update(const base::samples::Joints& joint_state);
+    void update(const KDL::JntArray& q, const KDL::JntArray& qd, const KDL::JntArray& qdd, std::map<std::string,int> joint_idx_map);
     /** Convert and return current Cartesian state*/
     const base::samples::RigidBodyStateSE3& rigidBodyState();
 
@@ -64,7 +65,7 @@ public:
     std::string root_frame;                          /** UID of the kinematics chain root link*/
     std::string tip_frame;                           /** UID of the kinematics chain tip link*/
     base::Time stamp;
-    bool has_acceleration, space_jacobian_is_up_to_date, body_jacobian_is_up_to_date, jac_dot_is_up_to_date;
+    bool has_acceleration, space_jacobian_is_up_to_date, body_jacobian_is_up_to_date, jac_dot_is_up_to_date, fk_is_up_to_date;
     std::shared_ptr<KDL::ChainJntToJacSolver> jac_solver;
     std::shared_ptr<KDL::ChainFkSolverVel_recursive> fk_solver_vel;
     std::shared_ptr<KDL::ChainJntToJacDotSolver> jac_dot_solver;

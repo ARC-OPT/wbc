@@ -7,7 +7,6 @@ add_compile_options(-std=c++11)
 set(PROJECT_VERSION 0.2)
 set(API_VERSION ${PROJECT_VERSION})
 
-include_directories(${PROJECT_SOURCE_DIR}/src)
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 
 

@@ -3,23 +3,16 @@ set(TARGET_NAME wbc-scenes)
 file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/scenes "*.cpp")
 file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/scenes "*.hpp")
 
-pkg_search_module(base-types REQUIRED base-types)
-list(APPEND PKGCONFIG_REQUIRES base-types)
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
 list(APPEND PKGCONFIG_REQUIRES wbc-tasks)
 list(APPEND PKGCONFIG_REQUIRES wbc-constraints)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
-include_directories(${base-types_INCLUDE_DIRS})
-link_directories(${base-types_LIBRARY_DIRS})
-
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
-target_link_libraries(${TARGET_NAME}
+target_link_libraries(${TARGET_NAME} PUBLIC
                       wbc-core
                       wbc-tasks
-                      wbc-constraints
-                      wbc-tools
-                      ${base-types_LIBRARIES})
+                      wbc-constraints)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}

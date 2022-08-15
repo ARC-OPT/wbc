@@ -963,7 +963,7 @@
     <child link="CameraTorso_Link"/>
   </joint>
   <link name="CameraTorso_Link"/>
-  <joint name="GLF1Gear" type="revolute">
+  <joint name="GLF1Gear" type="fixed">
     <origin xyz="0.0 0.0 0.053" rpy="1.2885 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF1ProximalSegment_Link"/>
@@ -987,7 +987,7 @@
       </material>
     </visual>
   </link>
-  <joint name="GLF1ProximalSegment" type="revolute">
+  <joint name="GLF1ProximalSegment" type="fixed">
     <origin xyz="-0.031453 -0.028781 0.079387" rpy="0.6664 0.1664 -1.533593"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="ALWristFT_Link"/>
@@ -1016,7 +1016,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GLF1TopSegment" type="revolute">
+  <joint name="GLF1TopSegment" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF1Gear_Link"/>
@@ -1045,7 +1045,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GLF2Gear" type="revolute">
+  <joint name="GLF2Gear" type="fixed">
     <origin xyz="0.0 0.0 0.053" rpy="1.2885 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF2ProximalSegment_Link"/>
@@ -1069,7 +1069,7 @@
       </material>
     </visual>
   </link>
-  <joint name="GLF2ProximalSegment" type="revolute">
+  <joint name="GLF2ProximalSegment" type="fixed">
     <origin xyz="-0.031632 0.027073 0.080199" rpy="0.665 -0.12478 -1.598593"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="ALWristFT_Link"/>
@@ -1098,7 +1098,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GLF2TopSegment" type="revolute">
+  <joint name="GLF2TopSegment" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF2Gear_Link"/>
@@ -1127,7 +1127,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GLF3Gear" type="revolute">
+  <joint name="GLF3Gear" type="fixed">
     <origin xyz="0.0 0.0 0.053" rpy="1.2885 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF3ProximalSegment_Link"/>
@@ -1151,7 +1151,7 @@
       </material>
     </visual>
   </link>
-  <joint name="GLF3ProximalSegment" type="revolute">
+  <joint name="GLF3ProximalSegment" type="fixed">
     <origin xyz="-0.030665 0.061788 0.075843" rpy="0.665 -0.124785 -1.598609"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="ALWristFT_Link"/>
@@ -1180,7 +1180,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GLF3TopSegment" type="revolute">
+  <joint name="GLF3TopSegment" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF3Gear_Link"/>
@@ -1209,7 +1209,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GLF4Gear" type="revolute">
+  <joint name="GLF4Gear" type="fixed">
     <origin xyz="0.0 0.0 0.053" rpy="1.2885 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF4ProximalSegment_Link"/>
@@ -1233,7 +1233,7 @@
       </material>
     </visual>
   </link>
-  <joint name="GLF4ProximalSegment" type="revolute">
+  <joint name="GLF4ProximalSegment" type="fixed">
     <origin xyz="-0.029562 5e-05 0.04035" rpy="0.6633 0.0 -1.570801"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLThumb_Link"/>
@@ -1262,7 +1262,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GLF4TopSegment" type="revolute">
+  <joint name="GLF4TopSegment" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GLF4Gear_Link"/>
@@ -1303,7 +1303,7 @@
       <inertia ixx="1e-05" ixy="0.0" ixz="0.0" iyy="1e-05" iyz="0.0" izz="1e-05"/>
     </inertial>
   </link>
-  <joint name="GLThumb" type="revolute">
+  <joint name="GLThumb" type="fixed">
     <origin xyz="0.019161 -0.002327 0.042" rpy="0.0 0.0 -3.141592"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="ALWristFT_Link"/>
@@ -1350,7 +1350,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GRF1Gear" type="revolute">
+  <joint name="GRF1Gear" type="fixed">
     <origin xyz="0.0 0.0 0.053" rpy="1.2885 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GRF1ProximalSegment_Link"/>
@@ -1374,7 +1374,7 @@
       </material>
     </visual>
   </link>
-  <joint name="GRF1ProximalSegment" type="revolute">
+  <joint name="GRF1ProximalSegment" type="fixed">
     <origin xyz="0.039291 -4.9e-05 0.077141" rpy="0.6633 0.0 1.570793"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="ARWristFT_Link"/>
@@ -1403,7 +1403,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GRF1TopSegment" type="revolute">
+  <joint name="GRF1TopSegment" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GRF1Gear_Link"/>
@@ -1432,7 +1432,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GRF2Gear" type="revolute">
+  <joint name="GRF2Gear" type="fixed">
     <origin xyz="0.0 0.0 0.053" rpy="1.2885 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GRF2ProximalSegment_Link"/>
@@ -1456,7 +1456,7 @@
       </material>
     </visual>
   </link>
-  <joint name="GRF2ProximalSegment" type="revolute">
+  <joint name="GRF2ProximalSegment" type="fixed">
     <origin xyz="-0.039316 5.4e-05 0.077141" rpy="0.6633 0.0 -1.570793"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="ARWristFT_Link"/>
@@ -1485,7 +1485,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="GRF2TopSegment" type="revolute">
+  <joint name="GRF2TopSegment" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="GRF2Gear_Link"/>
@@ -1580,7 +1580,7 @@
       </geometry>
     </collision>
   </link>
-  <joint name="HeadPitch" type="revolute">
+  <joint name="HeadPitch" type="fixed">
     <origin xyz="0.15925 0.0 0.0" rpy="0.0 0.0 -1.5708"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="HeadBase_Link"/>
@@ -1603,7 +1603,7 @@
       </material>
     </visual>
   </link>
-  <joint name="HeadRoll" type="revolute">
+  <joint name="HeadRoll" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="-1.5708 -1.5708 0.0"/>
     <axis xyz="-1.0 0.0 0.0"/>
     <parent link="HeadPitch_Link"/>
@@ -1626,7 +1626,7 @@
       </material>
     </visual>
   </link>
-  <joint name="HeadYaw" type="revolute">
+  <joint name="HeadYaw" type="fixed">
     <origin xyz="0.0 0.0 0.0" rpy="1.5708 -1.5708 0.0"/>
     <axis xyz="1.0 0.0 0.0"/>
     <parent link="HeadRoll_Link"/>

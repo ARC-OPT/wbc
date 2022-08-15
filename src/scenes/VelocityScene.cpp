@@ -91,8 +91,10 @@ const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
-        if(base::isNaN(solver_output[idx]))
+        if(base::isNaN(solver_output[idx])){
+            hqp[0].print();
             throw std::runtime_error("Solver output (speed) for joint " + name + " is NaN");
+        }
         solver_output_joints[name].speed = solver_output[idx];
     }
 

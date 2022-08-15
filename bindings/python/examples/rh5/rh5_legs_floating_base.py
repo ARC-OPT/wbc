@@ -16,23 +16,17 @@ floating_base_state.acceleration.linear = floating_base_state.acceleration.angul
 robot_model=RobotModelHyrodyn()
 r=RobotModelConfig()
 r.file="../../../../models/rh5/urdf/rh5_legs.urdf"
-r.submechanism_file="../../../../models/rh5/hyrodyn/rh5_legs_floating_base.yml"
-r.joint_names = ["floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
-                 "floating_base_rot_x",   "floating_base_rot_y",   "floating_base_rot_z",
-                 "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch",
-                 "LRHip1", "LRHip2", "LRHip3", "LRKnee", "LRAnkleRoll", "LRAnklePitch"]
-r.actuated_joint_names = ["LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch",
-                          "LRHip1", "LRHip2", "LRHip3", "LRKnee", "LRAnkleRoll", "LRAnklePitch"]
+r.submechanism_file="../../../../models/rh5/hyrodyn/rh5_legs.yml"
 r.floating_base = True
-r.floating_base_state.pose = floating_base_state.pose
-r.floating_base_state.twist = floating_base_state.twist
-r.floating_base_state.acceleration = floating_base_state.acceleration
-r.world_frame = "world"
-r.contact_points = ["LLAnkle_FT", "LRAnkle_FT"]
+r.type = "hyrodyn"
+a = ActiveContacts()
+a.names = ["LLAnkle_FT", "LRAnkle_FT"]
+a.elements = [1,1]
+r.contact_points = a
 if robot_model.configure(r) == False:
     print("Failed to configure robot model")
     exit(0)
-
+    
 # Create solver
 solver = QPOASESSolver()
 solver.setMaxNoWSR(100)

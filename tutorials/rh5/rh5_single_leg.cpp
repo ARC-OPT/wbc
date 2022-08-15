@@ -46,15 +46,13 @@ int main(){
     // In this case, there are not parallel structure, since we use the abstract model
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
-    config.joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"};
-    config.actuated_joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"};
     config.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
     if(!robot_model->configure(config))
         return -1;
 
     // Independent joint names. Since the model is serial and we don' t have a floating base:
     // actuated joints == independend joints == all joints
-    vector<string> ind_joint_names = config.joint_names;
+    vector<string> ind_joint_names = {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"};
 
     // Configure solver, use QPOASES in this case
     QPSolverPtr solver = make_shared<QPOASESSolver>();
