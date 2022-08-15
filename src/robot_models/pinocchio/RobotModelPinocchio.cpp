@@ -63,14 +63,24 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
         world_frame = robot_urdf->getRoot()->name;
     }
 
-    // 4. Create data structures
-
     joint_names = model.names;
     joint_names.erase(joint_names.begin()); // Erase global joint 'universe' which is added by Pinocchio
     if(has_floating_base)
         joint_names.erase(joint_names.begin()); // Erase 'floating_base' root joint
     actuated_joint_names = joint_names;
     joint_names = independent_joint_names = joint_names_floating_base + joint_names;
+
+    // 2. Verify consistency of URDF and config
+
+    // All contact point have to be a valid link in the robot URDF
+    for(auto c : cfg.contact_points.names){
+        if(!hasLink(c)){
+            LOG_ERROR("Contact point %s is not a valid link in the robot model", c.c_str());
+            return false;
+        }
+    }
+
+    // 3. Create data structures
 
     // Joint order in q,qd,qdd:
     //
@@ -87,13 +97,18 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     qd.resize(model.nv);
     qdd.resize(model.nv);
 
-    joint_state.resize(noOfActuatedJoints());
-    joint_state.names = actuatedJointNames();
+    joint_state.resize(joint_names.size());
+    joint_state.names = joint_names;
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
     selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
     selection_matrix.setZero();
+    for(int i = 0; i < actuated_joint_names.size(); i++)
+        selection_matrix(i, jointIndex(actuated_joint_names[i])) = 1.0;
+
+    contact_points = cfg.contact_points.names;
+    active_contacts = cfg.contact_points;
 
     LOG_DEBUG("------------------- WBC RobotModelPinocchio -----------------");
     LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
@@ -127,9 +142,11 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
-    joint_state = joint_state_in;
+    for(auto n : actuated_joint_names)
+        joint_state[n] = joint_state_in[n];
+    joint_state.time = joint_state_in.time;
 
-    if(has_floating_base){        
+    if(has_floating_base){
         if(!floating_base_state_in.hasValidPose() ||
            !floating_base_state_in.hasValidTwist() ||
            !floating_base_state_in.hasValidAcceleration()){
@@ -152,12 +169,14 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
         base::Acceleration fb_acc = floating_base_state.acceleration;
         fb_acc.linear = fb_rot.transpose() * floating_base_state.acceleration.linear;
 
+        base::Vector3d euler = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         for(int i = 0; i < 3; i++){
-            q[i] = floating_base_state.pose.position[i];
-            qd[i] = fb_twist.linear[i];
-            qd[i+3] = fb_twist.angular[i];
-            qdd[i] = fb_acc.linear[i];
-            qdd[i+3] = fb_acc.angular[i];
+            q[i]     = joint_state[joint_names_floating_base[i]].position       = floating_base_state.pose.position[i];
+            joint_state[joint_names_floating_base[i+3]].position = euler(i);
+            qd[i]    = joint_state[joint_names_floating_base[i]].speed          = fb_twist.linear[i];
+            qd[i+3]  = joint_state[joint_names_floating_base[i+3]].speed        = fb_twist.angular[i];
+            qdd[i]   = joint_state[joint_names_floating_base[i]].acceleration   = fb_acc.linear[i];
+            qdd[i+3] = joint_state[joint_names_floating_base[i+3]].acceleration = fb_acc.angular[i];
         }
         q[3] = floating_base_state.pose.orientation.x();
         q[4] = floating_base_state.pose.orientation.y();
@@ -176,6 +195,8 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
             qd[model.getJointId(name)-2+6]  = state.speed;        // first 6 elements in q are floating base twist
             qdd[model.getJointId(name)-2+6] = state.acceleration; // first 6 elements in q are floating base acceleration
         }
+        if(floating_base_state.time > joint_state.time)
+            joint_state.time = floating_base_state.time;
     }
     else{
         for(auto name : actuated_joint_names){

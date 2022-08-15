@@ -30,12 +30,13 @@ public:
     }
 };
 
-wbc::RobotModelConfig toRobotModelConfig(wbc_py::RobotModelConfig cfg_in){
+wbc::RobotModelConfig toRobotModelConfig(RobotModelConfig cfg_in){
     RobotModelConfig cfg = cfg_in;
     return cfg;
 }
-wbc_py::RobotModelConfig fromRobotModelConfig(wbc::RobotModelConfig cfg_in){
-    wbc_py::RobotModelConfig cfg;
+
+RobotModelConfig fromRobotModelConfig(wbc::RobotModelConfig cfg_in){
+    RobotModelConfig cfg;
     cfg.file = cfg_in.file;
     cfg.submechanism_file = cfg_in.submechanism_file;
     cfg.floating_base = cfg_in.floating_base;

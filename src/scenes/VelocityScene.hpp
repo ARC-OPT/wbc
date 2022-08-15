@@ -24,7 +24,7 @@ namespace wbc{
  */
 class VelocityScene : public WbcScene{
 protected:
-    base::VectorXd solver_output, robot_vel;
+    base::VectorXd solver_output, q, qd, qdd;
     bool compute_id;
 
     /**
