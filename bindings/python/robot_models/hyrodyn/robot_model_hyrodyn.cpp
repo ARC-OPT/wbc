@@ -27,7 +27,7 @@ base::NamedVector<base::JointLimitRange> RobotModelHyrodyn::jointLimits2(){
     return fromJointLimits(wbc::RobotModelHyrodyn::jointLimits());
 }
 wbc_py::RobotModelConfig RobotModelHyrodyn::getRobotModelConfig(){
-    return fromRobotModelConfig(RobotModelHyrodyn::getRobotModelConfig());
+    return fromRobotModelConfig(wbc::RobotModelHyrodyn::getRobotModelConfig());
 }
 
 

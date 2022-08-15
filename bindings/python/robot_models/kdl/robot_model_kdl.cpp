@@ -28,7 +28,7 @@ base::NamedVector<base::JointLimitRange> RobotModelKDL::jointLimits2(){
     return fromJointLimits(wbc::RobotModelKDL::jointLimits());
 }
 wbc_py::RobotModelConfig RobotModelKDL::getRobotModelConfig(){
-    return fromRobotModelConfig(RobotModelKDL::getRobotModelConfig());
+    return fromRobotModelConfig(wbc::RobotModelKDL::getRobotModelConfig());
 }
 
 }
