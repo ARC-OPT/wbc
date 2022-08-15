@@ -4,11 +4,11 @@
 
 namespace wbc{
 
-Constraint::Constraint(){
+Task::Task(){
 
 }
 
-Constraint::Constraint(const TaskConfig& _config, uint n_robot_joints) :
+Task::Task(const TaskConfig& _config, uint n_robot_joints) :
     config(_config){
 
     unsigned int no_variables = config.nVariables();
@@ -23,11 +23,11 @@ Constraint::Constraint(const TaskConfig& _config, uint n_robot_joints) :
     reset();
 }
 
-Constraint::~Constraint(){
+Task::~Task(){
 
 }
 
-void Constraint::reset(){
+void Task::reset(){
 
     unsigned int no_variables = config.nVariables();
 
@@ -45,13 +45,13 @@ void Constraint::reset(){
     time.microseconds = 0;
 }
 
-void Constraint::checkTimeout(){
+void Task::checkTimeout(){
     timeout = (int)time.isNull(); // If there has never been a reference value, set the task to timeout
     if(config.timeout > 0)
         timeout = (int)(base::Time::now() - time).toSeconds() > config.timeout;
 }
 
-void Constraint::setWeights(const base::VectorXd& weights){
+void Task::setWeights(const base::VectorXd& weights){
     if(config.nVariables() != weights.size()){
         LOG_ERROR("Task %s: Size of weight vector should be %i but is %i", config.name.c_str(), config.nVariables(), weights.size())
         throw std::invalid_argument("Invalid task weights");
@@ -66,7 +66,7 @@ void Constraint::setWeights(const base::VectorXd& weights){
     this->weights = weights;
 }
 
-void Constraint::setActivation(const double activation){
+void Task::setActivation(const double activation){
     if(activation < 0 || activation > 1){
         LOG_ERROR("Task %s: Activation has to be between 0 and 1 but is %f", config.name.c_str(), activation);
         throw std::invalid_argument("Invalid task activation");

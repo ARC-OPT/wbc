@@ -17,37 +17,37 @@ class VelocityScene : public wbc::VelocityScene{
 public:
     VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<HierarchicalLSSolver> solver);
     VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver);
-    void setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref);
-    void setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref);
+    void setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref);
+    void setCartReference(const std::string& task_name, const base::samples::RigidBodyStateSE3& ref);
     void setJointWeights(const base::NamedVector<double> &weights);
     base::NamedVector<double> getJointWeights2();
     base::NamedVector<double> getActuatedJointWeights2();
     base::NamedVector<base::JointState> solve2(const wbc::HierarchicalQP &hqp);
-    base::NamedVector<wbc::TaskStatus> updateConstraintsStatus2();
+    base::NamedVector<wbc::TaskStatus> updateTasksStatus2();
 };
 
 class VelocitySceneQuadraticCost : public wbc::VelocitySceneQuadraticCost{
 public:
     VelocitySceneQuadraticCost(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver);
-    void setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref);
-    void setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref);
+    void setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref);
+    void setCartReference(const std::string& task_name, const base::samples::RigidBodyStateSE3& ref);
     void setJointWeights(const base::NamedVector<double> &weights);
     base::NamedVector<double> getJointWeights2();
     base::NamedVector<double> getActuatedJointWeights2();
     base::NamedVector<base::JointState> solve2(const wbc::HierarchicalQP &hqp);
-    base::NamedVector<wbc::TaskStatus> updateConstraintsStatus2();
+    base::NamedVector<wbc::TaskStatus> updateTasksStatus2();
 };
 
 class AccelerationSceneTSID : public wbc::AccelerationSceneTSID{
 public:
     AccelerationSceneTSID(std::shared_ptr<RobotModelHyrodyn> robot_model, std::shared_ptr<QPOASESSolver> solver);
-    void setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref);
-    void setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref);
+    void setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref);
+    void setCartReference(const std::string& task_name, const base::samples::RigidBodyStateSE3& ref);
     void setJointWeights(const base::NamedVector<double> &weights);
     base::NamedVector<double> getJointWeights2();
     base::NamedVector<double> getActuatedJointWeights2();
     base::NamedVector<base::JointState> solve2(const wbc::HierarchicalQP &hqp);
-    base::NamedVector<wbc::TaskStatus> updateConstraintsStatus2();
+    base::NamedVector<wbc::TaskStatus> updateTasksStatus2();
     base::NamedVector<base::Wrench> getContactWrenches();
 };
 
