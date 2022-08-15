@@ -149,11 +149,7 @@ const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
 
 const ConstraintsStatus& VelocityScene::updateConstraintsStatus(){
 
-    robot_vel.resize(robot_model->noOfJoints());
-    uint nj = robot_model->noOfJoints();
-    const base::samples::Joints &joint_state = robot_model->jointState(robot_model->jointNames());
-    for(size_t i = 0; i < nj; i++)
-        robot_vel(i) = joint_state[i].speed;
+    robot_model->systemState(q,qd,qdd);
 
     for(uint prio = 0; prio < constraints.size(); prio++){
         for(uint i = 0; i < constraints[prio].size(); i++){
@@ -167,7 +163,7 @@ const ConstraintsStatus& VelocityScene::updateConstraintsStatus(){
             constraints_status[name].weights    = constraint->weights;
             constraints_status[name].y_ref      = constraint->y_ref;
             constraints_status[name].y_solution = constraint->A * solver_output;
-            constraints_status[name].y          = constraint->A * robot_vel;
+            constraints_status[name].y          = constraint->A * qd;
         }
     }
 
