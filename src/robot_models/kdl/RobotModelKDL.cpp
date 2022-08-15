@@ -62,8 +62,8 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
 
     joint_names = independent_joint_names = joint_names_floating_base + joint_names_urdf;
     actuated_joint_names = joint_names_urdf;
-    joint_state.elements.resize(actuated_joint_names.size());
-    joint_state.names = actuated_joint_names;
+    joint_state.elements.resize(joint_names.size());
+    joint_state.names = joint_names;
 
     // 2. Verify consistency of URDF and config
 
@@ -153,6 +153,10 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
+    for(auto n : actuated_joint_names)
+        joint_state[n] = joint_state_in[n];
+    joint_state.time = joint_state_in.time;
+
     // Update floating base if available
     if(has_floating_base){
         if(!_floating_base_state.hasValidPose() ||
@@ -168,14 +172,16 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state_in,
         floating_base_state = _floating_base_state;
         base::Vector3d euler = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         for(int i = 0; i < 3; i++){
-            q(i) = floating_base_state.pose.position(i);
-            qd(i) = floating_base_state.twist.linear(i);
-            qdd(i) = floating_base_state.acceleration.linear(i);
+            q(i)   = joint_state[joint_names_floating_base[i]].position     = floating_base_state.pose.position(i);
+            qd(i)  = joint_state[joint_names_floating_base[i]].speed        = floating_base_state.twist.linear(i);
+            qdd(i) = joint_state[joint_names_floating_base[i]].acceleration = floating_base_state.acceleration.linear(i);
 
-            q(i+3) = euler(i);
-            qd(i+3) = floating_base_state.twist.angular(i);
-            qdd(i+3) = floating_base_state.acceleration.angular(i);
+            q(i+3)   = joint_state[joint_names_floating_base[i+3]].position     = euler(i);
+            qd(i+3)  = joint_state[joint_names_floating_base[i+3]].speed        = floating_base_state.twist.angular(i);
+            qdd(i+3) = joint_state[joint_names_floating_base[i+3]].acceleration = floating_base_state.acceleration.angular(i);
         }
+        if(floating_base_state.time > joint_state.time)
+            joint_state.time = floating_base_state.time;
     }
 
     // Update actuated joints
@@ -192,8 +198,6 @@ void RobotModelKDL::update(const base::samples::Joints& joint_state_in,
         qd(idx) = state.speed;
         qdd(idx) = state.acceleration;
     }
-
-    joint_state = joint_state_in;
 
     for(auto c : kdl_chain_map)
         c.second->update(q,qd,qdd,joint_idx_map_kdl);

@@ -63,8 +63,8 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
 
     // 3. Create data structures
 
-    joint_state.names = actuated_joint_names;
-    joint_state.elements.resize(actuated_joint_names.size());
+    joint_state.resize(joint_names.size());
+    joint_state.names = joint_names;
 
     // Fixed base: If the robot has N dof, q_size = qd_size = N
     // Floating base: If the robot has N dof, q_size = N+7, qd_size = N+6
@@ -91,7 +91,9 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
         throw std::runtime_error("Invalid joint state");
     }
 
-    joint_state = joint_state_in;
+    for(auto n : actuated_joint_names)
+        joint_state[n] = joint_state_in[n];
+    joint_state.time = joint_state_in.time;
 
     uint start_idx = 0;
     if(has_floating_base){
@@ -131,13 +133,17 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
         int floating_body_id = rbdl_model->GetBodyId(base_frame.c_str());
         rbdl_model->SetQuaternion(floating_body_id, Math::Quaternion(floating_base_state_in.pose.orientation.coeffs()), q);
 
+        base::Vector3d euler = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         for(int i = 0; i < 3; i++){
-            q[i] = floating_base_state.pose.position[i];
-            qd[i] = fb_twist.linear[i];
-            qdd[i] = fb_acc.linear[i];
-            qd[i+3] = fb_twist.angular[i];
-            qdd[i+3] = fb_acc.angular[i];
+            q[i] = joint_state[joint_names_floating_base[i]].position = floating_base_state.pose.position[i];
+            qd[i] = joint_state[joint_names_floating_base[i]].speed = fb_twist.linear[i];
+            qdd[i] = joint_state[joint_names_floating_base[i]].acceleration = fb_acc.linear[i];
+            joint_state[joint_names_floating_base[i+3]].position = euler(i);
+            qd[i+3] = joint_state[joint_names_floating_base[i+3]].speed = fb_twist.angular[i];
+            qdd[i+3] = joint_state[joint_names_floating_base[i+3]].acceleration = fb_acc.angular[i];
         }
+        if(floating_base_state.time > joint_state.time)
+            joint_state.time = floating_base_state.time;
     }
 
     for(int i = 0; i < actuated_joint_names.size(); i++){
@@ -147,12 +153,11 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
                         << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
             throw std::runtime_error("Incomplete Joint State");
         }
-        const base::JointState& state = joint_state_in[name];
+        const base::JointState& state = joint_state[name];
         q[i+start_idx] = state.position;
         qd[i+start_idx] = state.speed;
         qdd[i+start_idx] = state.acceleration;
     }
-    joint_state = joint_state_in;
 
     UpdateKinematics(*rbdl_model, q, qd, qdd); // update bodies kinematics once
 }
