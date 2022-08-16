@@ -2,9 +2,10 @@
 
 namespace wbc{
 
-    JointLimitsAccelerationConstraint::JointLimitsAccelerationConstraint(double dt) 
+    JointLimitsAccelerationConstraint::JointLimitsAccelerationConstraint(double dt, bool reduced) 
     :   Constraint(Constraint::bounds),
-        dt(dt)
+        dt(dt),
+        reduced(reduced)
     {
 
     }
@@ -15,9 +16,17 @@ namespace wbc{
         uint na = robot_model->noOfActuatedJoints();
         uint nc = robot_model->getActiveContacts().size();
 
-        // vars are acceleration - torques - contatc forces
-        lb_vec.resize(nj+na+6*nc);
-        ub_vec.resize(nj+na+6*nc);
+        
+        if(reduced) // vars are acceleration - contact forces
+        {
+            lb_vec.resize(nj+6*nc);
+            ub_vec.resize(nj+6*nc);
+        }
+        else // vars are acceleration - torques - contact forces
+        {
+            lb_vec.resize(nj+na+6*nc);
+            ub_vec.resize(nj+na+6*nc);
+        }
 
         lb_vec.setConstant(-10000);
         ub_vec.setConstant(+10000);
@@ -63,7 +72,11 @@ namespace wbc{
             }
         }
 
-        // enforce joint effort limits
+        // enforce joint effort limits (only if torques are part of the optimization problem)
+        // otherwise use EffortLimitsAccelerationConstraint
+        if(reduced)
+            return;
+
         for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
             const std::string& name = robot_model->actuatedJointNames()[i];
             lb_vec(i+nj) = robot_model->jointLimits()[name].min.effort;

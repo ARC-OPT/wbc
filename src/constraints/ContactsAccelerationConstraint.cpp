@@ -10,7 +10,7 @@ namespace wbc{
         uint na = robot_model->noOfActuatedJoints();
         uint nc = contacts.size();
 
-        uint nv = nj + na + nc*6;
+        uint nv = reduced ? (nj + nc*6) : (nj + na + nc*6);
 
         A_mtx.resize(nc*6, nv);
         b_vec.resize(nc*6);
@@ -19,7 +19,7 @@ namespace wbc{
         b_vec.setZero();
 
         for(int i = 0; i < contacts.size(); i++){
-            base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->worldFrame(), contacts.names[i]);
+            const base::Acceleration& a = robot_model->spatialAccelerationBias(robot_model->worldFrame(), contacts.names[i]);
             base::Vector6d acc;
             acc.segment(0,3) = a.linear;
             acc.segment(3,3) = a.angular;

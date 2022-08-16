@@ -17,11 +17,15 @@ class ContactsAccelerationConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    ContactsAccelerationConstraint() : Constraint(Constraint::equality) { }
+    explicit ContactsAccelerationConstraint(bool _reduced = false) : Constraint(Constraint::equality), reduced(_reduced) { }
 
     virtual ~ContactsAccelerationConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) override;
+
+private:
+
+    bool reduced; // if torques are removed from the qp formulation or not
 
 };
 

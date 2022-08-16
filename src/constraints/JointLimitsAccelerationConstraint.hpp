@@ -17,9 +17,10 @@ class JointLimitsAccelerationConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    JointLimitsAccelerationConstraint() : Constraint(Constraint::bounds) { }
+    explicit JointLimitsAccelerationConstraint(bool reduced=false) 
+        : Constraint(Constraint::bounds), reduced(reduced) { }
     
-    JointLimitsAccelerationConstraint(double dt);
+    explicit JointLimitsAccelerationConstraint(double dt, bool reduced=false);
 
     virtual ~JointLimitsAccelerationConstraint() = default;
 
@@ -29,6 +30,8 @@ protected:
 
     /** Control timestep: used to integrate and differentiate velocities */
     double dt;
+
+    bool reduced;
 
 };
 typedef std::shared_ptr<JointLimitsAccelerationConstraint> JointLimitsAccelerationConstraintPtr;

@@ -17,12 +17,16 @@ class RigidbodyDynamicsConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    RigidbodyDynamicsConstraint() : Constraint(Constraint::equality) { }
+    explicit RigidbodyDynamicsConstraint(bool reduced = false) 
+        : Constraint(Constraint::equality), reduced(reduced) { }
 
     virtual ~RigidbodyDynamicsConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) override;
 
+protected:
+
+    bool reduced;
 };
 typedef std::shared_ptr<RigidbodyDynamicsConstraint> RigidbodyDynamicsConstraintPtr;
 

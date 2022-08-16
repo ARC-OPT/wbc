@@ -1,4 +1,4 @@
-#include "AccelerationSceneTSID.hpp"
+#include "AccelerationSceneReducedTSID.hpp"
 #include "core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
 
@@ -9,26 +9,25 @@
 #include "../constraints/RigidbodyDynamicsConstraint.hpp"
 #include "../constraints/ContactsAccelerationConstraint.hpp"
 #include "../constraints/JointLimitsAccelerationConstraint.hpp"
+#include "../constraints/EffortLimitsAccelerationConstraint.hpp"
 
 namespace wbc {
 
-AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
+AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
     WbcScene(robot_model,solver),
     hessian_regularizer(1e-8){
-    
-    // whether or not torques are removed  from the qp problem
-    // this formulation includes torques !!! 
-    bool reduced = false; // DO NOT CHANGE
 
+    bool reduced_problem = true;
+    
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
     constraints.resize(1);
-    constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
-    constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
-    constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
-
+    constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced_problem));
+    constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced_problem));
+    constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced_problem));
+    constraints[0].push_back(std::make_shared<EffortLimitsAccelerationConstraint>());
 }
 
-TaskPtr AccelerationSceneTSID::createTask(const TaskConfig &config){
+TaskPtr AccelerationSceneReducedTSID::createTask(const TaskConfig &config){
 
     if(config.type == cart)
         return std::make_shared<CartesianAccelerationTask>(config, robot_model->noOfJoints());
@@ -42,13 +41,13 @@ TaskPtr AccelerationSceneTSID::createTask(const TaskConfig &config){
     }
 }
 
-const HierarchicalQP& AccelerationSceneTSID::update(){
+const HierarchicalQP& AccelerationSceneReducedTSID::update(){
 
     if(!configured)
-        throw std::runtime_error("AccelerationSceneTSID has not been configured!. PLease call configure() before calling update() for the first time!");
+        throw std::runtime_error("AccelerationSceneReducedTSID has not been configured!. PLease call configure() before calling update() for the first time!");
 
     if(tasks.size() != 1){
-        LOG_ERROR("Number of priorities in AccelerationSceneTSID should be 1, but is %i", tasks.size());
+        LOG_ERROR("Number of priorities in AccelerationSceneReducedTSID should be 1, but is %i", tasks.size());
         throw std::runtime_error("Invalid task configuration");
     }
 
@@ -57,9 +56,9 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     uint na = robot_model->noOfActuatedJoints();
     uint ncp = robot_model->getActiveContacts().size();
 
-    // QP Size: (NJoints+NContacts*2*6 x NJoints+NActuatedJoints+NContacts*6)
-    // Variable order: (acc,torque,f_ext)
-    tasks_prio[prio].resize(nj+ncp*6,nj+na+ncp*6);
+    // QP Size: (NJoints+NContacts*2*6 x NJoints+NContacts*6)
+    // Variable order: (acc,f_ext)
+    tasks_prio[prio].resize(nj+ncp*6, nj+ncp*6);
     tasks_prio[prio].H.setZero();
     tasks_prio[prio].g.setZero();
 
@@ -85,7 +84,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
-        tasks_prio[prio].H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
+        tasks_prio[prio].H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw; // NOTE! good only if tasks involve only acceleration
         tasks_prio[prio].g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
     }
 
@@ -102,17 +101,17 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     }
 
     // Note already performed at the beginning of the update (but does not consider additional constraints)
-    tasks_prio[prio].lower_x.resize(nj+na+ncp*6);
-    tasks_prio[prio].upper_x.resize(nj+na+ncp*6);
+    tasks_prio[prio].A.resize(total_eqs, nj+ncp*6);
+    tasks_prio[prio].lower_x.resize(nj+ncp*6);
+    tasks_prio[prio].upper_x.resize(nj+ncp*6);
     tasks_prio[prio].lower_y.resize(total_eqs);
     tasks_prio[prio].upper_y.resize(total_eqs);
-    tasks_prio[prio].A.resize(total_eqs, nj+na+ncp*6);
 
-    tasks_prio[prio].lower_x.setConstant(-999999);  // bounds
-    tasks_prio[prio].upper_x.setConstant(+999999);  // bounds
-    tasks_prio[prio].lower_y.setConstant(-999999);  // inequalities
-    tasks_prio[prio].upper_y.setConstant(+999999);  // inequalities
     tasks_prio[prio].A.setZero();
+    tasks_prio[prio].lower_x.setConstant(-10000);   // bounds
+    tasks_prio[prio].upper_x.setConstant(+10000);   // bounds
+    tasks_prio[prio].lower_y.setZero(); // inequalities
+    tasks_prio[prio].upper_y.setZero(); // inequalities
 
     total_eqs = 0;
     for(uint i = 0; i < constraints[prio].size(); i++) {
@@ -120,7 +119,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         size_t c_size = constraints[prio][i]->size();
 
         if(type == Constraint::bounds) {
-            tasks_prio[prio].lower_x = constraints[prio][i]->lb();
+            tasks_prio[prio].lower_x = constraints[prio][i]->lb(); // NOTE! Good only if a single bound task is admitted
             tasks_prio[prio].upper_x = constraints[prio][i]->ub();
         }
         else if (type == Constraint::equality) {
@@ -142,50 +141,63 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     return tasks_prio;
 }
 
-const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP& hqp){
+const base::commands::Joints& AccelerationSceneReducedTSID::solve(const HierarchicalQP& hqp){
 
     // solve
     solver_output.resize(hqp[0].nq);
     solver->solve(hqp, solver_output);
 
+    const auto& contacts = robot_model->getActiveContacts();
+
     // Convert solver output: Acceleration and torque
     uint nj = robot_model->noOfJoints();
     uint na = robot_model->noOfActuatedJoints();
+    uint nc = contacts.size();
+
+    auto qdd_out = Eigen::Map<Eigen::VectorXd>(solver_output.data(), nj);
+    auto fext_out = Eigen::Map<Eigen::VectorXd>(solver_output.data()+nj, 6*nc);
+
+    // computing torques from accelerations and forces (using last na equation from dynamic equations of motion)
+    Eigen::VectorXd tau_out = robot_model->jointSpaceInertiaMatrix().bottomRows(na) * qdd_out;
+    for(uint c = 0; c < nc; ++c)
+        tau_out += -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[c]).transpose().bottomRows(na) * fext_out.segment<6>(c*6);
+    tau_out += robot_model->biasForces().bottomRows(na);
+
     solver_output_joints.resize(robot_model->noOfActuatedJoints());
     solver_output_joints.names = robot_model->actuatedJointNames();
     for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
-        if(base::isNaN(solver_output[idx])){
+        if(base::isNaN(qdd_out[idx])){
             hqp[0].print();
             throw std::runtime_error("Solver output (acceleration) for joint " + name + " is NaN");
         }
-        if(base::isNaN(solver_output[idx+nj])){
+        if(base::isNaN(tau_out[idx])){
             hqp[0].print();
             throw std::runtime_error("Solver output (force/torque) for joint " + name + " is NaN");
         }
-        solver_output_joints[name].acceleration = solver_output[idx];
-        solver_output_joints[name].effort = solver_output[idx+nj];
+        solver_output_joints[name].acceleration = qdd_out[idx];
+        solver_output_joints[name].effort = tau_out[idx-6]; // tau_out does not include fb dofs
     }
     solver_output_joints.time = base::Time::now();
 
-    // std::cout<<"Acc:   "<<solver_output.segment(0,nj).transpose()<<std::endl;
-    // std::cout<<"Tau:   "<<solver_output.segment(nj,na).transpose()<<std::endl;
-    // std::cout<<"F_ext: "<<solver_output.segment(nj+na,12).transpose()<<std::endl<<std::endl;
+    // std::cerr << "Acc:   " << qdd_out.transpose() << std::endl;
+    // std::cerr << "Tau:   " << tau_out.transpose() << std::endl;
+    // std::cerr << "F_ext: " << fext_out.transpose() << std::endl << std::endl;
 
     // Convert solver output: contact wrenches
-    contact_wrenches.resize(robot_model->getActiveContacts().size());
-    contact_wrenches.names = robot_model->getActiveContacts().names;
-    for(uint i = 0; i < robot_model->getActiveContacts().size(); i++){
-        contact_wrenches[i].force = solver_output.segment(nj+na+i*6,3);
-        contact_wrenches[i].torque = solver_output.segment(nj+na+i*6+3,3);
+    contact_wrenches.resize(nc);
+    contact_wrenches.names = contacts.names;
+    for(uint i = 0; i < nc; i++){
+        contact_wrenches[i].force = fext_out.segment(i*6, 3);
+        contact_wrenches[i].torque = fext_out.segment(i*6+3, 3);
     }
 
     contact_wrenches.time = base::Time::now();
     return solver_output_joints;
 }
 
-const TasksStatus& AccelerationSceneTSID::updateTasksStatus(){
+const TasksStatus& AccelerationSceneReducedTSID::updateTasksStatus(){
 
     uint nj = robot_model->noOfJoints();
     solver_output_acc = solver_output.segment(0,nj);
