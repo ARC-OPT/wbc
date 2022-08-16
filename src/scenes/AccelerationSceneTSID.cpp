@@ -133,22 +133,6 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         total_eqs += c_size;
     }
 
-    std::cerr << "task PRIO: " << std::endl;
-    std::cerr << "A: " << std::endl;
-    std::cerr << tasks_prio[prio].A << std::endl << std::endl;
-    std::cerr << "lower y: " << std::endl;
-    std::cerr << tasks_prio[prio].lower_y.transpose() << std::endl << std::endl;
-    std::cerr << "upper y: " << std::endl;
-    std::cerr << tasks_prio[prio].upper_y.transpose() << std::endl << std::endl;
-    std::cerr << "lower x: " << std::endl;
-    std::cerr << tasks_prio[prio].lower_x.transpose() << std::endl << std::endl;
-    std::cerr << "upper x: " << std::endl;
-    std::cerr << tasks_prio[prio].upper_x.transpose() << std::endl << std::endl;
-    std::cerr << "H: " << std::endl;
-    std::cerr << tasks_prio[prio].H << std::endl << std::endl;
-    std::cerr << "g: " << std::endl;
-    std::cerr << tasks_prio[prio].g.transpose() << std::endl << std::endl;
-    
     tasks_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     tasks_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
     return tasks_prio;
