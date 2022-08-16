@@ -123,14 +123,14 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
             tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
             tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
             tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
             tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
+            total_eqs += c_size;
         }
-
-        total_eqs += c_size;
     }
 
     tasks_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
