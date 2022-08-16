@@ -60,6 +60,9 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1AccelerationScene.html">AccelerationScene</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acceleration-based implementation of the WBC Scene. It sets up and solves the following optimization problem:  <a href="classwbc_1_1AccelerationScene.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html">AccelerationSceneReducedTSID</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:  <a href="classwbc_1_1AccelerationSceneReducedTSID.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1AccelerationSceneTSID.html">AccelerationSceneTSID</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:  <a href="classwbc_1_1AccelerationSceneTSID.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -88,6 +91,9 @@ Classes</h2></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1ContactsVelocityConstraint.html">ContactsVelocityConstraint</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract class to represent a generic hard constraint for a WBC optimization problem.  <a href="classwbc_1_1ContactsVelocityConstraint.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EffortLimitsAccelerationConstraint.html">EffortLimitsAccelerationConstraint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effort limits constraint for reduced TSID scene since torques are not part of qp, torque limits are enforced through acceleration and external forces limits using the linear dependecy given by the dynamic model.  <a href="classwbc_1_1EffortLimitsAccelerationConstraint.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EiquadprogSolver.html">EiquadprogSolver</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="classwbc_1_1QPOASESSolver.html" title="The QPOASESSolver class is a wrapper for the qp-solver qpoases (see https://www.coin-or....">QPOASESSolver</a> class is a wrapper for the qp-solver qpoases (see <a href="https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf">https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf</a>). It solves problems of shape:  <a href="classwbc_1_1EiquadprogSolver.html#details">More...</a><br /></td></tr>
@@ -187,6 +193,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:a8207cfd6483f7e4ba8a1e8ab84b93292"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1ab48086cb0f366ccb0587ad720dcc81"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1ContactsVelocityConstraint.html">ContactsVelocityConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a1ab48086cb0f366ccb0587ad720dcc81">ContactsVelocityConstraintPtr</a></td></tr>
 <tr class="separator:a1ab48086cb0f366ccb0587ad720dcc81"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1c19ebd25fed89fb0f445c9a4580b7fd"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1EffortLimitsAccelerationConstraint.html">EffortLimitsAccelerationConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a1c19ebd25fed89fb0f445c9a4580b7fd">EffortLimitsAccelerationConstraintPtr</a></td></tr>
+<tr class="separator:a1c19ebd25fed89fb0f445c9a4580b7fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:afdaae647899d4098fe8ae5924676ef5b"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1JointLimitsAccelerationConstraint.html">JointLimitsAccelerationConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#afdaae647899d4098fe8ae5924676ef5b">JointLimitsAccelerationConstraintPtr</a></td></tr>
 <tr class="separator:afdaae647899d4098fe8ae5924676ef5b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1dc7f055a143443104ad9b936928fe69"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1JointLimitsVelocityConstraint.html">JointLimitsVelocityConstraint</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a1dc7f055a143443104ad9b936928fe69">JointLimitsVelocityConstraintPtr</a></td></tr>
@@ -339,6 +347,20 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="classwbc_1_1ContactsVelocityConstraint.html">ContactsVelocityConstraint</a>&gt; <a class="el" href="namespacewbc.html#a1ab48086cb0f366ccb0587ad720dcc81">wbc::ContactsVelocityConstraintPtr</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1c19ebd25fed89fb0f445c9a4580b7fd" name="a1c19ebd25fed89fb0f445c9a4580b7fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c19ebd25fed89fb0f445c9a4580b7fd">&#9670;&nbsp;</a></span>EffortLimitsAccelerationConstraintPtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="classwbc_1_1EffortLimitsAccelerationConstraint.html">EffortLimitsAccelerationConstraint</a>&gt; <a class="el" href="namespacewbc.html#a1c19ebd25fed89fb0f445c9a4580b7fd">wbc::EffortLimitsAccelerationConstraintPtr</a></td>
         </tr>
       </table>
 </div><div class="memdoc">

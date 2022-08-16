@@ -70,10 +70,11 @@ Inheritance diagram for wbc::WbcScene:</div>
  <div class="center">
   <img src="classwbc_1_1WbcScene.png" usemap="#wbc::WbcScene_map" alt=""/>
   <map id="wbc::WbcScene_map" name="wbc::WbcScene_map">
-<area href="classwbc_1_1AccelerationScene.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following optimization ..." alt="wbc::AccelerationScene" shape="rect" coords="0,56,204,80"/>
-<area href="classwbc_1_1AccelerationSceneTSID.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::AccelerationSceneTSID" shape="rect" coords="214,56,418,80"/>
-<area href="classwbc_1_1VelocityScene.html" title="Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::VelocityScene" shape="rect" coords="428,56,632,80"/>
-<area href="classwbc_1_1VelocitySceneQuadraticCost.html" title="Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::VelocitySceneQuadraticCost" shape="rect" coords="428,112,632,136"/>
+<area href="classwbc_1_1AccelerationScene.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following optimization ..." alt="wbc::AccelerationScene" shape="rect" coords="0,56,226,80"/>
+<area href="classwbc_1_1AccelerationSceneReducedTSID.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::AccelerationSceneReducedTSID" shape="rect" coords="236,56,462,80"/>
+<area href="classwbc_1_1AccelerationSceneTSID.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::AccelerationSceneTSID" shape="rect" coords="472,56,698,80"/>
+<area href="classwbc_1_1VelocityScene.html" title="Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::VelocityScene" shape="rect" coords="708,56,934,80"/>
+<area href="classwbc_1_1VelocitySceneQuadraticCost.html" title="Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::VelocitySceneQuadraticCost" shape="rect" coords="708,112,934,136"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -328,7 +329,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >brief Create a task and add it to the WBC scene </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a573807cb84609db5d491de0c2cc01a48">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#aabf73628a2d3f72e25dc634133c061ed">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a0f16c950808da67ca8e9913a22a97495">wbc::VelocityScene</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a573807cb84609db5d491de0c2cc01a48">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#abd5559ea88852e6bdccc46f6c4eb5032">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#aabf73628a2d3f72e25dc634133c061ed">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a0f16c950808da67ca8e9913a22a97495">wbc::VelocityScene</a>.</p>
 
 </div>
 </div>
@@ -986,7 +987,7 @@ Protected Attributes</h2></td></tr>
 <p>Solve the given optimization problem. </p>
 <dl class="section return"><dt>Returns</dt><dd>Solver output as joint command </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a8371283b92c5750b7d540983ce88897a">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#ae1fd30bd2346e7a6a9903d3d2789a76d">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a1e76fc7da06bed8cc9cc9ee977deba46">wbc::VelocityScene</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a8371283b92c5750b7d540983ce88897a">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a327a2a8bbdb8bdc9bc3d0f78185609fe">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#ae1fd30bd2346e7a6a9903d3d2789a76d">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a1e76fc7da06bed8cc9cc9ee977deba46">wbc::VelocityScene</a>.</p>
 
 </div>
 </div>
@@ -1090,7 +1091,7 @@ Protected Attributes</h2></td></tr>
 <p>Update the wbc scene and return the (updated) optimization problem. </p>
 <dl class="section return"><dt>Returns</dt><dd>Hierarchical quadratic program (solver input) </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a62db0c502a12ae47680ad55faa987806">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a2967aff01959adb999ea22a941ea8dbd">wbc::AccelerationSceneTSID</a>, <a class="el" href="classwbc_1_1VelocityScene.html#ae6039e6aa5845f6e6d87daf039155cca">wbc::VelocityScene</a>, and <a class="el" href="classwbc_1_1VelocitySceneQuadraticCost.html#a87315b99d4771ad732a9123779a64a7e">wbc::VelocitySceneQuadraticCost</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a62db0c502a12ae47680ad55faa987806">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a22dbfbc646bbd76ae5e83732fe69328a">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a2967aff01959adb999ea22a941ea8dbd">wbc::AccelerationSceneTSID</a>, <a class="el" href="classwbc_1_1VelocityScene.html#ae6039e6aa5845f6e6d87daf039155cca">wbc::VelocityScene</a>, and <a class="el" href="classwbc_1_1VelocitySceneQuadraticCost.html#a87315b99d4771ad732a9123779a64a7e">wbc::VelocitySceneQuadraticCost</a>.</p>
 
 </div>
 </div>
@@ -1144,7 +1145,7 @@ Protected Attributes</h2></td></tr>
 
 <p>updateTasksStatus Evaluate the fulfillment of the tasks given the current robot state and the solver output </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#ad36eb3621f4a6bd8eefc95205395f58a">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a96934a437eb7b7188688ac174c9692f2">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a8b102d6c1ad59ea979855001619f2621">wbc::VelocityScene</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#ad36eb3621f4a6bd8eefc95205395f58a">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a51a8ced99fa58e70ac4b099c7b88578f">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a96934a437eb7b7188688ac174c9692f2">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a8b102d6c1ad59ea979855001619f2621">wbc::VelocityScene</a>.</p>
 
 </div>
 </div>
