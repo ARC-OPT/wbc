@@ -1,4 +1,79 @@
 <robot name="RH5">
+
+
+
+        <link name="world">
+        <inertial>
+          <origin xyz="0 0 0" rpy="0.0 0.0 0.0"/>
+          <mass value="0.0"/>
+          <inertia ixx="0" ixy="0" ixz="0" iyy="0" iyz="0.0" izz="0"/>
+        </inertial>
+        </link>
+
+        <link name="Root_Link_x">
+           </link>
+
+            <joint name="floating_base_trans_x" type="prismatic">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+            <parent link="world" />
+    	<child link="Root_Link_x" />
+    	<axis xyz="1 0 0" />
+            <limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+    	</joint>
+
+    	<link name="Root_Link_y">
+    	</link>
+
+    	<joint
+            name="floating_base_trans_y" type="prismatic">
+    	<parent link="Root_Link_x" />
+    	<child link="Root_Link_y" />
+    	<axis xyz="0 1 0" />
+    	<limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+    	</joint>
+
+    	<link name="Root_Link_z">
+    	</link>
+
+    	<joint
+            name="floating_base_trans_z" type="prismatic">
+    	<parent link="Root_Link_y" />
+    	<child link="Root_Link_z" />
+    	<axis xyz="0 0 1" />
+    	<limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+    	</joint>
+
+    	<link name="Root_Link_rx">
+    	</link>
+
+    	<joint
+            name="floating_base_rot_x" type="revolute">
+        <origin xyz="0 0 0" rpy="0 0 0"/>
+    	<parent link="Root_Link_z" />
+    	<child link="Root_Link_rx" />
+    	<axis xyz="1 0 0" />
+    	<limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+    	</joint>
+
+    	<link name="Root_Link_ry">
+    	</link>
+
+    	<joint
+            name="floating_base_rot_y" type="revolute">
+    	<parent link="Root_Link_rx" />
+    	<child link="Root_Link_ry" />
+    	<axis xyz="0 1 0" />
+    	<limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+    	</joint>
+
+    	<joint
+            name="floating_base_rot_z" type="revolute">
+    	<parent link="Root_Link_ry" />
+            <child link="RH5_Root_Link" />
+    	<axis xyz="0 0 1" />
+    	<limit lower="-1.57" upper="1.57" effort="0" velocity="0" />
+    	</joint>
+        
   <joint name="FLC_FrontLeft" type="fixed">
     <origin xyz="0.13 -0.04 0.0274" rpy="3.1416 0.0 0.0"/>
     <axis xyz="0.0 0.0 0.0"/>
