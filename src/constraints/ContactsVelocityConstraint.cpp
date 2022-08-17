@@ -10,7 +10,7 @@ namespace wbc{
         uint nc = contacts.size();
 
         A_mtx.resize(nc*6, nj);
-        b_vec.resize(nj);
+        b_vec.resize(nc*6);
         b_vec.setZero();
 
         for(int i = 0; i < nc; ++i)
