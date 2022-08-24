@@ -51,14 +51,16 @@ $(function() {
 </div><!-- top -->
 <div class="header">
   <div class="summary">
+<a href="#pub-types">Public Types</a> &#124;
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-methods">Protected Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1Constraint-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">wbc::Constraint Class Reference</div></div>
+  <div class="headertitle"><div class="title">wbc::Constraint Class Reference<span class="mlabels"><span class="mlabel">abstract</span></span></div></div>
 </div><!--header-->
 <div class="contents">
 
-<p>Abstract class to represent a generic constraint for a WBC optimization problem.  
+<p>Abstract class to represent a generic hard (linear) constraint for a WBC optimization problem. the constraint belongs to one of three types: equality Ax = b inequality lb &lt;= Ax &lt;= ub bounds lb &lt;= x &lt;= ub.  
  <a href="classwbc_1_1Constraint.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="Constraint_8hpp_source.html">Constraint.hpp</a>&gt;</code></p>
@@ -68,71 +70,127 @@ Inheritance diagram for wbc::Constraint:</div>
  <div class="center">
   <img src="classwbc_1_1Constraint.png" usemap="#wbc::Constraint_map" alt=""/>
   <map id="wbc::Constraint_map" name="wbc::Constraint_map">
-<area href="classwbc_1_1CartesianConstraint.html" title="Abstract interface for a constraint in Cartesian space." alt="wbc::CartesianConstraint" shape="rect" coords="351,56,575,80"/>
-<area href="classwbc_1_1JointConstraint.html" title="Abstract interface for a constraint in joint space." alt="wbc::JointConstraint" shape="rect" coords="1053,56,1277,80"/>
-<area href="classwbc_1_1CartesianAccelerationConstraint.html" title="Implementation of a Cartesian acceleration constraint." alt="wbc::CartesianAccelerationConstraint" shape="rect" coords="0,112,224,136"/>
-<area href="classwbc_1_1CartesianVelocityConstraint.html" title="Implementation of a Cartesian velocity constraint." alt="wbc::CartesianVelocityConstraint" shape="rect" coords="234,112,458,136"/>
-<area href="classwbc_1_1CoMAccelerationConstraint.html" title="Implementation of a CoM velocity constraint." alt="wbc::CoMAccelerationConstraint" shape="rect" coords="468,112,692,136"/>
-<area href="classwbc_1_1CoMVelocityConstraint.html" title="Implementation of a CoM velocity constraint." alt="wbc::CoMVelocityConstraint" shape="rect" coords="702,112,926,136"/>
-<area href="classwbc_1_1JointAccelerationConstraint.html" title="Implementation of a Joint velocity constraint." alt="wbc::JointAccelerationConstraint" shape="rect" coords="936,112,1160,136"/>
-<area href="classwbc_1_1JointVelocityConstraint.html" title="Implementation of a Joint velocity constraint." alt="wbc::JointVelocityConstraint" shape="rect" coords="1170,112,1394,136"/>
+<area href="classwbc_1_1ContactsAccelerationConstraint.html" title="Abstract class to represent a generic hard constraint for a WBC optimization problem." alt="wbc::ContactsAccelerationConstraint" shape="rect" coords="0,56,232,80"/>
+<area href="classwbc_1_1ContactsVelocityConstraint.html" title="Abstract class to represent a generic hard constraint for a WBC optimization problem." alt="wbc::ContactsVelocityConstraint" shape="rect" coords="242,56,474,80"/>
+<area href="classwbc_1_1EffortLimitsAccelerationConstraint.html" title="Effort limits constraint for reduced TSID scene since torques are not part of qp, torque limits are e..." alt="wbc::EffortLimitsAccelerationConstraint" shape="rect" coords="484,56,716,80"/>
+<area href="classwbc_1_1JointLimitsAccelerationConstraint.html" title="Abstract class to represent a generic hard constraint for a WBC optimization problem." alt="wbc::JointLimitsAccelerationConstraint" shape="rect" coords="726,56,958,80"/>
+<area href="classwbc_1_1JointLimitsVelocityConstraint.html" title="Abstract class to represent a generic hard constraint for a WBC optimization problem." alt="wbc::JointLimitsVelocityConstraint" shape="rect" coords="968,56,1200,80"/>
+<area href="classwbc_1_1RigidbodyDynamicsConstraint.html" title="Abstract class to represent a generic hard constraint for a WBC optimization problem." alt="wbc::RigidbodyDynamicsConstraint" shape="rect" coords="1210,56,1442,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
+Public Types</h2></td></tr>
+<tr class="memitem:a1d5eac6389077831ca18462e0fea391c"><td class="memItemLeft" align="right" valign="top">enum &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a> { <a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391cace44aa9b2f997a5c854b54d5b711175a">equality</a> = 0
+, <a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391cabc1b3a9afd4780d35089b273f8784c93">inequality</a> = 1
+, <a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391cab7253cb9d89df204e4c68eba27604d53">bounds</a> = 2
+ }</td></tr>
+<tr class="separator:a1d5eac6389077831ca18462e0fea391c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aee558f39ee47035c78da287180648a43"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#aee558f39ee47035c78da287180648a43">~Constraint</a> ()=default</td></tr>
+<tr class="separator:aee558f39ee47035c78da287180648a43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abc1077e8613dc25e6141088235e504eb"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#abc1077e8613dc25e6141088235e504eb">update</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model)=0</td></tr>
+<tr class="memdesc:abc1077e8613dc25e6141088235e504eb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update constraint matrix and vectors, depending on the type. Abstract method.  <a href="classwbc_1_1Constraint.html#abc1077e8613dc25e6141088235e504eb">More...</a><br /></td></tr>
+<tr class="separator:abc1077e8613dc25e6141088235e504eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a8f52e4ff7bd2711e638a382fc39c3ed0"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a8f52e4ff7bd2711e638a382fc39c3ed0">type</a> ()</td></tr>
+<tr class="memdesc:a8f52e4ff7bd2711e638a382fc39c3ed0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the type of this constraint.  <a href="classwbc_1_1Constraint.html#a8f52e4ff7bd2711e638a382fc39c3ed0">More...</a><br /></td></tr>
+<tr class="separator:a8f52e4ff7bd2711e638a382fc39c3ed0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6a6d35717f8b00276334bf5ce0863136"><td class="memItemLeft" align="right" valign="top">const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a6a6d35717f8b00276334bf5ce0863136">A</a> ()</td></tr>
+<tr class="memdesc:a6a6d35717f8b00276334bf5ce0863136"><td class="mdescLeft">&#160;</td><td class="mdescRight">return constraint matrix A  <a href="classwbc_1_1Constraint.html#a6a6d35717f8b00276334bf5ce0863136">More...</a><br /></td></tr>
+<tr class="separator:a6a6d35717f8b00276334bf5ce0863136"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab7f3ccf18b2db034c9051086c7847f37"><td class="memItemLeft" align="right" valign="top">const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#ab7f3ccf18b2db034c9051086c7847f37">b</a> ()</td></tr>
+<tr class="memdesc:ab7f3ccf18b2db034c9051086c7847f37"><td class="mdescLeft">&#160;</td><td class="mdescRight">return constraint vector b  <a href="classwbc_1_1Constraint.html#ab7f3ccf18b2db034c9051086c7847f37">More...</a><br /></td></tr>
+<tr class="separator:ab7f3ccf18b2db034c9051086c7847f37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae38b908da33906aa361eeb8ad9b4b12f"><td class="memItemLeft" align="right" valign="top">const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#ae38b908da33906aa361eeb8ad9b4b12f">lb</a> ()</td></tr>
+<tr class="memdesc:ae38b908da33906aa361eeb8ad9b4b12f"><td class="mdescLeft">&#160;</td><td class="mdescRight">return constraint lower bound lb  <a href="classwbc_1_1Constraint.html#ae38b908da33906aa361eeb8ad9b4b12f">More...</a><br /></td></tr>
+<tr class="separator:ae38b908da33906aa361eeb8ad9b4b12f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adf5b774f5b0e3572fa6c3415f2025327"><td class="memItemLeft" align="right" valign="top">const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#adf5b774f5b0e3572fa6c3415f2025327">ub</a> ()</td></tr>
+<tr class="memdesc:adf5b774f5b0e3572fa6c3415f2025327"><td class="mdescLeft">&#160;</td><td class="mdescRight">return constraint upper bound ub  <a href="classwbc_1_1Constraint.html#adf5b774f5b0e3572fa6c3415f2025327">More...</a><br /></td></tr>
+<tr class="separator:adf5b774f5b0e3572fa6c3415f2025327"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb0706925ae7fcee3e15ee85627cc67a"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#afb0706925ae7fcee3e15ee85627cc67a">size</a> ()</td></tr>
+<tr class="memdesc:afb0706925ae7fcee3e15ee85627cc67a"><td class="mdescLeft">&#160;</td><td class="mdescRight">return size of the constraint (i.e. number of rows of the constraint matrix)  <a href="classwbc_1_1Constraint.html#afb0706925ae7fcee3e15ee85627cc67a">More...</a><br /></td></tr>
+<tr class="separator:afb0706925ae7fcee3e15ee85627cc67a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
+Protected Member Functions</h2></td></tr>
 <tr class="memitem:a2e8eff615b1c4ea35064e3435d5c180f"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a2e8eff615b1c4ea35064e3435d5c180f">Constraint</a> ()</td></tr>
 <tr class="memdesc:a2e8eff615b1c4ea35064e3435d5c180f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <a href="classwbc_1_1Constraint.html#a2e8eff615b1c4ea35064e3435d5c180f">More...</a><br /></td></tr>
 <tr class="separator:a2e8eff615b1c4ea35064e3435d5c180f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7b62879f52f3501377d532bc0d132806"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a7b62879f52f3501377d532bc0d132806">Constraint</a> (const <a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a> &amp;_config, uint n_robot_joints)</td></tr>
-<tr class="memdesc:a7b62879f52f3501377d532bc0d132806"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes all members.  <a href="classwbc_1_1Constraint.html#a7b62879f52f3501377d532bc0d132806">More...</a><br /></td></tr>
-<tr class="separator:a7b62879f52f3501377d532bc0d132806"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a641bac31127a5037ca7b57cb283792c4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a641bac31127a5037ca7b57cb283792c4">~Constraint</a> ()</td></tr>
-<tr class="separator:a641bac31127a5037ca7b57cb283792c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af60d7a74dfc10cdcf7d306ddb6c647f3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#af60d7a74dfc10cdcf7d306ddb6c647f3">reset</a> ()</td></tr>
-<tr class="memdesc:af60d7a74dfc10cdcf7d306ddb6c647f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset constraint variables to initial values.  <a href="classwbc_1_1Constraint.html#af60d7a74dfc10cdcf7d306ddb6c647f3">More...</a><br /></td></tr>
-<tr class="separator:af60d7a74dfc10cdcf7d306ddb6c647f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0d715915efbe55c7c3ee0c42a69f21e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#ae0d715915efbe55c7c3ee0c42a69f21e">checkTimeout</a> ()</td></tr>
-<tr class="memdesc:ae0d715915efbe55c7c3ee0c42a69f21e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the constraint is in timeout and set the timeout flag accordingly. A constraint is in timeout if.  <a href="classwbc_1_1Constraint.html#ae0d715915efbe55c7c3ee0c42a69f21e">More...</a><br /></td></tr>
-<tr class="separator:ae0d715915efbe55c7c3ee0c42a69f21e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abd1f5ce1fe74c8ee3e517b84d4429b9d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#abd1f5ce1fe74c8ee3e517b84d4429b9d">setWeights</a> (const base::VectorXd &amp;<a class="el" href="classwbc_1_1Constraint.html#a5ca7ea71268c82103c47be596357da75">weights</a>)</td></tr>
-<tr class="memdesc:abd1f5ce1fe74c8ee3e517b84d4429b9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set constraint weights.  <a href="classwbc_1_1Constraint.html#abd1f5ce1fe74c8ee3e517b84d4429b9d">More...</a><br /></td></tr>
-<tr class="separator:abd1f5ce1fe74c8ee3e517b84d4429b9d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adb6a5f1850868d1bf5c6c2d93337b611"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#adb6a5f1850868d1bf5c6c2d93337b611">setActivation</a> (const double <a class="el" href="classwbc_1_1Constraint.html#adaeabe7a1b1ef8be26cebfffb4f28318">activation</a>)</td></tr>
-<tr class="memdesc:adb6a5f1850868d1bf5c6c2d93337b611"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set constraint activation.  <a href="classwbc_1_1Constraint.html#adb6a5f1850868d1bf5c6c2d93337b611">More...</a><br /></td></tr>
-<tr class="separator:adb6a5f1850868d1bf5c6c2d93337b611"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa23f902fa23680e28a2cae49de09a2ae"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#aa23f902fa23680e28a2cae49de09a2ae">Constraint</a> (<a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a> <a class="el" href="classwbc_1_1Constraint.html#a8f52e4ff7bd2711e638a382fc39c3ed0">type</a>)</td></tr>
+<tr class="memdesc:aa23f902fa23680e28a2cae49de09a2ae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Constructor. Initialiye the type of this constraint.  <a href="classwbc_1_1Constraint.html#aa23f902fa23680e28a2cae49de09a2ae">More...</a><br /></td></tr>
+<tr class="separator:aa23f902fa23680e28a2cae49de09a2ae"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
-Public Attributes</h2></td></tr>
-<tr class="memitem:ae051f34efe899cc4b824b57888558231"><td class="memItemLeft" align="right" valign="top">base::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#ae051f34efe899cc4b824b57888558231">time</a></td></tr>
-<tr class="separator:ae051f34efe899cc4b824b57888558231"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7f5bc8049a572f7de5015a72d07a3d25"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a7f5bc8049a572f7de5015a72d07a3d25">config</a></td></tr>
-<tr class="separator:a7f5bc8049a572f7de5015a72d07a3d25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a788eff86b50cc510653f3f6994c136a5"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a788eff86b50cc510653f3f6994c136a5">y_ref</a></td></tr>
-<tr class="separator:a788eff86b50cc510653f3f6994c136a5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a66d03491f44c763b326e87e394bbff59"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a66d03491f44c763b326e87e394bbff59">y_ref_root</a></td></tr>
-<tr class="separator:a66d03491f44c763b326e87e394bbff59"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ca7ea71268c82103c47be596357da75"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a5ca7ea71268c82103c47be596357da75">weights</a></td></tr>
-<tr class="separator:a5ca7ea71268c82103c47be596357da75"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aab01d3ab60e3aceb94fd1e254fa5d185"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#aab01d3ab60e3aceb94fd1e254fa5d185">weights_root</a></td></tr>
-<tr class="separator:aab01d3ab60e3aceb94fd1e254fa5d185"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adaeabe7a1b1ef8be26cebfffb4f28318"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#adaeabe7a1b1ef8be26cebfffb4f28318">activation</a></td></tr>
-<tr class="separator:adaeabe7a1b1ef8be26cebfffb4f28318"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae418bce125e6a35777fca5a62812f5e0"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#ae418bce125e6a35777fca5a62812f5e0">timeout</a></td></tr>
-<tr class="separator:ae418bce125e6a35777fca5a62812f5e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae8790185f8d6c50d2d53ef6eb87b1351"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#ae8790185f8d6c50d2d53ef6eb87b1351">A</a></td></tr>
-<tr class="separator:ae8790185f8d6c50d2d53ef6eb87b1351"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0b70832f54251682c50944866591909"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#ac0b70832f54251682c50944866591909">Aw</a></td></tr>
-<tr class="separator:ac0b70832f54251682c50944866591909"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a1c356c8705d971a5dab550db6a399020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a1c356c8705d971a5dab550db6a399020">c_type</a></td></tr>
+<tr class="separator:a1c356c8705d971a5dab550db6a399020"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a79014c7686b801e037fb52eb4b3f3620"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a79014c7686b801e037fb52eb4b3f3620">A_mtx</a></td></tr>
+<tr class="separator:a79014c7686b801e037fb52eb4b3f3620"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d04f9539154cd1306e07e80f124b27e"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a9d04f9539154cd1306e07e80f124b27e">b_vec</a></td></tr>
+<tr class="separator:a9d04f9539154cd1306e07e80f124b27e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a302fa061656366b7a09b6e910eb2c2c2"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a302fa061656366b7a09b6e910eb2c2c2">lb_vec</a></td></tr>
+<tr class="separator:a302fa061656366b7a09b6e910eb2c2c2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1824a2cc75b06bbc4b0a5106f5521f2c"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a1824a2cc75b06bbc4b0a5106f5521f2c">ub_vec</a></td></tr>
+<tr class="separator:a1824a2cc75b06bbc4b0a5106f5521f2c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >Abstract class to represent a generic constraint for a WBC optimization problem. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<div class="textblock"><p >Abstract class to represent a generic hard (linear) constraint for a WBC optimization problem. the constraint belongs to one of three types: equality Ax = b inequality lb &lt;= Ax &lt;= ub bounds lb &lt;= x &lt;= ub. </p>
+</div><h2 class="groupheader">Member Enumeration Documentation</h2>
+<a id="a1d5eac6389077831ca18462e0fea391c" name="a1d5eac6389077831ca18462e0fea391c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d5eac6389077831ca18462e0fea391c">&#9670;&nbsp;</a></span>Type</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">enum <a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">wbc::Constraint::Type</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<table class="fieldtable">
+<tr><th colspan="2">Enumerator</th></tr><tr><td class="fieldname"><a id="a1d5eac6389077831ca18462e0fea391cace44aa9b2f997a5c854b54d5b711175a" name="a1d5eac6389077831ca18462e0fea391cace44aa9b2f997a5c854b54d5b711175a"></a>equality&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1d5eac6389077831ca18462e0fea391cabc1b3a9afd4780d35089b273f8784c93" name="a1d5eac6389077831ca18462e0fea391cabc1b3a9afd4780d35089b273f8784c93"></a>inequality&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a1d5eac6389077831ca18462e0fea391cab7253cb9d89df204e4c68eba27604d53" name="a1d5eac6389077831ca18462e0fea391cab7253cb9d89df204e4c68eba27604d53"></a>bounds&#160;</td><td class="fielddoc"></td></tr>
+</table>
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aee558f39ee47035c78da287180648a43" name="aee558f39ee47035c78da287180648a43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aee558f39ee47035c78da287180648a43">&#9670;&nbsp;</a></span>~Constraint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual wbc::Constraint::~Constraint </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">virtual</span><span class="mlabel">default</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a2e8eff615b1c4ea35064e3435d5c180f" name="a2e8eff615b1c4ea35064e3435d5c180f"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2e8eff615b1c4ea35064e3435d5c180f">&#9670;&nbsp;</a></span>Constraint() <span class="overload">[1/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">wbc::Constraint::Constraint </td>
@@ -141,68 +199,54 @@ Public Attributes</h2></td></tr>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
 
 <p>Default constructor. </p>
 
 </div>
 </div>
-<a id="a7b62879f52f3501377d532bc0d132806" name="a7b62879f52f3501377d532bc0d132806"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7b62879f52f3501377d532bc0d132806">&#9670;&nbsp;</a></span>Constraint() <span class="overload">[2/2]</span></h2>
+<a id="aa23f902fa23680e28a2cae49de09a2ae" name="aa23f902fa23680e28a2cae49de09a2ae"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa23f902fa23680e28a2cae49de09a2ae">&#9670;&nbsp;</a></span>Constraint() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">wbc::Constraint::Constraint </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a> &amp;&#160;</td>
-          <td class="paramname"><em>_config</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">uint&#160;</td>
-          <td class="paramname"><em>n_robot_joints</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Resizes all members. </p>
-
-</div>
-</div>
-<a id="a641bac31127a5037ca7b57cb283792c4" name="a641bac31127a5037ca7b57cb283792c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a641bac31127a5037ca7b57cb283792c4">&#9670;&nbsp;</a></span>~Constraint()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">wbc::Constraint::~Constraint </td>
-          <td>(</td>
-          <td class="paramname"></td><td>)</td>
+          <td class="paramtype"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a>&#160;</td>
+          <td class="paramname"><em>type</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
+
+<p>Constructor. Initialiye the type of this constraint. </p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae0d715915efbe55c7c3ee0c42a69f21e" name="ae0d715915efbe55c7c3ee0c42a69f21e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0d715915efbe55c7c3ee0c42a69f21e">&#9670;&nbsp;</a></span>checkTimeout()</h2>
+<a id="a6a6d35717f8b00276334bf5ce0863136" name="a6a6d35717f8b00276334bf5ce0863136"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6a6d35717f8b00276334bf5ce0863136">&#9670;&nbsp;</a></span>A()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void wbc::Constraint::checkTimeout </td>
+          <td class="memname">const base::MatrixXd &amp; wbc::Constraint::A </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -210,22 +254,18 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Check if the constraint is in timeout and set the timeout flag accordingly. A constraint is in timeout if. </p>
-<ul>
-<li>No reference value has been set yet</li>
-<li>A timeout value is configured (config.timeout &gt; 0) and no reference value arrived during the timeout period </li>
-</ul>
+<p>return constraint matrix A </p>
 
 </div>
 </div>
-<a id="af60d7a74dfc10cdcf7d306ddb6c647f3" name="af60d7a74dfc10cdcf7d306ddb6c647f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af60d7a74dfc10cdcf7d306ddb6c647f3">&#9670;&nbsp;</a></span>reset()</h2>
+<a id="ab7f3ccf18b2db034c9051086c7847f37" name="ab7f3ccf18b2db034c9051086c7847f37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab7f3ccf18b2db034c9051086c7847f37">&#9670;&nbsp;</a></span>b()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void wbc::Constraint::reset </td>
+          <td class="memname">const base::VectorXd &amp; wbc::Constraint::b </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -233,210 +273,228 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p>Reset constraint variables to initial values. </p>
+<p>return constraint vector b </p>
 
 </div>
 </div>
-<a id="adb6a5f1850868d1bf5c6c2d93337b611" name="adb6a5f1850868d1bf5c6c2d93337b611"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adb6a5f1850868d1bf5c6c2d93337b611">&#9670;&nbsp;</a></span>setActivation()</h2>
+<a id="ae38b908da33906aa361eeb8ad9b4b12f" name="ae38b908da33906aa361eeb8ad9b4b12f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae38b908da33906aa361eeb8ad9b4b12f">&#9670;&nbsp;</a></span>lb()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void wbc::Constraint::setActivation </td>
+          <td class="memname">const base::VectorXd &amp; wbc::Constraint::lb </td>
           <td>(</td>
-          <td class="paramtype">const double&#160;</td>
-          <td class="paramname"><em>activation</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set constraint activation. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">activation</td><td>Value has to be between 0 and 1. Can be used to activate(1)/deactivate(0) the constraint. </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>return constraint lower bound lb </p>
 
 </div>
 </div>
-<a id="abd1f5ce1fe74c8ee3e517b84d4429b9d" name="abd1f5ce1fe74c8ee3e517b84d4429b9d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abd1f5ce1fe74c8ee3e517b84d4429b9d">&#9670;&nbsp;</a></span>setWeights()</h2>
+<a id="afb0706925ae7fcee3e15ee85627cc67a" name="afb0706925ae7fcee3e15ee85627cc67a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb0706925ae7fcee3e15ee85627cc67a">&#9670;&nbsp;</a></span>size()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">void wbc::Constraint::setWeights </td>
+          <td class="memname">uint wbc::Constraint::size </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;&#160;</td>
-          <td class="paramname"><em>weights</em></td><td>)</td>
+          <td class="paramname"></td><td>)</td>
           <td></td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p>Set constraint weights. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">weights</td><td>Weight vector. Size has to be same as number of constraint variables and all entries have to be &gt;= 0 </td></tr>
-  </table>
-  </dd>
-</dl>
+<p>return size of the constraint (i.e. number of rows of the constraint matrix) </p>
+
+</div>
+</div>
+<a id="a8f52e4ff7bd2711e638a382fc39c3ed0" name="a8f52e4ff7bd2711e638a382fc39c3ed0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8f52e4ff7bd2711e638a382fc39c3ed0">&#9670;&nbsp;</a></span>type()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Constraint::Type</a> wbc::Constraint::type </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return the type of this constraint. </p>
+
+</div>
+</div>
+<a id="adf5b774f5b0e3572fa6c3415f2025327" name="adf5b774f5b0e3572fa6c3415f2025327"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adf5b774f5b0e3572fa6c3415f2025327">&#9670;&nbsp;</a></span>ub()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">const base::VectorXd &amp; wbc::Constraint::ub </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>return constraint upper bound ub </p>
+
+</div>
+</div>
+<a id="abc1077e8613dc25e6141088235e504eb" name="abc1077e8613dc25e6141088235e504eb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abc1077e8613dc25e6141088235e504eb">&#9670;&nbsp;</a></span>update()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void wbc::Constraint::update </td>
+          <td>(</td>
+          <td class="paramtype"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td>
+          <td class="paramname"><em>robot_model</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Update constraint matrix and vectors, depending on the type. Abstract method. </p>
+
+<p>Implemented in <a class="el" href="classwbc_1_1ContactsAccelerationConstraint.html#a3b8e72238561bb55b60bb5c8af467b76">wbc::ContactsAccelerationConstraint</a>, <a class="el" href="classwbc_1_1ContactsVelocityConstraint.html#afe6488f888208becb275bbb166ebdc2a">wbc::ContactsVelocityConstraint</a>, <a class="el" href="classwbc_1_1EffortLimitsAccelerationConstraint.html#a3a555b28a18db1d02910e200f761de2d">wbc::EffortLimitsAccelerationConstraint</a>, <a class="el" href="classwbc_1_1JointLimitsAccelerationConstraint.html#a1f6118d7a4ea0926dc9786dbc2550fba">wbc::JointLimitsAccelerationConstraint</a>, <a class="el" href="classwbc_1_1JointLimitsVelocityConstraint.html#a2553d076fc2b5639ffa3800bd8a3d9b9">wbc::JointLimitsVelocityConstraint</a>, and <a class="el" href="classwbc_1_1RigidbodyDynamicsConstraint.html#a79cc6bdebc3f233d8fd85fe588e548c5">wbc::RigidbodyDynamicsConstraint</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="ae8790185f8d6c50d2d53ef6eb87b1351" name="ae8790185f8d6c50d2d53ef6eb87b1351"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae8790185f8d6c50d2d53ef6eb87b1351">&#9670;&nbsp;</a></span>A</h2>
+<a id="a79014c7686b801e037fb52eb4b3f3620" name="a79014c7686b801e037fb52eb4b3f3620"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a79014c7686b801e037fb52eb4b3f3620">&#9670;&nbsp;</a></span>A_mtx</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::MatrixXd wbc::Constraint::A</td>
+          <td class="memname">base::MatrixXd wbc::Constraint::A_mtx</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic constraint for a WBC optimization problem.">Constraint</a> matrix </p>
+<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic hard (linear) constraint for a WBC optimization problem....">Constraint</a> matrix </p>
 
 </div>
 </div>
-<a id="adaeabe7a1b1ef8be26cebfffb4f28318" name="adaeabe7a1b1ef8be26cebfffb4f28318"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adaeabe7a1b1ef8be26cebfffb4f28318">&#9670;&nbsp;</a></span>activation</h2>
+<a id="a9d04f9539154cd1306e07e80f124b27e" name="a9d04f9539154cd1306e07e80f124b27e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d04f9539154cd1306e07e80f124b27e">&#9670;&nbsp;</a></span>b_vec</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double wbc::Constraint::activation</td>
+          <td class="memname">base::VectorXd wbc::Constraint::b_vec</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic constraint for a WBC optimization problem.">Constraint</a> activation. Has to be between 0 and 1. Will be multiplied with the constraint weights. Can be used to (smoothly) switch on/off the constraints </p>
+<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic hard (linear) constraint for a WBC optimization problem....">Constraint</a> vector </p>
 
 </div>
 </div>
-<a id="ac0b70832f54251682c50944866591909" name="ac0b70832f54251682c50944866591909"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0b70832f54251682c50944866591909">&#9670;&nbsp;</a></span>Aw</h2>
+<a id="a1c356c8705d971a5dab550db6a399020" name="a1c356c8705d971a5dab550db6a399020"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1c356c8705d971a5dab550db6a399020">&#9670;&nbsp;</a></span>c_type</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::MatrixXd wbc::Constraint::Aw</td>
+          <td class="memname"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a> wbc::Constraint::c_type</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p >Weighted constraint matrix </p>
 
 </div>
 </div>
-<a id="a7f5bc8049a572f7de5015a72d07a3d25" name="a7f5bc8049a572f7de5015a72d07a3d25"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7f5bc8049a572f7de5015a72d07a3d25">&#9670;&nbsp;</a></span>config</h2>
+<a id="a302fa061656366b7a09b6e910eb2c2c2" name="a302fa061656366b7a09b6e910eb2c2c2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a302fa061656366b7a09b6e910eb2c2c2">&#9670;&nbsp;</a></span>lb_vec</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname"><a class="el" href="classwbc_1_1ConstraintConfig.html">ConstraintConfig</a> wbc::Constraint::config</td>
+          <td class="memname">base::VectorXd wbc::Constraint::lb_vec</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p >Configuration of this constraint. See <a class="el" href="ConstraintConfig_8hpp.html">ConstraintConfig.hpp</a> for more details </p>
+<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic hard (linear) constraint for a WBC optimization problem....">Constraint</a> lower bound </p>
 
 </div>
 </div>
-<a id="ae051f34efe899cc4b824b57888558231" name="ae051f34efe899cc4b824b57888558231"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae051f34efe899cc4b824b57888558231">&#9670;&nbsp;</a></span>time</h2>
+<a id="a1824a2cc75b06bbc4b0a5106f5521f2c" name="a1824a2cc75b06bbc4b0a5106f5521f2c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1824a2cc75b06bbc4b0a5106f5521f2c">&#9670;&nbsp;</a></span>ub_vec</h2>
 
 <div class="memitem">
 <div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::Time wbc::Constraint::time</td>
+          <td class="memname">base::VectorXd wbc::Constraint::ub_vec</td>
         </tr>
       </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
 </div><div class="memdoc">
-<p >Last time the constraint reference values was updated. </p>
-
-</div>
-</div>
-<a id="ae418bce125e6a35777fca5a62812f5e0" name="ae418bce125e6a35777fca5a62812f5e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae418bce125e6a35777fca5a62812f5e0">&#9670;&nbsp;</a></span>timeout</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">int wbc::Constraint::timeout</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Can be 0 or 1. Will be multiplied with the constraint weights. If no new reference values arrives for more than config.timeout time, this value will be set to zero </p>
-
-</div>
-</div>
-<a id="a5ca7ea71268c82103c47be596357da75" name="a5ca7ea71268c82103c47be596357da75"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ca7ea71268c82103c47be596357da75">&#9670;&nbsp;</a></span>weights</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::VectorXd wbc::Constraint::weights</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic constraint for a WBC optimization problem.">Constraint</a> weights. Size has to be same as number of constraint variables and all entries have to be &gt;= 0. A zero entry means that the reference of the corresponding constraint variable will be ignored while computing the solution, for example when controlling the Cartesian pose, the last 3 entries can be set to zero in order to ignore the orientarion and only control the position </p>
-
-</div>
-</div>
-<a id="aab01d3ab60e3aceb94fd1e254fa5d185" name="aab01d3ab60e3aceb94fd1e254fa5d185"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aab01d3ab60e3aceb94fd1e254fa5d185">&#9670;&nbsp;</a></span>weights_root</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::VectorXd wbc::Constraint::weights_root</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic constraint for a WBC optimization problem.">Constraint</a> weights. In case of joint constraints, weights_root will be equal to weights. In case of Cartesian constraints, weights_root will be equal to weights, transformed into the robot's base/root frame </p>
-
-</div>
-</div>
-<a id="a788eff86b50cc510653f3f6994c136a5" name="a788eff86b50cc510653f3f6994c136a5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a788eff86b50cc510653f3f6994c136a5">&#9670;&nbsp;</a></span>y_ref</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::VectorXd wbc::Constraint::y_ref</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Reference input for this constraint. Can be either joint or a Cartesian space variables. If the latter is the case they have to be expressed in in ref_frame coordinates! See <a class="el" href="ConstraintConfig_8hpp.html">ConstraintConfig.hpp</a> for more details. </p>
-
-</div>
-</div>
-<a id="a66d03491f44c763b326e87e394bbff59" name="a66d03491f44c763b326e87e394bbff59"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a66d03491f44c763b326e87e394bbff59">&#9670;&nbsp;</a></span>y_ref_root</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::VectorXd wbc::Constraint::y_ref_root</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p >Reference value for this constraint. Can be either joint or a Cartesian space variables. In the former case, y_ref_root will be equal to y_ref, in the latter case, y_ref_root will be y_ref transformed into the robot root/base frame. </p>
+<p ><a class="el" href="classwbc_1_1Constraint.html" title="Abstract class to represent a generic hard (linear) constraint for a WBC optimization problem....">Constraint</a> upper bound </p>
 
 </div>
 </div>
