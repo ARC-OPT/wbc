@@ -29,6 +29,8 @@ namespace wbc{
             // enforce joint velocity and position limits
             lb_vec(idx) = std::max(static_cast<double>(range.min.speed), (range.min.position - state[n].position) / dt);
             ub_vec(idx) = std::min(static_cast<double>(range.max.speed), (range.max.position - state[n].position) / dt);
+            lb_vec(idx) = std::min(lb_vec(idx), 0.0); // Why is this required?
+            ub_vec(idx) = std::max(ub_vec(idx), 0.0);
         }
     }
 
