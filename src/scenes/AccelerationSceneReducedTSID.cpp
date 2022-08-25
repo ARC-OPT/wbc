@@ -53,12 +53,18 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
 
     int prio = 0; // Only one priority is implemented here!
     uint nj = robot_model->noOfJoints();
-    uint na = robot_model->noOfActuatedJoints();
     uint ncp = robot_model->getActiveContacts().size();
 
     // QP Size: (NJoints+NContacts*2*6 x NJoints+NContacts*6)
     // Variable order: (acc,f_ext)
-    tasks_prio[prio].resize(nj+ncp*6, nj+ncp*6);
+
+    size_t total_eqs = 0;
+    for(auto contraint : constraints[prio]) {
+        contraint->update(robot_model);
+        if(contraint->type() != Constraint::bounds)
+            total_eqs += contraint->size();
+    }
+    tasks_prio[prio].resize(total_eqs, nj+ncp*6);
     tasks_prio[prio].H.setZero();
     tasks_prio[prio].g.setZero();
 
@@ -93,12 +99,6 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
 
     ///////// Constraints
 
-    size_t total_eqs = 0;
-    for(auto contraint : constraints[prio]) {
-        contraint->update(robot_model);
-        if(contraint->type() != Constraint::bounds)
-            total_eqs += contraint->size();
-    }
 
     // Note already performed at the beginning of the update (but does not consider additional constraints)
     tasks_prio[prio].A.resize(total_eqs, nj+ncp*6);
