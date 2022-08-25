@@ -55,7 +55,7 @@ int main()
 
     // Configure solver, use QPOases
     QPSolverPtr solver = make_shared<QPOASESSolver>();
-    dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(100);
+    dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
     qpOASES::Options options = dynamic_pointer_cast<QPOASESSolver>(solver)->getOptions();
     options.printLevel = qpOASES::PL_NONE;
     dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
@@ -91,24 +91,29 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl_left, ctrl_right;
-    base::VectorXd p_gain(6),d_gain(6);
+    base::VectorXd p_gain(6),d_gain(6),ff_gain(6);
     p_gain.setConstant(10); // Stiffness
     d_gain.setConstant(30); // Damping
+    ff_gain.setConstant(1); // Feed forward
     ctrl_left.setPGain(p_gain);
     ctrl_left.setDGain(d_gain);
+    ctrl_left.setDGain(ff_gain);
     ctrl_right.setPGain(p_gain);
-    ctrl_right.setDGain(d_gain);
 
     // Target Pose left/right
     base::samples::RigidBodyStateSE3 setpoint_left, setpoint_right, feedback_left, feedback_right, ctrl_output_left, ctrl_output_right;
-    setpoint_left.pose.position = base::Vector3d(0.4,0.453543,0.183343);
+    setpoint_left.pose.position = base::Vector3d(0.522827,0.453543,0.183343);
     setpoint_left.pose.orientation = base::Quaterniond(0.371912,-0.485673,0.725747,-0.314793);
+    setpoint_left.twist.setZero();
+    setpoint_left.acceleration.setZero();
     setpoint_right.pose.position = base::Vector3d(0.522827, -0.453543, 0.183345);
     setpoint_right.pose.orientation = base::Quaterniond(0.371914, 0.485672, 0.72575, 0.314787);
+    setpoint_right.twist.setZero();
+    setpoint_right.acceleration.setZero();
 
     // Run control loop
     JointIntegrator integrator;
-    double loop_time = 0.01; // seconds
+    double loop_time = dt; // seconds
     base::commands::Joints solver_output;
     for(double t = 0; t < 5; t+=loop_time){
 
@@ -118,6 +123,7 @@ int main()
         // Update controllers, left arm: Follow sinusoidal trajectory
         setpoint_left.pose.position[0] = 0.522827 + 0.1*sin(t);
         setpoint_left.twist.linear[0] = 0.1*cos(t);
+        setpoint_left.acceleration.linear[0] = -0.1*sin(t);
         feedback_left = robot_model->rigidBodyState(wbc_config[0].root, wbc_config[0].tip);
         feedback_right = robot_model->rigidBodyState(wbc_config[1].root, wbc_config[1].tip);
         ctrl_output_left = ctrl_left.update(setpoint_left, feedback_left);

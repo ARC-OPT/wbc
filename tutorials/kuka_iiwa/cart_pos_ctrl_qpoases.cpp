@@ -99,7 +99,7 @@ int main(int argc, char** argv){
     // Choose a valid reference pose x_r, which is defined in cart_task.ref_frame and defines the desired pose of
     // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, ctrl_output, feedback;
-    setpoint.pose.position = base::Vector3d(0.0, 0.45, 0.45);
+    setpoint.pose.position = base::Vector3d(0.0, 0.0, 0.95);
     setpoint.pose.orientation.setIdentity();
     setpoint.frame_id = cart_task.ref_frame;
     feedback.pose.position.setZero();

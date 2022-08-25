@@ -56,7 +56,7 @@ int main(int argc, char** argv){
     // will not contribute to the task solution, i.e., its velocity will be zero!
     JointWeights joint_weights;
     joint_weights.names = robot_model->jointNames();
-    joint_weights.elements = {1,1,1,0,1,1,1};
+    joint_weights.elements = {1,1,1,1,0,1,1};
     scene.setJointWeights(joint_weights);
 
     // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:

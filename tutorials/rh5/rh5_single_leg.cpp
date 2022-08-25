@@ -81,7 +81,7 @@ int main(){
     //
     // As we don't use feed forward velocity here, we can ignore the factor kd.
     CartesianPosPDController controller;
-    controller.setPGain(base::Vector6d::Constant(1));
+    controller.setPGain(base::Vector6d::Constant(10));
 
     // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed
     uint nj = ind_joint_names.size();
@@ -97,7 +97,7 @@ int main(){
     // Choose a valid reference pose x_r, which is defined in cart_task.ref_frame and defines the desired pose of
     // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
-    setpoint.pose.position = base::Vector3d(0, 0, -0.6);
+    setpoint.pose.position = base::Vector3d(0, 0, -0.7);
     setpoint.pose.orientation = base::Quaterniond(0,-1,0,0);
     setpoint.frame_id = cart_task.ref_frame;
     feedback.pose.position.setZero();

@@ -70,9 +70,10 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl_left, ctrl_right;
-    base::VectorXd p_gain(6),d_gain(6);
+    base::VectorXd p_gain(6),d_gain(6),ff_gain(6);
     p_gain.setConstant(10); // Stiffness
     d_gain.setConstant(30); // Damping
+    ff_gain.setConstant(1); // Feed forward
     ctrl_left.setPGain(p_gain);
     ctrl_left.setDGain(d_gain);
     ctrl_right.setPGain(p_gain);
@@ -97,6 +98,7 @@ int main()
         // Update controllers, left arm: Follow sinusoidal trajectory
         setpoint_left.pose.position[0] = 0.522827 + 0.1*sin(t);
         setpoint_left.twist.linear[0] = 0.1*cos(t);
+        setpoint_left.acceleration.linear[0] = -0.1*sin(t);
         feedback_left = robot_model->rigidBodyState(wbc_config[0].root, wbc_config[0].tip);
         feedback_right = robot_model->rigidBodyState(wbc_config[1].root, wbc_config[1].tip);
         ctrl_output_left = ctrl_left.update(setpoint_left, feedback_left);
