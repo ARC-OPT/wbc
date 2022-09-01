@@ -22,6 +22,8 @@ ProxQPSolver::ProxQPSolver()
 ///      l < Cx < u 
 void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output)
 {
+    namespace pqp = proxsuite::proxqp;
+
     if(hierarchical_qp.size() != 1)
         throw std::runtime_error("ProxQPSolver::solve: Constraints vector size must be 1 for the current implementation");
 
@@ -35,9 +37,9 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
 
     if(!configured) 
     {
-        _solver = pqp::Dense<double>(n_var, n_eq, n_in);
-        _solver.settings.eps_abs = _eps_abs;
-        _solver.settings.max_iter = _n_iter;
+        _solver_ptr = std::make_shared<pqp::dense::QP<double>>(n_var, n_eq, n_in);
+        _solver_ptr->settings.eps_abs = _eps_abs;
+        _solver_ptr->settings.max_iter = _n_iter;
 
         // hessian, gradient and equalities matrices in qp are ok
         // configuring inequalities constraints matrix
@@ -51,7 +53,7 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
     {
         if(n_var != _C_mtx.cols())
             throw std::runtime_error("QP problem changed dynamically. Not supported at the moment.");
-        if(n_con != _C_mtx.rows())
+        if(n_in != _C_mtx.rows())
             throw std::runtime_error("QP problem changed dynamically. Not supported at the moment.");
     }
 
@@ -63,13 +65,13 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
     _l_vec << qp.lower_y, qp.lower_x;
     _u_vec << qp.upper_y, qp.upper_x;
 
-    _solver.init(qp.H, qp.g, qp.A, qp.b, _C_mtx, _u_vec, _l_vec);
-    _solver.solve();
+    _solver_ptr->init(qp.H, qp.g, qp.A, qp.b, _C_mtx, _u_vec, _l_vec);
+    _solver_ptr->solve();
     
     solver_output.resize(qp.nq);
-    solver_output = _solver.results.x;
+    solver_output = _solver_ptr->results.x;
 
-    auto status = _solver.results.info.status;
+    auto status = _solver_ptr->results.info.status;
 
     if(status == pqp::QPSolverOutput::PROXQP_MAX_ITER_REACHED)
         throw std::runtime_error("ProxQP returned error status: max iterations reached.");
@@ -78,6 +80,6 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
     if(status == pqp::QPSolverOutput::PROXQP_DUAL_INFEASIBLE)
         throw std::runtime_error("ProxQP returned error status: problem is dual infeasible.");
 
-    _actual_n_iter = _solver.results.info.iter;
+    _actual_n_iter = _solver_ptr->results.info.iter;
 }
 }

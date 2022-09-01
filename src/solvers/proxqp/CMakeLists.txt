@@ -18,6 +18,8 @@ set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
        SOVERSION ${API_VERSION})
 
+target_compile_features(${TARGET_NAME} PUBLIC cxx_std_17)
+
 install(TARGETS ${TARGET_NAME}
         LIBRARY DESTINATION lib)
 

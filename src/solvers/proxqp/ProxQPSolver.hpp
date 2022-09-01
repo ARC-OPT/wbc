@@ -4,9 +4,11 @@
 #include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 
+#include <memory>
+
 #include <base/Time.hpp>
 
-#include <proxsuite/proxqp/dense/dense.hpp> 
+#include <proxsuite/proxqp/dense/wrapper.hpp> 
 
 namespace wbc {
 
@@ -29,7 +31,7 @@ private:
 
 public:
     ProxQPSolver();
-    virtual ~ProxQPSolver() = default;
+    virtual ~ProxQPSolver() noexcept { };
 
     /**
      * @brief solve Solve the given quadratic program
@@ -49,10 +51,10 @@ public:
     int getNter(){ return _actual_n_iter; }
 
 protected:
-    using pqp = proxsuite::proxqp;
 
-    pqp::Dense::QP<double> _solver;
+    std::shared_ptr<proxsuite::proxqp::dense::QP<double>> _solver_ptr;
     
+    double _eps_abs = 1e-9;
     int _n_iter;
     int _actual_n_iter;
 
