@@ -40,7 +40,7 @@ const HierarchicalQP& AccelerationScene::update(){
     //    W - Vector of task weights. One vector for each priority
 
     int prio = 0; // Only one priority is implemented here!
-    tasks_prio[prio].resize(n_task_variables_per_prio[prio], robot_model->noOfJoints());
+    tasks_prio[prio].resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
 
     // Walk through all tasks of current priority
     uint row_index = 0;
@@ -73,8 +73,8 @@ const HierarchicalQP& AccelerationScene::update(){
     const base::VectorXd& y = tasks_prio[prio].lower_y;
 
     // Cost Function: x^T*H*x + x^T * g
-    tasks_prio[prio].H = A.transpose()*A;
-    tasks_prio[prio].g.setZero() = -(A.transpose()*y).transpose();
+    tasks_prio[prio].H.noalias() = A.transpose() * A;
+    tasks_prio[prio].g.setZero().noalias() = -y.transpose() * A;
     tasks_prio[prio].upper_x.setConstant(1000);
     tasks_prio[prio].lower_x.setConstant(-1000);
 

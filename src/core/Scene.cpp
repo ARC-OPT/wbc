@@ -59,7 +59,7 @@ bool WbcScene::configure(const std::vector<TaskConfig> &config){
 
     tasks_prio.resize(tasks.size());
     for(uint prio = 0; prio < tasks.size(); prio++)
-        tasks_prio[prio].resize(n_task_variables_per_prio[prio], robot_model->noOfJoints());
+        tasks_prio[prio].resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
     configured = true;
 
     // Set actuated joint weights to 1 and unactuated joint weight to 0 by default
@@ -113,7 +113,7 @@ void WbcScene::setTaskWeights(const std::string& constraint_name, const base::Ve
     getTask(constraint_name)->setWeights(weights);
 }
 
-void WbcScene::setTaskActivation(const std::string& constraint_name, const double activation){
+void WbcScene::setTaskActivation(const std::string& constraint_name, double activation){
     getTask(constraint_name)->setActivation(activation);
 }
 

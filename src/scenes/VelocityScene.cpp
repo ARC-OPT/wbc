@@ -36,7 +36,7 @@ const HierarchicalQP& VelocityScene::update(){
     //    W - Vector of task weights. One vector for each priority
     for(uint prio = 0; prio < tasks.size(); prio++){
 
-        tasks_prio[prio].resize(n_task_variables_per_prio[prio], robot_model->noOfJoints());
+        tasks_prio[prio].resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
 
         // Walk through all tasks of current priority
         uint row_index = 0;

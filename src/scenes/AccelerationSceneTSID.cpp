@@ -57,9 +57,22 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     uint na = robot_model->noOfActuatedJoints();
     uint ncp = robot_model->getActiveContacts().size();
 
+    bool has_bounds = false;
+    size_t total_eqs = 0, total_ineqs = 0;
+    for(auto contraint : constraints[prio]) {
+        contraint->update(robot_model);
+        if(contraint->type() == Constraint::equality)
+            total_eqs += contraint->size();
+        if(contraint->type() == Constraint::inequality)
+            total_ineqs += contraint->size();
+        if(contraint->type() == Constraint::bounds)
+            has_bounds = true;;
+    }
+
+
     // QP Size: (NJoints+NContacts*2*6 x NJoints+NActuatedJoints+NContacts*6)
     // Variable order: (acc,torque,f_ext)
-    tasks_prio[prio].resize(nj+ncp*6,nj+na+ncp*6);
+    tasks_prio[prio].resize(nj+na+ncp*6, total_eqs, total_ineqs, has_bounds);
     tasks_prio[prio].H.setZero();
     tasks_prio[prio].g.setZero();
 
@@ -94,27 +107,21 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     ///////// Constraints
 
-    size_t total_eqs = 0;
-    for(auto contraint : constraints[prio]) {
-        contraint->update(robot_model);
-        if(contraint->type() != Constraint::bounds)
-            total_eqs += contraint->size();
-    }
-
     // Note already performed at the beginning of the update (but does not consider additional constraints)
-    tasks_prio[prio].lower_x.resize(nj+na+ncp*6);
-    tasks_prio[prio].upper_x.resize(nj+na+ncp*6);
-    tasks_prio[prio].lower_y.resize(total_eqs);
-    tasks_prio[prio].upper_y.resize(total_eqs);
-    tasks_prio[prio].A.resize(total_eqs, nj+na+ncp*6);
+    // tasks_prio[prio].lower_x.resize(nj+na+ncp*6);
+    // tasks_prio[prio].upper_x.resize(nj+na+ncp*6);
+    // tasks_prio[prio].lower_y.resize(total_eqs);
+    // tasks_prio[prio].upper_y.resize(total_eqs);
+    // tasks_prio[prio].A.resize(total_eqs, nj+na+ncp*6);
 
     tasks_prio[prio].lower_x.setConstant(-999999);  // bounds
     tasks_prio[prio].upper_x.setConstant(+999999);  // bounds
     tasks_prio[prio].lower_y.setConstant(-999999);  // inequalities
     tasks_prio[prio].upper_y.setConstant(+999999);  // inequalities
     tasks_prio[prio].A.setZero();
+    tasks_prio[prio].C.setZero();
 
-    total_eqs = 0;
+    total_eqs = 0, total_ineqs = 0;
     for(uint i = 0; i < constraints[prio].size(); i++) {
         Constraint::Type type = constraints[prio][i]->type();
         size_t c_size = constraints[prio][i]->size();
@@ -125,15 +132,14 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         }
         else if (type == Constraint::equality) {
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            tasks_prio[prio].b.segment(total_eqs, c_size) = constraints[prio][i]->b();
             total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
-            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
-            total_eqs += c_size;
+            tasks_prio[prio].A.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
+            total_ineqs += c_size;
         }
     }
 

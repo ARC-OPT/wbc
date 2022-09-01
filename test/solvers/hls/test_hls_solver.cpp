@@ -12,12 +12,14 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     srand (time(NULL));
 
     const uint NO_JOINTS = 6;
-    const uint NO_CONSTRAINTS = 6;
+    const uint NO_EQ_CONSTRAINTS = 6;
+    const uint NO_IN_CONSTRAINTS = 0;
+    const bool WITH_BOUNDS = false;
     const double NORM_MAX = 100;
     const double MIN_EIGENVALUE = 1e-9;
 
     HierarchicalLSSolver solver;
-    vector<int> ny_per_prio(1,NO_CONSTRAINTS);
+    vector<int> ny_per_prio(1,NO_EQ_CONSTRAINTS);
 
     BOOST_CHECK_EQUAL(solver.configure(ny_per_prio, NO_JOINTS), true);
 
@@ -28,11 +30,10 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     BOOST_CHECK(solver.getMaxSolverOutputNorm() == NORM_MAX);
 
     wbc::QuadraticProgram qp;
-    qp.resize(NO_CONSTRAINTS, NO_JOINTS);
+    qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
     base::Vector6d y;
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
-    qp.lower_y = y;
-    qp.upper_y = y;
+    qp.b = y;
 
     base::Matrix6d A;
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
@@ -43,6 +44,7 @@ BOOST_AUTO_TEST_CASE(solver_hls)
          0.315, 0.551, 0.462, 0.221, 0.638, 0.244;
     qp.A = A;
 
+    qp.check();
     wbc::HierarchicalQP hqp;
     hqp.Wq.setOnes(NO_JOINTS);
     hqp << qp;
@@ -66,7 +68,7 @@ BOOST_AUTO_TEST_CASE(solver_hls)
     cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
-    for(uint j = 0; j < NO_CONSTRAINTS; j++)
+    for(uint j = 0; j < NO_EQ_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
     //cout<<"\n............................."<<endl;

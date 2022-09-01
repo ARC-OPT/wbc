@@ -13,13 +13,13 @@ namespace wbc {
 class HierarchicalQP;
 
 /**
- * @brief The QPOASESSolver class is a wrapper for the qp-solver qpoases (see https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf). It solves problems of shape:
+ * @brief The EiquadprogSolver class is a wrapper for the qp-solver eiquadprog (see https://github.com/stack-of-tasks/eiquadprog). It solves problems of shape:
  *  \f[
  *        \begin{array}{ccc}
- *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{H}\mathbf{x}+\mathbf{x}^T\mathbf{g}& \\
+ *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{G}\mathbf{x}+\mathbf{x}^T\mathbf{g0}& \\
  *             & & \\
- *        s.t. & lb(\mathbf{Ax}) \leq \mathbf{Ax} \leq ub(\mathbf{Ax})& \\
- *             & lb(\mathbf{x}) \leq \mathbf{x} \leq ub(\mathbf{x})& \\
+ *        s.t. & \mathbf{CE}x + ce0 = 0& \\
+ *             & \mathbf{CI}x + ci0 \geq 0& \\
  *        \end{array}
  *  \f]
  */
@@ -53,9 +53,6 @@ protected:
     
     int _n_iter;
     int _actual_n_iter;
-
-    Eigen::MatrixXd _CE_mtx;
-    Eigen::VectorXd _ce0_vec;
 
     Eigen::MatrixXd _CI_mtx;
     Eigen::VectorXd _ci0_vec;

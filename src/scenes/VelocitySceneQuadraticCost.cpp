@@ -42,8 +42,21 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     uint ncp = contact_points.size();
     uint prio = 0;
 
+    // check problem size
+    size_t total_eqs = 0, total_ineqs = 0;
+    bool has_bounds = false;
+    for(auto constraint : constraints[prio]) {
+        constraint->update(robot_model);
+        if(constraint->type() == Constraint::equality)
+            total_eqs += constraint->size();
+        else if(constraint->type() == Constraint::inequality)
+            total_ineqs += constraint->size();
+        else if(constraint->type() == Constraint::bounds)
+            has_bounds = true;
+    }
+
     // QP Size: (NContacts*6 X NJoints)
-    tasks_prio[prio].resize(ncp*6,nj);
+    tasks_prio[prio].resize(nj, total_eqs, total_ineqs, has_bounds);
     tasks_prio[prio].H.setZero();
     tasks_prio[prio].g.setZero();
 
@@ -79,19 +92,12 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
     ///////// Constraints
 
-    size_t total_eqs = 0;
-    for(auto constraint : constraints[prio]) {
-        constraint->update(robot_model);
-        if(constraint->type() != Constraint::bounds)
-            total_eqs += constraint->size();
-    }
-
     // Note already performed at the beginning of the update (but does not consider additional constriants)
-    tasks_prio[prio].A.resize(total_eqs, nj);
-    tasks_prio[prio].lower_x.resize(nj);
-    tasks_prio[prio].upper_y.resize(nj);
-    tasks_prio[prio].lower_y.resize(total_eqs);
-    tasks_prio[prio].upper_y.resize(total_eqs);
+    // tasks_prio[prio].A.resize(total_eqs, nj);
+    // tasks_prio[prio].lower_x.resize(nj);
+    // tasks_prio[prio].upper_y.resize(nj);
+    // tasks_prio[prio].lower_y.resize(total_eqs);
+    // tasks_prio[prio].upper_y.resize(total_eqs);
 
     tasks_prio[prio].A.setZero();
     tasks_prio[prio].lower_y.setConstant(-99999);
@@ -100,6 +106,7 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     tasks_prio[prio].upper_x.setConstant(+99999);
 
     total_eqs = 0;
+    total_ineqs = 0;
     for(uint i = 0; i < constraints[prio].size(); i++) {
         Constraint::Type type = constraints[prio][i]->type();
         size_t c_size = constraints[prio][i]->size();
@@ -110,15 +117,14 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
         }
         else if (type == Constraint::equality) {
             tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            tasks_prio[prio].b.segment(total_eqs, c_size) = constraints[prio][i]->b();
             total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
-            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
-            total_eqs += c_size;
+            tasks_prio[prio].C.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
+            total_ineqs += c_size;
         }
     }
 
