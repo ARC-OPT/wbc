@@ -62,9 +62,9 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     // Constraint space upper and lower bounds
     real_t* lbA_ptr = 0;
     real_t* ubA_ptr = 0;
-    if(qp.lower_y.size() > 0)
+    if(lower_a.size() > 0)
         lbA_ptr = (real_t*)lower_a.data();
-    if(qp.upper_y.size() > 0)
+    if(upper_a.size() > 0)
          ubA_ptr = (real_t*)upper_a.data();
 
     // Constraint matrix
