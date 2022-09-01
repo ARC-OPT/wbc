@@ -27,7 +27,7 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
     qp.check();
 
-    size_t n_in = 2 * (qp.nin + qp.nq);
+    size_t n_in = (qp.bounded ? (2 * (qp.nin + qp.nq)) : (2*qp.nin));
     size_t n_eq = qp.neq;
     size_t n_var = qp.nq;
 
@@ -57,9 +57,10 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
     // create inequalities constraint matric (inequalities + bounds)
     _CI_mtx.middleRows(0, qp.nin) = qp.C;
     _CI_mtx.middleRows(qp.nin, qp.nin) = -qp.C;
-    _CI_mtx.middleRows(2*qp.nin, n_var).diagonal().setConstant(1.0);        // map bounds as inequalities
-    _CI_mtx.middleRows(2*qp.nin+n_var, n_var).diagonal().setConstant(-1.0);
-    
+    if(qp.bounded) {
+        _CI_mtx.middleRows(2*qp.nin, n_var).diagonal().setConstant(1.0);        // map bounds as inequalities
+        _CI_mtx.middleRows(2*qp.nin+n_var, n_var).diagonal().setConstant(-1.0);
+    }
     _ci0_vec << -qp.lower_y, qp.upper_y, -qp.lower_x, qp.upper_x;
 
     namespace eq = eiquadprog::solvers;
