@@ -86,7 +86,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_with_equality_constraints)
     const int NO_JOINTS = 6;
     const int NO_EQ_CONSTRAINTS = 6;
     const int NO_IN_CONSTRAINTS = 0;
-    const bool WITH_BOUNDS = false;
+    const bool WITH_BOUNDS = true;
     const int NO_WSR = 20;
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint

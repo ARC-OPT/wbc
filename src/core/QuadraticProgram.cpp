@@ -8,7 +8,7 @@ void QuadraticProgram::resize(const uint _nq, const uint _neq, const uint _nin, 
     nin = _nin;
     nq = _nq;
 
-    bounds = _bounds;
+    bounded = _bounds;
 
     // cost function
     H.resize(nq, nq);
@@ -31,16 +31,16 @@ void QuadraticProgram::resize(const uint _nq, const uint _neq, const uint _nin, 
     upper_y.setConstant(std::numeric_limits<double>::quiet_NaN());
 
     // bounds
-    lower_x.resize(bounds ? nq : 0);
+    lower_x.resize(bounded ? nq : 0);
     lower_x.setConstant(std::numeric_limits<double>::quiet_NaN());
-    upper_x.resize(bounds ? nq : 0);
+    upper_x.resize(bounded ? nq : 0);
     upper_x.setConstant(std::numeric_limits<double>::quiet_NaN());
 
     Wy.setOnes(neq+nin);
 }
 
 void QuadraticProgram::check() const {
-    if(bounds) {
+    if(bounded) {
         if(lower_x.size() != nq)
             throw std::runtime_error("Quadratic program with " + std::to_string(nq) + " variables has bounds "
                 + "but lower bound has size " + std::to_string(lower_x.size()));
@@ -80,6 +80,7 @@ void QuadraticProgram::check() const {
 void QuadraticProgram::print() const {
     std::cout << "-- Quadratic Program --" << std::endl;
     std::cout << "Size nq: " << nq << "  neq: " << neq << "  nin:" << nin << std::endl;
+    std::cout << "bounded: " << (bounded ? "true" : "false") << std::endl;
     std::cout << "H" << std::endl;
     std::cout << H << std::endl;
     std::cout << "g" << std::endl;

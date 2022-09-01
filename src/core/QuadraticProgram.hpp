@@ -27,7 +27,7 @@ struct QuadraticProgram{
     int neq;                /** Number of equalities constraints for this prio*/
     int nin;                /** Number of inequalities constraints for this prio*/
 
-    bool bounds;            /** Contains simple boiunds for the variables */
+    bool bounded;            /** Contains simple boiunds for the variables */
 
     base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
     base::VectorXd g;       /** Gradient vector (nq x 1) */
