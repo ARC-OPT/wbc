@@ -43,7 +43,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_without_constraints)
 
     qp.H = A.transpose()*A;
     qp.g = -(A.transpose()*y).transpose();
-    // qp.A = A; // ?
+    
     qp.lower_x.setConstant(-1000);
     qp.upper_x.setConstant(1000);
 
