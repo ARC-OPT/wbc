@@ -58,6 +58,10 @@ protected:
     int _n_iter;
     int _actual_n_iter;
 
+    size_t _n_var_init; // number of variables in the configured solver instance
+    size_t _n_eq_init;  // number of equalities in the configured solver instance
+    size_t _n_in_init;  // number of inequalities in the configured solver instance (inclusing bounds)
+
     Eigen::MatrixXd _C_mtx; // inequalities matrix (including bounds)
     Eigen::VectorXd _l_vec; // inequalities lower bounds
     Eigen::VectorXd _u_vec; // inequalities upper bounds

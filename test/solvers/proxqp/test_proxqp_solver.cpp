@@ -19,8 +19,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
 
     // Solve the problem min(||Ax-b||) without constraints --> encode the task as part of the cost function
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = A^T*A and g = -(A^T*y)^T
-    // For a 6x6 Constraint matrix this is approx. 3-5 times faster than encoding the task as constraint as below
-    // With warm start, this solver is much faster (approx. 5 times) than in the initial run
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
@@ -58,16 +56,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
-    std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
-    cout<<"No of joints: "<<NO_JOINTS<<endl;
-    cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
-
-    cout<<"\nSolver Input:"<<endl;
-    cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
-    cout<<"Reference: y = "<<y.transpose()<<endl;
-
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_JOINTS; j++)
@@ -88,7 +76,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = I  and g = 0
-    // For a 6x6 Constraint matrix this is approx. 3-5 times slower than encoding the task in the cost function as above
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
@@ -126,16 +113,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
-    std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
-    cout<<"No of joints: "<<NO_JOINTS<<endl;
-    cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
-
-    cout<<"\nSolver Input:"<<endl;
-    cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
-    cout<<"Reference: y = "<<y.transpose()<<endl;
-
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_EQ_CONSTRAINTS; j++)
@@ -156,7 +133,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = I  and g = 0
-    // For a 6x6 Constraint matrix this is approx. 3-5 times slower than encoding the task in the cost function as above
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
@@ -209,12 +185,10 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     const int NO_EQ_CONSTRAINTS = 0;
     const int NO_IN_CONSTRAINTS = 0;
     const bool WITH_BOUNDS = true;
-    const int NO_WSR = 20;
+    const int NO_WSR = 200;
 
-    // Solve the problem min(||Ax-b||) without constraints --> encode the task as part of the cost function
+    // Solve the problem min(||Ax-b||) with bound constraints --> encode the task as part of the cost function
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = A^T*A and g = -(A^T*y)^T
-    // For a 6x6 Constraint matrix this is approx. 3-5 times faster than encoding the task as constraint as below
-    // With warm start, this solver is much faster (approx. 5 times) than in the initial run
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
