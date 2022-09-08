@@ -81,11 +81,12 @@ WBC is distributed under the [3-clause BSD license](https://opensource.org/licen
 If you use WBC within your scientific work, please cite the following publication:
 
 ```
-@INPROCEEDINGS{mronga2022,
-author = "D. Mronga and S.Kumar and F.Kirchner",
-title = "Whole-Body Control of Series-Parallel Hybrid Robots",
-year = "2022",
-note = "{2022 IEEE International Conference on Robotics and Automation (ICRA)}, Accepted for publication",
+@INPROCEEDINGS{9811616,
+  booktitle={2022 International Conference on Robotics and Automation (ICRA)}, 
+  title={Whole-Body Control of Series-Parallel Hybrid Robots}, 
+  year={2022},
+  pages={228-234},
+  doi={10.1109/ICRA46639.2022.9811616}
 }
 ```
 ## Funding
