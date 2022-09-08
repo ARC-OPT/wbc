@@ -13,7 +13,7 @@ QPSolverRegistry<ProxQPSolver> ProxQPSolver::reg("ProxQP");
 
 ProxQPSolver::ProxQPSolver()
 {
-    _n_iter = 1000;
+    _n_iter = 10000;
     _eps_abs = 1e-9;
 }
 
@@ -85,13 +85,20 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
     // std::cerr << "b: "<< qp.b << std::endl;
     // std::cerr << "eps_abs: " << _solver_ptr->settings.eps_abs << std::endl;
     // std::cerr << "max_iter: " << _solver_ptr->settings.max_iter << std::endl;
-    
+
     _solver_ptr->solve();
     
     solver_output.resize(qp.nq);
     solver_output = _solver_ptr->results.x;
 
     auto status = _solver_ptr->results.info.status;
+
+    // if(status == pqp::QPSolverOutput::PROXQP_MAX_ITER_REACHED)
+    //     std::cerr << "ProxQP returned error status: max iterations reached." << std::endl;
+    // if(status == pqp::QPSolverOutput::PROXQP_PRIMAL_INFEASIBLE)
+    //     std::cerr << "ProxQP returned error status: problem is primal infeasible." << std::endl;
+    // if(status == pqp::QPSolverOutput::PROXQP_DUAL_INFEASIBLE)
+    //     std::cerr << "ProxQP returned error status: problem is dual infeasible." << std::endl;
 
     if(status == pqp::QPSolverOutput::PROXQP_MAX_ITER_REACHED)
         throw std::runtime_error("ProxQP returned error status: max iterations reached.");

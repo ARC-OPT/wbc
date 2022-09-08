@@ -19,6 +19,8 @@ void printResults(map<string,base::VectorXd> results){
 }
 
 map<string, base::VectorXd> evaluateQPOases(RobotModelPtr robot_model, string root, string tip, int n_samples, string type){
+    clog << "Evaluate QPOases solver in " << type << " scene" << endl;
+    
     QPSolverPtr solver = std::make_shared<QPOASESSolver>();
 
     TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
@@ -34,6 +36,8 @@ map<string, base::VectorXd> evaluateQPOases(RobotModelPtr robot_model, string ro
 }
 
 map<string, base::VectorXd> evaluateQPSwift(RobotModelPtr robot_model, string root, string tip, int n_samples, string type){
+    clog << "Evaluate QPSwift solver in " << type << " scene" << endl;
+    
     QPSolverPtr solver = std::make_shared<QPSwiftSolver>();
 
     TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
@@ -49,6 +53,8 @@ map<string, base::VectorXd> evaluateQPSwift(RobotModelPtr robot_model, string ro
 }
 
 map<string, base::VectorXd> evaluateEiquadprog(RobotModelPtr robot_model, string root, string tip, int n_samples, string type){
+    clog << "Evaluate Eiquadprog solver in " << type << " scene" << endl;
+    
     QPSolverPtr solver = std::make_shared<EiquadprogSolver>();
 
     TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
@@ -64,6 +70,8 @@ map<string, base::VectorXd> evaluateEiquadprog(RobotModelPtr robot_model, string
 }
 
 map<string, base::VectorXd> evaluateProxQP(RobotModelPtr robot_model, string root, string tip, int n_samples, string type){
+    clog << "Evaluate ProxQP solver in " << type << " scene" << endl;
+    
     QPSolverPtr solver = std::make_shared<ProxQPSolver>();
 
     TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
@@ -79,7 +87,7 @@ map<string, base::VectorXd> evaluateProxQP(RobotModelPtr robot_model, string roo
 }
 
 void runKUKAIiwaBenchmarks(int n_samples){
-    cout << " ----------- Evaluating KUKA iiwa model -----------" << endl;
+    
     RobotModelConfig cfg;
     cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     cfg.submechanism_file = "../../../models/kuka/hyrodyn/kuka_iiwa.yml";
@@ -89,6 +97,7 @@ void runKUKAIiwaBenchmarks(int n_samples){
     base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
     robot_model->update(joint_state);
 
+    clog << " ----------- Evaluating KUKA iiwa model -----------" << endl;
     map<string,base::VectorXd> results_qp_oases_vel   = evaluateQPOases(robot_model, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", n_samples, "vel");
     map<string,base::VectorXd> results_qp_swift_vel   = evaluateQPSwift(robot_model, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", n_samples, "vel");
     map<string,base::VectorXd> results_proxqp_vel   = evaluateProxQP(robot_model, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", n_samples, "vel");
@@ -126,7 +135,7 @@ void runKUKAIiwaBenchmarks(int n_samples){
 }
 
 void runRH5SingleLegBenchmarks(int n_samples){
-    cout << " ----------- Evaluating RH5 Single Leg model -----------" << endl;
+    
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
@@ -137,6 +146,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
     base::samples::RigidBodyStateSE3 rbs = randomFloatingBaseState();
     robot_model->update(joint_state, rbs);
 
+    clog << " ----------- Evaluating RH5 Single Leg model -----------" << endl;
     map<string,base::VectorXd> results_qp_oases_vel = evaluateQPOases(robot_model, "RH5_Root_Link", "LLAnkle_FT", n_samples, "vel");
     map<string,base::VectorXd> results_qp_swift_vel = evaluateQPSwift(robot_model, "RH5_Root_Link", "LLAnkle_FT", n_samples, "vel");
     map<string,base::VectorXd> results_proxqp_vel = evaluateProxQP(robot_model, "RH5_Root_Link", "LLAnkle_FT", n_samples, "vel");
@@ -175,7 +185,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
 }
 
 void runRH5LegsBenchmarks(int n_samples){
-    cout << " ----------- Evaluating RH5 Legs model -----------" << endl;
+    
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
@@ -193,6 +203,7 @@ void runRH5LegsBenchmarks(int n_samples){
     joint_state.time = base::Time::now();
     robot_model->update(joint_state, floating_base_state);
 
+    clog << " ----------- Evaluating RH5 Legs model -----------" << endl;
     map<string,base::VectorXd> results_qp_oases_vel = evaluateQPOases(robot_model, "world", "LLAnkle_FT", n_samples, "vel");
     map<string,base::VectorXd> results_qp_swift_vel = evaluateQPSwift(robot_model, "world", "LLAnkle_FT", n_samples, "vel");
     map<string,base::VectorXd> results_proxqp_vel = evaluateProxQP(robot_model, "world", "LLAnkle_FT", n_samples, "vel");
@@ -229,7 +240,7 @@ void runRH5LegsBenchmarks(int n_samples){
 }
 
 void runRH5Benchmarks(int n_samples){
-    cout << " ----------- Evaluating RH5 model -----------" << endl;
+    
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5/urdf/rh5.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
@@ -247,6 +258,7 @@ void runRH5Benchmarks(int n_samples){
     joint_state.time = base::Time::now();
     robot_model->update(joint_state, floating_base_state);
 
+    clog << " ----------- Evaluating RH5 model -----------" << endl;
     map<string,base::VectorXd> results_qp_oases_vel = evaluateQPOases(robot_model, "world", "LLAnkle_FT", n_samples, "vel");
     map<string,base::VectorXd> results_qp_swift_vel = evaluateQPSwift(robot_model, "world", "LLAnkle_FT", n_samples, "vel");
     map<string,base::VectorXd> results_proxqp_vel = evaluateProxQP(robot_model, "world", "LLAnkle_FT", n_samples, "vel");
@@ -284,7 +296,7 @@ void runRH5Benchmarks(int n_samples){
 }
 
 void runRH5v2Benchmarks(int n_samples){
-    cout << " ----------- Evaluating RH5v2 model -----------" << endl;
+
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
     cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
@@ -295,6 +307,7 @@ void runRH5v2Benchmarks(int n_samples){
     base::samples::RigidBodyStateSE3 rbs = randomFloatingBaseState();
     robot_model->update(joint_state, rbs);
 
+    clog << " ----------- Evaluating RH5v2 model -----------" << endl;
     map<string,base::VectorXd> results_qp_oases_vel = evaluateQPOases(robot_model, "RH5v2_Root_Link", "ALWristFT_Link", n_samples, "vel");
     map<string,base::VectorXd> results_qp_swift_vel = evaluateQPSwift(robot_model, "RH5v2_Root_Link", "ALWristFT_Link", n_samples, "vel");
     map<string,base::VectorXd> results_proxqp_vel = evaluateProxQP(robot_model, "RH5v2_Root_Link", "ALWristFT_Link", n_samples, "vel");
@@ -334,11 +347,11 @@ void runRH5v2Benchmarks(int n_samples){
 void runBenchmarks(int n_samples){
     boost::filesystem::create_directory("results");
 
-    //runRH5Benchmarks(n_samples);
-    //runRH5v2Benchmarks(n_samples);
+    runRH5Benchmarks(n_samples);
+    runRH5v2Benchmarks(n_samples);
     runKUKAIiwaBenchmarks(n_samples);
-    //runRH5SingleLegBenchmarks(n_samples);
-    //runRH5LegsBenchmarks(n_samples);
+    runRH5SingleLegBenchmarks(n_samples);
+    runRH5LegsBenchmarks(n_samples);
 }
 
 int main(){
