@@ -52,6 +52,7 @@ $(function() {
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-types">Protected Types</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1RobotModel-members.html">List of all members</a>  </div>
@@ -69,8 +70,10 @@ Inheritance diagram for wbc::RobotModel:</div>
  <div class="center">
   <img src="classwbc_1_1RobotModel.png" usemap="#wbc::RobotModel_map" alt=""/>
   <map id="wbc::RobotModel_map" name="wbc::RobotModel_map">
-<area href="classwbc_1_1RobotModelHyrodyn.html" alt="wbc::RobotModelHyrodyn" shape="rect" coords="0,56,157,80"/>
-<area href="classwbc_1_1RobotModelKDL.html" title="This model describes the kinemetic relationships required for velocity based wbc. It is based on a si..." alt="wbc::RobotModelKDL" shape="rect" coords="167,56,324,80"/>
+<area href="classwbc_1_1RobotModelHyrodyn.html" alt="wbc::RobotModelHyrodyn" shape="rect" coords="0,56,164,80"/>
+<area href="classwbc_1_1RobotModelKDL.html" title="This model describes the kinemetic relationships required for velocity based wbc. It is based on a si..." alt="wbc::RobotModelKDL" shape="rect" coords="174,56,338,80"/>
+<area href="classwbc_1_1RobotModelPinocchio.html" alt="wbc::RobotModelPinocchio" shape="rect" coords="348,56,512,80"/>
+<area href="classwbc_1_1RobotModelRBDL.html" alt="wbc::RobotModelRBDL" shape="rect" coords="522,56,686,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -83,11 +86,13 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac05f2165cdfa1655651ac31566e7d82d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ac05f2165cdfa1655651ac31566e7d82d">configure</a> (const <a class="el" href="structwbc_1_1RobotModelConfig.html">RobotModelConfig</a> &amp;cfg)=0</td></tr>
 <tr class="memdesc:ac05f2165cdfa1655651ac31566e7d82d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load and configure the robot model.  <a href="classwbc_1_1RobotModel.html#ac05f2165cdfa1655651ac31566e7d82d">More...</a><br /></td></tr>
 <tr class="separator:ac05f2165cdfa1655651ac31566e7d82d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaf9b4ec3954a4f5966a5ae2abfa26631"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aaf9b4ec3954a4f5966a5ae2abfa26631">update</a> (const base::samples::Joints &amp;joint_state, const base::samples::RigidBodyStateSE3 &amp;<a class="el" href="classwbc_1_1RobotModel.html#aae68afffbc5893f497038d4f9c85f287">floating_base_state</a>=base::samples::RigidBodyStateSE3())=0</td></tr>
+<tr class="memitem:aaf9b4ec3954a4f5966a5ae2abfa26631"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aaf9b4ec3954a4f5966a5ae2abfa26631">update</a> (const base::samples::Joints &amp;<a class="el" href="classwbc_1_1RobotModel.html#aea227a52cdc7a62a4c433392c88f424b">joint_state</a>, const base::samples::RigidBodyStateSE3 &amp;<a class="el" href="classwbc_1_1RobotModel.html#aae68afffbc5893f497038d4f9c85f287">floating_base_state</a>=base::samples::RigidBodyStateSE3())=0</td></tr>
 <tr class="memdesc:aaf9b4ec3954a4f5966a5ae2abfa26631"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the robot configuration.  <a href="classwbc_1_1RobotModel.html#aaf9b4ec3954a4f5966a5ae2abfa26631">More...</a><br /></td></tr>
 <tr class="separator:aaf9b4ec3954a4f5966a5ae2abfa26631"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3c952e564df88355c7363cfe7d853602"><td class="memItemLeft" align="right" valign="top">virtual const base::samples::Joints &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a3c952e564df88355c7363cfe7d853602">jointState</a> (const std::vector&lt; std::string &gt; &amp;joint_names)=0</td></tr>
-<tr class="separator:a3c952e564df88355c7363cfe7d853602"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf8342e8c26eb8126dc45bc3dc856112"><td class="memItemLeft" align="right" valign="top">const base::samples::Joints &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#acf8342e8c26eb8126dc45bc3dc856112">jointState</a> (const std::vector&lt; std::string &gt; &amp;<a class="el" href="classwbc_1_1RobotModel.html#ae6443388e1fc68d6e91e9948b33a7609">joint_names</a>)</td></tr>
+<tr class="separator:acf8342e8c26eb8126dc45bc3dc856112"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec105a2e0891b60bccd1d6b0e96daaf1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aec105a2e0891b60bccd1d6b0e96daaf1">systemState</a> (base::VectorXd &amp;q, base::VectorXd &amp;qd, base::VectorXd &amp;qdd)=0</td></tr>
+<tr class="separator:aec105a2e0891b60bccd1d6b0e96daaf1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0258f72fb8eb15f995f447a6788f1b97"><td class="memItemLeft" align="right" valign="top">virtual const base::samples::RigidBodyStateSE3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a0258f72fb8eb15f995f447a6788f1b97">rigidBodyState</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)=0</td></tr>
 <tr class="separator:a0258f72fb8eb15f995f447a6788f1b97"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7e71b2f2657edecf04ed6a75da8c9c80"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a7e71b2f2657edecf04ed6a75da8c9c80">spaceJacobian</a> (const std::string &amp;root_frame, const std::string &amp;tip_frame)=0</td></tr>
@@ -111,39 +116,39 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a1c4aed8dcda534022cffea4c57188a19"><td class="memItemLeft" align="right" valign="top">virtual const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a1c4aed8dcda534022cffea4c57188a19">biasForces</a> ()=0</td></tr>
 <tr class="memdesc:a1c4aed8dcda534022cffea4c57188a19"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system.  <a href="classwbc_1_1RobotModel.html#a1c4aed8dcda534022cffea4c57188a19">More...</a><br /></td></tr>
 <tr class="separator:a1c4aed8dcda534022cffea4c57188a19"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adea84cf5d39173bec70353c35ca5ee9f"><td class="memItemLeft" align="right" valign="top">virtual const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#adea84cf5d39173bec70353c35ca5ee9f">jointNames</a> ()=0</td></tr>
-<tr class="memdesc:adea84cf5d39173bec70353c35ca5ee9f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all joint names.  <a href="classwbc_1_1RobotModel.html#adea84cf5d39173bec70353c35ca5ee9f">More...</a><br /></td></tr>
-<tr class="separator:adea84cf5d39173bec70353c35ca5ee9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab2cff89fbda60b3dabe1072d25466da1"><td class="memItemLeft" align="right" valign="top">virtual const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ab2cff89fbda60b3dabe1072d25466da1">actuatedJointNames</a> ()=0</td></tr>
-<tr class="memdesc:ab2cff89fbda60b3dabe1072d25466da1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return only actuated joint names.  <a href="classwbc_1_1RobotModel.html#ab2cff89fbda60b3dabe1072d25466da1">More...</a><br /></td></tr>
-<tr class="separator:ab2cff89fbda60b3dabe1072d25466da1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a14e8e8a343506e1771405930216ff7f3"><td class="memItemLeft" align="right" valign="top">virtual const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a14e8e8a343506e1771405930216ff7f3">independentJointNames</a> ()=0</td></tr>
-<tr class="memdesc:a14e8e8a343506e1771405930216ff7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return only independent joint names.  <a href="classwbc_1_1RobotModel.html#a14e8e8a343506e1771405930216ff7f3">More...</a><br /></td></tr>
-<tr class="separator:a14e8e8a343506e1771405930216ff7f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad8de31e64843d88c4c19869a1825b8d0"><td class="memItemLeft" align="right" valign="top">virtual uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ad8de31e64843d88c4c19869a1825b8d0">jointIndex</a> (const std::string &amp;joint_name)=0</td></tr>
-<tr class="memdesc:ad8de31e64843d88c4c19869a1825b8d0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get index of joint name.  <a href="classwbc_1_1RobotModel.html#ad8de31e64843d88c4c19869a1825b8d0">More...</a><br /></td></tr>
-<tr class="separator:ad8de31e64843d88c4c19869a1825b8d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a20aa0b7957efe9514d9f835b3199b67d"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a20aa0b7957efe9514d9f835b3199b67d">baseFrame</a> ()</td></tr>
-<tr class="memdesc:a20aa0b7957efe9514d9f835b3199b67d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base frame of the robot.  <a href="classwbc_1_1RobotModel.html#a20aa0b7957efe9514d9f835b3199b67d">More...</a><br /></td></tr>
-<tr class="separator:a20aa0b7957efe9514d9f835b3199b67d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a03e8d69545832c81df2c69d0640cda37"><td class="memItemLeft" align="right" valign="top">virtual const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a03e8d69545832c81df2c69d0640cda37">worldFrame</a> ()</td></tr>
-<tr class="memdesc:a03e8d69545832c81df2c69d0640cda37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the world frame id.  <a href="classwbc_1_1RobotModel.html#a03e8d69545832c81df2c69d0640cda37">More...</a><br /></td></tr>
-<tr class="separator:a03e8d69545832c81df2c69d0640cda37"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a89682afec3437c7b2288b4ede324e238"><td class="memItemLeft" align="right" valign="top">virtual const base::JointLimits &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a89682afec3437c7b2288b4ede324e238">jointLimits</a> ()=0</td></tr>
-<tr class="memdesc:a89682afec3437c7b2288b4ede324e238"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current joint limits.  <a href="classwbc_1_1RobotModel.html#a89682afec3437c7b2288b4ede324e238">More...</a><br /></td></tr>
-<tr class="separator:a89682afec3437c7b2288b4ede324e238"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae2e925c0ca8ed9beb7de2999dec50159"><td class="memItemLeft" align="right" valign="top">virtual const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ae2e925c0ca8ed9beb7de2999dec50159">selectionMatrix</a> ()=0</td></tr>
-<tr class="memdesc:ae2e925c0ca8ed9beb7de2999dec50159"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current selection matrix S that maps complete joint vector to actuated joint vector: q_a = S * q. The matrix consists of only zeros and ones. Size is na x nq, where na is the number of actuated joints and nq the total number of joints.  <a href="classwbc_1_1RobotModel.html#ae2e925c0ca8ed9beb7de2999dec50159">More...</a><br /></td></tr>
-<tr class="separator:ae2e925c0ca8ed9beb7de2999dec50159"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19a777b6199ccf62a395df7890797c27"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a19a777b6199ccf62a395df7890797c27">hasLink</a> (const std::string &amp;link_name)=0</td></tr>
-<tr class="memdesc:a19a777b6199ccf62a395df7890797c27"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if given link name is available in robot model, false otherwise.  <a href="classwbc_1_1RobotModel.html#a19a777b6199ccf62a395df7890797c27">More...</a><br /></td></tr>
-<tr class="separator:a19a777b6199ccf62a395df7890797c27"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7adca0cffb104ad4cde92e9657150df8"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a7adca0cffb104ad4cde92e9657150df8">hasJoint</a> (const std::string &amp;joint_name)=0</td></tr>
-<tr class="memdesc:a7adca0cffb104ad4cde92e9657150df8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if given joint name is available in robot model, false otherwise.  <a href="classwbc_1_1RobotModel.html#a7adca0cffb104ad4cde92e9657150df8">More...</a><br /></td></tr>
-<tr class="separator:a7adca0cffb104ad4cde92e9657150df8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6262266249ffba01b33ab2045241a25a"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a6262266249ffba01b33ab2045241a25a">hasActuatedJoint</a> (const std::string &amp;joint_name)=0</td></tr>
-<tr class="memdesc:a6262266249ffba01b33ab2045241a25a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if given joint name is an actuated joint in robot model, false otherwise.  <a href="classwbc_1_1RobotModel.html#a6262266249ffba01b33ab2045241a25a">More...</a><br /></td></tr>
-<tr class="separator:a6262266249ffba01b33ab2045241a25a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7cebdc77ce1045b2bf467417f287a8f5"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a7cebdc77ce1045b2bf467417f287a8f5">jointNames</a> ()</td></tr>
+<tr class="memdesc:a7cebdc77ce1045b2bf467417f287a8f5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return all joint names.  <a href="classwbc_1_1RobotModel.html#a7cebdc77ce1045b2bf467417f287a8f5">More...</a><br /></td></tr>
+<tr class="separator:a7cebdc77ce1045b2bf467417f287a8f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:adc816dd714f15da75035dbe3b451829f"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#adc816dd714f15da75035dbe3b451829f">actuatedJointNames</a> ()</td></tr>
+<tr class="memdesc:adc816dd714f15da75035dbe3b451829f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return only actuated joint names.  <a href="classwbc_1_1RobotModel.html#adc816dd714f15da75035dbe3b451829f">More...</a><br /></td></tr>
+<tr class="separator:adc816dd714f15da75035dbe3b451829f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a53f2eebfa386a0fd2eebb5c28467ed37"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; std::string &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a53f2eebfa386a0fd2eebb5c28467ed37">independentJointNames</a> ()</td></tr>
+<tr class="memdesc:a53f2eebfa386a0fd2eebb5c28467ed37"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return only independent joint names.  <a href="classwbc_1_1RobotModel.html#a53f2eebfa386a0fd2eebb5c28467ed37">More...</a><br /></td></tr>
+<tr class="separator:a53f2eebfa386a0fd2eebb5c28467ed37"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac57693a487fa8e527d6ce05aa8a6f1a9"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ac57693a487fa8e527d6ce05aa8a6f1a9">jointIndex</a> (const std::string &amp;joint_name)</td></tr>
+<tr class="memdesc:ac57693a487fa8e527d6ce05aa8a6f1a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get index of joint name.  <a href="classwbc_1_1RobotModel.html#ac57693a487fa8e527d6ce05aa8a6f1a9">More...</a><br /></td></tr>
+<tr class="separator:ac57693a487fa8e527d6ce05aa8a6f1a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a87d2ff7673f7400fafcf60efeb83fa67"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a87d2ff7673f7400fafcf60efeb83fa67">baseFrame</a> ()</td></tr>
+<tr class="memdesc:a87d2ff7673f7400fafcf60efeb83fa67"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the base frame of the robot.  <a href="classwbc_1_1RobotModel.html#a87d2ff7673f7400fafcf60efeb83fa67">More...</a><br /></td></tr>
+<tr class="separator:a87d2ff7673f7400fafcf60efeb83fa67"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d2ade9bc411a29ab0b39937aca33fa0"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a7d2ade9bc411a29ab0b39937aca33fa0">worldFrame</a> ()</td></tr>
+<tr class="memdesc:a7d2ade9bc411a29ab0b39937aca33fa0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get the world frame id.  <a href="classwbc_1_1RobotModel.html#a7d2ade9bc411a29ab0b39937aca33fa0">More...</a><br /></td></tr>
+<tr class="separator:a7d2ade9bc411a29ab0b39937aca33fa0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a705817a20cd386fd6c3b246ae0844729"><td class="memItemLeft" align="right" valign="top">const base::JointLimits &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a705817a20cd386fd6c3b246ae0844729">jointLimits</a> ()</td></tr>
+<tr class="memdesc:a705817a20cd386fd6c3b246ae0844729"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current joint limits.  <a href="classwbc_1_1RobotModel.html#a705817a20cd386fd6c3b246ae0844729">More...</a><br /></td></tr>
+<tr class="separator:a705817a20cd386fd6c3b246ae0844729"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae21c5d404ebdaa740b5dedf79c5abb30"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ae21c5d404ebdaa740b5dedf79c5abb30">hasLink</a> (const std::string &amp;link_name)</td></tr>
+<tr class="memdesc:ae21c5d404ebdaa740b5dedf79c5abb30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if given link name is available in robot model, false otherwise.  <a href="classwbc_1_1RobotModel.html#ae21c5d404ebdaa740b5dedf79c5abb30">More...</a><br /></td></tr>
+<tr class="separator:ae21c5d404ebdaa740b5dedf79c5abb30"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab9bb21a569bc24f10269218903e8ca28"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ab9bb21a569bc24f10269218903e8ca28">hasJoint</a> (const std::string &amp;joint_name)</td></tr>
+<tr class="memdesc:ab9bb21a569bc24f10269218903e8ca28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if given joint name is available in robot model, false otherwise.  <a href="classwbc_1_1RobotModel.html#ab9bb21a569bc24f10269218903e8ca28">More...</a><br /></td></tr>
+<tr class="separator:ab9bb21a569bc24f10269218903e8ca28"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0dc4ffd1899021f4eedb83c6b6959ca6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a0dc4ffd1899021f4eedb83c6b6959ca6">hasActuatedJoint</a> (const std::string &amp;joint_name)</td></tr>
+<tr class="memdesc:a0dc4ffd1899021f4eedb83c6b6959ca6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return True if given joint name is an actuated joint in robot model, false otherwise.  <a href="classwbc_1_1RobotModel.html#a0dc4ffd1899021f4eedb83c6b6959ca6">More...</a><br /></td></tr>
+<tr class="separator:a0dc4ffd1899021f4eedb83c6b6959ca6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4cde2aded43297ee18c4594e008231db"><td class="memItemLeft" align="right" valign="top">const base::MatrixXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a4cde2aded43297ee18c4594e008231db">selectionMatrix</a> ()</td></tr>
+<tr class="memdesc:a4cde2aded43297ee18c4594e008231db"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current selection matrix S that maps complete joint vector to actuated joint vector: q_a = S * q. The matrix consists of only zeros and ones. Size is na x nq, where na is the number of actuated joints and nq the total number of joints.  <a href="classwbc_1_1RobotModel.html#a4cde2aded43297ee18c4594e008231db">More...</a><br /></td></tr>
+<tr class="separator:a4cde2aded43297ee18c4594e008231db"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a89931e8185003404023ea0dbae28df66"><td class="memItemLeft" align="right" valign="top">virtual const base::samples::RigidBodyStateSE3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a89931e8185003404023ea0dbae28df66">centerOfMass</a> ()=0</td></tr>
 <tr class="memdesc:a89931e8185003404023ea0dbae28df66"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute and return center of mass expressed in base frame.  <a href="classwbc_1_1RobotModel.html#a89931e8185003404023ea0dbae28df66">More...</a><br /></td></tr>
 <tr class="separator:a89931e8185003404023ea0dbae28df66"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -174,11 +179,21 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a066bca4d004955ead70d93c8edfb5f5f"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="structwbc_1_1RobotModelConfig.html">RobotModelConfig</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a066bca4d004955ead70d93c8edfb5f5f">getRobotModelConfig</a> ()</td></tr>
 <tr class="memdesc:a066bca4d004955ead70d93c8edfb5f5f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current robot model config.  <a href="classwbc_1_1RobotModel.html#a066bca4d004955ead70d93c8edfb5f5f">More...</a><br /></td></tr>
 <tr class="separator:a066bca4d004955ead70d93c8edfb5f5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a416fd1ef82ac3952153569f52a7bbc52"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a416fd1ef82ac3952153569f52a7bbc52">hasFloatingBase</a> ()</td></tr>
+<tr class="memdesc:a416fd1ef82ac3952153569f52a7bbc52"><td class="mdescLeft">&#160;</td><td class="mdescRight">Is floating base robot?  <a href="classwbc_1_1RobotModel.html#a416fd1ef82ac3952153569f52a7bbc52">More...</a><br /></td></tr>
+<tr class="separator:a416fd1ef82ac3952153569f52a7bbc52"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-types" name="pro-types"></a>
+Protected Types</h2></td></tr>
+<tr class="memitem:adec09c89423b3ab5057605a4591f236b"><td class="memItemLeft" align="right" valign="top">typedef std::map&lt; std::string, base::MatrixXd &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">JacobianMap</a></td></tr>
+<tr class="separator:adec09c89423b3ab5057605a4591f236b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a8f5388c8af5244ca8733fc04fefe656c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a8f5388c8af5244ca8733fc04fefe656c">updateFloatingBase</a> (const base::samples::RigidBodyStateSE3 &amp;rbs, const std::vector&lt; std::string &gt; &amp;floating_base_virtual_joint_names, base::samples::Joints &amp;joint_state)</td></tr>
-<tr class="separator:a8f5388c8af5244ca8733fc04fefe656c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afcfe9964f24003db5a703f0030a6fbf7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#afcfe9964f24003db5a703f0030a6fbf7">clear</a> ()</td></tr>
+<tr class="separator:afcfe9964f24003db5a703f0030a6fbf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af01952458e7a72f257dadf9e8f31c0df"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#af01952458e7a72f257dadf9e8f31c0df">chainID</a> (const std::string &amp;root, const std::string &amp;tip)</td></tr>
+<tr class="separator:af01952458e7a72f257dadf9e8f31c0df"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -198,10 +213,71 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a0f28b618c09eea132a2c3481704e9f4d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa64ca6ac20a136ffa9ae66c98a31376a"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aa64ca6ac20a136ffa9ae66c98a31376a">base_frame</a></td></tr>
 <tr class="separator:aa64ca6ac20a136ffa9ae66c98a31376a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac421450c277768642272409bd5683ac5"><td class="memItemLeft" align="right" valign="top">base::JointLimits&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ac421450c277768642272409bd5683ac5">joint_limits</a></td></tr>
+<tr class="separator:ac421450c277768642272409bd5683ac5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32db5424d0143925f888a0d84ac129b3"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a32db5424d0143925f888a0d84ac129b3">actuated_joint_names</a></td></tr>
+<tr class="separator:a32db5424d0143925f888a0d84ac129b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a36995e966ea95c19d83a8d4690c8efe0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a36995e966ea95c19d83a8d4690c8efe0">independent_joint_names</a></td></tr>
+<tr class="separator:a36995e966ea95c19d83a8d4690c8efe0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae6443388e1fc68d6e91e9948b33a7609"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ae6443388e1fc68d6e91e9948b33a7609">joint_names</a></td></tr>
+<tr class="separator:ae6443388e1fc68d6e91e9948b33a7609"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abba1d3564e20eb40d25891cc23711cc9"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#abba1d3564e20eb40d25891cc23711cc9">joint_names_floating_base</a></td></tr>
+<tr class="separator:abba1d3564e20eb40d25891cc23711cc9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acf5cdf1c065188814d4fab746995cc5f"><td class="memItemLeft" align="right" valign="top">urdf::ModelInterfaceSharedPtr&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#acf5cdf1c065188814d4fab746995cc5f">robot_urdf</a></td></tr>
+<tr class="separator:acf5cdf1c065188814d4fab746995cc5f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0bead23ac0c24130a6c621a002dd510c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a0bead23ac0c24130a6c621a002dd510c">has_floating_base</a></td></tr>
+<tr class="separator:a0bead23ac0c24130a6c621a002dd510c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aea227a52cdc7a62a4c433392c88f424b"><td class="memItemLeft" align="right" valign="top">base::samples::Joints&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aea227a52cdc7a62a4c433392c88f424b">joint_state</a></td></tr>
+<tr class="separator:aea227a52cdc7a62a4c433392c88f424b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2714d12a99d9bdb294ac473dcdbbcbf7"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a2714d12a99d9bdb294ac473dcdbbcbf7">joint_space_inertia_mat</a></td></tr>
+<tr class="separator:a2714d12a99d9bdb294ac473dcdbbcbf7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa52127308b4db094c21583bd1ed2a13a"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#aa52127308b4db094c21583bd1ed2a13a">com_jac</a></td></tr>
+<tr class="separator:aa52127308b4db094c21583bd1ed2a13a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac57db3e6bfd65b4aaf0b197aba611864"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ac57db3e6bfd65b4aaf0b197aba611864">bias_forces</a></td></tr>
+<tr class="separator:ac57db3e6bfd65b4aaf0b197aba611864"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92af26e334713f1c6e302aff9a12c5b7"><td class="memItemLeft" align="right" valign="top">base::Acceleration&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a92af26e334713f1c6e302aff9a12c5b7">spatial_acc_bias</a></td></tr>
+<tr class="separator:a92af26e334713f1c6e302aff9a12c5b7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d6bbf37b13b78ce23acbb3fcfaf9eea"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a9d6bbf37b13b78ce23acbb3fcfaf9eea">selection_matrix</a></td></tr>
+<tr class="separator:a9d6bbf37b13b78ce23acbb3fcfaf9eea"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3475d13e73fed48ea10cd011749db5e7"><td class="memItemLeft" align="right" valign="top">base::samples::RigidBodyStateSE3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a3475d13e73fed48ea10cd011749db5e7">com_rbs</a></td></tr>
+<tr class="separator:a3475d13e73fed48ea10cd011749db5e7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a738c923d8de416181739fba97bf35b43"><td class="memItemLeft" align="right" valign="top">base::samples::RigidBodyStateSE3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a738c923d8de416181739fba97bf35b43">rbs</a></td></tr>
+<tr class="separator:a738c923d8de416181739fba97bf35b43"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a92a5d104d15e909c4adbdaf91859538d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">JacobianMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a92a5d104d15e909c4adbdaf91859538d">space_jac_map</a></td></tr>
+<tr class="separator:a92a5d104d15e909c4adbdaf91859538d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab6734ae4e76084c05ac7091f08c0931c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">JacobianMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#ab6734ae4e76084c05ac7091f08c0931c">body_jac_map</a></td></tr>
+<tr class="separator:ab6734ae4e76084c05ac7091f08c0931c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a68c5dd5ba7c659d2c866c3697d0127c6"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">JacobianMap</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#a68c5dd5ba7c659d2c866c3697d0127c6">jac_dot_map</a></td></tr>
+<tr class="separator:a68c5dd5ba7c659d2c866c3697d0127c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:af13bbb73b3e8dc0cd01f80878f4a4423"><td class="memItemLeft" align="right" valign="top">base::samples::Joints&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html#af13bbb73b3e8dc0cd01f80878f4a4423">joint_state_out</a></td></tr>
+<tr class="separator:af13bbb73b3e8dc0cd01f80878f4a4423"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p >Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC. </p>
-</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
+<a id="adec09c89423b3ab5057605a4591f236b" name="adec09c89423b3ab5057605a4591f236b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adec09c89423b3ab5057605a4591f236b">&#9670;&#160;</a></span>JacobianMap</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::map&lt;std::string, base::MatrixXd &gt; <a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">wbc::RobotModel::JacobianMap</a></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a898f04f0afe80bc45d2a912b4aef5ec7" name="a898f04f0afe80bc45d2a912b4aef5ec7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a898f04f0afe80bc45d2a912b4aef5ec7">&#9670;&#160;</a></span>RobotModel()</h2>
 
@@ -245,8 +321,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab2cff89fbda60b3dabe1072d25466da1" name="ab2cff89fbda60b3dabe1072d25466da1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab2cff89fbda60b3dabe1072d25466da1">&#9670;&#160;</a></span>actuatedJointNames()</h2>
+<a id="adc816dd714f15da75035dbe3b451829f" name="adc816dd714f15da75035dbe3b451829f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adc816dd714f15da75035dbe3b451829f">&#9670;&#160;</a></span>actuatedJointNames()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -255,7 +331,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const std::vector&lt; std::string &gt; &amp; wbc::RobotModel::actuatedJointNames </td>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; wbc::RobotModel::actuatedJointNames </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -263,19 +339,17 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Return only actuated joint names. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a90845c997f205ef59ce6a2a0081d74b9">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#ac08a02361027d72d7762e592919d7f95">wbc::RobotModelKDL</a>.</p>
-
 </div>
 </div>
-<a id="a20aa0b7957efe9514d9f835b3199b67d" name="a20aa0b7957efe9514d9f835b3199b67d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a20aa0b7957efe9514d9f835b3199b67d">&#9670;&#160;</a></span>baseFrame()</h2>
+<a id="a87d2ff7673f7400fafcf60efeb83fa67" name="a87d2ff7673f7400fafcf60efeb83fa67"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a87d2ff7673f7400fafcf60efeb83fa67">&#9670;&#160;</a></span>baseFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -284,7 +358,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const std::string &amp; wbc::RobotModel::baseFrame </td>
+          <td class="memname">const std::string &amp; wbc::RobotModel::baseFrame </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -292,7 +366,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -326,7 +400,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#aa7fdb1e22c5dccb65edb832076b42edd">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#af5e9d387837fc94e9f8210d01b647ff1">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#aa7fdb1e22c5dccb65edb832076b42edd">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#af5e9d387837fc94e9f8210d01b647ff1">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#ac07161ff33a3579300e22f4023ca249f">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a29251a89e6008aec560262d6e226c55d">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -374,7 +448,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A 6xN matrix, where N is the number of robot joints </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ab0662284eb0d9348803be2e5b169e6f0">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a6ed92629cc435521defe9812539dbb4b">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ab0662284eb0d9348803be2e5b169e6f0">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a6ed92629cc435521defe9812539dbb4b">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a098a4bbbfbe44a57b692a4a0d8a96f57">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ada39832df12efa2563b096d05d6ddf63">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -403,7 +477,69 @@ Protected Attributes</h2></td></tr>
 
 <p>Compute and return center of mass expressed in base frame. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a05da85b0f2ede12e221e581dc0b99da3">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a6b23b8e97e72ad58f82021bf4aa1a37e">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a05da85b0f2ede12e221e581dc0b99da3">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a6b23b8e97e72ad58f82021bf4aa1a37e">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#af08705bc5c35d6f5036366dbb7ca464d">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a908c539f7004fa9ccb2025ca2f889575">wbc::RobotModelRBDL</a>.</p>
+
+</div>
+</div>
+<a id="af01952458e7a72f257dadf9e8f31c0df" name="af01952458e7a72f257dadf9e8f31c0df"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af01952458e7a72f257dadf9e8f31c0df">&#9670;&#160;</a></span>chainID()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::string wbc::RobotModel::chainID </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>root</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>tip</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >ID of kinematic chain given root and tip </p>
+
+</div>
+</div>
+<a id="afcfe9964f24003db5a703f0030a6fbf7" name="afcfe9964f24003db5a703f0030a6fbf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afcfe9964f24003db5a703f0030a6fbf7">&#9670;&#160;</a></span>clear()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::RobotModel::clear </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
@@ -433,7 +569,7 @@ Protected Attributes</h2></td></tr>
 <p>Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates. Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot. </p>
 <dl class="section return"><dt>Returns</dt><dd>A 3xN matrix, where N is the number of robot joints </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af349320a5e7628bdb1b27083bfc059f8">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#adbd5c0ae20d1fabc4adc569699b91f7e">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af349320a5e7628bdb1b27083bfc059f8">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#adbd5c0ae20d1fabc4adc569699b91f7e">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a5f992e0c7e20abf2fcdc177b5f5019e1">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a8d4b3c43f856a3db5136568cf56a3532">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -463,7 +599,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Compute and return the inverse dynamics solution. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a67176502805c0f8d862eeb0357461e03">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a8a1944397d086f4535200fc841cc869a">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a67176502805c0f8d862eeb0357461e03">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a8a1944397d086f4535200fc841cc869a">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a7de2853da92328fa87b5ca0542dbf77c">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a2f0c7c8a5ac0923a26c59f9bba14e65e">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -500,7 +636,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>True in case of success, else false </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a6a64c0b9d0dcab41e291b7e3c28df80d">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a7644659be15c2995b8bd2ccb41945d3d">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a6a64c0b9d0dcab41e291b7e3c28df80d">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a7644659be15c2995b8bd2ccb41945d3d">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#aee198ecd1ab3b176dd35448c1ed87846">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a3ef1a035e80651a0d3fde5f8ecf0d10d">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -585,38 +721,28 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a6262266249ffba01b33ab2045241a25a" name="a6262266249ffba01b33ab2045241a25a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6262266249ffba01b33ab2045241a25a">&#9670;&#160;</a></span>hasActuatedJoint()</h2>
+<a id="a0dc4ffd1899021f4eedb83c6b6959ca6" name="a0dc4ffd1899021f4eedb83c6b6959ca6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0dc4ffd1899021f4eedb83c6b6959ca6">&#9670;&#160;</a></span>hasActuatedJoint()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool wbc::RobotModel::hasActuatedJoint </td>
+          <td class="memname">bool wbc::RobotModel::hasActuatedJoint </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>joint_name</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Return True if given joint name is an actuated joint in robot model, false otherwise. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ac2a1202ea17b77713f775a2580c76a91">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#aed199660749837ebe13567d6ff164979">wbc::RobotModelKDL</a>.</p>
-
 </div>
 </div>
-<a id="a7adca0cffb104ad4cde92e9657150df8" name="a7adca0cffb104ad4cde92e9657150df8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7adca0cffb104ad4cde92e9657150df8">&#9670;&#160;</a></span>hasJoint()</h2>
+<a id="a416fd1ef82ac3952153569f52a7bbc52" name="a416fd1ef82ac3952153569f52a7bbc52"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a416fd1ef82ac3952153569f52a7bbc52">&#9670;&#160;</a></span>hasFloatingBase()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -625,67 +751,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual bool wbc::RobotModel::hasJoint </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>joint_name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return True if given joint name is available in robot model, false otherwise. </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a36e8c030c99b123fdb594aedfed062a0">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a03f77034f96d36b14b6082ddcd329595">wbc::RobotModelKDL</a>.</p>
-
-</div>
-</div>
-<a id="a19a777b6199ccf62a395df7890797c27" name="a19a777b6199ccf62a395df7890797c27"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19a777b6199ccf62a395df7890797c27">&#9670;&#160;</a></span>hasLink()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual bool wbc::RobotModel::hasLink </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;&#160;</td>
-          <td class="paramname"><em>link_name</em></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return True if given link name is available in robot model, false otherwise. </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#afda99a9b88703e7d9532dc661af8b329">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#ad2e36786b69d99563b03bfb5c7fa71a0">wbc::RobotModelKDL</a>.</p>
-
-</div>
-</div>
-<a id="a14e8e8a343506e1771405930216ff7f3" name="a14e8e8a343506e1771405930216ff7f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a14e8e8a343506e1771405930216ff7f3">&#9670;&#160;</a></span>independentJointNames()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual const std::vector&lt; std::string &gt; &amp; wbc::RobotModel::independentJointNames </td>
+          <td class="memname">bool wbc::RobotModel::hasFloatingBase </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -693,14 +759,79 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Is floating base robot? </p>
+
+</div>
+</div>
+<a id="ab9bb21a569bc24f10269218903e8ca28" name="ab9bb21a569bc24f10269218903e8ca28"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab9bb21a569bc24f10269218903e8ca28">&#9670;&#160;</a></span>hasJoint()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool wbc::RobotModel::hasJoint </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>joint_name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return True if given joint name is available in robot model, false otherwise. </p>
+
+</div>
+</div>
+<a id="ae21c5d404ebdaa740b5dedf79c5abb30" name="ae21c5d404ebdaa740b5dedf79c5abb30"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae21c5d404ebdaa740b5dedf79c5abb30">&#9670;&#160;</a></span>hasLink()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool wbc::RobotModel::hasLink </td>
+          <td>(</td>
+          <td class="paramtype">const std::string &amp;&#160;</td>
+          <td class="paramname"><em>link_name</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Return True if given link name is available in robot model, false otherwise. </p>
+
+</div>
+</div>
+<a id="a53f2eebfa386a0fd2eebb5c28467ed37" name="a53f2eebfa386a0fd2eebb5c28467ed37"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a53f2eebfa386a0fd2eebb5c28467ed37">&#9670;&#160;</a></span>independentJointNames()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; wbc::RobotModel::independentJointNames </td>
+          <td>(</td>
+          <td class="paramname"></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Return only independent joint names. </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a1275fe9f34522e6616767a45712ef559">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#ae1eba7115d827abc4e01a264df4d44fe">wbc::RobotModelKDL</a>.</p>
 
 </div>
 </div>
@@ -748,42 +879,32 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A 6xN matrix, where N is the number of robot joints </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ae1d80ce2251e741c407e10f012059d94">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#ad30771641ece568cc2f4f3d00af8f5e9">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ae1d80ce2251e741c407e10f012059d94">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#ad30771641ece568cc2f4f3d00af8f5e9">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a307a2cc988565747d7e03cebeb818fc1">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a8fac8cee797f749503b70a9a5dd97478">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
-<a id="ad8de31e64843d88c4c19869a1825b8d0" name="ad8de31e64843d88c4c19869a1825b8d0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad8de31e64843d88c4c19869a1825b8d0">&#9670;&#160;</a></span>jointIndex()</h2>
+<a id="ac57693a487fa8e527d6ce05aa8a6f1a9" name="ac57693a487fa8e527d6ce05aa8a6f1a9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57693a487fa8e527d6ce05aa8a6f1a9">&#9670;&#160;</a></span>jointIndex()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual uint wbc::RobotModel::jointIndex </td>
+          <td class="memname">uint wbc::RobotModel::jointIndex </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;&#160;</td>
           <td class="paramname"><em>joint_name</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 
 <p>Get index of joint name. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a582519499126106670661bb4b89fac2c">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a16a9eb4fff694608938a5f04ad1be270">wbc::RobotModelKDL</a>.</p>
-
 </div>
 </div>
-<a id="a89682afec3437c7b2288b4ede324e238" name="a89682afec3437c7b2288b4ede324e238"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a89682afec3437c7b2288b4ede324e238">&#9670;&#160;</a></span>jointLimits()</h2>
+<a id="a705817a20cd386fd6c3b246ae0844729" name="a705817a20cd386fd6c3b246ae0844729"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a705817a20cd386fd6c3b246ae0844729">&#9670;&#160;</a></span>jointLimits()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -792,7 +913,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const base::JointLimits &amp; wbc::RobotModel::jointLimits </td>
+          <td class="memname">const base::JointLimits &amp; wbc::RobotModel::jointLimits </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -800,19 +921,17 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Return current joint limits. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a06580f04171c269d170fe9d7e79a5f97">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#ad70e6269dc22747ddf319375790024fd">wbc::RobotModelKDL</a>.</p>
-
 </div>
 </div>
-<a id="adea84cf5d39173bec70353c35ca5ee9f" name="adea84cf5d39173bec70353c35ca5ee9f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adea84cf5d39173bec70353c35ca5ee9f">&#9670;&#160;</a></span>jointNames()</h2>
+<a id="a7cebdc77ce1045b2bf467417f287a8f5" name="a7cebdc77ce1045b2bf467417f287a8f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7cebdc77ce1045b2bf467417f287a8f5">&#9670;&#160;</a></span>jointNames()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -821,7 +940,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const std::vector&lt; std::string &gt; &amp; wbc::RobotModel::jointNames </td>
+          <td class="memname">const std::vector&lt; std::string &gt; &amp; wbc::RobotModel::jointNames </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -829,14 +948,12 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Return all joint names. </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#aa343b753367558ea0eddf530cd44ed23">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#ab754e17be8388cf03d70c8c99a589738">wbc::RobotModelKDL</a>.</p>
 
 </div>
 </div>
@@ -865,36 +982,26 @@ Protected Attributes</h2></td></tr>
 
 <p>Compute and return the joint space mass-inertia matrix, which is nj x nj, where nj is the number of joints of the system. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ad388b3d6b2964e16e4126b515e1dfce5">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a54f19018491bedddbef445276e21ff70">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ad388b3d6b2964e16e4126b515e1dfce5">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a54f19018491bedddbef445276e21ff70">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a18025e217e4bb31616b9fc92f1086b2c">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#af25bd03ef928a26f6f23b034f05b57c8">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
-<a id="a3c952e564df88355c7363cfe7d853602" name="a3c952e564df88355c7363cfe7d853602"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3c952e564df88355c7363cfe7d853602">&#9670;&#160;</a></span>jointState()</h2>
+<a id="acf8342e8c26eb8126dc45bc3dc856112" name="acf8342e8c26eb8126dc45bc3dc856112"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf8342e8c26eb8126dc45bc3dc856112">&#9670;&#160;</a></span>jointState()</h2>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const base::samples::Joints &amp; wbc::RobotModel::jointState </td>
+          <td class="memname">const base::samples::Joints &amp; wbc::RobotModel::jointState </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
           <td class="paramname"><em>joint_names</em></td><td>)</td>
           <td></td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
 <p >Returns the current status of the given joint names </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a077ccfc56722775c863e8f5a870944dd">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a2d1df5dbe18bbd7046ab9c9dd4d8cd91">wbc::RobotModelKDL</a>.</p>
 
 </div>
 </div>
@@ -987,12 +1094,12 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p >Returns the pose, twist and spatial acceleration between the two given frames. All quantities are defined in root_frame coordinates </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a112e01dfcdf42711abafd38c1d5fb108">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a840368157d320eedd57517de31eb8850">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a112e01dfcdf42711abafd38c1d5fb108">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a840368157d320eedd57517de31eb8850">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a207ce3b38be55e2123217d9caab4df60">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a566a860be78e1fe471ac9246169f3dd6">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
-<a id="ae2e925c0ca8ed9beb7de2999dec50159" name="ae2e925c0ca8ed9beb7de2999dec50159"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae2e925c0ca8ed9beb7de2999dec50159">&#9670;&#160;</a></span>selectionMatrix()</h2>
+<a id="a4cde2aded43297ee18c4594e008231db" name="a4cde2aded43297ee18c4594e008231db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4cde2aded43297ee18c4594e008231db">&#9670;&#160;</a></span>selectionMatrix()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1001,7 +1108,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const base::MatrixXd &amp; wbc::RobotModel::selectionMatrix </td>
+          <td class="memname">const base::MatrixXd &amp; wbc::RobotModel::selectionMatrix </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1009,14 +1116,12 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 <p>Return current selection matrix S that maps complete joint vector to actuated joint vector: q_a = S * q. The matrix consists of only zeros and ones. Size is na x nq, where na is the number of actuated joints and nq the total number of joints. </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a0a9fd49abd5bee58fd1bcfb31652bf6f">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#aa275f657c21ab45968f8066532e3f3ab">wbc::RobotModelKDL</a>.</p>
 
 </div>
 </div>
@@ -1140,7 +1245,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A 6xN matrix, where N is the number of robot joints </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a7c10295cba4f208ebf29257a72338a72">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a39a072ee311d360dcfa1f97b1b3d2a19">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a7c10295cba4f208ebf29257a72338a72">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a39a072ee311d360dcfa1f97b1b3d2a19">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#afec6f953bf9f77e6bff78a7715a0143b">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a7f4c19dfaf20907dd8e7799d5f34e07a">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1188,7 +1293,52 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A Nx1 vector, where N is the number of robot joints </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ac3ca7a488486f0ee1fe50a724d955e0d">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a5ac047c3b6c1871fdfa91c5109b0f8ed">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ac3ca7a488486f0ee1fe50a724d955e0d">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a5ac047c3b6c1871fdfa91c5109b0f8ed">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#ad12f5dd6b87101d3add7854808cf051b">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ac823634d7fcc9aabe0f266336501d404">wbc::RobotModelRBDL</a>.</p>
+
+</div>
+</div>
+<a id="aec105a2e0891b60bccd1d6b0e96daaf1" name="aec105a2e0891b60bccd1d6b0e96daaf1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec105a2e0891b60bccd1d6b0e96daaf1">&#9670;&#160;</a></span>systemState()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual void wbc::RobotModel::systemState </td>
+          <td>(</td>
+          <td class="paramtype">base::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>q</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">base::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>qd</em>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">base::VectorXd &amp;&#160;</td>
+          <td class="paramname"><em>qdd</em>&#160;</td>
+        </tr>
+        <tr>
+          <td></td>
+          <td>)</td>
+          <td></td><td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">pure virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p >Return entire system state </p>
+
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a16a22815bfdcc52608f7c0f573d5bba1">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a0a35337b45714167e298e3647a38fdb0">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#ab5436968bfa0dc4bb4998b81bcaaf2d3">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a2b56e9f68532901ee01ce08bf95f5091">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1235,54 +1385,12 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af20315259e6981ca1ef2d09ba7f7a548">wbc::RobotModelHyrodyn</a>, and <a class="el" href="classwbc_1_1RobotModelKDL.html#a08b2f1043effb15cc02767c74ecb6ce7">wbc::RobotModelKDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af20315259e6981ca1ef2d09ba7f7a548">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelKDL.html#a08b2f1043effb15cc02767c74ecb6ce7">wbc::RobotModelKDL</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a07f9ca5022c2b6b5d4b61ae27a05c206">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ae0dce17c8418f2de2f3d4e7440df2006">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
-<a id="a8f5388c8af5244ca8733fc04fefe656c" name="a8f5388c8af5244ca8733fc04fefe656c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8f5388c8af5244ca8733fc04fefe656c">&#9670;&#160;</a></span>updateFloatingBase()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::RobotModel::updateFloatingBase </td>
-          <td>(</td>
-          <td class="paramtype">const base::samples::RigidBodyStateSE3 &amp;&#160;</td>
-          <td class="paramname"><em>rbs</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::vector&lt; std::string &gt; &amp;&#160;</td>
-          <td class="paramname"><em>floating_base_virtual_joint_names</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">base::samples::Joints &amp;&#160;</td>
-          <td class="paramname"><em>joint_state</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a03e8d69545832c81df2c69d0640cda37" name="a03e8d69545832c81df2c69d0640cda37"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a03e8d69545832c81df2c69d0640cda37">&#9670;&#160;</a></span>worldFrame()</h2>
+<a id="a7d2ade9bc411a29ab0b39937aca33fa0" name="a7d2ade9bc411a29ab0b39937aca33fa0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d2ade9bc411a29ab0b39937aca33fa0">&#9670;&#160;</a></span>worldFrame()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -1291,7 +1399,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const std::string &amp; wbc::RobotModel::worldFrame </td>
+          <td class="memname">const std::string &amp; wbc::RobotModel::worldFrame </td>
           <td>(</td>
           <td class="paramname"></td><td>)</td>
           <td></td>
@@ -1299,7 +1407,7 @@ Protected Attributes</h2></td></tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel">inline</span><span class="mlabel">virtual</span></span>  </td>
+<span class="mlabels"><span class="mlabel">inline</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
@@ -1331,6 +1439,28 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a32db5424d0143925f888a0d84ac129b3" name="a32db5424d0143925f888a0d84ac129b3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32db5424d0143925f888a0d84ac129b3">&#9670;&#160;</a></span>actuated_joint_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; wbc::RobotModel::actuated_joint_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aa64ca6ac20a136ffa9ae66c98a31376a" name="aa64ca6ac20a136ffa9ae66c98a31376a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aa64ca6ac20a136ffa9ae66c98a31376a">&#9670;&#160;</a></span>base_frame</h2>
 
@@ -1342,6 +1472,94 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::string wbc::RobotModel::base_frame</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac57db3e6bfd65b4aaf0b197aba611864" name="ac57db3e6bfd65b4aaf0b197aba611864"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac57db3e6bfd65b4aaf0b197aba611864">&#9670;&#160;</a></span>bias_forces</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::VectorXd wbc::RobotModel::bias_forces</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab6734ae4e76084c05ac7091f08c0931c" name="ab6734ae4e76084c05ac7091f08c0931c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab6734ae4e76084c05ac7091f08c0931c">&#9670;&#160;</a></span>body_jac_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">JacobianMap</a> wbc::RobotModel::body_jac_map</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aa52127308b4db094c21583bd1ed2a13a" name="aa52127308b4db094c21583bd1ed2a13a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa52127308b4db094c21583bd1ed2a13a">&#9670;&#160;</a></span>com_jac</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::MatrixXd wbc::RobotModel::com_jac</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a3475d13e73fed48ea10cd011749db5e7" name="a3475d13e73fed48ea10cd011749db5e7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3475d13e73fed48ea10cd011749db5e7">&#9670;&#160;</a></span>com_rbs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::samples::RigidBodyStateSE3 wbc::RobotModel::com_rbs</td>
         </tr>
       </table>
   </td>
@@ -1441,6 +1659,226 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a0bead23ac0c24130a6c621a002dd510c" name="a0bead23ac0c24130a6c621a002dd510c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0bead23ac0c24130a6c621a002dd510c">&#9670;&#160;</a></span>has_floating_base</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool wbc::RobotModel::has_floating_base</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a36995e966ea95c19d83a8d4690c8efe0" name="a36995e966ea95c19d83a8d4690c8efe0"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a36995e966ea95c19d83a8d4690c8efe0">&#9670;&#160;</a></span>independent_joint_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; wbc::RobotModel::independent_joint_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a68c5dd5ba7c659d2c866c3697d0127c6" name="a68c5dd5ba7c659d2c866c3697d0127c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a68c5dd5ba7c659d2c866c3697d0127c6">&#9670;&#160;</a></span>jac_dot_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">JacobianMap</a> wbc::RobotModel::jac_dot_map</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ac421450c277768642272409bd5683ac5" name="ac421450c277768642272409bd5683ac5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac421450c277768642272409bd5683ac5">&#9670;&#160;</a></span>joint_limits</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::JointLimits wbc::RobotModel::joint_limits</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae6443388e1fc68d6e91e9948b33a7609" name="ae6443388e1fc68d6e91e9948b33a7609"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae6443388e1fc68d6e91e9948b33a7609">&#9670;&#160;</a></span>joint_names</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; wbc::RobotModel::joint_names</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abba1d3564e20eb40d25891cc23711cc9" name="abba1d3564e20eb40d25891cc23711cc9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abba1d3564e20eb40d25891cc23711cc9">&#9670;&#160;</a></span>joint_names_floating_base</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;std::string&gt; wbc::RobotModel::joint_names_floating_base</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a2714d12a99d9bdb294ac473dcdbbcbf7" name="a2714d12a99d9bdb294ac473dcdbbcbf7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2714d12a99d9bdb294ac473dcdbbcbf7">&#9670;&#160;</a></span>joint_space_inertia_mat</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::MatrixXd wbc::RobotModel::joint_space_inertia_mat</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aea227a52cdc7a62a4c433392c88f424b" name="aea227a52cdc7a62a4c433392c88f424b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aea227a52cdc7a62a4c433392c88f424b">&#9670;&#160;</a></span>joint_state</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::samples::Joints wbc::RobotModel::joint_state</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="af13bbb73b3e8dc0cd01f80878f4a4423" name="af13bbb73b3e8dc0cd01f80878f4a4423"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#af13bbb73b3e8dc0cd01f80878f4a4423">&#9670;&#160;</a></span>joint_state_out</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::samples::Joints wbc::RobotModel::joint_state_out</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a738c923d8de416181739fba97bf35b43" name="a738c923d8de416181739fba97bf35b43"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a738c923d8de416181739fba97bf35b43">&#9670;&#160;</a></span>rbs</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::samples::RigidBodyStateSE3 wbc::RobotModel::rbs</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a2c0f3811f95bfe17968ce2b0262583f7" name="a2c0f3811f95bfe17968ce2b0262583f7"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a2c0f3811f95bfe17968ce2b0262583f7">&#9670;&#160;</a></span>robot_model_config</h2>
 
@@ -1452,6 +1890,94 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="structwbc_1_1RobotModelConfig.html">RobotModelConfig</a> wbc::RobotModel::robot_model_config</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="acf5cdf1c065188814d4fab746995cc5f" name="acf5cdf1c065188814d4fab746995cc5f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acf5cdf1c065188814d4fab746995cc5f">&#9670;&#160;</a></span>robot_urdf</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">urdf::ModelInterfaceSharedPtr wbc::RobotModel::robot_urdf</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d6bbf37b13b78ce23acbb3fcfaf9eea" name="a9d6bbf37b13b78ce23acbb3fcfaf9eea"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d6bbf37b13b78ce23acbb3fcfaf9eea">&#9670;&#160;</a></span>selection_matrix</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::MatrixXd wbc::RobotModel::selection_matrix</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a92a5d104d15e909c4adbdaf91859538d" name="a92a5d104d15e909c4adbdaf91859538d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92a5d104d15e909c4adbdaf91859538d">&#9670;&#160;</a></span>space_jac_map</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="classwbc_1_1RobotModel.html#adec09c89423b3ab5057605a4591f236b">JacobianMap</a> wbc::RobotModel::space_jac_map</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a92af26e334713f1c6e302aff9a12c5b7" name="a92af26e334713f1c6e302aff9a12c5b7"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a92af26e334713f1c6e302aff9a12c5b7">&#9670;&#160;</a></span>spatial_acc_bias</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">base::Acceleration wbc::RobotModel::spatial_acc_bias</td>
         </tr>
       </table>
   </td>
