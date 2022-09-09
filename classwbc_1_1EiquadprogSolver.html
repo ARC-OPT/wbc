@@ -58,7 +58,7 @@ $(function() {
 </div><!--header-->
 <div class="contents">
 
-<p>The <a class="el" href="classwbc_1_1EiquadprogSolver.html" title="The EiquadprogSolver class is a wrapper for the qp-solver eiquadprog (see https://github....">EiquadprogSolver</a> class is a wrapper for the qp-solver eiquadprog (see <a href="https://github.com/stack-of-tasks/eiquadprog">https://github.com/stack-of-tasks/eiquadprog</a>). It solves problems of shape:  
+<p>The <a class="el" href="classwbc_1_1QPOASESSolver.html" title="The QPOASESSolver class is a wrapper for the qp-solver qpoases (see https://www.coin-or....">QPOASESSolver</a> class is a wrapper for the qp-solver qpoases (see <a href="https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf">https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf</a>). It solves problems of shape:  
  <a href="classwbc_1_1EiquadprogSolver.html#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="EiquadprogSolver_8hpp_source.html">EiquadprogSolver.hpp</a>&gt;</code></p>
@@ -107,6 +107,10 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a2be7c8ed9375e17bde9c95c97e1d59c5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad902b17de2e8c1422b810282443f3f27"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EiquadprogSolver.html#ad902b17de2e8c1422b810282443f3f27">_actual_n_iter</a></td></tr>
 <tr class="separator:ad902b17de2e8c1422b810282443f3f27"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a14ded8f9eac04f195112bb92c2e7937f"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EiquadprogSolver.html#a14ded8f9eac04f195112bb92c2e7937f">_CE_mtx</a></td></tr>
+<tr class="separator:a14ded8f9eac04f195112bb92c2e7937f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1c2de41c67031100509f50f7d40f95a"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EiquadprogSolver.html#ab1c2de41c67031100509f50f7d40f95a">_ce0_vec</a></td></tr>
+<tr class="separator:ab1c2de41c67031100509f50f7d40f95a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab50bcb39aa59951e2c3cbfef4ef10cbf"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EiquadprogSolver.html#ab50bcb39aa59951e2c3cbfef4ef10cbf">_CI_mtx</a></td></tr>
 <tr class="separator:ab50bcb39aa59951e2c3cbfef4ef10cbf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bb827ab7b59dcdce7a3d658c629bc78"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EiquadprogSolver.html#a8bb827ab7b59dcdce7a3d658c629bc78">_ci0_vec</a></td></tr>
@@ -116,14 +120,14 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a37459355745290b4509a9b6ea0c949ce inherit pro_attribs_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p >The <a class="el" href="classwbc_1_1EiquadprogSolver.html" title="The EiquadprogSolver class is a wrapper for the qp-solver eiquadprog (see https://github....">EiquadprogSolver</a> class is a wrapper for the qp-solver eiquadprog (see <a href="https://github.com/stack-of-tasks/eiquadprog">https://github.com/stack-of-tasks/eiquadprog</a>). It solves problems of shape: </p>
+<div class="textblock"><p >The <a class="el" href="classwbc_1_1QPOASESSolver.html" title="The QPOASESSolver class is a wrapper for the qp-solver qpoases (see https://www.coin-or....">QPOASESSolver</a> class is a wrapper for the qp-solver qpoases (see <a href="https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf">https://www.coin-or.org/qpOASES/doc/3.0/manual.pdf</a>). It solves problems of shape: </p>
 <p class="formulaDsp">
 \[
        \begin{array}{ccc}
-       min(\mathbf{x}) &amp; \frac{1}{2} \mathbf{x}^T\mathbf{G}\mathbf{x}+\mathbf{x}^T\mathbf{g0}&amp; \\
+       min(\mathbf{x}) &amp; \frac{1}{2} \mathbf{x}^T\mathbf{H}\mathbf{x}+\mathbf{x}^T\mathbf{g}&amp; \\
             &amp; &amp; \\
-       s.t. &amp; \mathbf{CE}x + ce0 = 0&amp; \\
-            &amp; \mathbf{CI}x + ci0 \geq 0&amp; \\
+       s.t. &amp; lb(\mathbf{Ax}) \leq \mathbf{Ax} \leq ub(\mathbf{Ax})&amp; \\
+            &amp; lb(\mathbf{x}) \leq \mathbf{x} \leq ub(\mathbf{x})&amp; \\
        \end{array}
  \]
 </p>
@@ -309,6 +313,50 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">int wbc::EiquadprogSolver::_actual_n_iter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab1c2de41c67031100509f50f7d40f95a" name="ab1c2de41c67031100509f50f7d40f95a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1c2de41c67031100509f50f7d40f95a">&#9670;&#160;</a></span>_ce0_vec</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd wbc::EiquadprogSolver::_ce0_vec</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a14ded8f9eac04f195112bb92c2e7937f" name="a14ded8f9eac04f195112bb92c2e7937f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a14ded8f9eac04f195112bb92c2e7937f">&#9670;&#160;</a></span>_CE_mtx</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::MatrixXd wbc::EiquadprogSolver::_CE_mtx</td>
         </tr>
       </table>
   </td>

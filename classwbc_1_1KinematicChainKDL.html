@@ -68,9 +68,9 @@ $(function() {
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a61d8dd941223a728e1ac4712c87704ea"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#a61d8dd941223a728e1ac4712c87704ea">KinematicChainKDL</a> (const KDL::Chain &amp;<a class="el" href="classwbc_1_1KinematicChainKDL.html#a59ecbacb0e8054a5da0a5c15b4b94cde">chain</a>, const std::string &amp;<a class="el" href="classwbc_1_1KinematicChainKDL.html#a32415cee2efc48e444883aa282da1976">root_frame</a>, const std::string &amp;<a class="el" href="classwbc_1_1KinematicChainKDL.html#a5d0ec4a564541f5c1e81e2ecb655de4c">tip_frame</a>)</td></tr>
 <tr class="separator:a61d8dd941223a728e1ac4712c87704ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a36374682a1bc3ba73bfe35d03e03c076"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#a36374682a1bc3ba73bfe35d03e03c076">update</a> (const KDL::JntArray &amp;q, const KDL::JntArray &amp;qd, const KDL::JntArray &amp;qdd, std::map&lt; std::string, int &gt; joint_idx_map)</td></tr>
-<tr class="memdesc:a36374682a1bc3ba73bfe35d03e03c076"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update all joints of the kinematic chain.  <a href="classwbc_1_1KinematicChainKDL.html#a36374682a1bc3ba73bfe35d03e03c076">More...</a><br /></td></tr>
-<tr class="separator:a36374682a1bc3ba73bfe35d03e03c076"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a555eb865e937d89a522bbbd43d416b95"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#a555eb865e937d89a522bbbd43d416b95">update</a> (const base::samples::Joints &amp;joint_state)</td></tr>
+<tr class="memdesc:a555eb865e937d89a522bbbd43d416b95"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update all joints of the kinematic chain.  <a href="classwbc_1_1KinematicChainKDL.html#a555eb865e937d89a522bbbd43d416b95">More...</a><br /></td></tr>
+<tr class="separator:a555eb865e937d89a522bbbd43d416b95"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8b5d5b75f0bf870e3b6bf274cf231970"><td class="memItemLeft" align="right" valign="top">const base::samples::RigidBodyStateSE3 &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#a8b5d5b75f0bf870e3b6bf274cf231970">rigidBodyState</a> ()</td></tr>
 <tr class="separator:a8b5d5b75f0bf870e3b6bf274cf231970"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3e2a161fbef2dbd80f2253f196141fb2"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#a3e2a161fbef2dbd80f2253f196141fb2">calculateForwardKinematics</a> ()</td></tr>
@@ -120,8 +120,6 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a60ee14477c9a2d8fbb15e80fe8384b1c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a67b6d99ba6729120a427e3a5e664b28b"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#a67b6d99ba6729120a427e3a5e664b28b">jac_dot_is_up_to_date</a></td></tr>
 <tr class="separator:a67b6d99ba6729120a427e3a5e664b28b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:abbe995335de056a6412a60bb8bbca532"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#abbe995335de056a6412a60bb8bbca532">fk_is_up_to_date</a></td></tr>
-<tr class="separator:abbe995335de056a6412a60bb8bbca532"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc4753d348ee81de97ee81b2b6baed93"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; KDL::ChainJntToJacSolver &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#abc4753d348ee81de97ee81b2b6baed93">jac_solver</a></td></tr>
 <tr class="separator:abc4753d348ee81de97ee81b2b6baed93"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a62b3235eccbd9126b5cf46f2b2db929e"><td class="memItemLeft" align="right" valign="top">std::shared_ptr&lt; KDL::ChainFkSolverVel_recursive &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1KinematicChainKDL.html#a62b3235eccbd9126b5cf46f2b2db929e">fk_solver_vel</a></td></tr>
@@ -262,8 +260,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a36374682a1bc3ba73bfe35d03e03c076" name="a36374682a1bc3ba73bfe35d03e03c076"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a36374682a1bc3ba73bfe35d03e03c076">&#9670;&#160;</a></span>update()</h2>
+<a id="a555eb865e937d89a522bbbd43d416b95" name="a555eb865e937d89a522bbbd43d416b95"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a555eb865e937d89a522bbbd43d416b95">&#9670;&#160;</a></span>update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -271,31 +269,9 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void wbc::KinematicChainKDL::update </td>
           <td>(</td>
-          <td class="paramtype">const KDL::JntArray &amp;&#160;</td>
-          <td class="paramname"><em>q</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
+          <td class="paramtype">const base::samples::Joints &amp;&#160;</td>
+          <td class="paramname"><em>joint_state</em></td><td>)</td>
           <td></td>
-          <td class="paramtype">const KDL::JntArray &amp;&#160;</td>
-          <td class="paramname"><em>qd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const KDL::JntArray &amp;&#160;</td>
-          <td class="paramname"><em>qdd</em>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::map&lt; std::string, int &gt;&#160;</td>
-          <td class="paramname"><em>joint_idx_map</em>&#160;</td>
-        </tr>
-        <tr>
-          <td></td>
-          <td>)</td>
-          <td></td><td></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -389,20 +365,6 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p >Helper to store current frame acceleration </p>
-
-</div>
-</div>
-<a id="abbe995335de056a6412a60bb8bbca532" name="abbe995335de056a6412a60bb8bbca532"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbe995335de056a6412a60bb8bbca532">&#9670;&#160;</a></span>fk_is_up_to_date</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool wbc::KinematicChainKDL::fk_is_up_to_date</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>
