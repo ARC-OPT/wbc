@@ -20,10 +20,24 @@ double whiteNoise(const double std_dev)
     return std_dev * sqrt( -2.0 * log( rand_no ) ) * tmp;
 }
 
-base::samples::Joints randomJointState(const vector<string>& joint_names, const base::JointLimits& limits){
+base::samples::Joints randomJointState(base::samples::Joints joint_state_in){
     base::samples::Joints joint_state;
-    joint_state.resize(joint_names.size());
-    joint_state.names = joint_names;
+    joint_state.resize(joint_state_in.size());
+    joint_state.names = joint_state_in.names;
+    for(auto n : joint_state.names){
+        joint_state[n].position = joint_state_in[n].position + whiteNoise(1e-4);
+        joint_state[n].speed = whiteNoise(1e-4);
+        joint_state[n].acceleration = whiteNoise(1e-4);
+    }
+    joint_state.time = base::Time::now();
+
+    return joint_state;
+}
+
+base::samples::Joints randomJointState(base::JointLimits limits){
+    base::samples::Joints joint_state;
+    joint_state.resize(limits.size());
+    joint_state.names = limits.names;
     for(auto n : joint_state.names){
         joint_state[n].position = (double(rand())/RAND_MAX)* (limits[n].max.position - limits[n].min.position) + limits[n].min.position;
         joint_state[n].speed = whiteNoise(1e-4);
@@ -34,17 +48,45 @@ base::samples::Joints randomJointState(const vector<string>& joint_names, const 
     return joint_state;
 }
 
-base::samples::RigidBodyStateSE3 randomFloatingBaseState(const base::RigidBodyStateSE3 &initial_state){
+base::samples::RigidBodyStateSE3 randomFloatingBaseState(){
     base::samples::RigidBodyStateSE3 floating_base_state;
-    floating_base_state.pose = initial_state.pose;
-    for(int i = 0; i < 3; i++){
-        floating_base_state.pose.position[i] += whiteNoise(1e-4);
-        floating_base_state.twist.linear[i] = whiteNoise(1e-4);
-        floating_base_state.twist.angular[i] = whiteNoise(1e-4);
-        floating_base_state.acceleration.linear[i] = whiteNoise(1e-4);
-        floating_base_state.acceleration.angular[i] = whiteNoise(1e-4);
-    }
+    floating_base_state.pose.position = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.pose.orientation = Eigen::AngleAxisd(double(rand())/RAND_MAX, Eigen::Vector3d::UnitX())
+                                         * Eigen::AngleAxisd(double(rand())/RAND_MAX, Eigen::Vector3d::UnitY())
+                                         * Eigen::AngleAxisd(double(rand())/RAND_MAX, Eigen::Vector3d::UnitZ());
+    floating_base_state.twist.linear = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.twist.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.acceleration.linear = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
+    floating_base_state.acceleration.angular = base::Vector3d(double(rand())/RAND_MAX,double(rand())/RAND_MAX,double(rand())/RAND_MAX);
     floating_base_state.time = base::Time::now();
+    floating_base_state.frame_id = "world";
+    return floating_base_state;
+}
+
+
+base::samples::RigidBodyStateSE3 randomFloatingBaseState(base::samples::RigidBodyStateSE3 floating_base_state_in){
+    base::samples::RigidBodyStateSE3 floating_base_state;
+    base::Vector3d euler = base::getEuler(floating_base_state_in.pose.orientation);
+    floating_base_state.pose.position = base::Vector3d(whiteNoise(1e-4),
+                                                       whiteNoise(1e-4),
+                                                       whiteNoise(1e-4));
+    floating_base_state.pose.orientation = Eigen::AngleAxisd(whiteNoise(1e-4), Eigen::Vector3d::UnitX())
+                                         * Eigen::AngleAxisd(whiteNoise(1e-4), Eigen::Vector3d::UnitY())
+                                         * Eigen::AngleAxisd(whiteNoise(1e-4), Eigen::Vector3d::UnitZ());
+    floating_base_state.twist.linear = base::Vector3d(whiteNoise(1e-4),
+                                                      whiteNoise(1e-4),
+                                                      whiteNoise(1e-4));
+    floating_base_state.twist.angular = base::Vector3d(whiteNoise(1e-4),
+                                                      whiteNoise(1e-4),
+                                                      whiteNoise(1e-4));
+    floating_base_state.acceleration.linear = base::Vector3d( whiteNoise(1e-4),
+                                                      whiteNoise(1e-4),
+                                                      whiteNoise(1e-4));
+    floating_base_state.acceleration.angular = base::Vector3d(whiteNoise(1e-4),
+                                                      whiteNoise(1e-4),
+                                                      whiteNoise(1e-4));
+    floating_base_state.time = base::Time::now();
+    floating_base_state.frame_id = "world";
     return floating_base_state;
 }
 
@@ -69,26 +111,19 @@ map<string, base::VectorXd> evaluateWBCSceneRandom(WbcScenePtr scene, int n_samp
         for(auto w : scene->getWbcConfig())
             scene->setReference(w.name, randomConstraintReference());
 
-        base::samples::Joints joint_state = randomJointState(scene->getRobotModel()->independentJointNames(), scene->getRobotModel()->jointLimits());
-        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(scene->getRobotModel()->getRobotModelConfig().floating_base_state);
+        RobotModelPtr robot_model = scene->getRobotModel();
+        base::samples::Joints joint_state = randomJointState(robot_model->jointState(robot_model->independentJointNames()));
+        base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(scene->getRobotModel()->floatingBaseState());
         scene->getRobotModel()->update(joint_state, floating_base_state);
 
         base::Time start = base::Time::now();
         HierarchicalQP qp = scene->update();
         time_scene_update[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
 
-        try{
-            start = base::Time::now();
-            scene->solve(qp);
-            time_scene_solve[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-        }
-        catch(exception e){
-            cout<<"Exception"<<endl;
-            i--;
-            usleep(0.01*1e6);
-            scene->getSolver()->reset();
-            continue;
-        }
+        start = base::Time::now();
+        scene->solve(qp);
+        time_scene_solve[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
+
         usleep(0.01*1e6);
     }
 

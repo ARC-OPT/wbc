@@ -5,7 +5,6 @@
 #include "../../core/RobotModelConfig.hpp"
 
 #include <hyrodyn/robot_model_hyrodyn.hpp>
-#include <urdf_world/types.h>
 #include <base/commands/Joints.hpp>
 
 namespace wbc{
@@ -15,21 +14,6 @@ private:
     static RobotModelRegistry<RobotModelHyrodyn> reg;
 
 protected:
-    base::samples::RigidBodyStateSE3 rbs;
-    base::JointLimits joint_limits;
-    base::samples::Joints joint_state;
-    base::MatrixXd joint_space_inertia_mat;
-    base::VectorXd bias_forces;
-    base::Acceleration spatial_acc_bias;
-    base::MatrixXd selection_matrix;
-    base::samples::Joints joint_state_out;
-    std::vector<std::string> joint_names;
-    std::vector<std::string> independent_joint_names;
-    std::vector<std::string> joint_names_floating_base;
-    base::samples::RigidBodyStateSE3 floating_base_state;
-    urdf::ModelInterfaceSharedPtr robot_urdf;
-    base::samples::RigidBodyStateSE3 com_rbs;
-    base::MatrixXd jacobian, com_jacobian;
     hyrodyn::RobotModel_HyRoDyn hyrodyn;
 
     void clear();
@@ -59,8 +43,8 @@ public:
     virtual void update(const base::samples::Joints& joint_state,
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
 
-    /** Returns the current status of the given joint names */
-    virtual const base::samples::Joints& jointState(const std::vector<std::string> &joint_names);
+    /** Return entire system state*/
+    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd);
 
     /**
      * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
@@ -112,35 +96,6 @@ public:
 
     /** Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system*/
     virtual const base::VectorXd &biasForces();
-
-    /** @brief Return all joint names*/
-    virtual const std::vector<std::string>& jointNames(){return joint_names;}
-
-    /** @brief Return only actuated joint names*/
-   virtual  const std::vector<std::string>& actuatedJointNames(){return hyrodyn.jointnames_active;}
-
-    /** @brief Return only independent joint names*/
-    virtual  const std::vector<std::string>& independentJointNames(){return independent_joint_names;}
-
-    /** @brief Get index of joint name*/
-    virtual uint jointIndex(const std::string &joint_name);
-
-    /** @brief Return current joint limits*/
-    virtual const base::JointLimits& jointLimits(){return joint_limits;}
-
-    /** @brief Return current selection matrix S that maps complete joint vector to actuated joint vector: q_a = S * q. The matrix
-      * consists of only zeros and ones. Size is na x nq, where na is the number of actuated joints and
-      * nq the total number of joints. */
-    virtual const base::MatrixXd& selectionMatrix(){return selection_matrix;}
-
-    /** @brief Return True if given link name is available in robot model, false otherwise*/
-    virtual bool hasLink(const std::string& link_name);
-
-    /** @brief Return True if given joint name is available in robot model, false otherwise*/
-    virtual bool hasJoint(const std::string& joint_name);
-
-    /** @brief Return True if given joint name is an actuated joint in robot model, false otherwise*/
-    virtual bool hasActuatedJoint(const std::string& joint_name);
 
     /** @brief Return Current center of gravity in expressed base frame*/
     virtual const base::samples::RigidBodyStateSE3& centerOfMass();

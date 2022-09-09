@@ -1,0 +1,28 @@
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -276,6 +276,9 @@ LIST(APPEND HEADERS
+ # --- MAIN LIBRARY -------------------------------------------------------------
+ ADD_SUBDIRECTORY(src)
+ 
++CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/pinocchio.pc.in ${CMAKE_CURRENT_BINARY_DIR}/pinocchio.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/pinocchio.pc DESTINATION lib/pkgconfig)
++
+ # --- BINDINGS -----------------------------------------------------------------
+ ADD_SUBDIRECTORY(bindings)
+
+
+--- pinocchio.pc.in
++++ pinocchio.pc.in
+@@ -0,0 +1,11 @@
++prefix=@CMAKE_INSTALL_PREFIX@
++exec_prefix=@CMAKE_INSTALL_PREFIX@
++libdir=${prefix}/lib
++includedir=${prefix}/include
++
++Name: @PACKAGE_NAME@
++Description: @PACKAGE_DESCRIPTION@
++Version: @PACKAGE_VERSION@
++Requires: @PKGCONFIG_REQUIRES@
++Libs: -L${libdir} @PKGCONFIG_LIBS@ -lpinocchio
++Cflags: -I${includedir} @PKGCONFIG_CFLAGS@
+

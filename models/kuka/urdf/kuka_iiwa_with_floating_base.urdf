@@ -8,12 +8,48 @@
     <color rgba='1.0 0.423529411765 0.0392156862745 1.0'/>
   </material>
 
-<link name='world'/>
-<link name='link_floating_base_trans_x'/>
-<link name='link_floating_base_trans_y'/>
-<link name='link_floating_base_trans_z'/>
-<link name='link_floating_base_rot_x'/>
-<link name='link_floating_base_rot_y'/>
+<link name='world'>
+<inertial>
+  <origin rpy='0 0 0' xyz='0 -0.03 0.12'/>
+  <mass value='4'/>
+  <inertia ixx='0.1' ixy='0' ixz='0' iyy='0.09' iyz='0' izz='0.02'/>
+</inertial>
+</link>
+<link name='link_floating_base_trans_x'>
+<inertial>
+  <origin rpy='0 0 0' xyz='0 -0.03 0.12'/>
+  <mass value='4'/>
+  <inertia ixx='0.1' ixy='0' ixz='0' iyy='0.09' iyz='0' izz='0.02'/>
+</inertial>
+</link>
+<link name='link_floating_base_trans_y'>
+<inertial>
+  <origin rpy='0 0 0' xyz='0 -0.03 0.12'/>
+  <mass value='4'/>
+  <inertia ixx='0.1' ixy='0' ixz='0' iyy='0.09' iyz='0' izz='0.02'/>
+</inertial>
+</link>
+<link name='link_floating_base_trans_z'>
+<inertial>
+  <origin rpy='0 0 0' xyz='0 -0.03 0.12'/>
+  <mass value='4'/>
+  <inertia ixx='0.1' ixy='0' ixz='0' iyy='0.09' iyz='0' izz='0.02'/>
+</inertial>
+</link>
+<link name='link_floating_base_rot_x'>
+<inertial>
+  <origin rpy='0 0 0' xyz='0 -0.03 0.12'/>
+  <mass value='4'/>
+  <inertia ixx='0.1' ixy='0' ixz='0' iyy='0.09' iyz='0' izz='0.02'/>
+</inertial>
+</link>
+<link name='link_floating_base_rot_y'>
+<inertial>
+  <origin rpy='0 0 0' xyz='0 -0.03 0.12'/>
+  <mass value='4'/>
+  <inertia ixx='0.1' ixy='0' ixz='0' iyy='0.09' iyz='0' izz='0.02'/>
+</inertial>
+</link>
 
   <joint name='floating_base_trans_x' type='prismatic'>
     <parent link='world'/>

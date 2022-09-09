@@ -148,7 +148,7 @@
     <visual name="LLAnklePitch_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/AnklePitch_Link.STL"/>
+        <mesh filename="../meshes/AnklePitch_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -157,7 +157,7 @@
     <visual name="LLAnkle_E21_Link_visual">
       <origin xyz="-0.07 -0.04 0.0" rpy="-0.05066 -0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_E21_Link.STL"/>
+        <mesh filename="../meshes/Ankle_E21_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -166,7 +166,7 @@
     <visual name="LLAnkle_E11_Link_visual">
       <origin xyz="-0.07 0.04 0.0" rpy="0.05066 -0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_E11_Link.STL"/>
+        <mesh filename="../meshes/Ankle_E11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -189,7 +189,7 @@
     <visual name="LLAnkleRoll_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/AnkleRoll_Link.STL"/>
+        <mesh filename="../meshes/AnkleRoll_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.64706 0.61961 0.58824 1.0"/>
@@ -205,7 +205,7 @@
     <visual name="LLAnkle_FT_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/FL_FT_Link.STL"/>
+        <mesh filename="../meshes/FL_FT_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -234,7 +234,7 @@
     <visual name="LLHip1_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/LLHip1_Link.STL"/>
+        <mesh filename="../meshes/LLHip1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -257,7 +257,7 @@
     <visual name="LLHip2_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/LLHip2_Link.STL"/>
+        <mesh filename="../meshes/LLHip2_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -266,7 +266,7 @@
     <visual name="LLHip3_B11_Link_visual">
       <origin xyz="0.018117 -0.09 -0.067615" rpy="-2.5686 1.2576999999999998 0.5958800000000001"/>
       <geometry>
-        <mesh filename="../meshes/stl/Hip3_B11_Link.STL"/>
+        <mesh filename="../meshes/Hip3_B11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -275,7 +275,7 @@
     <visual name="LLHip3_Act1_Link_visual">
       <origin xyz="0.09393098308289657 -0.038590125898753366 -0.3505567339559511" rpy="0.5729999999999998 1.2576999999999994 0.5958800000000001"/>
       <geometry>
-        <mesh filename="../meshes/stl/LLHip3_Act1_Link.STL"/>
+        <mesh filename="../meshes/LLHip3_Act1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -298,7 +298,7 @@
     <visual name="LLHip3_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Hip3_Link.STL"/>
+        <mesh filename="../meshes/Hip3_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -313,7 +313,7 @@
     <visual name="LLKnee_B11_Link_visual">
       <origin xyz="0.020175 0.070737 -0.075294" rpy="-0.15080999999999992 1.3059000000000005 -0.15616999999999992"/>
       <geometry>
-        <mesh filename="../meshes/stl/Knee_B11_Link.STL"/>
+        <mesh filename="../meshes/Knee_B11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -322,7 +322,7 @@
     <visual name="LLKnee_Act1_Link_visual">
       <origin xyz="0.09088512935033356 0.059603540016275505 -0.3391673631423413" rpy="-0.15080999999999994 1.3059000000000005 -0.15616999999999995"/>
       <geometry>
-        <mesh filename="../meshes/stl/Knee_Act1_Link.STL"/>
+        <mesh filename="../meshes/Knee_Act1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -345,7 +345,7 @@
     <visual name="LLKnee_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Knee_Link.STL"/>
+        <mesh filename="../meshes/Knee_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -360,7 +360,7 @@
     <visual name="LLAnkle_B11_Link_visual">
       <origin xyz="0.12872999008627622 0.022301069894637288 0.02649893010538089" rpy="1.5201995950723244 -1.9755524692725744e-06 1.7452956535986952"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B11_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -369,7 +369,7 @@
     <visual name="LLAnkle_B12_Link_visual">
       <origin xyz="0.12872999008627622 0.022301069894637288 0.02649893010538089" rpy="1.6213921335695103 0.0003060746390916892 -1.4023021588708646"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B12_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B12_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -378,7 +378,7 @@
     <visual name="LLAnkle_Act1_Link_visual">
       <origin xyz="0.39059846357402106 0.06684327487261481 0.03995015565913803" rpy="-3.135543074958524 1.5202022485750566 0.17453865585220907"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_Act1_Link.STL"/>
+        <mesh filename="../meshes/Ankle_Act1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -387,7 +387,7 @@
     <visual name="LLAnkle_B21_Link_visual">
       <origin xyz="0.1287301737465314 0.022301069893962668 -0.023501069894281797" rpy="1.6214049022519106 -1.9755524692725744e-06 1.7452956535986952"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B21_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B21_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -396,7 +396,7 @@
     <visual name="LLAnkle_B22_Link_visual">
       <origin xyz="0.1287301737465314 0.022301069893962668 -0.023501069894281797" rpy="1.520188652771982 -0.00030219472845357864 -1.4023021552616228"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B22_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B22_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -405,7 +405,7 @@
     <visual name="LLAnkle_Act2_Link_visual">
       <origin xyz="0.39059848109430023 0.06684329955582428 -0.03695544775297088" rpy="1.520188652771982 -0.00030219472845357864 -1.4023021552616228"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_Act2_Link.STL"/>
+        <mesh filename="../meshes/Ankle_Act2_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -428,7 +428,7 @@
     <visual name="LRAnklePitch_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/AnklePitch_Link.STL"/>
+        <mesh filename="../meshes/AnklePitch_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -437,7 +437,7 @@
     <visual name="LRAnkle_E21_Link_visual">
       <origin xyz="-0.07 -0.04 0.0" rpy="-0.05066 -0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_E21_Link.STL"/>
+        <mesh filename="../meshes/Ankle_E21_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -446,7 +446,7 @@
     <visual name="LRAnkle_E11_Link_visual">
       <origin xyz="-0.07 0.04 0.0" rpy="0.05066 -0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_E11_Link.STL"/>
+        <mesh filename="../meshes/Ankle_E11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -469,7 +469,7 @@
     <visual name="LRAnkleRoll_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/AnkleRoll_Link.STL"/>
+        <mesh filename="../meshes/AnkleRoll_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.64706 0.61961 0.58824 1.0"/>
@@ -485,7 +485,7 @@
     <visual name="LRAnkle_FT_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/FL_FT_Link.STL"/>
+        <mesh filename="../meshes/FL_FT_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -514,7 +514,7 @@
     <visual name="LRHip1_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/LRHip1_Link.STL"/>
+        <mesh filename="../meshes/LRHip1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -537,7 +537,7 @@
     <visual name="LRHip2_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/LRHip2_Link.STL"/>
+        <mesh filename="../meshes/LRHip2_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -546,7 +546,7 @@
     <visual name="LRHip3_B11_Link_visual">
       <origin xyz="0.018117 -0.09 -0.067615" rpy="-2.5686 1.2576999999999998 0.5958800000000001"/>
       <geometry>
-        <mesh filename="../meshes/stl/Hip3_B11_Link.STL"/>
+        <mesh filename="../meshes/Hip3_B11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -555,7 +555,7 @@
     <visual name="LRHip3_Act1_Link_visual">
       <origin xyz="0.09393098308289657 -0.038590125898753366 -0.3505567339559511" rpy="0.5729999999999998 1.2576999999999994 0.5958800000000001"/>
       <geometry>
-        <mesh filename="../meshes/stl/LLHip3_Act1_Link.STL"/>
+        <mesh filename="../meshes/LLHip3_Act1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -578,7 +578,7 @@
     <visual name="LRHip3_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Hip3_Link.STL"/>
+        <mesh filename="../meshes/Hip3_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -593,7 +593,7 @@
     <visual name="LRKnee_B11_Link_visual">
       <origin xyz="0.020175 0.070737 -0.075294" rpy="-0.15080999999999992 1.3059000000000005 -0.15616999999999992"/>
       <geometry>
-        <mesh filename="../meshes/stl/Knee_B11_Link.STL"/>
+        <mesh filename="../meshes/Knee_B11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -602,7 +602,7 @@
     <visual name="LRKnee_Act1_Link_visual">
       <origin xyz="0.09088512935033356 0.059603540016275505 -0.3391673631423413" rpy="-0.15080999999999994 1.3059000000000005 -0.15616999999999995"/>
       <geometry>
-        <mesh filename="../meshes/stl/Knee_Act1_Link.STL"/>
+        <mesh filename="../meshes/Knee_Act1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -625,7 +625,7 @@
     <visual name="LRKnee_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/Knee_Link.STL"/>
+        <mesh filename="../meshes/Knee_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -640,7 +640,7 @@
     <visual name="LRAnkle_B11_Link_visual">
       <origin xyz="0.12872999008627622 0.022301069894637288 0.02649893010538089" rpy="1.5201995950723244 -1.9755524692725744e-06 1.7452956535986952"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B11_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -649,7 +649,7 @@
     <visual name="LRAnkle_B12_Link_visual">
       <origin xyz="0.12872999008627622 0.022301069894637288 0.02649893010538089" rpy="1.6213921335695103 0.0003060746390916892 -1.4023021588708646"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B12_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B12_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -658,7 +658,7 @@
     <visual name="LRAnkle_Act1_Link_visual">
       <origin xyz="0.39059846357402106 0.06684327487261481 0.03995015565913803" rpy="-3.135543074958524 1.5202022485750566 0.17453865585220907"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_Act1_Link.STL"/>
+        <mesh filename="../meshes/Ankle_Act1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -667,7 +667,7 @@
     <visual name="LRAnkle_B21_Link_visual">
       <origin xyz="0.1287301737465314 0.022301069893962668 -0.023501069894281797" rpy="1.5201877513328248 1.8413153890626716e-06 -1.3962996501833926"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B21_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B21_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -676,7 +676,7 @@
     <visual name="LRAnkle_B22_Link_visual">
       <origin xyz="0.1287301737465314 0.022301069893962668 -0.023501069894281797" rpy="1.520188652771982 -0.00030219472845357864 -1.4023021552616228"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_B22_Link.STL"/>
+        <mesh filename="../meshes/Ankle_B22_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -685,7 +685,7 @@
     <visual name="LRAnkle_Act2_Link_visual">
       <origin xyz="0.39059848109430023 0.06684329955582428 -0.03695544775297088" rpy="1.520188652771982 -0.00030219472845357864 -1.4023021552616228"/>
       <geometry>
-        <mesh filename="../meshes/stl/Ankle_Act2_Link.STL"/>
+        <mesh filename="../meshes/Ankle_Act2_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -701,7 +701,7 @@
     <visual name="RH5_Root_Link_visual">
       <origin xyz="0.0 0.0 0.0" rpy="0.0 0.0 0.0"/>
       <geometry>
-        <mesh filename="../meshes/stl/RH5_Root_Link.STL"/>
+        <mesh filename="../meshes/RH5_Root_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -716,7 +716,7 @@
     <visual name="Body_B21_Link_visual">
       <origin xyz="-0.032000000000097936 0.019999999999651706 0.007000000000004142" rpy="-0.23917265358958625 -1.0127441837298582e-24 9.793190564044702e-12"/>
       <geometry>
-        <mesh filename="../meshes/stl/Body_B21_Link.STL"/>
+        <mesh filename="../meshes/Body_B21_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -725,7 +725,7 @@
     <visual name="Body_B22_Link_visual">
       <origin xyz="-0.032000000000097936 0.019999999999651706 0.007000000000004142" rpy="-0.23941646446807321 -0.044699407566615786 0.010906984228219958"/>
       <geometry>
-        <mesh filename="../meshes/stl/Body_B22_Link.STL"/>
+        <mesh filename="../meshes/Body_B22_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -734,7 +734,7 @@
     <visual name="Body_Act2_Link_visual">
       <origin xyz="-0.04304218393473293 0.0768145018662063 0.23999911792024206" rpy="-0.23941646446807358 -0.044699407566615786 0.010906984228220049"/>
       <geometry>
-        <mesh filename="../meshes/stl/Body_Act2_Link.STL"/>
+        <mesh filename="../meshes/Body_Act2_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -743,7 +743,7 @@
     <visual name="Body_B11_Link_visual">
       <origin xyz="-0.031999999999902065 -0.020000000000348295 0.006999999999995871" rpy="0.23917265358999984 -1.0127441837298582e-24 9.793190564044702e-12"/>
       <geometry>
-        <mesh filename="../meshes/stl/Body_B11_Link.STL"/>
+        <mesh filename="../meshes/Body_B11_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -752,7 +752,7 @@
     <visual name="Body_B12_Link_visual">
       <origin xyz="-0.031999999999902065 -0.020000000000348295 0.006999999999995871" rpy="0.2394164644684859 -0.044699407566611275 -0.01090698420865236"/>
       <geometry>
-        <mesh filename="../meshes/stl/Body_B12_Link.STL"/>
+        <mesh filename="../meshes/Body_B12_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -761,7 +761,7 @@
     <visual name="Body_Act1_Link_visual">
       <origin xyz="-0.043042183933424266 -0.07681450186721515 0.2399991179202104" rpy="0.2394164644684859 -0.044699407566611275 -0.01090698420865236"/>
       <geometry>
-        <mesh filename="../meshes/stl/Body_Act1_Link.STL"/>
+        <mesh filename="../meshes/Body_Act1_Link.STL"/>
       </geometry>
       <material name="">
         <color rgba="0.69804 0.69804 0.69804 1.0"/>

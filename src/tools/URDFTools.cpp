@@ -1,6 +1,8 @@
 #include "URDFTools.hpp"
 #include <base/JointLimits.hpp>
 #include <base-logging/Logging.hpp>
+#include <urdf_model/link.h>
+#include <stack>
 
 namespace wbc {
 
@@ -13,13 +15,29 @@ std::vector<std::string> URDFTools::jointNamesFromURDF(const std::string &filena
 }
 
 std::vector<std::string> URDFTools::jointNamesFromURDF(const urdf::ModelInterfaceSharedPtr& urdf_model){
+
     std::vector<std::string> joint_names;
-    std::map<std::string, urdf::JointSharedPtr>::const_iterator it;
-    for(it=urdf_model->joints_.begin(); it!=urdf_model->joints_.end(); ++it){
-        const urdf::JointSharedPtr &joint = it->second;
-        if(joint->type == urdf::Joint::FIXED)
-            continue;
-        joint_names.push_back(joint->name);
+    std::map<std::string, urdf::LinkSharedPtr> link_map = urdf_model->links_;
+    std::stack< std::shared_ptr<urdf::Link> > link_stack;
+    link_stack.push (link_map[(urdf_model->getRoot()->name)]);
+    std::stack<int> joint_index_stack;
+    joint_index_stack.push(0);
+    while (link_stack.size() > 0) {
+        std::shared_ptr<urdf::Link> cur_link = link_stack.top();
+        unsigned int joint_idx = joint_index_stack.top();
+        if (joint_idx < cur_link->child_joints.size()) {
+            std::shared_ptr<urdf::Joint> cur_joint = cur_link->child_joints[joint_idx];
+            joint_index_stack.pop();
+            joint_index_stack.push (joint_idx + 1);
+            link_stack.push (link_map[cur_joint->child_link_name]);
+            joint_index_stack.push(0);
+            if(cur_joint->type != urdf::Joint::FIXED)
+                joint_names.push_back(cur_joint->name);
+        }
+        else{
+            link_stack.pop();
+            joint_index_stack.pop();
+        }
     }
     return joint_names;
 }
@@ -113,16 +131,50 @@ std::vector<std::string> URDFTools::addFloatingBaseToURDF(urdf::ModelInterfaceSh
     std::string floating_base = std::string("  <link name='" + world_frame_id + "'>\n")   +
             "    <inertial>" +
             "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
-            "      <mass value='0'/>" +
+            "      <mass value='0.001'/>" +
             "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
             "    </inertial>" +
             "  </link>" +
 
-            "  <link name='link_floating_base_trans_x'/>\n"   +
-            "  <link name='link_floating_base_trans_y'/>\n"   +
-            "  <link name='link_floating_base_trans_z'/>\n"   +
-            "  <link name='link_floating_base_rot_x'/>\n"   +
-            "  <link name='link_floating_base_rot_y'/>\n"   +
+            "  <link name='link_floating_base_trans_x'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_trans_y'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_trans_z'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_rot_x'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
+
+            "  <link name='link_floating_base_rot_y'>"   +
+            "    <inertial>" +
+            "      <origin rpy='0 0 0' xyz='0 0 0'/>" +
+            "      <mass value='0.001'/>" +
+            "      <inertia ixx='0' ixy='0' ixz='0' iyy='0' iyz='0' izz='0'/>" +
+            "    </inertial>" +
+            "  </link\n>" +
 
            "  <joint name='floating_base_trans_x' type='prismatic'>\n"   +
              "  <parent link='" + world_frame_id + "'/>\n"   +

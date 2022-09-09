@@ -17,8 +17,6 @@ def run(robot_model):
     r=RobotModelConfig()
     r.file="../../../models/rh5/urdf/rh5_single_leg.urdf"
     r.submechanism_file="../../../models/rh5/hyrodyn/rh5_single_leg.yml"
-    r.joint_names = joint_names
-    r.actuated_joint_names = joint_names
     r.floating_base = False
     assert robot_model.configure(r) == True
 
@@ -82,7 +80,7 @@ def run(robot_model):
     robot_model.setGravityVector([0,0,-9.81])
 
     robot_model.getRobotModelConfig() == r
-    
+
 
 def test_robot_model_hyrodyn():
     run(RobotModelHyrodyn())

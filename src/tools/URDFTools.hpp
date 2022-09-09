@@ -37,7 +37,7 @@ public:
     /** Print whole URDF tree*/
     static void printTree(urdf::LinkConstSharedPtr link, int level = 0);
 
-    /** Create a floating as URDF and add it to the robot model*/
+    /** Create a 6 Dof virtual floating base URDF and add it to the robot model*/
     static std::vector<std::string> addFloatingBaseToURDF(urdf::ModelInterfaceSharedPtr& robot_urdf, const std::string &world_frame_id = "world");
 
     /** Set all blacklisted joints in robot model to fixed*/

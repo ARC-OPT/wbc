@@ -76,26 +76,4 @@ struct python_list_to_joint_vector {
     }
 };
 
-template <typename JointVectorType>
-struct joint_vector_to_python_list {
-    static PyObject* convert(const JointVectorType& vec)
-    {
-        boost::python::list l;
-        for (int i = 0; i < vec.size(); i++)
-            l.append(vec[i]);
-        return py::incref(l.ptr());
-    }
-};
-
-template <typename JointVectorType>
-void convertJointVector(bool isListConvertible = true)
-{
-    // list -> std vector
-    if (isListConvertible)
-        python_list_to_joint_vector<JointVectorType>();
-
-    // std vector -> python
-    py::to_python_converter<JointVectorType, joint_vector_to_python_list<JointVectorType> >();
-}
-
 } // namespace pygen

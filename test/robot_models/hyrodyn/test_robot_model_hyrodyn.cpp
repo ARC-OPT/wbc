@@ -1,21 +1,11 @@
 #include "robot_models/hyrodyn/RobotModelHyrodyn.hpp"
-#include "robot_models/kdl/RobotModelKDL.hpp"
 #include <boost/test/unit_test.hpp>
+#include "../test_robot_model.hpp"
 
 using namespace std;
 using namespace wbc;
 
-double whiteNoise(const double std_dev)
-{
-    double rand_no = ( rand() / ( (double)RAND_MAX ) );
-    while( rand_no == 0 )
-        rand_no = ( rand() / ( (double)RAND_MAX ) );
-
-    double tmp = cos( ( 2.0 * (double)M_PI ) * rand() / ( (double)RAND_MAX ) );
-    return std_dev * sqrt( -2.0 * log( rand_no ) ) * tmp;
-}
-
-BOOST_AUTO_TEST_CASE(configuration_test){
+BOOST_AUTO_TEST_CASE(configure_and_update){
 
     /**
      * Verify that the robot model fails to configure with invalid configurations
@@ -38,6 +28,21 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     BOOST_CHECK(robot_model.configure(config) == true);
+    for(size_t i = 0; i < robot_model.noOfJoints(); i++){
+        BOOST_CHECK(joint_names[i] == robot_model.jointNames()[i]);
+        BOOST_CHECK(joint_names[i] == robot_model.actuatedJointNames()[i]);
+        BOOST_CHECK(joint_names[i] == robot_model.independentJointNames()[i]);
+        BOOST_CHECK(i == robot_model.jointIndex(joint_names[i]));
+    }
+
+    base::samples::Joints joint_state_in = makeRandomJointState(joint_names);
+    BOOST_CHECK_NO_THROW(robot_model.update(joint_state_in));
+    base::samples::Joints joint_state_out = robot_model.jointState(joint_names);
+    for(auto n : joint_names){
+        BOOST_CHECK(joint_state_out[n].position = joint_state_in[n].position);
+        BOOST_CHECK(joint_state_out[n].speed = joint_state_in[n].speed);
+        BOOST_CHECK(joint_state_out[n].acceleration = joint_state_in[n].acceleration);
+    }
 
     // Invalid filename
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urd");
@@ -52,36 +57,43 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     config.floating_base = true;
-    config.floating_base_state.pose.fromTransform(Eigen::Affine3d::Identity());
     BOOST_CHECK(robot_model.configure(config) == true);
+    for(size_t i = 0; i < 6; i++){
+        BOOST_CHECK(floating_base_names[i] == robot_model.jointNames()[i]);
+        BOOST_CHECK(floating_base_names[i] == robot_model.independentJointNames()[i]);
+        BOOST_CHECK(i == robot_model.jointIndex(floating_base_names[i]));
+    }
+    for(size_t i = 0; i < robot_model.noOfActuatedJoints(); i++){
+        BOOST_CHECK(joint_names[i] == robot_model.jointNames()[i+6]);
+        BOOST_CHECK(joint_names[i] == robot_model.actuatedJointNames()[i]);
+        BOOST_CHECK(joint_names[i] == robot_model.independentJointNames()[i+6]);
+        BOOST_CHECK(i+6 == robot_model.jointIndex(joint_names[i]));
+    }
 
-    // Config with invalid floating base state
-    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
-    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
-    config.floating_base = true;
-    config.floating_base_state.pose.position.setZero();
-    config.floating_base_state.pose.orientation = base::Vector4d(1,1,1,1);
-    BOOST_CHECK(robot_model.configure(config) == false);
+    base::samples::RigidBodyStateSE3 floating_base_state_in = makeRandomFloatingBaseState();
+    BOOST_CHECK_NO_THROW(robot_model.update(joint_state_in, floating_base_state_in));
 
-    // Config with blacklisted joints
-    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
-    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
-    config.joint_blacklist.push_back(joint_names[6]);
-    config.floating_base = false;
-    BOOST_CHECK(robot_model.configure(config) == true);
-
-    // Config with invalid joints in blacklist
-    config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
-    config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_blacklist.yml";
-    config.joint_blacklist.push_back("kuka_lbr_l_joint_X");
-    BOOST_CHECK(robot_model.configure(config) == false);
+    base::samples::RigidBodyStateSE3 floating_base_state_out = robot_model.floatingBaseState();
+    joint_state_out = robot_model.jointState(joint_names);
+    for(auto n : joint_names){
+        BOOST_CHECK(joint_state_out[n].position = joint_state_in[n].position);
+        BOOST_CHECK(joint_state_out[n].speed = joint_state_in[n].speed);
+        BOOST_CHECK(joint_state_out[n].acceleration = joint_state_in[n].acceleration);
+    }
+    for(int i = 0; i < 3; i++){
+        BOOST_CHECK(floating_base_state_in.pose.position[i] == floating_base_state_out.pose.position[i]);
+        BOOST_CHECK(floating_base_state_in.pose.orientation.coeffs()[i] == floating_base_state_out.pose.orientation.coeffs()[i]);
+        BOOST_CHECK(floating_base_state_in.twist.linear[i] == floating_base_state_out.twist.linear[i]);
+        BOOST_CHECK(floating_base_state_in.twist.angular[i] == floating_base_state_out.twist.angular[i]);
+        BOOST_CHECK(floating_base_state_in.acceleration.linear[i] == floating_base_state_out.acceleration.linear[i]);
+        BOOST_CHECK(floating_base_state_in.acceleration.angular[i] == floating_base_state_out.acceleration.angular[i]);
+    }
 
     // Config with contact points
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.names.push_back("kuka_lbr_l_tcp");
     config.contact_points.elements.push_back(1);
-    config.joint_blacklist.clear();
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid contact points
@@ -90,270 +102,75 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     config.contact_points.names.push_back("XYZ");
     config.contact_points.elements.push_back(1);
     BOOST_CHECK(robot_model.configure(config) == false);
-
-}
-
-BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn){
-
-    /**
-     * Compare kinematics and dynamics of KDL-based robot model with Hyrodyn-based robot model
-     */
-
-    const string base_link = "RH5_Root_Link";
-    const string ee_link = "LLAnkle_FT";
-    RobotModelConfig config("../../../../models/rh5/urdf/rh5_single_leg.urdf",
-                           {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                           {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
-    RobotModelKDL robot_model_kdl;
-    BOOST_CHECK(robot_model_kdl.configure(config) == true);
-    uint na = robot_model_kdl.noOfActuatedJoints();
-
-    base::VectorXd q(na),qd(na),qdd(na);
-    q << 0,0,-0.2,0.4,-0.2,0;
-    qd.setZero();
-    qdd.setZero();
-    for(int i = 0; i < na; i++){
-        q(i) += whiteNoise(1e-4);
-        qd(i) += 0.5 + whiteNoise(1e-4);
-        qdd(i) += 0.2 + whiteNoise(1e-4);
-    }
-
-    base::samples::Joints joint_state;
-    joint_state.resize(na);
-    joint_state.names = robot_model_kdl.actuatedJointNames();
-    for(size_t i = 0; i < na; i++){
-        joint_state[i].position = q[i];
-        joint_state[i].speed = qd[i];
-        joint_state[i].acceleration = qdd[i];
-    }
-    joint_state.time = base::Time::now();
-    BOOST_CHECK_NO_THROW(robot_model_kdl.update(joint_state));
-
-    base::samples::RigidBodyStateSE3 rbs_kdl = robot_model_kdl.rigidBodyState(base_link, ee_link);
-    base::MatrixXd Js_kdl = robot_model_kdl.spaceJacobian(base_link, ee_link);
-    base::MatrixXd Jb_kdl = robot_model_kdl.bodyJacobian(base_link, ee_link);
-    base::MatrixXd H_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
-    base::MatrixXd C_kdl = robot_model_kdl.biasForces();
-    base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
-    base::MatrixXd com_jac_kdl = robot_model_kdl.comJacobian();
-
-    RobotModelHyrodyn robot_model_hyrodyn;
-    config = RobotModelConfig("../../../../models/rh5/urdf/rh5_single_leg.urdf",
-                             {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                             {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"});
-    config.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg.yml";
-    robot_model_hyrodyn.configure(config);
-    BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state));
-
-    base::samples::RigidBodyStateSE3 rbs_hyrodyn = robot_model_kdl.rigidBodyState(base_link, ee_link);
-    base::MatrixXd Js_hyrodyn = robot_model_hyrodyn.spaceJacobian(base_link, ee_link);
-    base::MatrixXd Jb_hyrodyn = robot_model_hyrodyn.bodyJacobian(base_link, ee_link);
-    base::MatrixXd H_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
-    base::MatrixXd C_hyrodyn = robot_model_hyrodyn.biasForces();
-    base::Acceleration acc_hyrodyn  = robot_model_hyrodyn.spatialAccelerationBias(base_link,ee_link);
-    base::MatrixXd com_jac_hyrodyn = robot_model_hyrodyn.comJacobian();
-
-    /*cout<<"Robot Model KDL"<<endl;
-    cout<<"Pose"<<endl;
-    cout<<rbs_kdl.pose.position.transpose()<<endl;
-    cout<<rbs_kdl.pose.orientation.coeffs().transpose()<<endl;
-    cout<<"Twist"<<endl;
-    cout<<rbs_kdl.twist.linear.transpose()<<endl;
-    cout<<rbs_kdl.twist.angular.transpose()<<endl;
-    cout<<"Space Jacobian"<<endl;
-    cout<<Js_kdl<<endl;
-    cout<<"Body Jacobian"<<endl;
-    cout<<Jb_kdl<<endl;
-    cout<<"Joint Space Inertia"<<endl;
-    cout<<H_kdl<<endl;
-    cout<<"Bias Forces"<<endl;
-    cout<<C_kdl.transpose()<<endl;
-    cout<<"CoM Jacobian"<<endl;
-    cout<<com_jac_kdl<<endl<<endl;
-
-    cout<<"Robot Model Hyrodyn"<<endl;
-    cout<<"Pose"<<endl;
-    cout<<rbs_hyrodyn.pose.position.transpose()<<endl;
-    cout<<rbs_hyrodyn.pose.orientation.coeffs().transpose()<<endl;
-    cout<<"Twist"<<endl;
-    cout<<rbs_hyrodyn.twist.linear.transpose()<<endl;
-    cout<<rbs_hyrodyn.twist.angular.transpose()<<endl;
-    cout<<"Space Jacobian"<<endl;
-    cout<<Js_hyrodyn<<endl;
-    cout<<"Body Jacobian"<<endl;
-    cout<<Jb_hyrodyn<<endl;
-    cout<<"Joint Space Inertia"<<endl;
-    cout<<H_hyrodyn<<endl;
-    cout<<"Bias Forces"<<endl;
-    cout<<C_hyrodyn.transpose()<<endl;
-    cout<<"CoM Jacobian"<<endl;
-    cout<<com_jac_hyrodyn<<endl<<endl;*/
-
-    for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(rbs_kdl.pose.position(i) - rbs_hyrodyn.pose.position(i)) < 1e-9);
-    for(int i = 0; i < 4; i++)
-        BOOST_CHECK(fabs(rbs_kdl.pose.orientation.coeffs()(i) - rbs_hyrodyn.pose.orientation.coeffs()(i)) < 1e-9);
-    for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(rbs_kdl.twist.linear(i) - rbs_hyrodyn.twist.linear(i)) < 1e-9);
-    for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(rbs_kdl.twist.angular(i) - rbs_hyrodyn.twist.angular(i)) < 1e-9);
-    for(int i = 0; i < 6; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(Js_kdl(i,j) - Js_hyrodyn(i,j)) < 1e-3);
-    for(int i = 0; i < 6; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(Jb_kdl(i,j) - Jb_hyrodyn(i,j)) < 1e-3);
-    for(int i = 0; i < na; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(H_kdl(i,j) - H_hyrodyn(i,j)) < 1e-3);
-    for(int i = 0; i < na; i++)
-        BOOST_CHECK(fabs(C_kdl(i) - C_hyrodyn(i)) < 1e-3);
-    for(int i = 0; i < 3; i++){
-        BOOST_CHECK(fabs(acc_kdl.linear(i) - acc_hyrodyn.linear(i)) < 1e-3);
-        BOOST_CHECK(fabs(acc_kdl.angular(i) - acc_hyrodyn.angular(i)) < 1e-3);
-    }
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(com_jac_kdl(i,j) - com_jac_hyrodyn(i,j)) < 1e-3);
 }
 
 
-BOOST_AUTO_TEST_CASE(compare_kdl_vs_hyrodyn_floating_base){
+BOOST_AUTO_TEST_CASE(fk){
+    string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    string tip_frame = "kuka_lbr_l_tcp";
 
-    /**
-     * Compare kinematics and dynamics of KDL-based robot model with Hyrodyn-based robot model when using a floating base
-     */
+    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+    RobotModelConfig cfg(urdf_file);
+    cfg.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
+    cfg.floating_base = true;
+    BOOST_CHECK(robot_model->configure(cfg));
 
-    const string base_link = "world";
-    const string ee_link = "LLAnkle_FT";
-
-    base::samples::RigidBodyStateSE3 floating_base_state;
-    floating_base_state.pose.position = base::Vector3d(-0.027769312129200783, 0.0, 0.918141273555804);
-    floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
-    floating_base_state.twist.setZero();
-    floating_base_state.acceleration.setZero();
-    RobotModelConfig config("../../../../models/rh5/urdf/rh5_single_leg.urdf",
-                           {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z", "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z",
-                            "LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                           {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                            true,
-                            "world",
-                            floating_base_state,
-                            ActiveContacts());
-    RobotModelKDL robot_model_kdl;
-    BOOST_CHECK(robot_model_kdl.configure(config) == true);
-    uint na = robot_model_kdl.noOfActuatedJoints();
-
-    base::VectorXd q(na),qd(na),qdd(na);
-    q << 0,0,-0.2,0.4,-0.2,0;
-    qd.setZero();
-    qdd.setZero();
-    for(int i = 0; i < na; i++){
-        q(i) += whiteNoise(1e-4);
-        qd(i) += whiteNoise(1e-4);
-        qdd(i) += whiteNoise(1e-4);
-    }
-
-    base::samples::Joints joint_state;
-    joint_state.resize(na);
-    joint_state.names = robot_model_kdl.actuatedJointNames();
-    for(size_t i = 0; i < na; i++){
-        joint_state[i].position = q[i];
-        joint_state[i].speed = qd[i];
-        joint_state[i].acceleration = qdd[i];
-    }
-    joint_state.time = base::Time::now();
-    floating_base_state.time = base::Time::now();
-    BOOST_CHECK_NO_THROW(robot_model_kdl.update(joint_state, floating_base_state));
-
-    base::samples::RigidBodyStateSE3 rbs_kdl = robot_model_kdl.rigidBodyState(base_link, ee_link);
-    base::MatrixXd Js_kdl = robot_model_kdl.spaceJacobian(base_link, ee_link);
-    base::MatrixXd Jb_kdl = robot_model_kdl.bodyJacobian(base_link, ee_link);
-    base::MatrixXd H_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
-    base::MatrixXd C_kdl = robot_model_kdl.biasForces();
-    base::Acceleration acc_kdl  = robot_model_kdl.spatialAccelerationBias(base_link,ee_link);
-    base::MatrixXd com_jac_kdl = robot_model_kdl.comJacobian();
-
-
-    RobotModelHyrodyn robot_model_hyrodyn;
-    config.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg_floating_base.yml";
-    robot_model_hyrodyn.configure(config);
-    BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state, floating_base_state));
-
-
-    base::samples::RigidBodyStateSE3 rbs_hyrodyn = robot_model_hyrodyn.rigidBodyState(base_link, ee_link);
-    base::MatrixXd Js_hyrodyn = robot_model_hyrodyn.spaceJacobian(base_link, ee_link);
-    base::MatrixXd Jb_hyrodyn = robot_model_hyrodyn.bodyJacobian(base_link, ee_link);
-    base::MatrixXd H_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
-    base::MatrixXd C_hyrodyn = robot_model_hyrodyn.biasForces();
-    base::Acceleration acc_hyrodyn  = robot_model_hyrodyn.spatialAccelerationBias(base_link,ee_link);
-    base::MatrixXd com_jac_hyrodyn = robot_model_hyrodyn.comJacobian();
-
-    /*cout<<"Robot Model KDL"<<endl;
-    cout<<"Pose"<<endl;
-    cout<<rbs_kdl.pose.position.transpose()<<endl;
-    cout<<rbs_kdl.pose.orientation.coeffs().transpose()<<endl;
-    cout<<"Twist"<<endl;
-    cout<<rbs_kdl.twist.linear.transpose()<<endl;
-    cout<<rbs_kdl.twist.angular.transpose()<<endl;
-    cout<<"Space Jacobian"<<endl;
-    cout<<Js_kdl<<endl;
-    cout<<"Body Jacobian"<<endl;
-    cout<<Jb_kdl<<endl;
-    cout<<"Joint Space Inertia"<<endl;
-    cout<<H_kdl<<endl;
-    cout<<"Bias Forces"<<endl;
-    cout<<C_kdl.transpose()<<endl;
-    cout<<"CoM Jacobian"<<endl;
-    cout<<com_jac_kdl<<endl<<endl;
-
-    cout<<"Robot Model Hyrodyn"<<endl;
-    cout<<"Pose"<<endl;
-    cout<<rbs_hyrodyn.pose.position.transpose()<<endl;
-    cout<<rbs_hyrodyn.pose.orientation.coeffs().transpose()<<endl;
-    cout<<"Twist"<<endl;
-    cout<<rbs_hyrodyn.twist.linear.transpose()<<endl;
-    cout<<rbs_hyrodyn.twist.angular.transpose()<<endl;
-    cout<<"Space Jacobian"<<endl;
-    cout<<Js_hyrodyn<<endl;
-    cout<<"Body Jacobian"<<endl;
-    cout<<Jb_hyrodyn<<endl;
-    cout<<"Joint Space Inertia"<<endl;
-    cout<<H_hyrodyn<<endl;
-    cout<<"Bias Forces"<<endl;
-    cout<<C_hyrodyn.transpose()<<endl;
-    cout<<"CoM Jacobian"<<endl;
-    cout<<com_jac_hyrodyn<<endl<<endl;*/
-
-    for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(rbs_kdl.pose.position(i) - rbs_hyrodyn.pose.position(i)) < 1e-6);
-    for(int i = 0; i < 4; i++)
-        BOOST_CHECK(fabs(rbs_kdl.pose.orientation.coeffs()(i) - rbs_hyrodyn.pose.orientation.coeffs()(i)) < 1e-3);
-    for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(rbs_kdl.twist.linear(i) - rbs_hyrodyn.twist.linear(i)) < 1e-9);
-    for(int i = 0; i < 3; i++)
-        BOOST_CHECK(fabs(rbs_kdl.twist.angular(i) - rbs_hyrodyn.twist.angular(i)) < 1e-9);
-    for(int i = 0; i < 6; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(Js_kdl(i,j) - Js_hyrodyn(i,j)) < 1e-3);
-    for(int i = 0; i < 6; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(Jb_kdl(i,j) - Jb_hyrodyn(i,j)) < 1e-3);
-    for(int i = 0; i < na; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(H_kdl(i,j) - H_hyrodyn(i,j)) < 1e-3);
-    for(int i = 0; i < na; i++)
-        BOOST_CHECK(fabs(C_kdl(i) - C_hyrodyn(i)) < 1e-3);
-    for(int i = 0; i < 3; i++){
-        BOOST_CHECK(fabs(acc_kdl.linear(i) - acc_hyrodyn.linear(i)) < 1e-3);
-        BOOST_CHECK(fabs(acc_kdl.angular(i) - acc_hyrodyn.angular(i)) < 1e-3);
-    }
-    for(int i = 0; i < 3; i++)
-        for(int j = 0; j < na; j++)
-            BOOST_CHECK(fabs(com_jac_kdl(i,j) - com_jac_hyrodyn(i,j)) < 1e-3);
+    testSpaceJacobian(robot_model, tip_frame, true);
 }
 
 
+BOOST_AUTO_TEST_CASE(space_jacobian){
+    string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    string tip_frame = "kuka_lbr_l_tcp";
+
+    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+    RobotModelConfig cfg(urdf_file);
+    cfg.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
+    cfg.floating_base = true;
+    BOOST_CHECK(robot_model->configure(cfg));
+
+    testSpaceJacobian(robot_model, tip_frame, true);
+}
+
+BOOST_AUTO_TEST_CASE(body_jacobian){
+    string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    string tip_frame = "kuka_lbr_l_tcp";
+
+    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+    RobotModelConfig cfg(urdf_file);
+    cfg.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
+    cfg.floating_base = true;
+    BOOST_CHECK(robot_model->configure(cfg));
+
+    testBodyJacobian(robot_model, tip_frame, true);
+}
+
+BOOST_AUTO_TEST_CASE(com_jacobian){
+    string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    string tip_frame = "kuka_lbr_l_tcp";
+
+    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+    RobotModelConfig cfg(urdf_file);
+    cfg.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
+    cfg.floating_base = false;
+    BOOST_CHECK(robot_model->configure(cfg));
+
+    testCoMJacobian(robot_model, true);
+}
+
+BOOST_AUTO_TEST_CASE(dynamics){
+
+    string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+
+    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+    RobotModelConfig cfg(urdf_file);
+    cfg.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
+    cfg.floating_base = false;
+    BOOST_CHECK(robot_model->configure(cfg));
+
+    testDynamics(robot_model, true);
+
+}
 
 BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
 
@@ -365,20 +182,13 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     string tip  = "LLAnklePitch_Link";
 
     RobotModelHyrodyn robot_model_hybrid;
-    RobotModelConfig config_hybrid("../../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf",
-                                   {"LLHip1", "LLHip2",
-                                    "LLHip3", "LLHip3_B11", "LLHip3_Act1",
-                                    "LLKnee", "LLKnee_B11", "LLKnee_Act1",
-                                    "LLAnkleRoll", "LLAnklePitch", "LLAnkle_E11", "LLAnkle_E21", "LLAnkle_B11", "LLAnkle_B12", "LLAnkle_Act1", "LLAnkle_B21", "LLAnkle_B22", "LLAnkle_Act2"},
-                                   {"LLHip1", "LLHip2", "LLHip3_Act1","LLKnee_Act1", "LLAnkle_Act1", "LLAnkle_Act2"});
+    RobotModelConfig config_hybrid("../../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf");
     config_hybrid.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
     BOOST_CHECK(robot_model_hybrid.configure(config_hybrid) == true);
 
 
     RobotModelHyrodyn robot_model_serial;
-    RobotModelConfig config_serial("../../../../models/rh5/urdf/rh5_single_leg.urdf",
-                                   {"LLHip1", "LLHip2", "LLHip3", "LLKnee", "LLAnkleRoll", "LLAnklePitch"},
-                                   {"LLHip1", "LLHip2", "LLHip3","LLKnee", "LLAnkleRoll", "LLAnklePitch"});
+    RobotModelConfig config_serial("../../../../models/rh5/urdf/rh5_single_leg.urdf");
     config_serial.submechanism_file = "../../../../models/rh5/hyrodyn/rh5_single_leg.yml";
     BOOST_CHECK(robot_model_serial.configure(config_serial) == true);
 
@@ -396,7 +206,7 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_serial.update(joint_state);
     robot_model_hybrid.update(joint_state);
 
-   // cout<<"******************** HYBRID MODEL *****************"<<endl;
+    cout<<"******************** HYBRID MODEL *****************"<<endl;
     base::MatrixXd jac = robot_model_hybrid.spaceJacobian(root, tip);
     base::Vector6d v;
     v.setZero();
@@ -405,21 +215,19 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_hybrid.hyrodynHandle()->ud = u;
     robot_model_hybrid.hyrodynHandle()->calculate_forward_system_state();
 
-    /*cout<< "Solution actuation space" << endl;
+    cout<< "Solution actuation space" << endl;
     std::cout<<robot_model_hybrid.hyrodynHandle()->ud.transpose()<<endl;
 
     cout<< "Solution projected to independent joint space" << endl;
     std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;
 
-
-    cout<<"******************** SERIAL MODEL *****************"<<endl;*/
+    cout<<"******************** SERIAL MODEL *****************"<<endl;
     jac = robot_model_serial.spaceJacobian(root, tip);
     base::VectorXd yd = jac.completeOrthogonalDecomposition().pseudoInverse()*v;
 
-    /*cout<< "Solution independent joint space" << endl;
-    std::cout<<yd.transpose()<<endl;*/
+    cout<< "Solution independent joint space" << endl;
+    std::cout<<yd.transpose()<<endl;
 
     for(int i = 0; i < robot_model_hybrid.noOfActuatedJoints(); i++)
         BOOST_CHECK(fabs(robot_model_hybrid.hyrodynHandle()->yd[i] - yd[i]) < 1e-6);
-
 }

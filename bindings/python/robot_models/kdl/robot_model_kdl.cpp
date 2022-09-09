@@ -6,6 +6,9 @@
 
 namespace wbc_py {
 
+bool RobotModelKDL::configure(const wbc_py::RobotModelConfig &cfg){
+    return wbc::RobotModelKDL::configure(toRobotModelConfig(cfg));
+}
 void RobotModelKDL::update(const base::NamedVector<base::JointState> &joint_state){
     wbc::RobotModelKDL::update(tobaseSamplesJoints(joint_state));
 }
@@ -23,6 +26,9 @@ base::NamedVector<int> RobotModelKDL::getActiveContacts2(){
 }
 base::NamedVector<base::JointLimitRange> RobotModelKDL::jointLimits2(){
     return fromJointLimits(wbc::RobotModelKDL::jointLimits());
+}
+wbc_py::RobotModelConfig RobotModelKDL::getRobotModelConfig(){
+    return fromRobotModelConfig(wbc::RobotModelKDL::getRobotModelConfig());
 }
 
 }
@@ -60,7 +66,7 @@ BOOST_PYTHON_MODULE(robot_model_kdl){
             .def("noOfActuatedJoints",      &wbc_py::RobotModelKDL::noOfActuatedJoints)
             .def("setGravityVector",        &wbc_py::RobotModelKDL::setGravityVector)
             .def("floatingBaseState",       &wbc_py::RobotModelKDL::floatingBaseState, py::return_value_policy<py::copy_const_reference>())
-            .def("getRobotModelConfig",     &wbc_py::RobotModelKDL::getRobotModelConfig, py::return_value_policy<py::copy_const_reference>());
+            .def("getRobotModelConfig",     &wbc_py::RobotModelKDL::getRobotModelConfig);
 }
 
 

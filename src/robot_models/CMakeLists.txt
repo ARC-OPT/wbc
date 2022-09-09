@@ -1,4 +1,9 @@
 add_subdirectory(kdl)
 if(USE_HYRODYN)
     add_subdirectory(hyrodyn)
+    add_subdirectory(rbdl)
 endif()
+if(USE_PINOCCHIO)
+    add_subdirectory(pinocchio)
+endif()
+

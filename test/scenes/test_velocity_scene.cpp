@@ -1,9 +1,7 @@
 #include <boost/test/unit_test.hpp>
 #include "robot_models/kdl/RobotModelKDL.hpp"
-#include "core/RobotModelConfig.hpp"
 #include "scenes/VelocityScene.hpp"
 #include "solvers/hls/HierarchicalLSSolver.hpp"
-#include <tools/URDFTools.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -50,12 +48,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
     config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
-
-    vector<string> joint_names = URDFTools::jointNamesFromURDF(config.file);
-    config.joint_names = config.actuated_joint_names = joint_names;
-    bool configured;
-    BOOST_CHECK_NO_THROW(configured = robot_model->configure(config));
-    BOOST_CHECK(configured);
+    BOOST_CHECK(robot_model->configure(config));
 
     base::samples::Joints joint_state;
     joint_state.names = robot_model->jointNames();
@@ -67,21 +60,20 @@ BOOST_AUTO_TEST_CASE(simple_test){
     joint_state.time = base::Time::now();
     BOOST_CHECK_NO_THROW(robot_model->update(joint_state));
 
-    // Configure WBC Scene
+    // Configure solver
     QPSolverPtr solver = std::make_shared<HierarchicalLSSolver>();
     (std::dynamic_pointer_cast<HierarchicalLSSolver>(solver))->setMaxSolverOutputNorm(1000);
-    ConstraintConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
+
+    // Configure scene
     VelocityScene wbc_scene(robot_model, solver);
+    ConstraintConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), true);
 
-    // Set Reference
+    // Set random Reference
     base::samples::RigidBodyStateSE3 ref;
     srand (time(NULL));
-    for(int i = 0; i < 3; i++){
-        ref.twist.linear[i] = ((double)rand())/RAND_MAX;
-        ref.twist.angular[i] = ((double)rand())/RAND_MAX;
-    }
-
+    ref.twist.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
+    ref.twist.angular = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
     BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_constraint.name, ref));
 
     // Solve
@@ -92,15 +84,11 @@ BOOST_AUTO_TEST_CASE(simple_test){
     base::commands::Joints solver_output = wbc_scene.getSolverOutput();
 
     // Check
-    base::VectorXd qd;
-    qd.resize(solver_output.size());
-    for(int i = 0; i < solver_output.size(); i++)
-        qd[i] = solver_output[i].speed;
-    base::MatrixXd jac = robot_model->spaceJacobian(cart_constraint.ref_frame, cart_constraint.tip);
-    base::VectorXd yd = jac*qd;
+    wbc_scene.updateConstraintsStatus();
+    ConstraintsStatus status = wbc_scene.getConstraintsStatus();
     for(int i = 0; i < 3; i++){
-        BOOST_CHECK(fabs(yd[i] - ref.twist.linear[i]) < 1e-5);
-        BOOST_CHECK(fabs(yd[i+3] - ref.twist.angular[i]) < 1e5);
+        BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-5);
+        BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i]) < 1e5);
     }
 }
 

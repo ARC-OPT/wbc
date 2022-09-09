@@ -47,13 +47,6 @@ int main()
     // Configure robot model. We configure a serial model without parallel mechanisms.
     // Blacklist the finger joints, as they are not relevant and may slow down the solver
     RobotModelConfig config("../../../models/rh5v2/urdf/rh5v2.urdf");
-    config.joint_blacklist = {"HeadPitch", "HeadRoll", "HeadYaw",
-                              "GLF1Gear", "GLF1ProximalSegment", "GLF1TopSegment",
-                              "GLF2Gear", "GLF2ProximalSegment", "GLF2TopSegment",
-                              "GLF3Gear", "GLF3ProximalSegment", "GLF3TopSegment",
-                              "GLF4Gear", "GLF4ProximalSegment", "GLF4TopSegment", "GLThumb",
-                              "GRF1Gear", "GRF1ProximalSegment", "GRF1TopSegment",
-                              "GRF2Gear", "GRF2ProximalSegment", "GRF2TopSegment"};
     config.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
     if(!robot_model->configure(config))
         return -1;

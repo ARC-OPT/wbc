@@ -1,11 +1,13 @@
 #include "../../eigen_conversion.h"
 #include "../../base_types_conversion.h"
 #include "../../std_vector_conversion.h"
-#include "../../wbc_types_conversions.h"
 #include "robot_model_hyrodyn.hpp"
 
 namespace wbc_py {
 
+bool RobotModelHyrodyn::configure(const wbc_py::RobotModelConfig &cfg){
+    return wbc::RobotModelHyrodyn::configure(toRobotModelConfig(cfg));
+}
 void RobotModelHyrodyn::update(const base::NamedVector<base::JointState> &joint_state){
     wbc::RobotModelHyrodyn::update(tobaseSamplesJoints(joint_state));
 }
@@ -24,6 +26,10 @@ base::NamedVector<int> RobotModelHyrodyn::getActiveContacts2(){
 base::NamedVector<base::JointLimitRange> RobotModelHyrodyn::jointLimits2(){
     return fromJointLimits(wbc::RobotModelHyrodyn::jointLimits());
 }
+wbc_py::RobotModelConfig RobotModelHyrodyn::getRobotModelConfig(){
+    return fromRobotModelConfig(wbc::RobotModelHyrodyn::getRobotModelConfig());
+}
+
 
 }
 
@@ -60,7 +66,7 @@ BOOST_PYTHON_MODULE(robot_model_hyrodyn){
             .def("noOfActuatedJoints",      &wbc_py::RobotModelHyrodyn::noOfActuatedJoints)
             .def("setGravityVector",        &wbc_py::RobotModelHyrodyn::setGravityVector)
             .def("floatingBaseState",       &wbc_py::RobotModelHyrodyn::floatingBaseState, py::return_value_policy<py::copy_const_reference>())
-            .def("getRobotModelConfig",     &wbc_py::RobotModelHyrodyn::getRobotModelConfig, py::return_value_policy<py::copy_const_reference>());
+            .def("getRobotModelConfig",     &wbc_py::RobotModelHyrodyn::getRobotModelConfig);
 
 }
 
