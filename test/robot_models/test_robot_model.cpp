@@ -107,28 +107,6 @@ void testSpaceJacobian(RobotModelPtr robot_model, const string &tip_frame, bool 
     base::VectorXd qdd(robot_model->noOfJoints());
     robot_model->systemState(q,qd,qdd);
 
-    cout<<"Joint Names"<<endl;
-    for(auto n : robot_model->jointNames())
-        cout<<n<<" ";
-
-    cout<<"Actuated joint Names"<<endl;
-    for(auto n : robot_model->actuatedJointNames())
-        cout<<n<<" ";
-    cout<<endl;
-
-    cout<<"Independent joint Names"<<endl;
-    for(auto n : robot_model->independentJointNames())
-        cout<<n<<" ";
-    cout<<endl;
-
-    cout<<"Joint state"<<endl;
-    for(auto n : joint_state_in.names)
-        cout<<n<<" "<<joint_state_in[n].position<<" "<<joint_state_in[n].speed<<" "<<joint_state_in[n].acceleration<<" "<<endl;
-
-    cout<<q.transpose()<<endl;
-    cout<<qd.transpose()<<endl;
-    cout<<qdd.transpose()<<endl;
-
     base::samples::RigidBodyStateSE3 rbs = robot_model->rigidBodyState(robot_model->worldFrame(), tip_frame);
 
     // Check correctness of FK solution agains Js*qd
