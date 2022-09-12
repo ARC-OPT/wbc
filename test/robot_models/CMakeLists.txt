@@ -21,6 +21,5 @@ if(USE_HYRODYN AND USE_PINOCCHIO AND USE_RBDL)
                          wbc-robot_models-kdl
                          wbc-robot_models-rbdl
                          wbc-robot_models-pinocchio
-                         ${base-types_LIBRARIES}
                          ${Boost_UNIT_TEST_FRAMEWORK_LIBRARY})
 endif()
