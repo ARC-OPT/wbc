@@ -92,7 +92,7 @@ BOOST_AUTO_TEST_CASE(fk){
     cfg.floating_base = true;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testSpaceJacobian(robot_model, tip_frame, true);
+    testSpaceJacobian(robot_model, tip_frame, false);
 }
 
 
@@ -105,7 +105,7 @@ BOOST_AUTO_TEST_CASE(space_jacobian){
     cfg.floating_base = true;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testSpaceJacobian(robot_model, tip_frame, true);
+    testSpaceJacobian(robot_model, tip_frame, false);
 }
 
 BOOST_AUTO_TEST_CASE(body_jacobian){
@@ -117,7 +117,7 @@ BOOST_AUTO_TEST_CASE(body_jacobian){
     cfg.floating_base = true;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testBodyJacobian(robot_model, tip_frame, true);
+    testBodyJacobian(robot_model, tip_frame, false);
 }
 
 BOOST_AUTO_TEST_CASE(com_jacobian){
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(com_jacobian){
     cfg.floating_base = false;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testCoMJacobian(robot_model, true);
+    testCoMJacobian(robot_model, false);
 }
 
 BOOST_AUTO_TEST_CASE(dynamics){
@@ -141,6 +141,6 @@ BOOST_AUTO_TEST_CASE(dynamics){
     cfg.floating_base = false;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testDynamics(robot_model, true);
+    testDynamics(robot_model, false);
 
 }
