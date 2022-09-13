@@ -55,6 +55,7 @@ fi
 
 # Python bindings
 if [ -d "bindings" ]; then
+  echo "Testing Python bindings ..."
   cd ../bindings/python/test
   nosetests
 fi
