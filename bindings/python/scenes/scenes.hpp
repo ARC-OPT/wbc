@@ -6,7 +6,6 @@
 #include "scenes/AccelerationSceneTSID.hpp"
 #include "../solvers/hls/HierarchicalLSSolver.hpp"
 #include "../solvers/qpoases/QPOasesSolver.hpp"
-#include "../robot_models/hyrodyn/robot_model_hyrodyn.hpp"
 #include "../robot_models/kdl/robot_model_kdl.hpp"
 
 namespace wbc_py {
@@ -40,7 +39,7 @@ public:
 
 class AccelerationSceneTSID : public wbc::AccelerationSceneTSID{
 public:
-    AccelerationSceneTSID(std::shared_ptr<RobotModelHyrodyn> robot_model, std::shared_ptr<QPOASESSolver> solver);
+    AccelerationSceneTSID(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver);
     void setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref);
     void setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref);
     void setJointWeights(const base::NamedVector<double> &weights);

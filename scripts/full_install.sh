@@ -75,7 +75,7 @@ cmake ..
 sudo make -j8 install && cd ../.. 
 
 # For Python bindings
-sudo apt-get install python-dev libboost-python-dev libboost-numpy-dev python-numpy
+sudo apt-get install python-dev libboost-python-dev libboost-numpy-dev python-numpy python-nose
 
 # WBC
 mkdir wbc/build && cd wbc/build

@@ -4,7 +4,6 @@ PYTHON_ADD_MODULE(scenes scenes.cpp)
 target_link_libraries(scenes PUBLIC
 	wbc-scenes
 	wbc-robot_models-kdl
-	wbc-robot_models-hyrodyn
 	wbc-solvers-hls
         wbc-solvers-qpoases
         Boost::python
