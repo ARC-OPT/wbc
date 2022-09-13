@@ -54,12 +54,9 @@ if [ -d "qpswift" ]; then
 fi
 
 # Python bindings
-if [ -d "bindings" ]; then
-  # ToDO: Find a better solution than using PYTHONPATH here
-  export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.6/site-packages
-  export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/site-packages
-  echo "Testing Python bindings ..."
-  cd ../bindings/python/test
-  nosetests3
-fi
+#if [ -d "bindings" ]; then
+#  echo "Testing Python bindings ..."
+#  cd ../bindings/python/test
+#  nosetests3
+#fi
 
