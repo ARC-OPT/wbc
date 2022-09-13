@@ -50,4 +50,12 @@ if [ -d "qpswift" ]; then
   echo "Testing QPSwiftSolver ..."
   cd qpswift   
   ./test_qpswift_solver
+  cd ../..
 fi
+
+# Python bindings
+if [ -d "bindings" ]; then
+  cd ../bindings/python/test
+  nosetests
+fi
+
