@@ -60,6 +60,6 @@ if [ -d "bindings" ]; then
   export PYTHONPATH=$PYTHONPATH:/usr/local/lib/python3.8/site-packages
   echo "Testing Python bindings ..."
   cd ../bindings/python/test
-  nosetests
+  nosetests3
 fi
 
