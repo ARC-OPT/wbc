@@ -1,0 +1,27 @@
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -107,6 +107,9 @@ if(QPSHAREDLIB)
+                 )
+ endif()
+ 
++CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/qpSWIFT.pc.in ${CMAKE_CURRENT_BINARY_DIR}/qpSWIFT.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qpSWIFT.pc DESTINATION lib/pkgconfig)
++
+ 
+ install(FILES ${qpSWIFT_headers} DESTINATION "${CMAKE_INSTALL_INCLUDEDIR}/qpSWIFT")
+ 
+--- qpSWIFT.pc.in
++++ qpSWIFT.pc.in
+@@ -0,0 +1,11 @@
++prefix=@CMAKE_INSTALL_PREFIX@
++exec_prefix=@CMAKE_INSTALL_PREFIX@
++libdir=${prefix}/lib
++includedir=${prefix}/include
++
++Name: @PACKAGE_NAME@
++Description: @PACKAGE_DESCRIPTION@
++Version: @PACKAGE_VERSION@
++Requires: @PKGCONFIG_REQUIRES@
++Libs: -L${libdir} @PKGCONFIG_LIBS@ -lqpSWIFT
++Cflags: -I${includedir} @PKGCONFIG_CFLAGS@
+

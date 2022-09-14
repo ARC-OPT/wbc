@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     srand (time(NULL));
 
     const int NO_JOINTS = 6;
-    const int NO_CONSTRAINTS = 6;
+    const int NO_CONSTRAINTS = 0;
     const int NO_WSR = 20;
 
     // Solve the problem min(||Ax-b||) without constraints --> encode the task as part of the cost function

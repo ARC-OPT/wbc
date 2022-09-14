@@ -74,20 +74,16 @@ BOOST_AUTO_TEST_CASE(task_config){
     BOOST_CHECK_THROW(jnt_config.validate(), std::invalid_argument);
 }
 
-BOOST_AUTO_TEST_CASE(plugin_loader){
+BOOST_AUTO_TEST_CASE(robot_model_factory){
     BOOST_CHECK_NO_THROW(PluginLoader::loadPlugin("libwbc-robot_models-kdl.so"));
     PluginLoader::PluginMap *plugin_map = PluginLoader::getPluginMap();
     BOOST_CHECK(plugin_map->count("libwbc-robot_models-kdl.so") == 1);
-    BOOST_CHECK_NO_THROW(PluginLoader::unloadPlugin("libwbc-robot_models-kdl.so"));
-}
-
-BOOST_AUTO_TEST_CASE(robot_model_factory){
-    BOOST_CHECK_NO_THROW(PluginLoader::loadPlugin("libwbc-robot_models-kdl.so"));
     RobotModelFactory::RobotModelMap *robot_model_map = RobotModelFactory::getRobotModelMap();
     BOOST_CHECK(robot_model_map->count("kdl") == 1);
     RobotModel* model;
     BOOST_CHECK_NO_THROW(model = RobotModelFactory::createInstance("kdl"));
     BOOST_CHECK(model != 0);
+    BOOST_CHECK_NO_THROW(PluginLoader::unloadPlugin("libwbc-robot_models-kdl.so"));
 }
 
 BOOST_AUTO_TEST_CASE(qp_solver_factory){

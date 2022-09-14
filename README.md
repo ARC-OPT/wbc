@@ -6,7 +6,7 @@ WBC is C++ library for optimization-based control of redundant robots. It allows
 
 WBC was initiated and is currently developed at the [Robotics Innovation Center](http://robotik.dfki-bremen.de/en/startpage.html) of the [German Research Center for Artificial Intelligence (DFKI)](http://www.dfki.de) in Bremen. It is part of the ARC-OPT (Adaptive Robot Control using Optimization) framework, which facilitates learning and optimizing whole-body controllers from data obtained, e.g., in user demonstrations. Also see the [ARC-OPT website](https://robotik.dfki-bremen.de/en/research/softwaretools/arc-opt/) of the Robotics Innovation Center.
 
-![image](https://github.com/ARC-OPT/wbc/blob/master/doc/images/DFKI_Logo_e_schrift.jpg)
+<img src="https://github.com/ARC-OPT/wbc/blob/master/doc/images/DFKI_Logo_e_schrift.jpg"  width="400" >
 
 ## Motivation
 
@@ -43,24 +43,7 @@ Optional:
 
 ## Installation
 
-
-### Standalone
-
-Download the [install script](https://github.com/ARC-OPT/wbc/blob/master/scripts/install.sh) and type
-
-```
-sh install.sh
-```
-
-### Inside Rock
-
-* New Bootstrap: See [here](https://git.hb.dfki.de/wbc/buildconf)
-* Existing Rock Installation: Add the wbc package set to your autoproj/manifest file: 
-    ```
-    package_sets:
-    - dfkigit: dfki-control/wbc/package_set
-    ```    
-  followed by `aup control/wbc` and then `amake control/wbc`
+[Standalone](https://arc-opt.github.io/Documentation/installation/installation_no_rock.html) | [Using Rock](https://arc-opt.github.io/Documentation/installation/installation_rock.html)
 
 ## Testing
 
@@ -68,9 +51,7 @@ Please check the unit tests [here](https://github.com/ARC-OPT/wbc/tree/master/te
 
 ## Contributing
 
-Please use the [issue tracker](https://github.com/ARC-OPT/wbc/issues) to submit bug reports and feature requests.
-
-Please use merge requests as described [here](https://github.com/ARC-OPT/wbc/blob/master/CONTRIBUTING.md) to add/adapt functionality. 
+Please use the [issue tracker](https://github.com/ARC-OPT/wbc/issues) to submit bug reports and feature requests. Please use merge requests as described [here](https://github.com/ARC-OPT/wbc/blob/master/CONTRIBUTING.md) to add/adapt functionality. 
 
 ## License
 
@@ -78,16 +59,8 @@ WBC is distributed under the [3-clause BSD license](https://opensource.org/licen
 
 ## Acknowledge WBC
 
-If you use WBC within your scientific work, please cite the following publication:
+If you use WBC within your scientific work, please cite [this paper](https://arc-opt.github.io/Documentation/publications/icra_2022/index.html).
 
-```
-@INPROCEEDINGS{mronga2022,
-author = "D. Mronga and S.Kumar and F.Kirchner",
-title = "Whole-Body Control of Series-Parallel Hybrid Robots",
-year = "2022",
-note = "{2022 IEEE International Conference on Robotics and Automation (ICRA)}, Accepted for publication",
-}
-```
 ## Funding
 
 WBC has been developed in the research projects [TransFit](https://robotik.dfki-bremen.de/en/research/projects/transfit/) (Grant number 50RA1701) and [BesMan](https://robotik.dfki-bremen.de/en/research/projects/besman.html) (Grant number 50RA1216) funded by the German Aerospace Center (DLR) with funds from the German	Federal Ministry for Economic Affairs and Climate Action (BMWK). It is further developed in the [M-Rock](https://robotik.dfki-bremen.de/en/research/projects/m-rock/) (Grant number 01IW21002) and [VeryHuman](https://robotik.dfki-bremen.de/en/research/projects/veryhuman/) (Grant number  01IW20004) projects funded by the German Aerospace Center (DLR) with federal funds from the German Federal Ministry of Education and Research (BMBF).
