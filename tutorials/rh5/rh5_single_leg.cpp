@@ -35,6 +35,8 @@ using namespace ctrl_lib;
  */
 int main(){
 
+    double dt = 0.001;
+
     // Create Hyrodyn based robot model.  In this case, we use the Hyrodyn-based model, which allows handling of parallel mechanisms.
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
 
@@ -60,17 +62,17 @@ int main(){
     dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
     // Configure Scene, use VelocitySceneQuadraticCost in this case
-    ConstraintConfig cart_constraint;
-    cart_constraint.name = "left_leg_posture";     // unique id
-    cart_constraint.type = cart;                   // Cartesian or joint space task?
-    cart_constraint.priority = 0;                  // Priority, 0 - highest prio
-    cart_constraint.root = "RH5_Root_Link";        // Root link of the kinematic chain to consider for this task
-    cart_constraint.tip = "LLAnkle_FT";            // Tip link of the kinematic chain to consider for this task
-    cart_constraint.ref_frame = "RH5_Root_Link";   // In what frame is the task specified?
-    cart_constraint.activation = 1;                // (0..1) initial task activation. 1 - Task should be active initially
-    cart_constraint.weights = vector<double>(6,1); // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
-    VelocitySceneQuadraticCost scene(robot_model, solver);
-    if(!scene.configure({cart_constraint}))
+    TaskConfig cart_task;
+    cart_task.name = "left_leg_posture";     // unique id
+    cart_task.type = cart;                   // Cartesian or joint space task?
+    cart_task.priority = 0;                  // Priority, 0 - highest prio
+    cart_task.root = "RH5_Root_Link";        // Root link of the kinematic chain to consider for this task
+    cart_task.tip = "LLAnkle_FT";            // Tip link of the kinematic chain to consider for this task
+    cart_task.ref_frame = "RH5_Root_Link";   // In what frame is the task specified?
+    cart_task.activation = 1;                // (0..1) initial task activation. 1 - Task should be active initially
+    cart_task.weights = vector<double>(6,1); // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
+    VelocitySceneQuadraticCost scene(robot_model, solver, dt);
+    if(!scene.configure({cart_task}))
         return -1;
 
     // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:
@@ -79,7 +81,7 @@ int main(){
     //
     // As we don't use feed forward velocity here, we can ignore the factor kd.
     CartesianPosPDController controller;
-    controller.setPGain(base::Vector6d::Constant(1));
+    controller.setPGain(base::Vector6d::Constant(10));
 
     // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed
     uint nj = ind_joint_names.size();
@@ -92,16 +94,16 @@ int main(){
         joint_state[i].position = init_q[i];
     joint_state.time = base::Time::now();
 
-    // Choose a valid reference pose x_r, which is defined in cart_constraint.ref_frame and defines the desired pose of
-    // the cart_constraint.ref_tip frame. The pose will be passed as setpoint to the controller.
+    // Choose a valid reference pose x_r, which is defined in cart_task.ref_frame and defines the desired pose of
+    // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
     base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
-    setpoint.pose.position = base::Vector3d(0, 0, -0.6);
+    setpoint.pose.position = base::Vector3d(0, 0, -0.7);
     setpoint.pose.orientation = base::Quaterniond(0,-1,0,0);
-    setpoint.frame_id = cart_constraint.ref_frame;
+    setpoint.frame_id = cart_task.ref_frame;
     feedback.pose.position.setZero();
     feedback.pose.orientation.setIdentity();
 
-    double loop_time = 0.001; // seconds
+    double loop_time = dt; // seconds
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-3){
 
@@ -109,12 +111,12 @@ int main(){
         robot_model->update(joint_state);
 
         // Update controller. The feedback is the pose of the tip link described in ref_frame link
-        feedback = robot_model->rigidBodyState(cart_constraint.root, cart_constraint.tip);
+        feedback = robot_model->rigidBodyState(cart_task.root, cart_task.tip);
         ctrl_output = controller.update(setpoint, feedback);
 
         // Update constraints. Pass the control output of the solver to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
-        scene.setReference(cart_constraint.name, ctrl_output);
+        scene.setReference(cart_task.name, ctrl_output);
 
         // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();

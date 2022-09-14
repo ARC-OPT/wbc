@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include <core/ConstraintConfig.hpp>
+#include <core/TaskConfig.hpp>
 #include <core/PluginLoader.hpp>
 #include <core/RobotModelFactory.hpp>
 #include <core/QPSolverFactory.hpp>
@@ -7,9 +7,9 @@
 using namespace std;
 using namespace wbc;
 
-BOOST_AUTO_TEST_CASE(constraint_config){
-    // Cartesian config
-    ConstraintConfig cart_config;
+BOOST_AUTO_TEST_CASE(task_config){
+    // Cartesian task config
+    TaskConfig cart_config;
     cart_config.name       = "cart_pos_ctrl_left";
     cart_config.type       = cart;
     cart_config.priority   = 0;
@@ -22,7 +22,7 @@ BOOST_AUTO_TEST_CASE(constraint_config){
     // Valid cart_config
     BOOST_CHECK_NO_THROW(cart_config.validate());
 
-    // Invalid constraint type
+    // Invalid task type
     cart_config.type = unset;
     BOOST_CHECK_THROW(cart_config.validate(), std::invalid_argument);
     cart_config.type = cart;
@@ -57,8 +57,8 @@ BOOST_AUTO_TEST_CASE(constraint_config){
     BOOST_CHECK_THROW(cart_config.validate(), std::invalid_argument);
     cart_config.tip = "kuka_lbr_l_link_0";
 
-    // Joint config
-    ConstraintConfig jnt_config;
+    // Joint task config
+    TaskConfig jnt_config;
     jnt_config.name        = "jnt_pos_ctrl";
     jnt_config.type        = jnt;
     jnt_config.priority    = 0;

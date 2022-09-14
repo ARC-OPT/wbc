@@ -22,11 +22,11 @@ void printResults(map<string,base::VectorXd> results){
 void evaluateVelocitySceneQuadraticCost(map<string,RobotModelPtr> robot_models, map<string,QPSolverPtr> solvers,
                                         const string &root, const string &tip,
                                         int n_samples, string robot_name){
-    ConstraintConfig cart_constraint("cart_pos_ctrl",0,root,tip,root,1);
+    TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
     for(auto it : robot_models){
         for(auto itt : solvers){
             WbcScenePtr scene = make_shared<VelocitySceneQuadraticCost>(it.second, itt.second);
-            if(!scene->configure({cart_constraint}))
+            if(!scene->configure({cart_task}))
                 throw runtime_error("Failed to configure VelocitySceneQuadraticCost");
             map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
             string filename = "results/" + robot_name + "_vel_" + it.first + "_" + itt.first + ".csv";
@@ -40,11 +40,11 @@ void evaluateVelocitySceneQuadraticCost(map<string,RobotModelPtr> robot_models, 
 void evaluateAccelerationSceneTSID(map<string,RobotModelPtr> robot_models, map<string,QPSolverPtr> solvers,
                                    const string &root, const string &tip,
                                    int n_samples, string robot_name){
-    ConstraintConfig cart_constraint("cart_pos_ctrl",0,root,tip,root,1);
+    TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
     for(auto it : robot_models){
         for(auto itt : solvers){
             WbcScenePtr scene = make_shared<AccelerationSceneTSID>(it.second, itt.second);
-            if(!scene->configure({cart_constraint}))
+            if(!scene->configure({cart_task}))
                 throw runtime_error("Failed to configure AccelerationSceneTSID");
             map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
             toCSV(results, "results/" + robot_name + "_acc_" + it.first + "_" + itt.first + ".csv");

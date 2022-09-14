@@ -19,8 +19,8 @@ base::NamedVector<double> toNamedVector(const wbc::JointWeights &weights){
     return weights_out;
 }
 
-base::NamedVector<wbc::ConstraintStatus> toNamedVector(const wbc::ConstraintsStatus& status_in){
-    base::NamedVector<wbc::ConstraintStatus> status_out;
+base::NamedVector<wbc::TaskStatus> toNamedVector(const wbc::TasksStatus& status_in){
+    base::NamedVector<wbc::TaskStatus> status_out;
     status_out.elements = status_in.elements;
     status_out.names = status_in.names;
     return status_out;
@@ -39,11 +39,11 @@ VelocityScene::VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::sh
 VelocityScene::VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::VelocityScene(robot_model, solver){
 }
-void VelocityScene::setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref){
-    wbc::VelocityScene::setReference(constraint_name, tobaseSamplesJoints(ref));
+void VelocityScene::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
+    wbc::VelocityScene::setReference(task_name, tobaseSamplesJoints(ref));
 }
-void VelocityScene::setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
-    wbc::VelocityScene::setReference(constraint_name, ref);
+void VelocityScene::setCartReference(const std::string& task_name, const base::samples::RigidBodyStateSE3& ref){
+    wbc::VelocityScene::setReference(task_name, ref);
 }
 void VelocityScene::setJointWeights(const base::NamedVector<double> &weights){
     wbc::VelocityScene::setJointWeights(toJointWeights(weights));
@@ -57,18 +57,18 @@ base::NamedVector<double> VelocityScene::getActuatedJointWeights2(){
 base::NamedVector<base::JointState> VelocityScene::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::VelocityScene::solve(hqp));
 }
-base::NamedVector<wbc::ConstraintStatus> VelocityScene::updateConstraintsStatus2(){
-    return toNamedVector(wbc::VelocityScene::updateConstraintsStatus());
+base::NamedVector<wbc::TaskStatus> VelocityScene::updateTasksStatus2(){
+    return toNamedVector(wbc::VelocityScene::updateTasksStatus());
 }
 
 VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::VelocitySceneQuadraticCost(robot_model, solver){
 }
-void VelocitySceneQuadraticCost::setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref){
-    wbc::VelocitySceneQuadraticCost::setReference(constraint_name, tobaseSamplesJoints(ref));
+void VelocitySceneQuadraticCost::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
+    wbc::VelocitySceneQuadraticCost::setReference(task_name, tobaseSamplesJoints(ref));
 }
-void VelocitySceneQuadraticCost::setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
-    wbc::VelocitySceneQuadraticCost::setReference(constraint_name, ref);
+void VelocitySceneQuadraticCost::setCartReference(const std::string& task_name, const base::samples::RigidBodyStateSE3& ref){
+    wbc::VelocitySceneQuadraticCost::setReference(task_name, ref);
 }
 void VelocitySceneQuadraticCost::setJointWeights(const base::NamedVector<double> &weights){
     wbc::VelocitySceneQuadraticCost::setJointWeights(toJointWeights(weights));
@@ -82,18 +82,18 @@ base::NamedVector<double> VelocitySceneQuadraticCost::getActuatedJointWeights2()
 base::NamedVector<base::JointState> VelocitySceneQuadraticCost::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::VelocitySceneQuadraticCost::solve(hqp));
 }
-base::NamedVector<wbc::ConstraintStatus> VelocitySceneQuadraticCost::updateConstraintsStatus2(){
-    return toNamedVector(wbc::VelocitySceneQuadraticCost::updateConstraintsStatus());
+base::NamedVector<wbc::TaskStatus> VelocitySceneQuadraticCost::updateTasksStatus2(){
+    return toNamedVector(wbc::VelocitySceneQuadraticCost::updateTasksStatus());
 }
 
 AccelerationSceneTSID::AccelerationSceneTSID(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::AccelerationSceneTSID(robot_model, solver){
 }
-void AccelerationSceneTSID::setJointReference(const std::string& constraint_name, const base::NamedVector<base::JointState>& ref){
-    wbc::AccelerationSceneTSID::setReference(constraint_name, tobaseSamplesJoints(ref));
+void AccelerationSceneTSID::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
+    wbc::AccelerationSceneTSID::setReference(task_name, tobaseSamplesJoints(ref));
 }
-void AccelerationSceneTSID::setCartReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
-    wbc::AccelerationSceneTSID::setReference(constraint_name, ref);
+void AccelerationSceneTSID::setCartReference(const std::string& task_name, const base::samples::RigidBodyStateSE3& ref){
+    wbc::AccelerationSceneTSID::setReference(task_name, ref);
 }
 void AccelerationSceneTSID::setJointWeights(const base::NamedVector<double> &weights){
     wbc::AccelerationSceneTSID::setJointWeights(toJointWeights(weights));
@@ -107,8 +107,8 @@ base::NamedVector<double> AccelerationSceneTSID::getActuatedJointWeights2(){
 base::NamedVector<base::JointState> AccelerationSceneTSID::solve2(const wbc::HierarchicalQP &hqp){
     return toNamedVector(wbc::AccelerationSceneTSID::solve(hqp));
 }
-base::NamedVector<wbc::ConstraintStatus> AccelerationSceneTSID::updateConstraintsStatus2(){
-    return toNamedVector(wbc::AccelerationSceneTSID::updateConstraintsStatus());
+base::NamedVector<wbc::TaskStatus> AccelerationSceneTSID::updateTasksStatus2(){
+    return toNamedVector(wbc::AccelerationSceneTSID::updateTasksStatus());
 }
 base::NamedVector<base::Wrench> AccelerationSceneTSID::getContactWrenches(){
     return toNamedVector(wbc::AccelerationSceneTSID::getContactWrenches());
@@ -129,10 +129,10 @@ BOOST_PYTHON_MODULE(scenes){
             .def("setReference", &wbc_py::VelocityScene::setCartReference)
             .def("setTaskWeights",   &wbc_py::VelocityScene::setTaskWeights)
             .def("setTaskActivation",   &wbc_py::VelocityScene::setTaskActivation)
-            .def("getConstraintsStatus",   &wbc_py::VelocityScene::getConstraintsStatus,  py::return_value_policy<py::copy_const_reference>())
+            .def("getTasksStatus",   &wbc_py::VelocityScene::getTasksStatus,  py::return_value_policy<py::copy_const_reference>())
             .def("getNConstraintVariablesPerPrio",   &wbc_py::VelocityScene::getNConstraintVariablesPerPrio)
             .def("hasConstraint",   &wbc_py::VelocityScene::hasConstraint)
-            .def("updateConstraintsStatus",   &wbc_py::VelocityScene::updateConstraintsStatus2)
+            .def("updateTasksStatus",   &wbc_py::VelocityScene::updateTasksStatus2)
             .def("getHierarchicalQP",   &wbc_py::VelocityScene::getHierarchicalQP,  py::return_value_policy<py::copy_const_reference>())
             .def("getSolverOutput",   &wbc_py::VelocityScene::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
             .def("setJointWeights",   &wbc_py::VelocityScene::setJointWeights)
@@ -147,10 +147,10 @@ BOOST_PYTHON_MODULE(scenes){
             .def("setReference", &wbc_py::VelocitySceneQuadraticCost::setCartReference)
             .def("setTaskWeights",   &wbc_py::VelocitySceneQuadraticCost::setTaskWeights)
             .def("setTaskActivation",   &wbc_py::VelocitySceneQuadraticCost::setTaskActivation)
-            .def("getConstraintsStatus",   &wbc_py::VelocitySceneQuadraticCost::getConstraintsStatus,  py::return_value_policy<py::copy_const_reference>())
+            .def("getTasksStatus",   &wbc_py::VelocitySceneQuadraticCost::getTasksStatus,  py::return_value_policy<py::copy_const_reference>())
             .def("getNConstraintVariablesPerPrio",   &wbc_py::VelocitySceneQuadraticCost::getNConstraintVariablesPerPrio)
             .def("hasConstraint",   &wbc_py::VelocitySceneQuadraticCost::hasConstraint)
-            .def("updateConstraintsStatus",   &wbc_py::VelocitySceneQuadraticCost::updateConstraintsStatus2)
+            .def("updateTasksStatus",   &wbc_py::VelocitySceneQuadraticCost::updateTasksStatus2)
             .def("getHierarchicalQP",   &wbc_py::VelocitySceneQuadraticCost::getHierarchicalQP,  py::return_value_policy<py::copy_const_reference>())
             .def("getSolverOutput",   &wbc_py::VelocitySceneQuadraticCost::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
             .def("setJointWeights",   &wbc_py::VelocitySceneQuadraticCost::setJointWeights)
@@ -165,10 +165,10 @@ BOOST_PYTHON_MODULE(scenes){
             .def("setReference", &wbc_py::AccelerationSceneTSID::setCartReference)
             .def("setTaskWeights",   &wbc_py::AccelerationSceneTSID::setTaskWeights)
             .def("setTaskActivation",   &wbc_py::AccelerationSceneTSID::setTaskActivation)
-            .def("getConstraintsStatus",   &wbc_py::AccelerationSceneTSID::getConstraintsStatus,  py::return_value_policy<py::copy_const_reference>())
+            .def("getTasksStatus",   &wbc_py::AccelerationSceneTSID::getTasksStatus,  py::return_value_policy<py::copy_const_reference>())
             .def("getNConstraintVariablesPerPrio",   &wbc_py::AccelerationSceneTSID::getNConstraintVariablesPerPrio)
             .def("hasConstraint",   &wbc_py::AccelerationSceneTSID::hasConstraint)
-            .def("updateConstraintsStatus",   &wbc_py::AccelerationSceneTSID::updateConstraintsStatus2)
+            .def("updateTasksStatus",   &wbc_py::AccelerationSceneTSID::updateTasksStatus2)
             .def("getHierarchicalQP",   &wbc_py::AccelerationSceneTSID::getHierarchicalQP,  py::return_value_policy<py::copy_const_reference>())
             .def("getSolverOutput",   &wbc_py::AccelerationSceneTSID::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
             .def("setJointWeights",   &wbc_py::AccelerationSceneTSID::setJointWeights)

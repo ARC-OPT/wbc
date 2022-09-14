@@ -1,16 +1,26 @@
 #include "VelocitySceneQuadraticCost.hpp"
+
 #include <base/JointLimits.hpp>
 #include <base-logging/Logging.hpp>
-#include "../core/CartesianVelocityConstraint.hpp"
-#include "../core/JointVelocityConstraint.hpp"
-#include "../core/CoMVelocityConstraint.hpp"
+
+#include "../tasks/CartesianVelocityTask.hpp"
+#include "../tasks/JointVelocityTask.hpp"
+#include "../tasks/CoMVelocityTask.hpp"
+
+#include "../constraints/ContactsVelocityConstraint.hpp"
+#include "../constraints/JointLimitsVelocityConstraint.hpp"
 
 
 namespace wbc{
 
-VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver) :
+VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
     VelocityScene(robot_model, solver),
     hessian_regularizer(1e-8){
+
+    // for now manually adding constraint to this scene (an option would be to take them during configuration)
+    constraints.resize(1);
+    constraints[0].push_back(std::make_shared<ContactsVelocityConstraint>());
+    constraints[0].push_back(std::make_shared<JointLimitsVelocityConstraint>(dt));
 
 }
 
@@ -20,11 +30,11 @@ VelocitySceneQuadraticCost::~VelocitySceneQuadraticCost(){
 const HierarchicalQP& VelocitySceneQuadraticCost::update(){
 
     if(!configured)
-        throw std::runtime_error("VelocitySceneQuadraticCost has not been configured!. PLease call configure() before calling update() for the first time!");
+        throw std::runtime_error("VelocitySceneQuadraticCost has not been configured!. Please call configure() before calling update() for the first time!");
 
-    if(constraints.size() != 1){
-        LOG_ERROR("Number of priorities in VelocitySceneQuadraticCost should be 1, but is %i", constraints.size());
-        throw std::runtime_error("Invalid constraint configuration");
+    if(tasks.size() != 1){
+        LOG_ERROR("Number of priorities in VelocitySceneQuadraticCost should be 1, but is %i", tasks.size());
+        throw std::runtime_error("Invalid task configuration");
     }
 
     int nj = robot_model->noOfJoints();
@@ -33,104 +43,88 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     uint prio = 0;
 
     // QP Size: (NContacts*6 X NJoints)
-    constraints_prio[prio].resize(ncp*6,nj);
-    constraints_prio[prio].H.setZero();
-    constraints_prio[prio].g.setZero();
+    tasks_prio[prio].resize(ncp*6,nj);
+    tasks_prio[prio].H.setZero();
+    tasks_prio[prio].g.setZero();
 
     ///////// Tasks
 
-    for(uint i = 0; i < constraints[prio].size(); i++){
+    for(uint i = 0; i < tasks[prio].size(); i++){
+        
+        TaskPtr task = tasks[prio][i];
 
-        constraints[prio][i]->checkTimeout();
-        int type = constraints[prio][i]->config.type;
-        ConstraintPtr constraint;
-
-        if(type == cart){
-
-            constraint = std::static_pointer_cast<CartesianVelocityConstraint>(constraints[prio][i]);
-
-            // Constraint Jacobian
-            constraint->A = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
-
-            // Convert constraint twist to robot root
-            base::MatrixXd rot_mat = robot_model->rigidBodyState(constraint->config.root, constraint->config.ref_frame).pose.orientation.toRotationMatrix();
-            constraint->y_ref_root.segment(0,3) = rot_mat * constraint->y_ref.segment(0,3);
-            constraint->y_ref_root.segment(3,3) = rot_mat * constraint->y_ref.segment(3,3);
-
-            // Also convert the weight vector from ref frame to the root frame. Take the absolute values after rotation, since weights can only
-            // assume positive values
-            constraint->weights_root.segment(0,3) = rot_mat * constraint->weights.segment(0,3);
-            constraint->weights_root.segment(3,3) = rot_mat * constraint->weights.segment(3,3);
-            constraint->weights_root = constraint->weights_root.cwiseAbs();
-        }
-        else if(type == com){
-            constraint = std::static_pointer_cast<CoMVelocityConstraint>(constraints[prio][i]);
-            constraint->A = robot_model->comJacobian();
-            // CoM tasks are always in world/base frame, no need to transform.
-            constraint->y_ref_root = constraint->y_ref;
-            constraint->weights_root = constraint->weights;
-        }
-        else if(type == jnt){
-
-            constraint = std::static_pointer_cast<JointVelocityConstraint>(constraints[prio][i]);
-
-            // Joint space constraints: constraint matrix has only ones and Zeros. The joint order in the constraints might be different than in the robot model.
-            // Thus, for joint space constraints, the joint indices have to be mapped correctly.
-            for(uint k = 0; k < constraint->config.joint_names.size(); k++){
-
-                int idx = robot_model->jointIndex(constraint->config.joint_names[k]);
-                constraint->A(k,idx) = 1.0;
-                constraint->y_ref_root = constraint->y_ref;     // In joint space y_ref is equal to y_ref_root
-                constraint->weights_root = constraint->weights; // Same of the weights
-            }
-        }
-        else{
-            LOG_ERROR("Constraint %s: Invalid type: %i", constraints[prio][i]->config.name.c_str(), type);
-            throw std::invalid_argument("Invalid constraint configuration");
-        }
+        task->checkTimeout();
+        task->update(robot_model);
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
-        // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
-        if(constraint->activation == 0){
-           constraint->y_ref.setZero();
-           constraint->y_ref_root.setZero();
+        // task phases and we don't want to store the "old" reference value, in case we switch on the task again
+        if(task->activation == 0){
+           task->y_ref.setZero();
+           task->y_ref_root.setZero();
         }
 
-        for(int i = 0; i < constraint->A.rows(); i++)
-            constraint->Aw.row(i) = constraint->weights_root(i) * constraint->A.row(i) * constraint->activation * (!constraint->timeout);
-        for(int i = 0; i < constraint->A.cols(); i++)
-            constraint->Aw.col(i) = joint_weights[i] * constraint->Aw.col(i);
+        for(int i = 0; i < task->A.rows(); i++)
+            task->Aw.row(i) = task->weights_root(i) * task->A.row(i) * task->activation * (!task->timeout);
+        for(int i = 0; i < task->A.cols(); i++)
+            task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
-        constraints_prio[prio].H.block(0,0,nj,nj) += constraint->Aw.transpose()*constraint->Aw;
-        constraints_prio[prio].g.segment(0,nj) -= constraint->Aw.transpose()*constraint->y_ref_root;
+        tasks_prio[prio].H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
+        tasks_prio[prio].g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
 
-    } // constraints on prio
+    } // tasks on prio
 
     // Add regularization term
-    constraints_prio[prio].H.block(0,0,nj,nj).diagonal().array() += hessian_regularizer;
+    tasks_prio[prio].H.block(0,0,nj,nj).diagonal().array() += hessian_regularizer;
 
 
     ///////// Constraints
 
-    // For all contacts: Js*qd = 0 (Rigid Contacts, contact points do not move!)
-    constraints_prio[prio].A.setZero();
-    for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(i*6, 0, 6, nj) = contact_points[i]*robot_model->bodyJacobian(robot_model->worldFrame(), contact_points.names[i]);
-    constraints_prio[prio].lower_y.setZero();
-    constraints_prio[prio].upper_y.setZero();
-    // TODO: Using actual limits does not work well (QP Solver sometimes fails due to infeasible QP)
-    constraints_prio[prio].lower_x.setConstant(-1000);
-    constraints_prio[prio].upper_x.setConstant(1000);
-    for(auto n : robot_model->actuatedJointNames()){
-        size_t idx = robot_model->jointIndex(n);
-        const base::JointLimitRange &range = robot_model->jointLimits().getElementByName(n);
-        constraints_prio[prio].lower_x(idx) = range.min.speed;
-        constraints_prio[prio].upper_x(idx) = range.max.speed;
+    size_t total_eqs = 0;
+    for(auto constraint : constraints[prio]) {
+        constraint->update(robot_model);
+        if(constraint->type() != Constraint::bounds)
+            total_eqs += constraint->size();
     }
 
-    constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
+    // Note already performed at the beginning of the update (but does not consider additional constriants)
+    tasks_prio[prio].A.resize(total_eqs, nj);
+    tasks_prio[prio].lower_x.resize(nj);
+    tasks_prio[prio].upper_y.resize(nj);
+    tasks_prio[prio].lower_y.resize(total_eqs);
+    tasks_prio[prio].upper_y.resize(total_eqs);
 
-    return constraints_prio;
+    tasks_prio[prio].A.setZero();
+    tasks_prio[prio].lower_y.setConstant(-99999);
+    tasks_prio[prio].upper_y.setConstant(+99999);
+    tasks_prio[prio].lower_x.setConstant(-99999);
+    tasks_prio[prio].upper_x.setConstant(+99999);
+
+    total_eqs = 0;
+    for(uint i = 0; i < constraints[prio].size(); i++) {
+        Constraint::Type type = constraints[prio][i]->type();
+        size_t c_size = constraints[prio][i]->size();
+
+        if(type == Constraint::bounds) {
+            tasks_prio[prio].lower_x = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_x = constraints[prio][i]->ub();
+        }
+        else if (type == Constraint::equality) {
+            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            total_eqs += c_size;
+        }
+        else if (type == Constraint::inequality) {
+            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
+            total_eqs += c_size;
+        }
+    }
+
+    tasks_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
+
+    return tasks_prio;
 }
 
 } // namespace wbc

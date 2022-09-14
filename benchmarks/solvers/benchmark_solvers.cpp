@@ -20,13 +20,13 @@ void printResults(map<string,base::VectorXd> results){
 map<string, base::VectorXd> evaluateQPOases(RobotModelPtr robot_model, string root, string tip, int n_samples, string type){
     QPSolverPtr solver = std::make_shared<QPOASESSolver>();
 
-    ConstraintConfig cart_constraint("cart_pos_ctrl",0,root,tip,root,1);
+    TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
     WbcScenePtr scene;
     if(type == "vel")
         scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
     else
         scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
-    if(!scene->configure({cart_constraint}))
+    if(!scene->configure({cart_task}))
         throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
 
     return evaluateWBCSceneRandom(scene, n_samples);
@@ -35,13 +35,13 @@ map<string, base::VectorXd> evaluateQPOases(RobotModelPtr robot_model, string ro
 map<string, base::VectorXd> evaluateQPSwift(RobotModelPtr robot_model, string root, string tip, int n_samples, string type){
     QPSolverPtr solver = std::make_shared<QPSwiftSolver>();
 
-    ConstraintConfig cart_constraint("cart_pos_ctrl",0,root,tip,root,1);
+    TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
     WbcScenePtr scene;
     if(type == "vel")
         scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
     else
         scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
-    if(!scene->configure({cart_constraint}))
+    if(!scene->configure({cart_task}))
         throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
 
     return evaluateWBCSceneRandom(scene, n_samples);
@@ -50,13 +50,13 @@ map<string, base::VectorXd> evaluateQPSwift(RobotModelPtr robot_model, string ro
 map<string, base::VectorXd> evaluateEiquadprog(RobotModelPtr robot_model, string root, string tip, int n_samples, string type){
     QPSolverPtr solver = std::make_shared<EiquadprogSolver>();
 
-    ConstraintConfig cart_constraint("cart_pos_ctrl",0,root,tip,root,1);
+    TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
     WbcScenePtr scene;
     if(type == "vel")
         scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
     else
         scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
-    if(!scene->configure({cart_constraint}))
+    if(!scene->configure({cart_task}))
         throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
 
     return evaluateWBCSceneRandom(scene, n_samples);

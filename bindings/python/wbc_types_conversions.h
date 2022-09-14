@@ -7,6 +7,9 @@ wbc::ActiveContacts toActiveContacts(const base::NamedVector<int> &contacts_in){
     wbc::ActiveContacts contacts_out;
     contacts_out.elements = contacts_in.elements;
     contacts_out.names = contacts_in.names;
+    std::cout<<"CONTACT POINTS"<<std::endl;
+    for(int i = 0; i < contacts_out.size(); i++)
+        std::cout<<contacts_out.names[i]<<std::endl;
     return contacts_out;
 }
 

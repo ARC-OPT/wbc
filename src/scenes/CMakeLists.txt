@@ -4,11 +4,15 @@ file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/scenes "*.cpp")
 file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/scenes "*.hpp")
 
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
+list(APPEND PKGCONFIG_REQUIRES wbc-tasks)
+list(APPEND PKGCONFIG_REQUIRES wbc-constraints)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME} PUBLIC
-                      wbc-core)
+                      wbc-core
+                      wbc-tasks
+                      wbc-constraints)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}

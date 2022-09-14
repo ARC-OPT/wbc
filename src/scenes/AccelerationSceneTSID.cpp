@@ -1,29 +1,44 @@
 #include "AccelerationSceneTSID.hpp"
 #include "core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
-#include "../core/JointAccelerationConstraint.hpp"
-#include "../core/CartesianAccelerationConstraint.hpp"
-#include "../core/CoMAccelerationConstraint.hpp"
+
+#include "../tasks/JointAccelerationTask.hpp"
+#include "../tasks/CartesianAccelerationTask.hpp"
+#include "../tasks/CoMAccelerationTask.hpp"
+
+#include "../constraints/RigidbodyDynamicsConstraint.hpp"
+#include "../constraints/ContactsAccelerationConstraint.hpp"
+#include "../constraints/JointLimitsAccelerationConstraint.hpp"
 
 namespace wbc {
 
-AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver) :
+AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
     WbcScene(robot_model,solver),
     hessian_regularizer(1e-8){
+    
+    // whether or not torques are removed  from the qp problem
+    // this formulation includes torques !!! 
+    bool reduced = false; // DO NOT CHANGE
+
+    // for now manually adding constraint to this scene (an option would be to take them during configuration)
+    constraints.resize(1);
+    constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
+    constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
+    constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
 
 }
 
-ConstraintPtr AccelerationSceneTSID::createConstraint(const ConstraintConfig &config){
+TaskPtr AccelerationSceneTSID::createTask(const TaskConfig &config){
 
     if(config.type == cart)
-        return std::make_shared<CartesianAccelerationConstraint>(config, robot_model->noOfJoints());
+        return std::make_shared<CartesianAccelerationTask>(config, robot_model->noOfJoints());
     else if(config.type == com)
-        return std::make_shared<CoMAccelerationConstraint>(config, robot_model->noOfJoints());
+        return std::make_shared<CoMAccelerationTask>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
-        return std::make_shared<JointAccelerationConstraint>(config, robot_model->noOfJoints());
+        return std::make_shared<JointAccelerationTask>(config, robot_model->noOfJoints());
     else{
-        LOG_ERROR("Constraint with name %s has an invalid constraint type: %i", config.name.c_str(), config.type);
-        throw std::invalid_argument("Invalid constraint config");
+        LOG_ERROR("Task with name %s has an invalid task type: %i", config.name.c_str(), config.type);
+        throw std::invalid_argument("Invalid task config");
     }
 }
 
@@ -32,9 +47,9 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     if(!configured)
         throw std::runtime_error("AccelerationSceneTSID has not been configured!. PLease call configure() before calling update() for the first time!");
 
-    if(constraints.size() != 1){
-        LOG_ERROR("Number of priorities in AccelerationSceneTSID should be 1, but is %i", constraints.size());
-        throw std::runtime_error("Invalid constraint configuration");
+    if(tasks.size() != 1){
+        LOG_ERROR("Number of priorities in AccelerationSceneTSID should be 1, but is %i", tasks.size());
+        throw std::runtime_error("Invalid task configuration");
     }
 
     int prio = 0; // Only one priority is implemented here!
@@ -44,127 +59,87 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     // QP Size: (NJoints+NContacts*2*6 x NJoints+NActuatedJoints+NContacts*6)
     // Variable order: (acc,torque,f_ext)
-    constraints_prio[prio].resize(nj+ncp*6,nj+na+ncp*6);
-    constraints_prio[prio].H.setZero();
-    constraints_prio[prio].g.setZero();
+    tasks_prio[prio].resize(nj+ncp*6,nj+na+ncp*6);
+    tasks_prio[prio].H.setZero();
+    tasks_prio[prio].g.setZero();
 
     ///////// Tasks
 
     // Walk through all tasks
-    for(uint i = 0; i < constraints[prio].size(); i++){
+    for(uint i = 0; i < tasks[prio].size(); i++){
+        
+        TaskPtr task = tasks[prio][i];
 
-        int type = constraints[prio][i]->config.type;
-        constraints[prio][i]->checkTimeout();
-        ConstraintPtr constraint;
-
-        if(type == cart){
-            constraint = std::static_pointer_cast<CartesianAccelerationConstraint>(constraints[prio][i]);
-
-            // Task Jacobian
-            constraint->A = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
-
-             // Desired task space acceleration: y_r = y_d - Jdot*qdot
-            constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
-
-            // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
-            // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
-            // be the origin of ref frame, not the root frame. This is more intuitive when controlling the orientation of e.g. a robot' s end effector.
-            base::samples::RigidBodyStateSE3 ref_frame = robot_model->rigidBodyState(constraint->config.root, constraint->config.ref_frame);
-            constraint->y_ref_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(0,3);
-            constraint->y_ref_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->y_ref.segment(3,3);
-
-            // Also convert the weight vector from ref frame to the root frame. Take the absolute values after rotation, since weights can only
-            // assume positive values
-            constraint->weights_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(0,3);
-            constraint->weights_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * constraint->weights.segment(3,3);
-            constraint->weights_root = constraint->weights_root.cwiseAbs();
-        }
-        else if(type == com){
-            constraint = std::static_pointer_cast<CoMAccelerationConstraint>(constraints[prio][i]);
-            constraint->A = robot_model->comJacobian();
-            // Desired task space acceleration: y_r = y_d - Jdot*qdot
-            constraint->y_ref = constraint->y_ref - robot_model->spatialAccelerationBias(robot_model->worldFrame(), robot_model->baseFrame()).linear;
-            // CoM tasks are always in world/base frame, no need to transform.
-            constraint->y_ref_root = constraint->y_ref;
-            constraint->weights_root = constraint->weights;
-        }
-        else if(type == jnt){
-            constraint = std::static_pointer_cast<JointAccelerationConstraint>(constraints[prio][i]);
-
-            // Joint space constraints: constraint matrix has only ones and Zeros. The joint order in the constraints might be different than in the robot model.
-            // Thus, for joint space constraints, the joint indices have to be mapped correctly.
-            for(uint k = 0; k < constraint->config.joint_names.size(); k++){
-
-                int idx = robot_model->jointIndex(constraint->config.joint_names[k]);
-                constraint->A(k,idx) = 1.0;
-                constraint->y_ref_root = constraint->y_ref;     // In joint space y_ref is equal to y_ref_root
-                constraint->weights_root = constraint->weights; // Same for the weights
-            }
-        }
-        else{
-            LOG_ERROR("Constraint %s: Invalid type: %i", constraints[prio][i]->config.name.c_str(), type);
-            throw std::invalid_argument("Invalid constraint configuration");
-        }
+        task->checkTimeout();
+        task->update(robot_model);
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
-        // task phases and we don't want to store the "old" reference value, in case we switch on the constraint again
-        if(constraint->activation == 0){
-           constraint->y_ref.setZero();
-           constraint->y_ref_root.setZero();
+        // task phases and we don't want to store the "old" reference value, in case we switch on the task again
+        if(task->activation == 0){
+           task->y_ref.setZero();
+           task->y_ref_root.setZero();
         }
 
-        for(int i = 0; i < constraint->A.rows(); i++)
-            constraint->Aw.row(i) = constraint->weights_root(i) * constraint->A.row(i) * constraint->activation * (!constraint->timeout);
-        for(int i = 0; i < constraint->A.cols(); i++)
-            constraint->Aw.col(i) = joint_weights[i] * constraint->Aw.col(i);
+        for(int i = 0; i < task->A.rows(); i++)
+            task->Aw.row(i) = task->weights_root(i) * task->A.row(i) * task->activation * (!task->timeout);
+        for(int i = 0; i < task->A.cols(); i++)
+            task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
-        constraints_prio[prio].H.block(0,0,nj,nj) += constraint->Aw.transpose()*constraint->Aw;
-        constraints_prio[prio].g.segment(0,nj) -= constraint->Aw.transpose()*constraint->y_ref_root;
+        tasks_prio[prio].H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
+        tasks_prio[prio].g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
     }
 
-    constraints_prio[prio].H.block(0,0,constraints_prio[prio].nq,constraints_prio[prio].nq).diagonal().array() += hessian_regularizer;
+    tasks_prio[prio].H.block(0,0, tasks_prio[prio].nq, tasks_prio[prio].nq).diagonal().array() += hessian_regularizer;
 
 
     ///////// Constraints
 
-    constraints_prio[prio].A.setZero();
-    constraints_prio[prio].lower_y.setZero();
-    constraints_prio[prio].upper_y.setZero();
-
-
-    // 1. M*qdd - S^T*tau - Jb_1^T*f_ext_1 - Jb_2^T*f_ext_2 - ... = -h (Rigid Body Dynamic Equation)
-
-    ActiveContacts contact_points = robot_model->getActiveContacts();
-    constraints_prio[prio].A.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
-    constraints_prio[prio].A.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
-    for(int i = 0; i < contact_points.size(); i++)
-        constraints_prio[prio].A.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contact_points.names[i]).transpose();
-    constraints_prio[prio].lower_y.segment(0,nj) = constraints_prio[prio].upper_y.segment(0,nj) = -robot_model->biasForces();// + robot_model->bodyJacobian(world_link, contact_link).transpose() * f_ext;
-
-    // 2. For all contacts: Js*qdd = -Jsdot*qd (Rigid Contacts, contact points do not move!)
-
-    for(int i = 0; i < contact_points.size(); i++){
-        constraints_prio[prio].A.block(nj+i*6,  0, 6, nj) = robot_model->spaceJacobian(robot_model->worldFrame(), contact_points.names[i]);
-        base::Vector6d acc;
-        base::Acceleration a = robot_model->spatialAccelerationBias(robot_model->worldFrame(), contact_points.names[i]);
-        acc.segment(0,3) = a.linear;
-        acc.segment(3,3) = a.angular;
-        constraints_prio[prio].lower_y.segment(nj+i*6,6) = constraints_prio[prio].upper_y.segment(nj+i*6,6) = -acc;
+    size_t total_eqs = 0;
+    for(auto contraint : constraints[prio]) {
+        contraint->update(robot_model);
+        if(contraint->type() != Constraint::bounds)
+            total_eqs += contraint->size();
     }
 
-    // 3. Torque and acceleration limits
+    // Note already performed at the beginning of the update (but does not consider additional constraints)
+    tasks_prio[prio].lower_x.resize(nj+na+ncp*6);
+    tasks_prio[prio].upper_x.resize(nj+na+ncp*6);
+    tasks_prio[prio].lower_y.resize(total_eqs);
+    tasks_prio[prio].upper_y.resize(total_eqs);
+    tasks_prio[prio].A.resize(total_eqs, nj+na+ncp*6);
 
-    constraints_prio[prio].upper_x.setConstant(10000);
-    constraints_prio[prio].lower_x.setConstant(-10000);
-    for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
-        const std::string& name = robot_model->actuatedJointNames()[i];
-        constraints_prio[prio].lower_x(i+nj) = robot_model->jointLimits()[name].min.effort;
-        constraints_prio[prio].upper_x(i+nj) = robot_model->jointLimits()[name].max.effort;
+    tasks_prio[prio].lower_x.setConstant(-999999);  // bounds
+    tasks_prio[prio].upper_x.setConstant(+999999);  // bounds
+    tasks_prio[prio].lower_y.setConstant(-999999);  // inequalities
+    tasks_prio[prio].upper_y.setConstant(+999999);  // inequalities
+    tasks_prio[prio].A.setZero();
+
+    total_eqs = 0;
+    for(uint i = 0; i < constraints[prio].size(); i++) {
+        Constraint::Type type = constraints[prio][i]->type();
+        size_t c_size = constraints[prio][i]->size();
+
+        if(type == Constraint::bounds) {
+            tasks_prio[prio].lower_x = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_x = constraints[prio][i]->ub();
+        }
+        else if (type == Constraint::equality) {
+            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            total_eqs += c_size;
+        }
+        else if (type == Constraint::inequality) {
+            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
+            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
+            total_eqs += c_size;
+        }
     }
 
-    constraints_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
-    constraints_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all constraints!?
-    return constraints_prio;
+    tasks_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
+    tasks_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
+    return tasks_prio;
 }
 
 const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP& hqp){
@@ -194,9 +169,9 @@ const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP&
     }
     solver_output_joints.time = base::Time::now();
 
-    /*std::cout<<"Acc:   "<<solver_output.segment(0,nj).transpose()<<std::endl;
-    std::cout<<"Tau:   "<<solver_output.segment(nj,na).transpose()<<std::endl;
-    std::cout<<"F_ext: "<<solver_output.segment(nj+na,12).transpose()<<std::endl<<std::endl;*/
+    // std::cout<<"Acc:   "<<solver_output.segment(0,nj).transpose()<<std::endl;
+    // std::cout<<"Tau:   "<<solver_output.segment(nj,na).transpose()<<std::endl;
+    // std::cout<<"F_ext: "<<solver_output.segment(nj+na,12).transpose()<<std::endl<<std::endl;
 
     // Convert solver output: contact wrenches
     contact_wrenches.resize(robot_model->getActiveContacts().size());
@@ -210,7 +185,7 @@ const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP&
     return solver_output_joints;
 }
 
-const ConstraintsStatus& AccelerationSceneTSID::updateConstraintsStatus(){
+const TasksStatus& AccelerationSceneTSID::updateTasksStatus(){
 
     uint nj = robot_model->noOfJoints();
     solver_output_acc = solver_output.segment(0,nj);
@@ -219,27 +194,27 @@ const ConstraintsStatus& AccelerationSceneTSID::updateConstraintsStatus(){
     for(size_t i = 0; i < nj; i++)
         robot_acc(i) = joint_state[i].acceleration;
 
-    for(uint prio = 0; prio < constraints.size(); prio++){
-        for(uint i = 0; i < constraints[prio].size(); i++){
-            ConstraintPtr constraint = constraints[prio][i];
-            const std::string &name = constraint->config.name;
+    for(uint prio = 0; prio < tasks.size(); prio++){
+        for(uint i = 0; i < tasks[prio].size(); i++){
+            TaskPtr task = tasks[prio][i];
+            const std::string &name = task->config.name;
 
-            constraints_status[name].time       = constraint->time;
-            constraints_status[name].config     = constraint->config;
-            constraints_status[name].activation = constraint->activation;
-            constraints_status[name].timeout    = constraint->timeout;
-            constraints_status[name].weights    = constraint->weights;
-            constraints_status[name].y_ref      = constraint->y_ref_root;
-            if(constraint->config.type == cart){
-                const base::MatrixXd &jac = robot_model->spaceJacobian(constraint->config.root, constraint->config.tip);
-                const base::Acceleration &bias_acc = robot_model->spatialAccelerationBias(constraint->config.root, constraint->config.tip);
-                constraints_status[name].y_solution = jac * solver_output_acc + bias_acc;
-                constraints_status[name].y          = jac * robot_acc + bias_acc;
+            tasks_status[name].time       = task->time;
+            tasks_status[name].config     = task->config;
+            tasks_status[name].activation = task->activation;
+            tasks_status[name].timeout    = task->timeout;
+            tasks_status[name].weights    = task->weights;
+            tasks_status[name].y_ref      = task->y_ref_root;
+            if(task->config.type == cart){
+                const base::MatrixXd &jac = robot_model->spaceJacobian(task->config.root, task->config.tip);
+                const base::Acceleration &bias_acc = robot_model->spatialAccelerationBias(task->config.root, task->config.tip);
+                tasks_status[name].y_solution = jac * solver_output_acc + bias_acc;
+                tasks_status[name].y          = jac * robot_acc + bias_acc;
             }
         }
     }
 
-    return constraints_status;
+    return tasks_status;
 }
 
 }

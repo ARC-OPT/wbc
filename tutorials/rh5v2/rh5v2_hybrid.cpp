@@ -18,6 +18,7 @@ using namespace ctrl_lib;
  */
 int main()
 {
+    double dt = 0.01;
 
     // Create robot model, use Hyrodyn based model
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
@@ -40,10 +41,10 @@ int main()
 
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
-    AccelerationSceneTSID scene(robot_model, solver);
-    vector<ConstraintConfig> wbc_config;
-    wbc_config.push_back(ConstraintConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
-    wbc_config.push_back(ConstraintConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
+    AccelerationSceneTSID scene(robot_model, solver, dt);
+    vector<TaskConfig> wbc_config;
+    wbc_config.push_back(TaskConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
+    wbc_config.push_back(TaskConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
     if(!scene.configure(wbc_config))
         return -1;
 
@@ -69,9 +70,10 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl_left, ctrl_right;
-    base::VectorXd p_gain(6),d_gain(6);
+    base::VectorXd p_gain(6),d_gain(6),ff_gain(6);
     p_gain.setConstant(10); // Stiffness
     d_gain.setConstant(30); // Damping
+    ff_gain.setConstant(1); // Feed forward
     ctrl_left.setPGain(p_gain);
     ctrl_left.setDGain(d_gain);
     ctrl_right.setPGain(p_gain);
@@ -86,7 +88,7 @@ int main()
 
     // Run control loop
     JointIntegrator integrator;
-    double loop_time = 0.01; // seconds
+    double loop_time = dt; // seconds
     base::commands::Joints solver_output;
     for(double t = 0; t < 5; t+=loop_time){
 
@@ -96,6 +98,7 @@ int main()
         // Update controllers, left arm: Follow sinusoidal trajectory
         setpoint_left.pose.position[0] = 0.522827 + 0.1*sin(t);
         setpoint_left.twist.linear[0] = 0.1*cos(t);
+        setpoint_left.acceleration.linear[0] = -0.1*sin(t);
         feedback_left = robot_model->rigidBodyState(wbc_config[0].root, wbc_config[0].tip);
         feedback_right = robot_model->rigidBodyState(wbc_config[1].root, wbc_config[1].tip);
         ctrl_output_left = ctrl_left.update(setpoint_left, feedback_left);

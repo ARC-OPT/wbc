@@ -51,24 +51,24 @@ BOOST_AUTO_TEST_CASE(simple_test){
     dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
 
     // Configure scene
-    ConstraintConfig cart_constraint;
-    cart_constraint.type = cart;
-    cart_constraint.name = "cart_pos_ctrl";
-    cart_constraint.root = "world";
-    cart_constraint.tip = "RH5_Root_Link";
-    cart_constraint.ref_frame = "world";
-    cart_constraint.weights = {1,1,1,1,1,1};
-    cart_constraint.priority = 0;
-    cart_constraint.activation = 1;
+    TaskConfig cart_task;
+    cart_task.type = cart;
+    cart_task.name = "cart_pos_ctrl";
+    cart_task.root = "world";
+    cart_task.tip = "RH5_Root_Link";
+    cart_task.ref_frame = "world";
+    cart_task.weights = {1,1,1,1,1,1};
+    cart_task.priority = 0;
+    cart_task.activation = 1;
     VelocitySceneQuadraticCost wbc_scene(robot_model, solver);
-    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), true);
+    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
 
     // Set random Reference
     base::samples::RigidBodyStateSE3 ref;
     srand (time(NULL));
     ref.twist.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
     ref.twist.angular = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
-    BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_constraint.name, ref));
+    BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_task.name, ref));
 
     // Solve
     BOOST_CHECK_NO_THROW(wbc_scene.update());
@@ -80,8 +80,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
     base::commands::Joints solver_output = wbc_scene.getSolverOutput();
 
     // Check
-    wbc_scene.updateConstraintsStatus();
-    ConstraintsStatus status = wbc_scene.getConstraintsStatus();
+    wbc_scene.updateTasksStatus();
+    TasksStatus status = wbc_scene.getTasksStatus();
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-3);
         BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i+3]) < 1e-3);

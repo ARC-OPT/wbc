@@ -12,7 +12,7 @@ BOOST_AUTO_TEST_CASE(configuration_test){
      * Check if the WBC velocity scene fails to configure with invalid configuration
      */
 
-    ConstraintConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0");
+    TaskConfig cart_task("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0");
 
     shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
     RobotModelConfig config;
@@ -22,20 +22,20 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     VelocityScene wbc_scene(robot_model, solver);
 
     // Check if configuration works
-    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), true);
+    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
 
     // Empty constraint config
     BOOST_CHECK_EQUAL(wbc_scene.configure({}), false);
 
     // WBC config with invalid frame ids
-    cart_constraint.tip = "kuka_lbr_l_";
-    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), false);
-    cart_constraint.tip = "kuka_lbr_l_tcp";
-    cart_constraint.root = "kuka_lbr_l_link_";
-    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), false);
-    cart_constraint.root = "kuka_lbr_l_link_0";
-    cart_constraint.ref_frame = "kuka_lbr_l_link_";
-    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), false);
+    cart_task.tip = "kuka_lbr_l_";
+    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), false);
+    cart_task.tip = "kuka_lbr_l_tcp";
+    cart_task.root = "kuka_lbr_l_link_";
+    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), false);
+    cart_task.root = "kuka_lbr_l_link_0";
+    cart_task.ref_frame = "kuka_lbr_l_link_";
+    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), false);
 }
 
 BOOST_AUTO_TEST_CASE(simple_test){
@@ -66,15 +66,15 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     // Configure scene
     VelocityScene wbc_scene(robot_model, solver);
-    ConstraintConfig cart_constraint("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
-    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_constraint}), true);
+    TaskConfig cart_task("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
+    BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
 
     // Set random Reference
     base::samples::RigidBodyStateSE3 ref;
     srand (time(NULL));
     ref.twist.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
     ref.twist.angular = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
-    BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_constraint.name, ref));
+    BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_task.name, ref));
 
     // Solve
     BOOST_CHECK_NO_THROW(wbc_scene.update());
@@ -84,8 +84,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
     base::commands::Joints solver_output = wbc_scene.getSolverOutput();
 
     // Check
-    wbc_scene.updateConstraintsStatus();
-    ConstraintsStatus status = wbc_scene.getConstraintsStatus();
+    wbc_scene.updateTasksStatus();
+    TasksStatus status = wbc_scene.getTasksStatus();
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-5);
         BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i]) < 1e5);

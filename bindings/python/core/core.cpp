@@ -2,8 +2,8 @@
 #include "../std_vector_conversion.h"
 #include "../wbc_types_conversions.h"
 #include "core/RobotModelConfig.hpp"
-#include "core/ConstraintConfig.hpp"
-#include "core/ConstraintStatus.hpp"
+#include "core/TaskConfig.hpp"
+#include "core/TaskStatus.hpp"
 #include "core/QuadraticProgram.hpp"
 #include <base/JointLimits.hpp>
 #include <boost/python/enum.hpp>
@@ -21,12 +21,12 @@ BOOST_PYTHON_MODULE(core){
     pygen::convertStdVector<std::vector<base::JointState>>();
     pygen::convertStdVector<std::vector<base::JointLimitRange>>();
     pygen::convertStdVector<std::vector<base::Wrench>>();
-    pygen::convertStdVector<std::vector<wbc::ConstraintConfig>>();
+    pygen::convertStdVector<std::vector<wbc::TaskConfig>>();
     pygen::convertVector<Eigen::Matrix<double, 3, 1, Eigen::DontAlign>>();
     pygen::convertVector<Eigen::Matrix<double, 6, 1, Eigen::DontAlign>>();
     pygen::convertTransform<Eigen::Transform<double, 3, Eigen::DontAlign>>();
     pygen::convertQuaternion<Eigen::Quaternion<double, Eigen::DontAlign>>();
-    pygen::convertStdVector<std::vector<wbc::ConstraintStatus>>();
+    pygen::convertStdVector<std::vector<wbc::TaskStatus>>();
 
     py::class_<base::Pose>("Pose")
             .add_property("position",
@@ -125,26 +125,26 @@ BOOST_PYTHON_MODULE(core){
             .def_readwrite("floating_base",        &wbc::RobotModelConfig::floating_base)
             .add_property("contact_points",        &wbc_py::RobotModelConfig::getActiveContacts, &wbc_py::RobotModelConfig::setActiveContacts);
 
-   py::enum_<wbc::ConstraintType>("ConstraintType")
-       .value("unset", wbc::ConstraintType::unset)
-       .value("cart", wbc::ConstraintType::cart)
-       .value("jnt", wbc::ConstraintType::jnt);
+   py::enum_<wbc::TaskType>("TaskType")
+       .value("unset", wbc::TaskType::unset)
+       .value("cart", wbc::TaskType::cart)
+       .value("jnt", wbc::TaskType::jnt);
 
-   py::class_<wbc::ConstraintConfig>("ConstraintConfig")
-            .def_readwrite("name",       &wbc::ConstraintConfig::name)
-            .def_readwrite("type",       &wbc::ConstraintConfig::type)
-            .def_readwrite("priority",   &wbc::ConstraintConfig::priority)
+   py::class_<wbc::TaskConfig>("TaskConfig")
+            .def_readwrite("name",       &wbc::TaskConfig::name)
+            .def_readwrite("type",       &wbc::TaskConfig::type)
+            .def_readwrite("priority",   &wbc::TaskConfig::priority)
             .add_property("weights",
-                py::make_getter(&wbc::ConstraintConfig::weights, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::ConstraintConfig::weights))
-            .def_readwrite("activation", &wbc::ConstraintConfig::activation)
-            .def_readwrite("timeout",    &wbc::ConstraintConfig::timeout)
+                py::make_getter(&wbc::TaskConfig::weights, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::TaskConfig::weights))
+            .def_readwrite("activation", &wbc::TaskConfig::activation)
+            .def_readwrite("timeout",    &wbc::TaskConfig::timeout)
             .add_property("joint_names",
-                py::make_getter(&wbc::ConstraintConfig::joint_names, py::return_value_policy<py::copy_non_const_reference>()),
-                py::make_setter(&wbc::ConstraintConfig::joint_names))
-            .def_readwrite("root",       &wbc::ConstraintConfig::root)
-            .def_readwrite("tip",        &wbc::ConstraintConfig::tip)
-            .def_readwrite("ref_frame",  &wbc::ConstraintConfig::ref_frame);
+                py::make_getter(&wbc::TaskConfig::joint_names, py::return_value_policy<py::copy_non_const_reference>()),
+                py::make_setter(&wbc::TaskConfig::joint_names))
+            .def_readwrite("root",       &wbc::TaskConfig::root)
+            .def_readwrite("tip",        &wbc::TaskConfig::tip)
+            .def_readwrite("ref_frame",  &wbc::TaskConfig::ref_frame);
 
    py::class_<wbc::QuadraticProgram>("QuadraticProgram")
            .add_property("A",
@@ -200,29 +200,29 @@ BOOST_PYTHON_MODULE(core){
            py::make_getter(&base::NamedVector<int>::elements, py::return_value_policy<py::copy_non_const_reference>()),
            py::make_setter(&base::NamedVector<int>::elements));
 
-   py::class_<wbc::ConstraintStatus>("ConstraintStatus")
-       .def_readwrite("config",  &wbc::ConstraintStatus::config)
-       .def_readwrite("activation",  &wbc::ConstraintStatus::activation)
-       .def_readwrite("timeout",  &wbc::ConstraintStatus::timeout)
+   py::class_<wbc::TaskStatus>("TaskStatus")
+       .def_readwrite("config",  &wbc::TaskStatus::config)
+       .def_readwrite("activation",  &wbc::TaskStatus::activation)
+       .def_readwrite("timeout",  &wbc::TaskStatus::timeout)
        .add_property("weights",
-                     py::make_getter(&wbc::ConstraintStatus::weights, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::ConstraintStatus::weights))
+                     py::make_getter(&wbc::TaskStatus::weights, py::return_value_policy<py::copy_non_const_reference>()),
+                     py::make_setter(&wbc::TaskStatus::weights))
        .add_property("y_ref",
-                     py::make_getter(&wbc::ConstraintStatus::y_ref, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::ConstraintStatus::y_ref))
+                     py::make_getter(&wbc::TaskStatus::y_ref, py::return_value_policy<py::copy_non_const_reference>()),
+                     py::make_setter(&wbc::TaskStatus::y_ref))
        .add_property("y_solution",
-                     py::make_getter(&wbc::ConstraintStatus::y_solution, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::ConstraintStatus::y_solution))
+                     py::make_getter(&wbc::TaskStatus::y_solution, py::return_value_policy<py::copy_non_const_reference>()),
+                     py::make_setter(&wbc::TaskStatus::y_solution))
        .add_property("y",
-                     py::make_getter(&wbc::ConstraintStatus::y, py::return_value_policy<py::copy_non_const_reference>()),
-                     py::make_setter(&wbc::ConstraintStatus::y));
+                     py::make_getter(&wbc::TaskStatus::y, py::return_value_policy<py::copy_non_const_reference>()),
+                     py::make_setter(&wbc::TaskStatus::y));
 
-   py::class_<base::NamedVector<wbc::ConstraintStatus>>("ConstraintsStatus")
+   py::class_<base::NamedVector<wbc::TaskStatus>>("TasksStatus")
            .add_property("names",
-               py::make_getter(&wbc::ConstraintsStatus::names, py::return_value_policy<py::copy_non_const_reference>()),
-               py::make_setter(&wbc::ConstraintsStatus::names))
+               py::make_getter(&wbc::TasksStatus::names, py::return_value_policy<py::copy_non_const_reference>()),
+               py::make_setter(&wbc::TasksStatus::names))
            .add_property("elements",
-               py::make_getter(&wbc::ConstraintsStatus::elements, py::return_value_policy<py::copy_non_const_reference>()),
-               py::make_setter(&wbc::ConstraintsStatus::elements));
+               py::make_getter(&wbc::TasksStatus::elements, py::return_value_policy<py::copy_non_const_reference>()),
+               py::make_setter(&wbc::TasksStatus::elements));
 }
 
