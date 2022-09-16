@@ -1,5 +1,12 @@
 <?xml version="1.0" ?>
 <robot name="RH5v2" version="1.0">
+    <link name="world"/>
+    <joint name="base_joint" type="fixed">
+       <parent link="world"/>
+       <child link="RH5v2_Root_Link"/>
+       <origin rpy="0 0 0" xyz="0 0 0"/>
+    </joint>
+
 	<joint name="ALBase" type="fixed">
 		<origin rpy="-6.2e-05 -0.23628 1.309002" xyz="-0.025162 0.126091 0.35059"/>
 		<parent link="BodyYaw_Link"/>
@@ -66,7 +73,12 @@
 				<color rgba="0.75294 0.75294 0.75294 1.0"/>
 			</material>
 		</visual>
-
+		<collision name="ALShoulder1_Link_Collision">
+			<origin rpy="1.570796 -1.568017 0.0" xyz="-0.005334 -0.004665 -0.002299"/>
+			<geometry>
+				<sphere radius="0.059044141322374344"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="ALShoulder2" type="revolute">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -131,7 +143,12 @@
 				<color rgba="0.75294 0.75294 0.75294 1.0"/>
 			</material>
 		</visual>
-
+		<collision name="ALShoulder3_Link_Collision">
+			<origin rpy="3.071603 0.037077 0.479525" xyz="0.000897 0.015259 0.247292"/>
+			<geometry>
+				<cylinder length="0.37510071270897083" radius="0.04989704605643945"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="ALWristFT" type="fixed">
 		<origin rpy="0.0 0.0 1.5708" xyz="0.0 0.0 0.042748"/>
@@ -325,6 +342,12 @@
 				<color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
 			</material>
 		</visual>
+		<collision name="ALWristRoll_Link_Collision">
+			<origin rpy="1.529155 1.46726 -1.538407" xyz="0.081951 0.005319 -0.000273"/>
+			<geometry>
+				<cylinder length="0.19892359808020985" radius="0.051451062143852824"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="ALWristYaw" type="revolute">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -469,6 +492,12 @@
 				<color rgba="0.75294 0.75294 0.75294 1.0"/>
 			</material>
 		</visual>
+		<collision name="ARShoulder1_Link_Collision">
+			<origin rpy="1.570864 -1.568017 3.141524" xyz="0.005334 -0.004665 -0.002299"/>
+			<geometry>
+				<sphere radius="0.059044145081229044"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="ARShoulder2" type="revolute">
 		<origin rpy="0.0 0.0 -3.141592" xyz="0.0 0.0 0.0"/>
@@ -533,6 +562,12 @@
 				<color rgba="0.75294 0.75294 0.75294 1.0"/>
 			</material>
 		</visual>
+		<collision name="ARShoulder3_Link_Collision">
+			<origin rpy="0.06999 -0.037077 0.479526" xyz="0.000897 0.015259 -0.247292"/>
+			<geometry>
+				<cylinder length="0.37510067633392874" radius="0.04989704634130358"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="ARWristFT" type="fixed">
 		<origin rpy="0.0 0.0 -1.5708" xyz="0.0 0.0 0.042748"/>
@@ -599,7 +634,6 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
-
 	</link>
 	<joint name="ARWristPitch" type="revolute">
 		<origin rpy="-3.141592 -1.5707 3.141592" xyz="-0.173 0.0 0.0"/>
@@ -709,6 +743,12 @@
 				<color rgba="0.77647 0.75686 0.73725 1.0"/>
 			</material>
 		</visual>
+		<collision name="ARWristRoll_Link_Collision">
+			<origin rpy="1.57398 -1.456133 1.499218" xyz="-0.082074 0.004997 0.0"/>
+			<geometry>
+				<cylinder length="0.19860603208685698" radius="0.05148203817753268"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="ARWristYaw" type="revolute">
 		<origin rpy="0.0 0.0 -1e-06" xyz="0.0 0.0 0.0"/>
@@ -900,7 +940,12 @@
 				<color rgba="0.20784 0.30196 0.45098 1.0"/>
 			</material>
 		</visual>
-
+		<collision name="BodyYaw_Link_Collision">
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+			<geometry>
+				<mesh filename="../meshes/BodyYaw_Link_abstract-urdf_joined_convexhull.obj" scale="1.0 1.0 1.0"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="CameraHeadLeftEye" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="0.02 0.0 0.0"/>
@@ -960,6 +1005,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF1ProximalSegment_Collision">
+			<origin rpy="0.000111 0.075418 -1.569794" xyz="0.00013 -0.002054 0.02649"/>
+			<geometry>
+				<box size="0.030218173173127905 0.034882865322953094 0.0747403673565936"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLF1TopSegment" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -983,6 +1034,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF1TopSegment_Collision">
+			<origin rpy="3.025162 1.145167 -1.622776" xyz="0.0 0.02387 -0.012657"/>
+			<geometry>
+				<box size="0.026310870976772916 0.02858935493300371 0.07745781389552309"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLF2Gear" type="fixed">
 		<origin rpy="1.2885 0.0 0.0" xyz="0.0 0.0 0.053"/>
@@ -1030,6 +1087,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF2ProximalSegment_Collision">
+			<origin rpy="0.000111 0.075418 -1.569794" xyz="0.00013 -0.002054 0.02649"/>
+			<geometry>
+				<box size="0.030218173173127905 0.034882865322953094 0.0747403673565936"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLF2TopSegment" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -1053,6 +1116,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF2TopSegment_Collision">
+			<origin rpy="3.025162 1.145167 -1.622776" xyz="0.0 0.02387 -0.012657"/>
+			<geometry>
+				<box size="0.026310870976772916 0.02858935493300371 0.07745781389552309"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLF3Gear" type="fixed">
 		<origin rpy="1.2885 0.0 0.0" xyz="0.0 0.0 0.053"/>
@@ -1100,6 +1169,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF3ProximalSegment_Collision">
+			<origin rpy="0.000111 0.075418 -1.569794" xyz="0.00013 -0.002054 0.02649"/>
+			<geometry>
+				<box size="0.030218173173127905 0.034882865322953094 0.0747403673565936"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLF3TopSegment" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -1123,6 +1198,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF3TopSegment_Collision">
+			<origin rpy="3.025162 1.145167 -1.622776" xyz="0.0 0.02387 -0.012657"/>
+			<geometry>
+				<box size="0.026310870976772916 0.02858935493300371 0.07745781389552309"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLF4Gear" type="fixed">
 		<origin rpy="1.2885 0.0 0.0" xyz="0.0 0.0 0.053"/>
@@ -1170,6 +1251,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF4ProximalSegment_Collision">
+			<origin rpy="0.000111 0.075418 -1.569794" xyz="0.00013 -0.002054 0.02649"/>
+			<geometry>
+				<box size="0.030218173173127905 0.034882865322953094 0.0747403673565936"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLF4TopSegment" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -1193,6 +1280,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GLF4TopSegment_Collision">
+			<origin rpy="3.025162 1.145167 -1.622776" xyz="0.0 0.02387 -0.012657"/>
+			<geometry>
+				<box size="0.026310870976772916 0.02858935493300371 0.07745781389552309"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GLIMU" type="fixed">
 		<origin rpy="0.0 1.3526 0.0" xyz="-0.003256 0.00202 0.053849"/>
@@ -1293,6 +1386,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GRF1ProximalSegment_Collision">
+			<origin rpy="0.000111 0.075418 -1.569794" xyz="0.00013 -0.002054 0.02649"/>
+			<geometry>
+				<box size="0.030218173173127905 0.034882865322953094 0.0747403673565936"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GRF1TopSegment" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -1316,6 +1415,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GRF1TopSegment_Collision">
+			<origin rpy="3.025162 1.145167 -1.622776" xyz="0.0 0.02387 -0.012657"/>
+			<geometry>
+				<box size="0.026310870976772916 0.02858935493300371 0.07745781389552309"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GRF2Gear" type="fixed">
 		<origin rpy="1.2885 0.0 0.0" xyz="0.0 0.0 0.053"/>
@@ -1363,6 +1468,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GRF2ProximalSegment_Collision">
+			<origin rpy="0.000111 0.075418 -1.569794" xyz="0.00013 -0.002054 0.02649"/>
+			<geometry>
+				<box size="0.030218173173127905 0.034882865322953094 0.0747403673565936"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GRF2TopSegment" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
@@ -1386,6 +1497,12 @@
 				<color rgba="0.94118 0.67451 0.11765 1.0"/>
 			</material>
 		</visual>
+		<collision name="GRF2TopSegment_Collision">
+			<origin rpy="3.025162 1.145167 -1.622776" xyz="0.0 0.02387 -0.012657"/>
+			<geometry>
+				<box size="0.026310870976772916 0.02858935493300371 0.07745781389552309"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="GRIMU" type="fixed">
 		<origin rpy="-1.5708 -0.009708 3.141593" xyz="0.001862 -0.026119 0.056625"/>
@@ -1446,6 +1563,12 @@
 				<color rgba="0.69804 0.69804 0.69804 1.0"/>
 			</material>
 		</visual>
+		<collision name="HeadBase_Link_Collision">
+			<origin rpy="1.489582 -0.057445 1.569603" xyz="0.089282 0.003564 -0.023422"/>
+			<geometry>
+				<box size="0.15116204744210632 0.15949007075757243 0.18968096600451853"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="HeadPitch" type="revolute">
 		<origin rpy="0.0 0.0 -1.5708" xyz="0.15925 0.0 0.0"/>
@@ -1515,6 +1638,12 @@
 				<color rgba="0.498039215686275 0.498039215686275 0.498039215686275 1.0"/>
 			</material>
 		</visual>
+		<collision name="HeadYaw_Collision">
+			<origin rpy="1.570773 -5.3e-05 2.757791" xyz="0.071982 -0.056676 0.0"/>
+			<geometry>
+				<box size="0.20200141506883382 0.2099636317811051 0.2599446678014104"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="IMU_Body" type="fixed">
 		<origin rpy="0.0 0.0 0.0" xyz="-0.005 -0.01745 -0.09195"/>
@@ -1573,7 +1702,12 @@
 				<color rgba="0.89804 0.91765 0.92941 1.0"/>
 			</material>
 		</visual>
-
+		<collision name="RH5v2_Root_Link_Collision">
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+			<geometry>
+				<mesh filename="../meshes/RH5v2_Root_Link_convexhull.obj" scale="1.0 1.0 1.0"/>
+			</geometry>
+		</collision>
 		<visual name="BodyRoot_Link_Visual">
 			<origin rpy="0.0 0.0 -1.5708" xyz="0.0 0.0 0.016"/>
 			<geometry>
@@ -1679,6 +1813,12 @@
 				<color rgba="0.69804 0.69804 0.69804 1.0"/>
 			</material>
 		</visual>
+		<collision name="Structure_Sensor_Collision">
+			<origin rpy="1.570797 0.0 -1.570893" xyz="0.038262 0.0 -0.004648"/>
+			<geometry>
+				<box size="0.028000000898483875 0.029504660516651193 0.11954025808869992"/>
+			</geometry>
+		</collision>
 	</link>
 	<joint name="platform" type="fixed">
 		<origin rpy="-1.570801 1.309 -1.5708" xyz="0.025 -0.085744 -0.09458"/>
@@ -1700,6 +1840,11 @@
 				<color rgba="0.75294 0.75294 0.75294 1.0"/>
 			</material>
 		</visual>
-
+		<collision name="platform_Collision">
+			<origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
+			<geometry>
+				<mesh filename="../meshes/base_link_convexhull.obj" scale="1.0 1.0 1.0"/>
+			</geometry>
+		</collision>
 	</link>
 </robot>
