@@ -196,9 +196,9 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
 }
 
 void RobotModelHyrodyn::systemState(base::VectorXd &_q, base::VectorXd &_qd, base::VectorXd &_qdd){
-    _q = hyrodyn.y;
-    _qd = hyrodyn.yd;
-    _qdd = hyrodyn.ydd;
+    _q = hyrodyn.u;
+    _qd = hyrodyn.ud;
+    _qdd = hyrodyn.udd;
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){

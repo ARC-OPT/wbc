@@ -53,6 +53,7 @@ submechanisms:
   - Structure_Sensor
   - CameraTorso
   - IMU_Body
+  - platform
   jointnames_active:
   - BodyPitch
   - BodyRoll
@@ -71,6 +72,9 @@ submechanisms:
   - ARWristRoll
   - ARWristPitch
   - ARWristYaw
+  - HeadPitch
+  - HeadRoll
+  - HeadYaw
   jointnames_independent:
   - BodyPitch
   - BodyRoll
@@ -89,6 +93,9 @@ submechanisms:
   - ARWristRoll
   - ARWristPitch
   - ARWristYaw
+  - HeadPitch
+  - HeadRoll
+  - HeadYaw
   jointnames_spanningtree:
   - BodyPitch
   - BodyRoll
@@ -107,5 +114,8 @@ submechanisms:
   - ARWristRoll
   - ARWristPitch
   - ARWristYaw
+  - HeadPitch
+  - HeadRoll
+  - HeadYaw
   name: RH5v2
   type: serial
