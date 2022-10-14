@@ -25,8 +25,6 @@ namespace wbc{
         for(int i=0; i < nc; ++i)
             A_mtx.block(0,nj+i*6,na,6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose().bottomRows(na);
 
-        auto state = robot_model->jointState(robot_model->actuatedJointNames());
-
         // enforce joint effort limits (only if torques are part of the optimization problem)
         Eigen::VectorXd b = robot_model->biasForces().tail(na);
 
