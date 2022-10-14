@@ -94,7 +94,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         tasks_prio[prio].g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
     }
 
-    tasks_prio[prio].H.block(0,0, tasks_prio[prio].nq, tasks_prio[prio].nq).diagonal().array() += hessian_regularizer;
+    tasks_prio[prio].H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
 
 
     ///////// Constraints
