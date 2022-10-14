@@ -164,8 +164,9 @@ const base::commands::Joints& AccelerationSceneTSID::solve(const HierarchicalQP&
             hqp[0].print();
             throw std::runtime_error("Solver output (force/torque) for joint " + name + " is NaN");
         }
-        solver_output_joints[name].acceleration = solver_output[idx];
-        solver_output_joints[name].effort = solver_output[idx+nj];
+        solver_output_joints[name].acceleration = solver_output.segment(0,nj)[idx];
+        uint start_idx = robot_model->hasFloatingBase() ? 6 : 0;
+        solver_output_joints[name].effort = solver_output.segment(nj,na)[idx-start_idx];
     }
     solver_output_joints.time = base::Time::now();
 

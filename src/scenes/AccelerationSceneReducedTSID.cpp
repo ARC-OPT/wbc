@@ -94,7 +94,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         tasks_prio[prio].g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
     }
 
-    tasks_prio[prio].H.block(0,0, tasks_prio[prio].nq, tasks_prio[prio].nq).diagonal().array() += hessian_regularizer;
+    tasks_prio[prio].H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
 
 
     ///////// Constraints
@@ -177,7 +177,7 @@ const base::commands::Joints& AccelerationSceneReducedTSID::solve(const Hierarch
             throw std::runtime_error("Solver output (force/torque) for joint " + name + " is NaN");
         }
         solver_output_joints[name].acceleration = qdd_out[idx];
-        uint start_idx = 6 ? robot_model->hasFloatingBase() : 0;
+        uint start_idx = robot_model->hasFloatingBase() ? 6 : 0;
         solver_output_joints[name].effort = tau_out[idx-start_idx]; // tau_out does not include fb dofs.
     }
     solver_output_joints.time = base::Time::now();
