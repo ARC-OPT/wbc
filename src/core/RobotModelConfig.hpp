@@ -6,7 +6,18 @@
 
 namespace wbc{
 
-struct ActiveContacts : public base::NamedVector<int>{
+struct ActiveContact{
+    ActiveContact(){
+
+    }
+    ActiveContact(int active, double mu) : active(active), mu(mu){
+
+    }
+    int active; /** In contact*/
+    double mu;  /** Friction coeffcient*/
+};
+
+struct ActiveContacts : public base::NamedVector<ActiveContact>{
 };
 
 /**

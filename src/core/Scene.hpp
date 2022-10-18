@@ -19,7 +19,7 @@ protected:
     std::vector< std::vector<TaskPtr> > tasks;
     std::vector< std::vector<ConstraintPtr> > constraints;
     TasksStatus tasks_status;
-    HierarchicalQP tasks_prio;
+    HierarchicalQP hqp;
     std::vector<int> n_task_variables_per_prio;
     bool configured;
     base::commands::Joints solver_output_joints;
@@ -116,7 +116,7 @@ public:
     /**
      * @brief Return tasks sorted by priority for the solver
      */
-    void getHierarchicalQP(HierarchicalQP& hqp){hqp = tasks_prio;}
+    void getHierarchicalQP(HierarchicalQP& _hqp){_hqp = hqp;}
 
     /**
      * @brief Get current solver output

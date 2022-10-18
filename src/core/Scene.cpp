@@ -57,9 +57,7 @@ bool WbcScene::configure(const std::vector<TaskConfig> &config){
         }
     }
 
-    tasks_prio.resize(tasks.size());
-    for(uint prio = 0; prio < tasks.size(); prio++)
-        tasks_prio[prio].resize(n_task_variables_per_prio[prio], robot_model->noOfJoints());
+    hqp.resize(tasks.size());
     configured = true;
 
     // Set actuated joint weights to 1 and unactuated joint weight to 0 by default
