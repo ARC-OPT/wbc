@@ -67,7 +67,9 @@ BOOST_AUTO_TEST_CASE(simple_test){
     base::samples::RigidBodyStateSE3 ref;
     srand (time(NULL));
     ref.acceleration.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
+    ref.acceleration.linear.setZero();
     ref.acceleration.angular = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
+    ref.acceleration.angular.setZero();
     BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_task.name, ref));
 
     // Solve

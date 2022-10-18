@@ -21,7 +21,7 @@ solver = HierarchicalLSSolver()
 solver.setMaxSolverOutputNorm(10)
 
 # Set up Tasks: Only a single, Cartesian positioning task
-cfg = ConstraintConfig()
+cfg = TaskConfig()
 cfg.name = "tcp_pose"
 cfg.root = "kuka_lbr_l_link_0"
 cfg.tip = "kuka_lbr_l_tcp"
