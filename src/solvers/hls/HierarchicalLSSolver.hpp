@@ -108,11 +108,11 @@ public:
     void setJointWeights(const base::VectorXd& weights, const uint prio);
 
     /**
-     * @brief setConstraintWeights Sets the weights for the constraints of the given priority.
+     * @brief setTaskWeights Sets the weights for the constraints of the given priority.
      * @param weights Size has to be same number of constraint variables of that priority.
      * @param prio Priority the constraint weight vector should be applied to
      */
-    void setConstraintWeights(const base::VectorXd& weights, const uint prio);
+    void setTaskWeights(const base::VectorXd& weights, const uint prio);
 
     /**
      * @brief setMinEigenvalue Sets the minimum Eigenvalue that is allowed to occur in normal (undamped) matrix inversion.
