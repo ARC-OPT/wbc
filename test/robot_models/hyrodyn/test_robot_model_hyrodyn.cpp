@@ -93,14 +93,14 @@ BOOST_AUTO_TEST_CASE(configure_and_update){
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.names.push_back("kuka_lbr_l_tcp");
-    config.contact_points.elements.push_back(1);
+    config.contact_points.elements.push_back(wbc::ActiveContact(1,0.6));
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid contact points
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.names.push_back("XYZ");
-    config.contact_points.elements.push_back(1);
+    config.contact_points.elements.push_back(wbc::ActiveContact(1,0.6));
     BOOST_CHECK(robot_model.configure(config) == false);
 }
 
