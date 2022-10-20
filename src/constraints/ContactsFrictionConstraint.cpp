@@ -4,6 +4,8 @@ namespace wbc {
 
 void ContactsFrictionConstraint::update(RobotModelPtr robot_model){
 
+    const bool use_torques = false;
+
     const auto& contacts = robot_model->getActiveContacts();
 
     uint nj = robot_model->noOfJoints();
@@ -12,7 +14,9 @@ void ContactsFrictionConstraint::update(RobotModelPtr robot_model){
 
     uint nv = reduced ? nj + 6*nc : nj + na + 6*nc;
 
-    const uint row_skip = 8, col_skip = 3;
+    const uint row_skip = use_torques ? 8 : 4;
+    const uint col_skip = use_torques ? 6 : 3;
+
     A_mtx.resize(nc*row_skip, nv);
     lb_vec.resize(nc*row_skip);
     ub_vec.resize(nc*row_skip);
@@ -22,6 +26,7 @@ void ContactsFrictionConstraint::update(RobotModelPtr robot_model){
     lb_vec.setZero();
 
     uint start_idx = reduced ? nj : nj + na;
+
     for(int i = 0; i < contacts.size(); i++){
 
         double mu=contacts[i].mu;
@@ -45,25 +50,22 @@ void ContactsFrictionConstraint::update(RobotModelPtr robot_model){
         ub[2] =  1e10;
         ub[3] =  1e10;
 
-        /*const base::Vector3d &r = robot_model->rigidBodyState(robot_model->worldFrame(), contacts.names[i]).pose.position;
-        a.block<1,3>(4,3) = r.cross(a.block<1,3>(0,0));
-        a.block<1,3>(5,3) = r.cross(a.block<1,3>(1,0));
-        a.block<1,3>(6,3) = r.cross(a.block<1,3>(2,0));
-        a.block<1,3>(7,3) = r.cross(a.block<1,3>(3,0));
-        lb[4] = -1e10;
-        lb[5] = -1e10;
-        ub[6] =  1e10;
-        ub[7] =  1e10;*/
+        if(use_torques){
+            const base::Vector3d &r = robot_model->rigidBodyState(robot_model->worldFrame(), contacts.names[i]).pose.position;
+            a.block<1,3>(4,3) = r.cross(a.block<1,3>(0,0));
+            a.block<1,3>(5,3) = r.cross(a.block<1,3>(1,0));
+            a.block<1,3>(6,3) = r.cross(a.block<1,3>(2,0));
+            a.block<1,3>(7,3) = r.cross(a.block<1,3>(3,0));
+            lb[4] = -1e10;
+            lb[5] = -1e10;
+            ub[6] =  1e10;
+            ub[7] =  1e10;
+        }
 
         lb_vec.segment(i*row_skip,row_skip) = lb;
         ub_vec.segment(i*row_skip,row_skip) = ub;
         A_mtx.block<row_skip,col_skip>(i*row_skip,start_idx+i*6) = a;
     }
-
-    /*std::cout<<"A: "<<std::endl;
-    std::cout<<A_mtx<<std::endl;
-    std::cout<<"lb: "<<lb_vec.transpose()<<std::endl;
-    std::cout<<"ub: "<<ub_vec.transpose()<<std::endl<<std::endl;*/
 }
 
 }

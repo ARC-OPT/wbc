@@ -15,19 +15,10 @@ namespace wbc{
         uint nj = robot_model->noOfJoints();
         uint na = robot_model->noOfActuatedJoints();
         uint nc = robot_model->getActiveContacts().size();
+        uint nv = reduced ? nj+6*nc : nj+na+6*nc;
 
-        
-        if(reduced) // vars are acceleration - contact forces
-        {
-            lb_vec.resize(nj+6*nc);
-            ub_vec.resize(nj+6*nc);
-        }
-        else // vars are acceleration - torques - contact forces
-        {
-            lb_vec.resize(nj+na+6*nc);
-            ub_vec.resize(nj+na+6*nc);
-        }
-
+        lb_vec.resize(nv);
+        ub_vec.resize(nv);
         lb_vec.setConstant(-10000);
         ub_vec.setConstant(+10000);
 
