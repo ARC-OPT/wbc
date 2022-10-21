@@ -1,3 +1,5 @@
+[![Build and Test Action](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test.yml)
+
 # WBC - Whole-Body Control
 
 [Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/)
