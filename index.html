@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.9.5"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>wbc: WBC - Whole-Body Control</title>
+<title>wbc: wbc</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -46,15 +46,18 @@ $(function() {
 <div id="main-nav"></div>
 </div><!-- top -->
 <div><div class="header">
-  <div class="headertitle"><div class="title">WBC - Whole-Body Control </div></div>
+  <div class="headertitle"><div class="title">wbc </div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><p ><a class="anchor" id="md_README"></a> <a href="https://arc-opt.github.io/wbc/index.html">Code API</a> | <a href="https://arc-opt.github.io/Documentation/">Full Documentation</a></p>
+<div class="textblock"><p ><a class="anchor" id="md_README"></a> <a href="https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test.yml"><img src="https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test.yml/badge.svg" alt="Build and Test Action" style="pointer-events: none;" class="inline"/></a></p>
+<h1><a class="anchor" id="autotoc_md0"></a>
+WBC - Whole-Body Control</h1>
+<p ><a href="https://arc-opt.github.io/wbc/index.html">Code API</a> | <a href="https://arc-opt.github.io/Documentation/">Full Documentation</a></p>
 <p >WBC is C++ library for optimization-based control of redundant robots. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks.</p>
 <p >WBC was initiated and is currently developed at the <a href="http://robotik.dfki-bremen.de/en/startpage.html">Robotics Innovation Center</a> of the <a href="http://www.dfki.de">German Research Center for Artificial Intelligence (DFKI)</a> in Bremen. It is part of the ARC-OPT (Adaptive Robot Control using Optimization) framework, which facilitates learning and optimizing whole-body controllers from data obtained, e.g., in user demonstrations. Also see the <a href="https://robotik.dfki-bremen.de/en/research/softwaretools/arc-opt/">ARC-OPT website</a> of the Robotics Innovation Center.</p>
 <p ><img src="https://github.com/ARC-OPT/wbc/blob/master/doc/images/DFKI_Logo_e_schrift.jpg" alt="" width="400" class="inline"/></p>
-<h1><a class="anchor" id="autotoc_md1"></a>
-Motivation</h1>
+<h2><a class="anchor" id="autotoc_md1"></a>
+Motivation</h2>
 <p >WBC is a standalone library for optimization-based control of redundant robots. It contains various implementations of whole-body feedback control approaches on velocity-, acceleration- and force/torque-level. WBC is meant for controlling robots with redundant degrees of freedom, like humanoids or other legged robots with floating base, but also fixed-base systems like mobile manipulators, dual-arm systems or even simple manipulators. It is also meant for controlling multiple tasks simultaneously while taking into account the physical constraints of the robot. E.g., on a humanoid robot do ... (1) keep balance (2) Grasp an object with one arm (3) maintaining an upright body posture (4) Consider the joint torque limits, etc... WBC is a purely reactive approach, i.e., it does not involve any motion planning or trajectory optimization. However, it can be used to stabilize trajectories coming from a motion planner or trajectory optimizer and integrate them with other objectives and physical constraints of the robot.</p>
 <p >The library is written in C++, with Python bindings for most functionalities. The general idea of optimization-based robot control is to formulate simultaneously running robot tasks as constraints or within the cost function of an instantaneous optimization problem. Now, in each control cycle ...</p>
 <ul>
@@ -63,11 +66,11 @@ Motivation</h1>
 <li>The solution is applied to the actuators of the robot</li>
 </ul>
 <p >The online solution of this problem is the robot joint control signal that complies with all tasks, while integrating physical constraints like actuator limits. An advantage of this approach is that complex tasks can be composed from low-dimensional descriptors, which are typically easier to specify and control than the complete task are once. Also, the redundancy of the robot is nicely exploited utilizing all the dof of the system (whole body).</p>
-<h1><a class="anchor" id="autotoc_md2"></a>
-Getting Started</h1>
+<h2><a class="anchor" id="autotoc_md2"></a>
+Getting Started</h2>
 <p >Please check out the tutorials section in the <a href="https://arc-opt.github.io/">documentation</a> for examples of usage.</p>
-<h1><a class="anchor" id="autotoc_md3"></a>
-Requirements / Dependencies</h1>
+<h2><a class="anchor" id="autotoc_md3"></a>
+Requirements / Dependencies</h2>
 <p >Currently supported OS: Ubuntu18.04, Ubuntu20.04</p>
 <p >Since WBC can be considered as an integrative framework that facilitates the composition of different robot control approaches, there is a number of dependencies:</p>
 <ul>
@@ -81,26 +84,26 @@ Requirements / Dependencies</h1>
 <li>For python bindings: python-dev, libboost-python-dev, libboost-numpy-dev, python-numpy</li>
 <li>To support robot architectures with closed loops (series-parallel hybrid systems): <a href="https://git.hb.dfki.de/dfki-mechanics/hyrodyn/rbdl">rbdl</a>, <a href="https://git.hb.dfki.de/dfki-mechanics/hyrodyn/hyrodyn">hyrodyn</a></li>
 </ul>
-<h1><a class="anchor" id="autotoc_md4"></a>
-Installation</h1>
+<h2><a class="anchor" id="autotoc_md4"></a>
+Installation</h2>
 <p ><a href="https://arc-opt.github.io/Documentation/installation/installation_no_rock.html">Standalone</a> | <a href="https://arc-opt.github.io/Documentation/installation/installation_rock.html">Using Rock</a></p>
-<h1><a class="anchor" id="autotoc_md5"></a>
-Testing</h1>
+<h2><a class="anchor" id="autotoc_md5"></a>
+Testing</h2>
 <p >Please check the unit tests <a href="https://github.com/ARC-OPT/wbc/tree/master/test">here</a>, as well the <a href="https://github.com/ARC-OPT/wbc/tree/master/tutorials">tutorials</a></p>
-<h1><a class="anchor" id="autotoc_md6"></a>
-Contributing</h1>
+<h2><a class="anchor" id="autotoc_md6"></a>
+Contributing</h2>
 <p >Please use the <a href="https://github.com/ARC-OPT/wbc/issues">issue tracker</a> to submit bug reports and feature requests. Please use merge requests as described <a href="https://github.com/ARC-OPT/wbc/blob/master/CONTRIBUTING.md">here</a> to add/adapt functionality.</p>
-<h1><a class="anchor" id="autotoc_md7"></a>
-License</h1>
+<h2><a class="anchor" id="autotoc_md7"></a>
+License</h2>
 <p >WBC is distributed under the <a href="https://opensource.org/licenses/BSD-3-Clause">3-clause BSD license</a>.</p>
-<h1><a class="anchor" id="autotoc_md8"></a>
-Acknowledge WBC</h1>
+<h2><a class="anchor" id="autotoc_md8"></a>
+Acknowledge WBC</h2>
 <p >If you use WBC within your scientific work, please cite <a href="https://arc-opt.github.io/Documentation/publications/icra_2022/index.html">this paper</a>.</p>
-<h1><a class="anchor" id="autotoc_md9"></a>
-Funding</h1>
+<h2><a class="anchor" id="autotoc_md9"></a>
+Funding</h2>
 <p >WBC has been developed in the research projects <a href="https://robotik.dfki-bremen.de/en/research/projects/transfit/">TransFit</a> (Grant number 50RA1701) and <a href="https://robotik.dfki-bremen.de/en/research/projects/besman.html">BesMan</a> (Grant number 50RA1216) funded by the German Aerospace Center (DLR) with funds from the German Federal Ministry for Economic Affairs and Climate Action (BMWK). It is further developed in the <a href="https://robotik.dfki-bremen.de/en/research/projects/m-rock/">M-Rock</a> (Grant number 01IW21002) and <a href="https://robotik.dfki-bremen.de/en/research/projects/veryhuman/">VeryHuman</a> (Grant number 01IW20004) projects funded by the German Aerospace Center (DLR) with federal funds from the German Federal Ministry of Education and Research (BMBF).</p>
-<h1><a class="anchor" id="autotoc_md10"></a>
-Maintainer / Authors / Contributers</h1>
+<h2><a class="anchor" id="autotoc_md10"></a>
+Maintainer / Authors / Contributers</h2>
 <p >Dennis Mronga, <a href="#" onclick="location.href='mai'+'lto:'+'den'+'ni'+'s.m'+'ro'+'nga'+'@d'+'fki'+'.d'+'e'; return false;">denni<span class="obfuscator">.nosp@m.</span>s.mr<span class="obfuscator">.nosp@m.</span>onga@<span class="obfuscator">.nosp@m.</span>dfki<span class="obfuscator">.nosp@m.</span>.de</a></p>
 <p >Copyright 2017, DFKI GmbH / Robotics Innovation Center </p>
 </div></div><!-- PageDoc -->
