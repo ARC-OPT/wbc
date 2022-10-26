@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_serial.update(joint_state);
     robot_model_hybrid.update(joint_state);
 
-    cout<<"******************** HYBRID MODEL *****************"<<endl;
+    //cout<<"******************** HYBRID MODEL *****************"<<endl;
     base::MatrixXd jac = robot_model_hybrid.spaceJacobian(root, tip);
     base::Vector6d v;
     v.setZero();
@@ -215,18 +215,18 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_hybrid.hyrodynHandle()->ud = u;
     robot_model_hybrid.hyrodynHandle()->calculate_forward_system_state();
 
-    cout<< "Solution actuation space" << endl;
+    /*cout<< "Solution actuation space" << endl;
     std::cout<<robot_model_hybrid.hyrodynHandle()->ud.transpose()<<endl;
 
     cout<< "Solution projected to independent joint space" << endl;
-    std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;
+    std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;*/
 
-    cout<<"******************** SERIAL MODEL *****************"<<endl;
+    //cout<<"******************** SERIAL MODEL *****************"<<endl;
     jac = robot_model_serial.spaceJacobian(root, tip);
     base::VectorXd yd = jac.completeOrthogonalDecomposition().pseudoInverse()*v;
 
-    cout<< "Solution independent joint space" << endl;
-    std::cout<<yd.transpose()<<endl;
+    /*cout<< "Solution independent joint space" << endl;
+    std::cout<<yd.transpose()<<endl;*/
 
     for(int i = 0; i < robot_model_hybrid.noOfActuatedJoints(); i++)
         BOOST_CHECK(fabs(robot_model_hybrid.hyrodynHandle()->yd[i] - yd[i]) < 1e-6);

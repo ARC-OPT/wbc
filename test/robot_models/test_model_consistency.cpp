@@ -11,8 +11,8 @@ using namespace std;
 void compareRbs(base::samples::RigidBodyStateSE3 rbs_a, base::samples::RigidBodyStateSE3 rbs_b, double default_accuracy = 1e-3){
     if(rbs_a.hasValidPose() && rbs_b.hasValidPose()){
         for(int i = 0; i < 3; i++) BOOST_CHECK(fabs(rbs_a.pose.position(i) - rbs_b.pose.position(i)) < default_accuracy);
-        if(rbs_b.pose.orientation.w() < 0 && rbs_a.pose.orientation.w() > 0 ||
-           rbs_b.pose.orientation.w() > 0 && rbs_a.pose.orientation.w() < 0)
+        if((rbs_b.pose.orientation.w() < 0 && rbs_a.pose.orientation.w() > 0) ||
+           (rbs_b.pose.orientation.w() > 0 && rbs_a.pose.orientation.w() < 0))
             rbs_a.pose.orientation = base::Quaterniond(-rbs_a.pose.orientation.w(),-rbs_a.pose.orientation.x(),-rbs_a.pose.orientation.y(),-rbs_a.pose.orientation.z());
         for(int i = 0; i < 4; i++) BOOST_CHECK(fabs(rbs_a.pose.orientation.coeffs()(i) - rbs_b.pose.orientation.coeffs()(i)) < default_accuracy);
     }
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE(fixed_base){
     vector<string> tip_frames = {"LLAnkle_FT", "kuka_lbr_l_tcp", "ALWristFT_Link"};
     bool verbose = false;
 
-    for(int i = 0; i < urdf_files.size(); i++){
+    for(uint i = 0; i < urdf_files.size(); i++){
 
         if(verbose){
             cout<<"------------------- Robot Model --------------------"<<endl;
