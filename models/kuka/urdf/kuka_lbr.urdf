@@ -106,7 +106,7 @@
     <collision name="collision_kuka_lbr_r_link_0">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_0.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_0.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -136,7 +136,7 @@
     <collision name="collision_kuka_lbr_r_link_1">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_1.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_1.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -166,7 +166,7 @@
     <collision name="collision_kuka_lbr_r_link_2">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_2.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_2.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -196,7 +196,7 @@
     <collision name="collision_kuka_lbr_r_link_3">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_3.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_3.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -226,7 +226,7 @@
     <collision name="collision_kuka_lbr_r_link_4">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_4.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_4.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -256,7 +256,7 @@
     <collision name="collision_kuka_lbr_r_link_5">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_5.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_5.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -286,7 +286,7 @@
     <collision name="collision_kuka_lbr_r_link_6">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_6.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_6.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -316,7 +316,7 @@
     <collision name="collision_kuka_lbr_r_link_7">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_7.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_7.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -380,7 +380,7 @@
     <collision name="collision_kuka_lbr_l_link_0">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_0.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_0.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -410,7 +410,7 @@
     <collision name="collision_kuka_lbr_l_link_1">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_1.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_1.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -440,7 +440,7 @@
     <collision name="collision_kuka_lbr_l_link_2">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_2.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_2.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -470,7 +470,7 @@
     <collision name="collision_kuka_lbr_l_link_3">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_3.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_3.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -500,7 +500,7 @@
     <collision name="collision_kuka_lbr_l_link_4">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_4.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_4.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -530,7 +530,7 @@
     <collision name="collision_kuka_lbr_l_link_5">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_5.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_5.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -560,7 +560,7 @@
     <collision name="collision_kuka_lbr_l_link_6">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_6.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_6.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -590,7 +590,7 @@
     <collision name="collision_kuka_lbr_l_link_7">
       <origin xyz="0 0 0" rpy="0 0 0"/>
       <geometry>
-        <mesh filename="./meshes/coarse/link_7.stl" scale="1.0 1.0 1.0"/>
+        <mesh filename="./meshes/link_7.stl" scale="1.0 1.0 1.0"/>
       </geometry>
     </collision>
   </link>
@@ -722,7 +722,7 @@
       <collision name="collision_kuka_lbr_l_palm">
         <origin xyz="0 0 0" rpy="1.570796 1.570796 0"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_palm.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_palm.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -743,7 +743,7 @@
       <collision name="collision_kuka_lbr_l_finger_1_link_0">
         <origin xyz="0.02 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_1_link_0.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_1_link_0.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -764,7 +764,7 @@
       <collision name="collision_kuka_lbr_l_finger_1_link_1">
         <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_1_link_1.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_1_link_1.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -785,7 +785,7 @@
       <collision name="collision_kuka_lbr_l_finger_1_link_2">
         <origin xyz="0.039 0 0.0075" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_1_link_2.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_1_link_2.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -806,7 +806,7 @@
       <collision name="collision_kuka_lbr_l_finger_1_link_3">
         <origin xyz="0 0 0" rpy="0 0 0.52"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_1_link_3.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_1_link_3.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -827,7 +827,7 @@
       <collision name="collision_kuka_lbr_l_finger_2_link_0">
         <origin xyz="0.02 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_2_link_0.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_2_link_0.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -848,7 +848,7 @@
       <collision name="collision_kuka_lbr_l_finger_2_link_1">
         <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_2_link_1.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_2_link_1.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -869,7 +869,7 @@
       <collision name="collision_kuka_lbr_l_finger_2_link_2">
         <origin xyz="0.039 0 0.0075" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_2_link_2.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_2_link_2.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -890,7 +890,7 @@
       <collision name="collision_kuka_lbr_l_finger_2_link_3">
         <origin xyz="0 0 0" rpy="0 0 0.52"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_2_link_3.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_2_link_3.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -911,7 +911,7 @@
       <collision name="collision_kuka_lbr_l_finger_middle_link_0">
         <origin xyz="0.02 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_middle_link_0.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_middle_link_0.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -932,7 +932,7 @@
       <collision name="collision_kuka_lbr_l_finger_middle_link_1">
         <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_middle_link_1.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_middle_link_1.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -953,7 +953,7 @@
       <collision name="collision_kuka_lbr_l_finger_middle_link_2">
         <origin xyz="0.039 0 0.0075" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_middle_link_2.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_middle_link_2.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -974,7 +974,7 @@
       <collision name="collision_kuka_lbr_l_finger_middle_link_3">
         <origin xyz="0 0 0" rpy="0 0 0.52"/>
         <geometry>
-          <mesh filename="./meshes/coarse/collision_finger_middle_link_3.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="./meshes/collision_finger_middle_link_3.stl" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
       <inertial>
@@ -1102,7 +1102,7 @@
         <collision name="collision_kuka_lbr_r_palm">
           <origin xyz="0 0 0" rpy="1.570796 1.570796 0"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_palm.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_palm.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1123,7 +1123,7 @@
         <collision name="collision_kuka_lbr_r_finger_1_link_0">
           <origin xyz="0.02 0 0" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_1_link_0.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_1_link_0.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1144,7 +1144,7 @@
         <collision name="collision_kuka_lbr_r_finger_1_link_1">
           <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_1_link_1.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_1_link_1.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1165,7 +1165,7 @@
         <collision name="collision_kuka_lbr_r_finger_1_link_2">
           <origin xyz="0.039 0 0.0075" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_1_link_2.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_1_link_2.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1186,7 +1186,7 @@
         <collision name="collision_kuka_lbr_r_finger_1_link_3">
           <origin xyz="0 0 0" rpy="0 0 0.52"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_1_link_3.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_1_link_3.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1207,7 +1207,7 @@
         <collision name="collision_kuka_lbr_r_finger_2_link_0">
           <origin xyz="0.02 0 0" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_2_link_0.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_2_link_0.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1228,7 +1228,7 @@
         <collision name="collision_kuka_lbr_r_finger_2_link_1">
           <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_2_link_1.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_2_link_1.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1249,7 +1249,7 @@
         <collision name="collision_kuka_lbr_r_finger_2_link_2">
           <origin xyz="0.039 0 0.0075" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_2_link_2.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_2_link_2.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1270,7 +1270,7 @@
         <collision name="collision_kuka_lbr_r_finger_2_link_3">
           <origin xyz="0 0 0" rpy="0 0 0.52"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_2_link_3.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_2_link_3.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1291,7 +1291,7 @@
         <collision name="collision_kuka_lbr_r_finger_middle_link_0">
           <origin xyz="0.02 0 0" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_middle_link_0.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_middle_link_0.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1312,7 +1312,7 @@
         <collision name="collision_kuka_lbr_r_finger_middle_link_1">
           <origin xyz="0.05 -0.028 0" rpy="0 0 -0.52"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_middle_link_1.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_middle_link_1.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1333,7 +1333,7 @@
         <collision name="collision_kuka_lbr_r_finger_middle_link_2">
           <origin xyz="0.039 0 0.0075" rpy="0 0 0"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_middle_link_2.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_middle_link_2.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>
@@ -1354,7 +1354,7 @@
         <collision name="collision_kuka_lbr_r_finger_middle_link_3">
           <origin xyz="0 0 0" rpy="0 0 0.52"/>
           <geometry>
-            <mesh filename="./meshes/coarse/collision_finger_middle_link_3.stl" scale="1.0 1.0 1.0"/>
+            <mesh filename="./meshes/collision_finger_middle_link_3.stl" scale="1.0 1.0 1.0"/>
           </geometry>
         </collision>
         <inertial>

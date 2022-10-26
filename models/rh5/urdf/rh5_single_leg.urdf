@@ -351,7 +351,7 @@
       <collision name="collision_0_RH5_Root_Link">
         <origin xyz="0 0 0" rpy="0 0 0"/>
         <geometry>
-          <mesh filename="../meshes/stl/RH5_Root_Link.stl" scale="1.0 1.0 1.0"/>
+          <mesh filename="../meshes/RH5_Root_Link.STL" scale="1.0 1.0 1.0"/>
         </geometry>
       </collision>
   </link>

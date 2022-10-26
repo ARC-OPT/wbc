@@ -32,10 +32,10 @@ BOOST_AUTO_TEST_CASE(joint_torque_controller_test){
     joint_names.push_back("joint_b");
 
     PIDCtrlParams params(joint_names.size());
-    params.p_gain.setConstant(1);
+    params.p_gain.setConstant(10);
 
     base::Vector2d max_ctrl_out, dead_zone;
-    max_ctrl_out.setConstant(0.5);
+    max_ctrl_out.setConstant(5.0);
     dead_zone.setConstant(0.01);
 
     JointTorquePIDController controller(joint_names);
