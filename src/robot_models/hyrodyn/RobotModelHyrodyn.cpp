@@ -196,9 +196,20 @@ void RobotModelHyrodyn::update(const base::samples::Joints& joint_state_in,
 }
 
 void RobotModelHyrodyn::systemState(base::VectorXd &_q, base::VectorXd &_qd, base::VectorXd &_qdd){
-    _q = hyrodyn.u;
-    _qd = hyrodyn.ud;
-    _qdd = hyrodyn.udd;
+    _q.resize(noOfJoints());
+    _qd.resize(noOfJoints());
+    _qdd.resize(noOfJoints());
+    uint start_idx = 0;
+    uint na = noOfActuatedJoints();
+    if(hasFloatingBase()){
+        start_idx = 6;
+        _q.segment(0,6)   = hyrodyn.y.segment(0,6);
+        _qd.segment(0,6)  = hyrodyn.yd.segment(0,6);
+        _qdd.segment(0,6) = hyrodyn.ydd.segment(0,6);
+    }
+    _q.segment(start_idx,na)   = hyrodyn.u;
+    _qd.segment(start_idx,na)  = hyrodyn.ud;
+    _qdd.segment(start_idx,na) = hyrodyn.udd;
 }
 
 const base::samples::RigidBodyStateSE3 &RobotModelHyrodyn::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
