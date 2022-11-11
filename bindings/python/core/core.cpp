@@ -22,6 +22,7 @@ BOOST_PYTHON_MODULE(core){
     pygen::convertStdVector<std::vector<base::JointLimitRange>>();
     pygen::convertStdVector<std::vector<base::Wrench>>();
     pygen::convertStdVector<std::vector<wbc::TaskConfig>>();
+    pygen::convertStdVector<std::vector<wbc::ActiveContact>>();
     pygen::convertVector<Eigen::Matrix<double, 3, 1, Eigen::DontAlign>>();
     pygen::convertVector<Eigen::Matrix<double, 6, 1, Eigen::DontAlign>>();
     pygen::convertTransform<Eigen::Transform<double, 3, Eigen::DontAlign>>();
@@ -196,13 +197,13 @@ BOOST_PYTHON_MODULE(core){
            .def_readwrite("active", &wbc::ActiveContact::active)
            .def_readwrite("mu",     &wbc::ActiveContact::mu);
 
-   py::class_<wbc::ActiveContact>("ActiveContacts")
+   py::class_<base::NamedVector<wbc::ActiveContact>>("ActiveContacts")
        .add_property("names",
-           py::make_getter(&base::NamedVector<int>::names, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&base::NamedVector<int>::names))
+           py::make_getter(&wbc::ActiveContacts::names, py::return_value_policy<py::copy_non_const_reference>()),
+           py::make_setter(&wbc::ActiveContacts::names))
        .add_property("elements",
-           py::make_getter(&base::NamedVector<wbc::ActiveContact>::elements, py::return_value_policy<py::copy_non_const_reference>()),
-           py::make_setter(&base::NamedVector<wbc::ActiveContact>::elements));
+           py::make_getter(&wbc::ActiveContacts::elements, py::return_value_policy<py::copy_non_const_reference>()),
+           py::make_setter(&wbc::ActiveContacts::elements));
 
    py::class_<wbc::TaskStatus>("TaskStatus")
        .def_readwrite("config",  &wbc::TaskStatus::config)

@@ -1,5 +1,5 @@
 from wbc.core import *
-from wbc.robot_models.robot_model_hyrodyn import RobotModelHyrodyn
+from wbc.robot_models.robot_model_kdl import RobotModelKDL
 from wbc.scenes import AccelerationSceneTSID
 from wbc.solvers.qpoases_solver import QPOASESSolver
 from wbc.controllers import CartesianPosPDController
@@ -13,33 +13,36 @@ floating_base_state.pose.orientation    = [0,0,0,1]
 floating_base_state.twist.linear        = floating_base_state.twist.angular        = [0,0,0]
 floating_base_state.acceleration.linear = floating_base_state.acceleration.angular = [0,0,0]
 
-robot_model=RobotModelHyrodyn()
+robot_model=RobotModelKDL()
 r=RobotModelConfig()
 r.file="../../../../models/rh5/urdf/rh5_legs.urdf"
 r.submechanism_file="../../../../models/rh5/hyrodyn/rh5_legs.yml"
 r.floating_base = True
 r.type = "hyrodyn"
-a = ActiveContacts()
-a.names = ["LLAnkle_FT", "LRAnkle_FT"]
-a.elements = [1,1]
-r.contact_points = a
+contacts = ActiveContacts()
+contacts.names = ["LLAnkle_FT", "LRAnkle_FT"]
+a = ActiveContact()
+a.mu = 0.6
+a.active = 1
+contacts.elements = [a,a]
+r.contact_points = contacts
 if robot_model.configure(r) == False:
     print("Failed to configure robot model")
     exit(0)
-    
+
 # Create solver
 solver = QPOASESSolver()
 solver.setMaxNoWSR(100)
 
 # Set up Tasks: Only a single, Cartesian positioning task
-cfg = ConstraintConfig()
+cfg = TaskConfig()
 cfg.name = "zero_com_acceleration"
 cfg.root = "world"
 cfg.tip = "RH5_Root_Link"
 cfg.ref_frame = "world"
 cfg.priority = 0
 cfg.activation = 1
-cfg.type = ConstraintType.cart
+cfg.type = TaskType.cart
 cfg.weights = [1]*6
 
 # Configure WBC Scene

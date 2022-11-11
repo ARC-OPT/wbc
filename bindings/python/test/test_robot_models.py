@@ -12,7 +12,10 @@ def run(robot_model):
     gravity_vector = [0,0,-9.81]
     contacts = ActiveContacts()
     contacts.names = ["RH5_Root_link", "LLAnkle_FT"]
-    contacts.elements = [1,1]
+    a = ActiveContact()
+    a.mu = 0.6
+    a.active = 1
+    contacts.elements = [a,a]
 
     r=RobotModelConfig()
     r.file="../../../models/rh5/urdf/rh5_single_leg.urdf"
