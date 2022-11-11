@@ -1,8 +1,8 @@
-#include "ContactsFrictionConstraint.hpp"
+#include "ContactsFrictionPointConstraint.hpp"
 
 namespace wbc {
 
-void ContactsFrictionConstraint::update(RobotModelPtr robot_model){
+void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
 
     const bool use_torques = false;
 
@@ -27,7 +27,7 @@ void ContactsFrictionConstraint::update(RobotModelPtr robot_model){
 
     uint start_idx = reduced ? nj : nj + na;
 
-    for(int i = 0; i < contacts.size(); i++){
+    for(uint i = 0; i < contacts.size(); i++){
 
         double mu=contacts[i].mu;
 

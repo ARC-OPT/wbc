@@ -6,7 +6,8 @@
 
 namespace wbc{
 
-struct ActiveContact{
+class ActiveContact{
+public:
     ActiveContact(){
 
     }
@@ -17,7 +18,7 @@ struct ActiveContact{
     double mu;  /** Friction coeffcient*/
 };
 
-struct ActiveContacts : public base::NamedVector<ActiveContact>{
+class ActiveContacts : public base::NamedVector<ActiveContact>{
 };
 
 /**
