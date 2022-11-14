@@ -31,36 +31,15 @@ void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
 
         double mu=contacts[i].mu;
 
-        // ToDo: Make the following dynamically reconfigurable, currently we assume that contact surface normal is always world_z
-        Eigen::Vector3d contact_normal(0,0,1);
-        Eigen::Vector3d contact_tagent_x(1,0,0);
-        Eigen::Vector3d contact_tagent_y(0,1,0);
-
+        // We assume that contact surface normal is always world_z, TODO: Make this dynamically (re-)configurable
         Eigen::MatrixXd a(row_skip,col_skip);
+        a << 1,0,-mu,
+             0,1,-mu,
+             1,0, mu,
+             0,1, mu;
         Eigen::VectorXd lb(row_skip), ub(row_skip);
-        lb.setZero();
-        ub.setZero();
-        a.setZero();
-        a.block<1,3>(0,0) = (contact_tagent_x-mu*contact_normal).transpose();
-        a.block<1,3>(1,0) = (contact_tagent_y-mu*contact_normal).transpose();
-        a.block<1,3>(2,0) = (-contact_tagent_x+mu*contact_normal).transpose();
-        a.block<1,3>(3,0) = (-contact_tagent_y+mu*contact_normal).transpose();
-        lb[0] = -1e10;
-        lb[1] = -1e10;
-        ub[2] =  1e10;
-        ub[3] =  1e10;
-
-        if(use_torques){
-            const base::Vector3d &r = robot_model->rigidBodyState(robot_model->worldFrame(), contacts.names[i]).pose.position;
-            a.block<1,3>(4,3) = r.cross(a.block<1,3>(0,0));
-            a.block<1,3>(5,3) = r.cross(a.block<1,3>(1,0));
-            a.block<1,3>(6,3) = r.cross(a.block<1,3>(2,0));
-            a.block<1,3>(7,3) = r.cross(a.block<1,3>(3,0));
-            lb[4] = -1e10;
-            lb[5] = -1e10;
-            ub[6] =  1e10;
-            ub[7] =  1e10;
-        }
+        lb << -1e10,-1e10,0,0;
+        ub << 0,0,1e10,1e10;
 
         lb_vec.segment(i*row_skip,row_skip) = lb;
         ub_vec.segment(i*row_skip,row_skip) = ub;
