@@ -16,6 +16,8 @@ public:
     }
     int active; /** In contact*/
     double mu;  /** Friction coeffcient*/
+    double wx;  /** x-dimension of the contact surface (only for surface contacts)*/
+    double wy;  /** y-dimension of the contact surface (only for surface contacts)*/
 };
 
 class ActiveContacts : public base::NamedVector<ActiveContact>{

@@ -9,7 +9,7 @@
 #include "../constraints/RigidbodyDynamicsConstraint.hpp"
 #include "../constraints/ContactsAccelerationConstraint.hpp"
 #include "../constraints/JointLimitsAccelerationConstraint.hpp"
-#include "../constraints/ContactsFrictionPointConstraint.hpp"
+#include "../constraints/ContactsFrictionSurfaceConstraint.hpp"
 
 namespace wbc {
 
@@ -26,7 +26,7 @@ AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolver
     constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
     constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
     constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
-    constraints[0].push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+    constraints[0].push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
 
 }
 

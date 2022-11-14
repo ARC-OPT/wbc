@@ -10,7 +10,8 @@
 #include "../constraints/ContactsAccelerationConstraint.hpp"
 #include "../constraints/JointLimitsAccelerationConstraint.hpp"
 #include "../constraints/EffortLimitsAccelerationConstraint.hpp"
-#include "../constraints/ContactsFrictionPointConstraint.hpp"
+#include "../constraints/ContactsFrictionSurfaceConstraint.hpp"
+
 
 namespace wbc {
 
@@ -26,7 +27,7 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
     constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced_problem));
     constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced_problem));
     constraints[0].push_back(std::make_shared<EffortLimitsAccelerationConstraint>());
-    constraints[0].push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced_problem));
+    constraints[0].push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced_problem));
 }
 
 TaskPtr AccelerationSceneReducedTSID::createTask(const TaskConfig &config){
