@@ -22,9 +22,9 @@ namespace wbc{
         lb_vec.setConstant(-10000);
         ub_vec.setConstant(+10000);
 
-        bool check_accelerations = false;
-        bool check_velocities = false;
-        bool check_positions = false;
+        bool check_accelerations = true;
+        bool check_velocities = true;
+        bool check_positions = true;
         
         auto state = robot_model->jointState(robot_model->actuatedJointNames());
 
