@@ -21,14 +21,14 @@ solver = HierarchicalLSSolver()
 solver.setMaxSolverOutputNorm(10)
 
 # Set up Tasks: Only a single, Cartesian positioning task
-cfg = ConstraintConfig()
+cfg = TaskConfig()
 cfg.name = "tcp_pose"
 cfg.root = "kuka_lbr_l_link_0"
 cfg.tip = "kuka_lbr_l_tcp"
 cfg.ref_frame = "kuka_lbr_l_link_0"
 cfg.priority = 0
 cfg.activation = 1
-cfg.type = ConstraintType.cart
+cfg.type = TaskType.cart
 cfg.weights = [1]*6
 
 # Configure WBC Scene

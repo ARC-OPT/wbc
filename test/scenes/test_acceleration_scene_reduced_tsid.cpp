@@ -18,7 +18,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
     config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    config.contact_points.elements = {1,1};
+    config.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     vector<double> q_in = {0,0,-0.35,0.64,0,-0.27,

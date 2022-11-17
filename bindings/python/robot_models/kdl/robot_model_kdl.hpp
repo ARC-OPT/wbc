@@ -13,8 +13,8 @@ public:
     void update(const base::NamedVector<base::JointState> &joint_state);
     void update2(const base::NamedVector<base::JointState> &joint_state, const base::samples::RigidBodyStateSE3 &floating_base_state);
     base::NamedVector<base::JointState> jointState2(const std::vector<std::string> &names);
-    void setActiveContacts(const base::NamedVector<int> & active_contacts);
-    base::NamedVector<int> getActiveContacts2();
+    void setActiveContacts(const base::NamedVector<wbc::ActiveContact> & active_contacts);
+    base::NamedVector<wbc::ActiveContact> getActiveContacts2();
     base::NamedVector<base::JointLimitRange> jointLimits2();
     wbc_py::RobotModelConfig getRobotModelConfig();
 };

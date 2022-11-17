@@ -10,6 +10,8 @@
 #include "../constraints/ContactsAccelerationConstraint.hpp"
 #include "../constraints/JointLimitsAccelerationConstraint.hpp"
 #include "../constraints/EffortLimitsAccelerationConstraint.hpp"
+#include "../constraints/ContactsFrictionSurfaceConstraint.hpp"
+
 
 namespace wbc {
 
@@ -25,6 +27,7 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
     constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced_problem));
     constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced_problem));
     constraints[0].push_back(std::make_shared<EffortLimitsAccelerationConstraint>());
+    constraints[0].push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced_problem));
 }
 
 TaskPtr AccelerationSceneReducedTSID::createTask(const TaskConfig &config){
@@ -54,23 +57,54 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     int prio = 0; // Only one priority is implemented here!
     uint nj = robot_model->noOfJoints();
     uint ncp = robot_model->getActiveContacts().size();
+    uint nv = nj+ncp*6;
 
-    // QP Size: (NJoints+NContacts*2*6 x NJoints+NContacts*6)
-    // Variable order: (acc,f_ext)
+    //////// Constraints
 
-    size_t total_eqs = 0;
+    size_t nc = 0;
     for(auto contraint : constraints[prio]) {
         contraint->update(robot_model);
         if(contraint->type() != Constraint::bounds)
-            total_eqs += contraint->size();
+            nc += contraint->size();
     }
-    tasks_prio[prio].resize(total_eqs, nj+ncp*6);
-    tasks_prio[prio].H.setZero();
-    tasks_prio[prio].g.setZero();
+
+    // QP Size: (nc x nj+nc*6)
+    // Variable order: (qdd,f_ext)
+    QuadraticProgram& qp = hqp[prio];
+    qp.resize(nc, nv);
+    qp.A.setZero();
+    qp.lower_x.setConstant(-10000);   // bounds
+    qp.upper_x.setConstant(+10000);   // bounds
+    qp.lower_y.setZero(); // inequalities
+    qp.upper_y.setZero(); // inequalities
+
+    uint total_eqs = 0;
+    for(uint i = 0; i < constraints[prio].size(); i++) {
+        Constraint::Type type = constraints[prio][i]->type();
+        size_t c_size = constraints[prio][i]->size();
+
+        if(type == Constraint::bounds) {
+            qp.lower_x = constraints[prio][i]->lb(); // NOTE! Good only if a single bound task is admitted
+            qp.upper_x = constraints[prio][i]->ub();
+        }
+        else if (type == Constraint::equality) {
+            qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            qp.lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            qp.upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            total_eqs += c_size;
+        }
+        else if (type == Constraint::inequality) {
+            qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            qp.lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
+            qp.upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
+            total_eqs += c_size;
+        }
+    }
 
     ///////// Tasks
 
-    // Walk through all tasks
+    qp.H.setZero();
+    qp.g.setZero();
     for(uint i = 0; i < tasks[prio].size(); i++){
         
         TaskPtr task = tasks[prio][i];
@@ -90,55 +124,15 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
-        tasks_prio[prio].H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw; // NOTE! good only if tasks involve only acceleration
-        tasks_prio[prio].g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
+        qp.H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw; // NOTE! good only if tasks involve only acceleration
+        qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
     }
 
-    tasks_prio[prio].H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
+    qp.H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
 
-
-    ///////// Constraints
-
-
-    // Note already performed at the beginning of the update (but does not consider additional constraints)
-    tasks_prio[prio].A.resize(total_eqs, nj+ncp*6);
-    tasks_prio[prio].lower_x.resize(nj+ncp*6);
-    tasks_prio[prio].upper_x.resize(nj+ncp*6);
-    tasks_prio[prio].lower_y.resize(total_eqs);
-    tasks_prio[prio].upper_y.resize(total_eqs);
-
-    tasks_prio[prio].A.setZero();
-    tasks_prio[prio].lower_x.setConstant(-10000);   // bounds
-    tasks_prio[prio].upper_x.setConstant(+10000);   // bounds
-    tasks_prio[prio].lower_y.setZero(); // inequalities
-    tasks_prio[prio].upper_y.setZero(); // inequalities
-
-    total_eqs = 0;
-    for(uint i = 0; i < constraints[prio].size(); i++) {
-        Constraint::Type type = constraints[prio][i]->type();
-        size_t c_size = constraints[prio][i]->size();
-
-        if(type == Constraint::bounds) {
-            tasks_prio[prio].lower_x = constraints[prio][i]->lb(); // NOTE! Good only if a single bound task is admitted
-            tasks_prio[prio].upper_x = constraints[prio][i]->ub();
-        }
-        else if (type == Constraint::equality) {
-            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            total_eqs += c_size;
-        }
-        else if (type == Constraint::inequality) {
-            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
-            tasks_prio[prio].upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
-            total_eqs += c_size;
-        }
-    }
-
-    tasks_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
-    tasks_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
-    return tasks_prio;
+    hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
+    hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
+    return hqp;
 }
 
 const base::commands::Joints& AccelerationSceneReducedTSID::solve(const HierarchicalQP& hqp){

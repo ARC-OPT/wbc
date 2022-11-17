@@ -18,10 +18,10 @@ void RobotModelKDL::update2(const base::NamedVector<base::JointState> &joint_sta
 base::NamedVector<base::JointState> RobotModelKDL::jointState2(const std::vector<std::string> &names){
     return toNamedVector(wbc::RobotModelKDL::jointState(names));
 }
-void RobotModelKDL::setActiveContacts(const base::NamedVector<int> & active_contacts){
+void RobotModelKDL::setActiveContacts(const base::NamedVector<wbc::ActiveContact> & active_contacts){
     wbc::RobotModelKDL::setActiveContacts(toActiveContacts(active_contacts));
 }
-base::NamedVector<int> RobotModelKDL::getActiveContacts2(){
+base::NamedVector<wbc::ActiveContact> RobotModelKDL::getActiveContacts2(){
     return fromActiveContacts(wbc::RobotModelKDL::getActiveContacts());
 }
 base::NamedVector<base::JointLimitRange> RobotModelKDL::jointLimits2(){

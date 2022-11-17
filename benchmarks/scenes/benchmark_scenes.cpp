@@ -126,7 +126,7 @@ void runRH5LegsBenchmarks(int n_samples){
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
     cfg.floating_base = true;
     cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    cfg.contact_points.elements = {1,1};
+    cfg.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
     const string robot = "rh5_legs";
 
     map<string,RobotModelPtr> robot_models;
@@ -170,7 +170,7 @@ void runRH5Benchmarks(int n_samples){
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
     cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    cfg.contact_points.elements = {1,1};
+    cfg.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
     const string robot = "rh5";
 
     map<string,RobotModelPtr> robot_models;

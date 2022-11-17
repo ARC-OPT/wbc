@@ -25,14 +25,14 @@ def test_velocity_scene():
     robot_model.update(joint_state)
 
     scene=VelocityScene(robot_model, solver)
-    cfg = ConstraintConfig()
+    cfg = TaskConfig()
     cfg.name = "tcp_pose"
     cfg.root = "kuka_lbr_l_link_0"
     cfg.tip = "kuka_lbr_l_tcp"
     cfg.ref_frame = "kuka_lbr_l_link_0"
     cfg.priority = 0
     cfg.activation = 1
-    cfg.type = ConstraintType.cart
+    cfg.type = TaskType.cart
     cfg.weights = [1]*6
     constraint_config = [cfg]
     assert scene.configure(constraint_config) == True
@@ -43,7 +43,7 @@ def test_velocity_scene():
     scene.setReference(cfg.name,ref)
     hqp = scene.update()
     solver_output = scene.solve(hqp)
-    status = scene.updateConstraintsStatus()
+    status = scene.updateTasksStatus()
 
     assert np.all(status.elements[0].y_ref[0:3] == ref.twist.linear)
     assert np.all(status.elements[0].y_ref[3:6] == ref.twist.angular)
