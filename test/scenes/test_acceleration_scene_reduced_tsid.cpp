@@ -17,8 +17,11 @@ BOOST_AUTO_TEST_CASE(simple_test){
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
-    config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    config.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
+    config.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
+    wbc::ActiveContact contact(1,0.6);
+    contact.wx = 0.2;
+    contact.wy = 0.08;
+    config.contact_points.elements = {contact, contact};
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     vector<double> q_in = {0,0,-0.35,0.64,0,-0.27,
@@ -26,7 +29,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     base::samples::Joints joint_state;
     joint_state.names = robot_model->actuatedJointNames();
-    for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
+    for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         base::JointState js;
         js.position = q_in[i];
         js.speed = js.acceleration = 0;
@@ -86,7 +89,6 @@ BOOST_AUTO_TEST_CASE(simple_test){
         BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-3);
         BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i]) < 1e3);
     }
-
     
     // Check if torques respect equation of motions
     uint nj = robot_model->noOfJoints();
@@ -109,7 +111,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     base::VectorXd eq_motion_left = robot_model->jointSpaceInertiaMatrix() * qdd + robot_model->biasForces();
     base::VectorXd eq_motion_right = robot_model->selectionMatrix().transpose() * tau;
-    for(int i=0; i < contacts.size(); ++i)
+    for(uint i=0; i < contacts.size(); ++i)
         eq_motion_right += robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose() * f_ext.segment<6>(i*6);
     
     BOOST_CHECK((eq_motion_left - eq_motion_right).cwiseAbs().maxCoeff() < 1e-3);
