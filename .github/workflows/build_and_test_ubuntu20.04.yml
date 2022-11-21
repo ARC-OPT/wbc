@@ -20,5 +20,6 @@ jobs:
     - name: test
       run: |
         export LD_LIBRARY_PATH=/usr/local/lib
+        export PYTHONPATH=/usr/local/lib/python3.8/site-packages
         cd wbc
         sh scripts/run_tests.sh
