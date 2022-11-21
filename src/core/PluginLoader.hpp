@@ -3,6 +3,8 @@
 
 #include <map>
 #include <dlfcn.h>
+#include <string>
+#include <stdexcept>
 
 namespace wbc {
 

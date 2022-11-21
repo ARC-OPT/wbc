@@ -1,5 +1,6 @@
 [![Ubuntu 18.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu18.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu18.04.yml)
 [![Ubuntu 20.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu20.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu20.04.yml)
+[![Ubuntu 22.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml)
 
 # WBC - Whole-Body Control
 
