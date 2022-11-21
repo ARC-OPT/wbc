@@ -79,5 +79,5 @@ sudo apt-get install python3-dev python3-numpy python3-nose libboost-python-dev 
 
 # WBC
 mkdir wbc/build && cd wbc/build
-cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_PINOCCHIO=1 -DUSE_QPSWIFT=1
+cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_QPSWIFT=1
 sudo make -j8 install
