@@ -1,10 +1,10 @@
 #ifndef PLUGIN_LOADER_HPP
 #define PLUGIN_LOADER_HPP
 
-#include <map>
-#include <dlfcn.h>
 #include <string>
 #include <stdexcept>
+#include <map>
+#include <dlfcn.h>
 
 namespace wbc {
 
