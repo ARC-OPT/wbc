@@ -1,5 +1,5 @@
 from wbc.core import *
-from wbc.robot_models.robot_model_kdl import RobotModelKDL
+from wbc.robot_models.robot_model_pinocchio import RobotModelPinocchio
 from wbc.scenes import AccelerationSceneTSID
 from wbc.solvers.qpoases_solver import QPOASESSolver
 from wbc.controllers import CartesianPosPDController
@@ -13,12 +13,10 @@ floating_base_state.pose.orientation    = [0,0,0,1]
 floating_base_state.twist.linear        = floating_base_state.twist.angular        = [0,0,0]
 floating_base_state.acceleration.linear = floating_base_state.acceleration.angular = [0,0,0]
 
-robot_model=RobotModelKDL()
+robot_model=RobotModelPinocchio()
 r=RobotModelConfig()
 r.file="../../../../models/rh5/urdf/rh5_legs.urdf"
-r.submechanism_file="../../../../models/rh5/hyrodyn/rh5_legs.yml"
 r.floating_base = True
-r.type = "hyrodyn"
 contacts = ActiveContacts()
 contacts.names = ["FL_SupportCenter", "FR_SupportCenter"]
 a = ActiveContact()
