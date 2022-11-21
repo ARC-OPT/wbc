@@ -1,6 +1,8 @@
 #ifndef PLUGIN_LOADER_HPP
 #define PLUGIN_LOADER_HPP
 
+#include <string>
+#include <stdexcept>
 #include <map>
 #include <dlfcn.h>
 
