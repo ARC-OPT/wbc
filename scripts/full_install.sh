@@ -28,7 +28,7 @@ cmake ..
 sudo make -j8 install &&  cd ../../..
 
 # Pinocchio
-git clone --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
+git clone --branch v2.6.8 --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
 cd pinocchio
 mkdir build && cd build
 cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF 

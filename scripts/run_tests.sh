@@ -12,14 +12,14 @@ cd ../core
 
 # Robot Models
 echo "Testing robot models ..."
-echo "Testing RobotModelKDL ..."
-cd ../robot_models/kdl
-./test_robot_model_kdl
+echo "Testing RobotModelPinocchio ..."
+cd ../robot_models/pinocchio
+./test_robot_model_pinocchio
 cd ..
-if [ -d "pinocchio" ]; then
-  echo "Testing RobotModelPinocchio ..."
-  cd pinocchio
-  ./test_robot_model_pinocchio
+if [ -d "kdl" ]; then
+  echo "Testing RobotModelKDL ..."
+  cd kdl
+  ./test_robot_model_kdl
   cd ..
 fi
 if [ -d "rbdl" ]; then

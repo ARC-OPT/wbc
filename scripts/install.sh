@@ -20,25 +20,15 @@ sudo make -j8 install && cd ../..
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
-# KDL 
-git clone https://github.com/orocos/orocos_kinematics_dynamics.git -b v1.5.1
-mkdir orocos_kinematics_dynamics/orocos_kdl/build
-cd orocos_kinematics_dynamics/orocos_kdl/build
-cmake .. 
-sudo make -j8 install &&  cd ../../..
+# Pinocchio
+git clone --branch v2.6.8 --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
+cd pinocchio
+mkdir build && cd build
+cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF
+sudo make -j8 install && cd ../..
 
 # Clone WBC repo to have the patches for KDL and qpOASES
 git clone https://github.com/ARC-OPT/wbc.git
-
-# KDL parser
-sudo apt-get -y install libtinyxml2-dev
-git clone https://github.com/ros/kdl_parser.git -b 1.14.1
-cd kdl_parser/kdl_parser
-mkdir patches && cp ../../wbc/patches/kdl_parser.patch patches
-git apply patches/kdl_parser.patch
-mkdir build && cd build 
-cmake .. 
-sudo make -j8 install && cd ../../..
 
 # If not done yet, setup a ssh key pair using the command `ssh-keygen` and add the 
 # key from `~/.ssh/id_rsa.pub `to the keys in your Gitlab account.

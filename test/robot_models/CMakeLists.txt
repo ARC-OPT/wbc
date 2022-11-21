@@ -1,16 +1,16 @@
-add_subdirectory(kdl)
+add_subdirectory(pinocchio)
 if(USE_RBDL)
     add_subdirectory(rbdl)
 endif()
 if(USE_HYRODYN)
     add_subdirectory(hyrodyn)
 endif()
-if(USE_PINOCCHIO)
-    add_subdirectory(pinocchio)
+if(USE_KDL)
+    add_subdirectory(kdl)
 endif()
 
 
-if(USE_HYRODYN AND USE_PINOCCHIO AND USE_RBDL)
+if(USE_HYRODYN AND USE_KDL AND USE_RBDL)
 
    add_executable(test_model_consistency test_model_consistency.cpp ../suite.cpp  test_robot_model.cpp)
    target_link_libraries(test_model_consistency
