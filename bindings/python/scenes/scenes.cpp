@@ -33,10 +33,10 @@ base::NamedVector<base::Wrench> toNamedVector(const base::samples::Wrenches& wre
     return wrenches_out;
 }
 
-VelocityScene::VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<HierarchicalLSSolver> solver) :
+VelocityScene::VelocityScene(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<HierarchicalLSSolver> solver) :
     wbc::VelocityScene(robot_model, solver){
 }
-VelocityScene::VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
+VelocityScene::VelocityScene(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::VelocityScene(robot_model, solver){
 }
 void VelocityScene::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
@@ -61,7 +61,7 @@ base::NamedVector<wbc::TaskStatus> VelocityScene::updateTasksStatus2(){
     return toNamedVector(wbc::VelocityScene::updateTasksStatus());
 }
 
-VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
+VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::VelocitySceneQuadraticCost(robot_model, solver){
 }
 void VelocitySceneQuadraticCost::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
@@ -86,7 +86,7 @@ base::NamedVector<wbc::TaskStatus> VelocitySceneQuadraticCost::updateTasksStatus
     return toNamedVector(wbc::VelocitySceneQuadraticCost::updateTasksStatus());
 }
 
-AccelerationSceneTSID::AccelerationSceneTSID(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
+AccelerationSceneTSID::AccelerationSceneTSID(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::AccelerationSceneTSID(robot_model, solver){
 }
 void AccelerationSceneTSID::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
@@ -120,8 +120,8 @@ BOOST_PYTHON_MODULE(scenes){
 
     np::initialize();
 
-    py::class_<wbc_py::VelocityScene>("VelocityScene", py::init<std::shared_ptr<wbc_py::RobotModelKDL>, std::shared_ptr<wbc_py::QPOASESSolver>>())
-            .def(py::init<std::shared_ptr<wbc_py::RobotModelKDL>,std::shared_ptr<wbc_py::HierarchicalLSSolver>>())
+    py::class_<wbc_py::VelocityScene>("VelocityScene", py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>, std::shared_ptr<wbc_py::QPOASESSolver>>())
+            .def(py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>,std::shared_ptr<wbc_py::HierarchicalLSSolver>>())
             .def("configure",    &wbc_py::VelocityScene::configure)
             .def("update",       &wbc_py::VelocityScene::update, py::return_value_policy<py::copy_const_reference>())
             .def("solve",        &wbc_py::VelocityScene::solve2)
@@ -139,7 +139,7 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getJointWeights",   &wbc_py::VelocityScene::getJointWeights2)
             .def("getActuatedJointWeights",   &wbc_py::VelocityScene::getActuatedJointWeights2);
 
-    py::class_<wbc_py::VelocitySceneQuadraticCost>("VelocitySceneQuadraticCost", py::init<std::shared_ptr<wbc_py::RobotModelKDL>, std::shared_ptr<wbc_py::QPOASESSolver>>())
+    py::class_<wbc_py::VelocitySceneQuadraticCost>("VelocitySceneQuadraticCost", py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>, std::shared_ptr<wbc_py::QPOASESSolver>>())
             .def("configure",    &wbc_py::VelocitySceneQuadraticCost::configure)
             .def("update",       &wbc_py::VelocitySceneQuadraticCost::update, py::return_value_policy<py::copy_const_reference>())
             .def("solve",        &wbc_py::VelocitySceneQuadraticCost::solve2)
@@ -157,7 +157,7 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getJointWeights",   &wbc_py::VelocitySceneQuadraticCost::getJointWeights2)
             .def("getActuatedJointWeights",   &wbc_py::VelocitySceneQuadraticCost::getActuatedJointWeights2);
 
-    py::class_<wbc_py::AccelerationSceneTSID>("AccelerationSceneTSID", py::init<std::shared_ptr<wbc_py::RobotModelKDL>, std::shared_ptr<wbc_py::QPOASESSolver>>())
+    py::class_<wbc_py::AccelerationSceneTSID>("AccelerationSceneTSID", py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>, std::shared_ptr<wbc_py::QPOASESSolver>>())
             .def("configure",    &wbc_py::AccelerationSceneTSID::configure)
             .def("update",       &wbc_py::AccelerationSceneTSID::update, py::return_value_policy<py::copy_const_reference>())
             .def("solve",        &wbc_py::AccelerationSceneTSID::solve2)

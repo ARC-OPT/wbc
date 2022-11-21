@@ -181,7 +181,7 @@ void RobotModelRBDL::update(const base::samples::Joints& joint_state_in,
     for(int i = 0; i < actuated_joint_names.size(); i++){
         const std::string &name = actuated_joint_names[i];
         if(!hasJoint(name)){
-            LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the KDL Tree, but it is not in the joint state vector."
+            LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the robot model, but it is not in the joint state vector."
                         << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
             throw std::runtime_error("Incomplete Joint State");
         }

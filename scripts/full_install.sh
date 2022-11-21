@@ -28,7 +28,7 @@ cmake ..
 sudo make -j8 install &&  cd ../../..
 
 # Pinocchio
-git clone --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
+git clone --branch v2.6.8 --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
 cd pinocchio
 mkdir build && cd build
 cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF 
@@ -79,5 +79,5 @@ sudo apt-get install python3-dev python3-numpy python3-nose libboost-python-dev 
 
 # WBC
 mkdir wbc/build && cd wbc/build
-cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_PINOCCHIO=1 -DUSE_QPSWIFT=1
+cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_QPSWIFT=1
 sudo make -j8 install

@@ -41,7 +41,7 @@ int main(){
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
 
     // Configure the model. We pass a serial model description to RobotModelHyrodyn, which means that the solution will be identical
-    // to the one obtained by  RobotModelKDL. RobotModelHyrodyn assumes that you specify correctly all joints (actuated and unactuated).
+    // to the one obtained by  RobotModelPinocchio. RobotModelHyrodyn assumes that you specify correctly all joints (actuated and unactuated).
     // Also, we have to pass a submechanism files, which describes the parallel structures inside the robot architecture
     // In this case, there are not parallel structure, since we use the abstract model
     RobotModelConfig config;

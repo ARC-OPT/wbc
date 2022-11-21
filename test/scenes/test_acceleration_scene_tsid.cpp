@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "robot_models/kdl/RobotModelKDL.hpp"
+#include "robot_models/pinocchio/RobotModelPinocchio.hpp"
 #include "scenes/AccelerationSceneTSID.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
 
@@ -13,7 +13,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
      */
 
     // Configure Robot model
-    shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
+    shared_ptr<RobotModelPinocchio> robot_model = make_shared<RobotModelPinocchio>();
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;

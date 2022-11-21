@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "robot_models/kdl/RobotModelKDL.hpp"
+#include "robot_models/pinocchio/RobotModelPinocchio.hpp"
 #include "scenes/VelocityScene.hpp"
 #include "solvers/hls/HierarchicalLSSolver.hpp"
 
@@ -14,7 +14,7 @@ BOOST_AUTO_TEST_CASE(configuration_test){
 
     TaskConfig cart_task("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0");
 
-    shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
+    shared_ptr<RobotModelPinocchio> robot_model = make_shared<RobotModelPinocchio>();
     RobotModelConfig config;
     config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
@@ -45,7 +45,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
      */
 
     // Configure Robot model
-    shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
+    shared_ptr<RobotModelPinocchio> robot_model = make_shared<RobotModelPinocchio>();
     RobotModelConfig config;
     config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     BOOST_CHECK(robot_model->configure(config));

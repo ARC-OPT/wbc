@@ -22,23 +22,16 @@ public:
     virtual ~RobotModelHyrodyn();
 
     /**
-     * @brief Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree.
-     *  If the overall model is empty, the overall KDL::Tree will be replaced by the given tree. If there
-     *  is already a KDL Tree, the new tree will be attached with the given pose to the 'hook' frame of the overall tree. The relative poses
-     *  of the trees can be updated online by calling update() with poses parameter appropriately set.
-     * @param model_config The models configuration(s). These include the path to the URDF model file(s), the relative poses and hooks
-     *  to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other.
-     * @param base_frame Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model.
+     * @brief Load and configure the robot model
+     * @param cfg Model configuration. See RobotModelConfig.hpp for details
      * @return True in case of success, else false
      */
     virtual bool configure(const RobotModelConfig& cfg);
 
     /**
-     * @brief Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required
-     *  when requesting rigid body states, Jacobians or joint states. Note that
-     * @param joint_state The joint_state vector. Has to contain all robot joints.
-     * @param poses Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model. The source frame
-     *  of the given rigid body state has to match the segment name in the KDL Tree that shall be updated
+     * @brief Update the robot configuration
+     * @param joint_state The joint_state vector. Has to contain all robot joints that are configured in the model.
+     * @param poses Optional, only for floating base robots: update the floating base state of the robot model.
      */
     virtual void update(const base::samples::Joints& joint_state,
                         const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
