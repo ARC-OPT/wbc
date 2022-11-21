@@ -17,7 +17,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
-    config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
+    config.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
     config.contact_points.elements = {ActiveContact(1,0.6),ActiveContact(1,0.6)};
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     base::samples::Joints joint_state;
     joint_state.names = robot_model->actuatedJointNames();
-    for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
+    for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         base::JointState js;
         js.position = q_in[i];
         js.speed = js.acceleration = 0;
