@@ -77,10 +77,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a85e6c680aa66303fdfa1638673879f0a"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a85e6c680aa66303fdfa1638673879f0a">~RobotModelHyrodyn</a> ()</td></tr>
 <tr class="separator:a85e6c680aa66303fdfa1638673879f0a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6a64c0b9d0dcab41e291b7e3c28df80d"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a6a64c0b9d0dcab41e291b7e3c28df80d">configure</a> (const <a class="el" href="structwbc_1_1RobotModelConfig.html">RobotModelConfig</a> &amp;cfg)</td></tr>
-<tr class="memdesc:a6a64c0b9d0dcab41e291b7e3c28df80d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree. If the overall model is empty, the overall KDL::Tree will be replaced by the given tree. If there is already a KDL Tree, the new tree will be attached with the given pose to the 'hook' frame of the overall tree. The relative poses of the trees can be updated online by calling <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af20315259e6981ca1ef2d09ba7f7a548" title="Update the robot model. The joint state has to contain all joints that are relevant in the model....">update()</a> with poses parameter appropriately set.  <a href="classwbc_1_1RobotModelHyrodyn.html#a6a64c0b9d0dcab41e291b7e3c28df80d">More...</a><br /></td></tr>
+<tr class="memdesc:a6a64c0b9d0dcab41e291b7e3c28df80d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Load and configure the robot model.  <a href="classwbc_1_1RobotModelHyrodyn.html#a6a64c0b9d0dcab41e291b7e3c28df80d">More...</a><br /></td></tr>
 <tr class="separator:a6a64c0b9d0dcab41e291b7e3c28df80d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af20315259e6981ca1ef2d09ba7f7a548"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af20315259e6981ca1ef2d09ba7f7a548">update</a> (const base::samples::Joints &amp;<a class="el" href="classwbc_1_1RobotModel.html#aea227a52cdc7a62a4c433392c88f424b">joint_state</a>, const base::samples::RigidBodyStateSE3 &amp;<a class="el" href="classwbc_1_1RobotModel.html#aae68afffbc5893f497038d4f9c85f287">floating_base_state</a>=base::samples::RigidBodyStateSE3())</td></tr>
-<tr class="memdesc:af20315259e6981ca1ef2d09ba7f7a548"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required when requesting rigid body states, Jacobians or joint states. Note that.  <a href="classwbc_1_1RobotModelHyrodyn.html#af20315259e6981ca1ef2d09ba7f7a548">More...</a><br /></td></tr>
+<tr class="memdesc:af20315259e6981ca1ef2d09ba7f7a548"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the robot configuration.  <a href="classwbc_1_1RobotModelHyrodyn.html#af20315259e6981ca1ef2d09ba7f7a548">More...</a><br /></td></tr>
 <tr class="separator:af20315259e6981ca1ef2d09ba7f7a548"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a16a22815bfdcc52608f7c0f573d5bba1"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a16a22815bfdcc52608f7c0f573d5bba1">systemState</a> (base::VectorXd &amp;q, base::VectorXd &amp;qd, base::VectorXd &amp;qdd)</td></tr>
 <tr class="separator:a16a22815bfdcc52608f7c0f573d5bba1"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -553,11 +553,10 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Load and configure the robot model. In this implementation, each model config constains a URDF file that will be parsed into a KDL tree. If the overall model is empty, the overall KDL::Tree will be replaced by the given tree. If there is already a KDL Tree, the new tree will be attached with the given pose to the 'hook' frame of the overall tree. The relative poses of the trees can be updated online by calling <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af20315259e6981ca1ef2d09ba7f7a548" title="Update the robot model. The joint state has to contain all joints that are relevant in the model....">update()</a> with poses parameter appropriately set. </p>
+<p>Load and configure the robot model. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">model_config</td><td>The models configuration(s). These include the path to the URDF model file(s), the relative poses and hooks to which the models shall be attached. This way you can add multiple robot model tree and attach them to each other. </td></tr>
-    <tr><td class="paramname">base_frame</td><td>Base frame of the model. If left empty, the base will be selected as the root frame of the first URDF model. </td></tr>
+    <tr><td class="paramname">cfg</td><td>Model configuration. See <a class="el" href="RobotModelConfig_8hpp.html">RobotModelConfig.hpp</a> for details </td></tr>
   </table>
   </dd>
 </dl>
@@ -891,11 +890,11 @@ Additional Inherited Members</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>Update the robot model. The joint state has to contain all joints that are relevant in the model. This means: All joints that are ever required when requesting rigid body states, Jacobians or joint states. Note that. </p>
+<p>Update the robot configuration. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">joint_state</td><td>The joint_state vector. Has to contain all robot joints. </td></tr>
-    <tr><td class="paramname">poses</td><td>Optionally update links of the robot model. This can be used to update e.g. the relative position between two robots in the model. The source frame of the given rigid body state has to match the segment name in the KDL Tree that shall be updated </td></tr>
+    <tr><td class="paramname">joint_state</td><td>The joint_state vector. Has to contain all robot joints that are configured in the model. </td></tr>
+    <tr><td class="paramname">poses</td><td>Optional, only for floating base robots: update the floating base state of the robot model. </td></tr>
   </table>
   </dd>
 </dl>
