@@ -8,9 +8,8 @@ set(PROJECT_VERSION 0.2)
 set(API_VERSION ${PROJECT_VERSION})
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-
-
-if(USE_HYRODYN)
+if(USE_HYRODYN AND USE_RBDL AND USE_KDL AND USE_EIQUADPROG AND USE_QPSWIFT)
+    message("Detected Full install, adding benchmark folder")
     add_subdirectory(benchmarks)
 endif()
 add_subdirectory(src)

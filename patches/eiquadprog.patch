@@ -1,0 +1,10 @@
+--- CMakeLists.txt
++++ CMakeLists.txt
+@@ -57,6 +57,7 @@ set(${PROJECT_NAME}_HEADERS
+     include/${PROJECT_NAME}/eiquadprog-utils.hxx)
+ 
+ add_library(${PROJECT_NAME} SHARED src/eiquadprog-fast.cpp src/eiquadprog.cpp)
++PKG_CONFIG_APPEND_LIBS(${PROJECT_NAME})
+ 
+ if(TRACE_SOLVER)
+   target_compile_definitions(${PROJECT_NAME} PRIVATE EIQGUADPROG_TRACE_SOLVER)

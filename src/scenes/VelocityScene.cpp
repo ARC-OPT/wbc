@@ -27,16 +27,14 @@ const HierarchicalQP& VelocityScene::update(){
     if(!configured)
         throw std::runtime_error("VelocityScene has not been configured!. PLease call configure() before calling update() for the first time!");
 
-    base::samples::RigidBodyStateSE3 ref_frame;
+    ///////// Tasks
 
-    // Create equation system
-    //    Walk through all priorities and update the optimization problem. The outcome will be
-    //    A - Vector of task matrices. One matrix for each priority
-    //    y - Vector of task velocities. One vector for each priority
-    //    W - Vector of task weights. One vector for each priority
+    // Note: This scene models all tasks as linear equality constraints in order to comply with the HLS solver
+    uint nj = robot_model->noOfJoints();
     for(uint prio = 0; prio < tasks.size(); prio++){
 
-        tasks_prio[prio].resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
+        uint nc = n_task_variables_per_prio[prio];
+        hqp[prio].resize(nj, nc, 0, false);
 
         // Walk through all tasks of current priority
         uint row_index = 0;
@@ -58,25 +56,25 @@ const HierarchicalQP& VelocityScene::update(){
 
             // Insert tasks into equation system of current priority at the correct position. Note: Weights will be zero if activations
             // for this task is zero or if the task is in timeout
-            tasks_prio[prio].Wy.segment(row_index, n_vars) = task->weights_root * task->activation * (!task->timeout);
-            tasks_prio[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = task->A;
-            tasks_prio[prio].lower_y.segment(row_index, n_vars) = task->y_ref_root;
-            tasks_prio[prio].upper_y.segment(row_index, n_vars) = task->y_ref_root;
-            tasks_prio[prio].H.setIdentity();
-            tasks_prio[prio].lower_x.resize(0);
-            tasks_prio[prio].upper_x.resize(0);
-            tasks_prio[prio].g.setZero();
+            hqp[prio].Wy.segment(row_index, n_vars) = task->weights_root * task->activation * (!task->timeout);
+            hqp[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = task->A;
+            hqp[prio].lower_y.segment(row_index, n_vars) = task->y_ref_root;
+            hqp[prio].upper_y.segment(row_index, n_vars) = task->y_ref_root;
+            hqp[prio].H.setIdentity();
+            hqp[prio].lower_x.resize(0);
+            hqp[prio].upper_x.resize(0);
+            hqp[prio].g.setZero();
 
             row_index += n_vars;
 
         } // tasks on prio
     } // priorities
 
-    tasks_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
+    hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
 
     // Joint Weights
-    tasks_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
-    return tasks_prio;
+    hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
+    return hqp;
 }
 
 const base::commands::Joints& VelocityScene::solve(const HierarchicalQP& hqp){
@@ -122,7 +120,7 @@ const TasksStatus& VelocityScene::updateTasksStatus(){
         }
     }
 
-    tasks_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
+    hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     return tasks_status;
 }
 

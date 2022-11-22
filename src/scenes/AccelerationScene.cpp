@@ -31,27 +31,34 @@ const HierarchicalQP& AccelerationScene::update(){
         throw std::runtime_error("Invalid task configuration");
     }
 
-    base::samples::RigidBodyStateSE3 ref_frame;
-
-    // Create equation system
-    //    Walk through all priorities and update the optimization problem. The outcome will be
-    //    A - Vector of task matrices. One matrix for each priority
-    //    y - Vector of task velocities. One vector for each priority
-    //    W - Vector of task weights. One vector for each priority
+    uint nv = robot_model->noOfJoints();
+    uint nc = 0;
 
     int prio = 0; // Only one priority is implemented here!
-    tasks_prio[prio].resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
+    QuadraticProgram &qp = hqp[prio];
+    qp.resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
 
-    // Walk through all tasks of current priority
-    uint row_index = 0;
+    ///////// Constraints
+
+    // This scene does not implement constraints
+    hqp[prio].upper_x.setConstant(1e10);
+    hqp[prio].lower_x.setConstant(-1e10);
+
+    hqp[prio].A.setZero();
+    hqp[prio].lower_y.setZero();
+    hqp[prio].upper_y.setZero();
+
+
+    ///////// Tasks
+
+    qp.H.setZero();
+    qp.g.setZero();
     for(uint i = 0; i < tasks[prio].size(); i++){
 
         TaskPtr task = tasks[prio][i];
 
         task->checkTimeout();
         task->update(robot_model);
-
-        uint n_vars = task->config.nVariables();
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the task again
@@ -60,31 +67,20 @@ const HierarchicalQP& AccelerationScene::update(){
            task->y_ref_root.setZero();
         }
 
-        // Insert tasks into equation system of current priority at the correct position. Note: Weights will be zero if activations
-        // for this task is zero or if the task is in timeout
-        tasks_prio[prio].Wy.segment(row_index, n_vars) = task->weights_root * task->activation * (!task->timeout);
-        tasks_prio[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = task->A;
-        tasks_prio[prio].lower_y.segment(row_index, n_vars) = task->y_ref_root;
-        tasks_prio[prio].upper_y.segment(row_index, n_vars) = task->y_ref_root;
+        for(int i = 0; i < task->A.rows(); i++)
+            task->Aw.row(i) = task->weights_root(i) * task->A.row(i) * task->activation * (!task->timeout);
+        for(int i = 0; i < task->A.cols(); i++)
+            task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
-        row_index += n_vars;
+        qp.H += task->Aw.transpose()*task->Aw;
+        qp.g -= task->Aw.transpose()*task->y_ref_root;
     }
     const base::MatrixXd& A = tasks_prio[prio].A;
     const base::VectorXd& y = tasks_prio[prio].lower_y;
 
-    // Cost Function: x^T*H*x + x^T * g
-    tasks_prio[prio].H.noalias() = A.transpose() * A;
-    tasks_prio[prio].g.setZero().noalias() = -y.transpose() * A;
-    tasks_prio[prio].upper_x.setConstant(1000);
-    tasks_prio[prio].lower_x.setConstant(-1000);
-
-    tasks_prio[prio].A.setZero();
-    tasks_prio[prio].lower_y.setZero();
-    tasks_prio[prio].upper_y.setZero();
-
-    tasks_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
-    tasks_prio.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
-    return tasks_prio;
+    hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
+    hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
+    return hqp;
 }
 
 const base::commands::Joints& AccelerationScene::solve(const HierarchicalQP& hqp){

@@ -35,8 +35,10 @@ void RobotModel::clear(){
 
 void RobotModel::setActiveContacts(const ActiveContacts &contacts){
     for(auto name : contacts.names){
-        if(contacts[name] != 0 && contacts[name] != 1)
+        if(contacts[name].active != 0 && contacts[name].active != 1)
             throw std::runtime_error("RobotModel::setActiveContacts: Contact value has to been 0 or 1");
+        if(contacts[name].mu <= 0)
+            throw std::runtime_error("RobotModel::setActiveContacts: Friction coefficient has to be > 0");
     }
     active_contacts = contacts;
 }

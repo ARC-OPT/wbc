@@ -1,5 +1,5 @@
-#include <robot_models/kdl/RobotModelKDL.hpp>
 #include <core/RobotModelConfig.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <scenes/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
@@ -37,8 +37,7 @@ using namespace wbc;
 int main(int argc, char** argv){
 
     // Create a robot model. Each robot model is derived from a common RobotModel class, as it will be passed to the WBC scene later on.
-    // Currently 2 different robot models are implemented. A KDL-based model (robot_models/kdl) and a Hyrodyn-based model (robot_models(hyrodyn)
-    RobotModelPtr robot_model = make_shared<RobotModelKDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure the robot model by passing the RobotModelConfig. The simplest configuration can by obtained by only setting
     // the path to the URDF file. In doing so, WBC will assume:

@@ -93,7 +93,7 @@ void HierarchicalLSSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, bas
 
         // Set weights for this prioritiy
         if(hierarchical_qp[prio].Wy.size() != 0)
-            setConstraintWeights(hierarchical_qp[prio].Wy, prio);
+            setTaskWeights(hierarchical_qp[prio].Wy, prio);
         if(hierarchical_qp.Wq.size() != 0)
             setJointWeights(hierarchical_qp.Wq, prio);
 
@@ -205,9 +205,9 @@ void HierarchicalLSSolver::setJointWeights(const base::VectorXd& weights, const 
     }
 }
 
-void HierarchicalLSSolver::setConstraintWeights(const base::VectorXd& weights, const uint prio){
+void HierarchicalLSSolver::setTaskWeights(const base::VectorXd& weights, const uint prio){
     if(!configured)
-        throw std::runtime_error("setConstraintWeights: Solver has not been configured yet!");
+        throw std::runtime_error("setTaskWeights: Solver has not been configured yet!");
 
     if(prio < 0 ||prio >= priorities.size())
         throw std::invalid_argument("Cannot set constraint weights on priority " + to_string(prio) +

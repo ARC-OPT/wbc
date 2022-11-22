@@ -1,6 +1,6 @@
 find_package(PythonInterp 3 REQUIRED)
 find_package(PythonLibs 3 REQUIRED)
-find_package(Boost COMPONENTS python3 numpy3)
+find_package(Boost COMPONENTS python numpy REQUIRED)
 
 set(PYTHON_INSTALL_PATH ${CMAKE_INSTALL_PREFIX}/lib/python${PYTHON_VERSION_MAJOR}.${PYTHON_VERSION_MINOR}/site-packages)
 

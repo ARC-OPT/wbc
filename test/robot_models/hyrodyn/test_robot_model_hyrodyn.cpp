@@ -93,14 +93,14 @@ BOOST_AUTO_TEST_CASE(configure_and_update){
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.names.push_back("kuka_lbr_l_tcp");
-    config.contact_points.elements.push_back(1);
+    config.contact_points.elements.push_back(wbc::ActiveContact(1,0.6));
     BOOST_CHECK(robot_model.configure(config) == true);
 
     // Config with invalid contact points
     config = RobotModelConfig("../../../../models/kuka/urdf/kuka_iiwa.urdf");
     config.submechanism_file = "../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     config.contact_points.names.push_back("XYZ");
-    config.contact_points.elements.push_back(1);
+    config.contact_points.elements.push_back(wbc::ActiveContact(1,0.6));
     BOOST_CHECK(robot_model.configure(config) == false);
 }
 
@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE(fk){
     cfg.floating_base = true;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testSpaceJacobian(robot_model, tip_frame, true);
+    testSpaceJacobian(robot_model, tip_frame, false);
 }
 
 
@@ -129,7 +129,7 @@ BOOST_AUTO_TEST_CASE(space_jacobian){
     cfg.floating_base = true;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testSpaceJacobian(robot_model, tip_frame, true);
+    testSpaceJacobian(robot_model, tip_frame, false);
 }
 
 BOOST_AUTO_TEST_CASE(body_jacobian){
@@ -142,7 +142,7 @@ BOOST_AUTO_TEST_CASE(body_jacobian){
     cfg.floating_base = true;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testBodyJacobian(robot_model, tip_frame, true);
+    testBodyJacobian(robot_model, tip_frame, false);
 }
 
 BOOST_AUTO_TEST_CASE(com_jacobian){
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE(com_jacobian){
     cfg.floating_base = false;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testCoMJacobian(robot_model, true);
+    testCoMJacobian(robot_model, false);
 }
 
 BOOST_AUTO_TEST_CASE(dynamics){
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE(dynamics){
     cfg.floating_base = false;
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testDynamics(robot_model, true);
+    testDynamics(robot_model, false);
 
 }
 
@@ -206,7 +206,7 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_serial.update(joint_state);
     robot_model_hybrid.update(joint_state);
 
-    cout<<"******************** HYBRID MODEL *****************"<<endl;
+    //cout<<"******************** HYBRID MODEL *****************"<<endl;
     base::MatrixXd jac = robot_model_hybrid.spaceJacobian(root, tip);
     base::Vector6d v;
     v.setZero();
@@ -215,18 +215,18 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     robot_model_hybrid.hyrodynHandle()->ud = u;
     robot_model_hybrid.hyrodynHandle()->calculate_forward_system_state();
 
-    cout<< "Solution actuation space" << endl;
+    /*cout<< "Solution actuation space" << endl;
     std::cout<<robot_model_hybrid.hyrodynHandle()->ud.transpose()<<endl;
 
     cout<< "Solution projected to independent joint space" << endl;
-    std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;
+    std::cout<<robot_model_hybrid.hyrodynHandle()->yd.transpose()<<endl;*/
 
-    cout<<"******************** SERIAL MODEL *****************"<<endl;
+    //cout<<"******************** SERIAL MODEL *****************"<<endl;
     jac = robot_model_serial.spaceJacobian(root, tip);
     base::VectorXd yd = jac.completeOrthogonalDecomposition().pseudoInverse()*v;
 
-    cout<< "Solution independent joint space" << endl;
-    std::cout<<yd.transpose()<<endl;
+    /*cout<< "Solution independent joint space" << endl;
+    std::cout<<yd.transpose()<<endl;*/
 
     for(int i = 0; i < robot_model_hybrid.noOfActuatedJoints(); i++)
         BOOST_CHECK(fabs(robot_model_hybrid.hyrodynHandle()->yd[i] - yd[i]) < 1e-6);

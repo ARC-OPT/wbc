@@ -1,0 +1,25 @@
+name: Ubuntu 20.04
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+    branches: [ master ]
+
+jobs:
+  build_and_test_20_04:
+    runs-on: ubuntu-20.04
+
+    steps:
+    # Check out repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v2
+    # Build and install
+    - name: install
+      run: sh scripts/full_install.sh
+    # Run all tests
+    - name: test
+      run: |
+        export LD_LIBRARY_PATH=/usr/local/lib
+        export PYTHONPATH=/usr/local/lib/python3.8/site-packages
+        cd wbc
+        sh scripts/run_tests.sh

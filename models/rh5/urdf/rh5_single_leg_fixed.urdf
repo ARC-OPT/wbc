@@ -64,7 +64,7 @@
     </collision>
   </link>
   <link name="FL_SupportCenter"/>
-  <joint name="FL_SupportCenter" type="fixed">
+  <joint name="FL_SupportCenter_joint" type="fixed">
     <origin xyz="0.03 0.0 0.0444" rpy="3.1416 0.0 0.0"/>
     <axis xyz="0.0 0.0 0.0"/>
     <parent link="LLAnkle_FT"/>

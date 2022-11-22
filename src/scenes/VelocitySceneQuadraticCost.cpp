@@ -42,6 +42,8 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
     uint ncp = contact_points.size();
     uint prio = 0;
 
+    ///////// Constraints
+
     // check problem size
     size_t total_eqs = 0, total_ineqs = 0;
     bool has_bounds = false;
@@ -55,13 +57,44 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
             has_bounds = true;
     }
 
-    // QP Size: (NContacts*6 X NJoints)
-    tasks_prio[prio].resize(nj, total_eqs, total_ineqs, has_bounds);
-    tasks_prio[prio].H.setZero();
-    tasks_prio[prio].g.setZero();
-
     ///////// Tasks
 
+    // QP Size: (ncp*6 x nj)
+    // Variable order: (qd)
+    QuadraticProgram &qp = hqp[prio];
+    qp.resize(nj, total_eqs, total_ineqs, has_bounds);
+    qp.lower_y.setConstant(-99999);
+    qp.upper_y.setConstant(+99999);
+    qp.lower_x.setConstant(-99999);
+    qp.upper_x.setConstant(+99999);
+    qp.A.setZero();
+
+    uint total_eqs = 0;
+    for(uint i = 0; i < constraints[prio].size(); i++) {
+        Constraint::Type type = constraints[prio][i]->type();
+        size_t c_size = constraints[prio][i]->size();
+
+        if(type == Constraint::bounds) {
+            qp.lower_x = constraints[prio][i]->lb();
+            qp.upper_x = constraints[prio][i]->ub();
+        }
+        else if (type == Constraint::equality) {
+            qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
+            qp.lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            qp.upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            total_eqs += c_size;
+        }
+        else if (type == Constraint::inequality) {
+            qp.A.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
+            qp.lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
+            qp.upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
+            total_ineqs += c_size;
+        }
+    }
+
+    ///////// Tasks    
+    qp.H.setZero();
+    qp.g.setZero();
     for(uint i = 0; i < tasks[prio].size(); i++){
         
         TaskPtr task = tasks[prio][i];
@@ -81,56 +114,18 @@ const HierarchicalQP& VelocitySceneQuadraticCost::update(){
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
-        tasks_prio[prio].H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
-        tasks_prio[prio].g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
+        qp.H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
+        qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
 
     } // tasks on prio
 
     // Add regularization term
-    tasks_prio[prio].H.block(0,0,nj,nj).diagonal().array() += hessian_regularizer;
+    qp.H.block(0,0,nj,nj).diagonal().array() += hessian_regularizer;
 
+    hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
+    hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
 
-    ///////// Constraints
-
-    // Note already performed at the beginning of the update (but does not consider additional constriants)
-    // tasks_prio[prio].A.resize(total_eqs, nj);
-    // tasks_prio[prio].lower_x.resize(nj);
-    // tasks_prio[prio].upper_y.resize(nj);
-    // tasks_prio[prio].lower_y.resize(total_eqs);
-    // tasks_prio[prio].upper_y.resize(total_eqs);
-
-    tasks_prio[prio].A.setZero();
-    tasks_prio[prio].lower_y.setConstant(-99999);
-    tasks_prio[prio].upper_y.setConstant(+99999);
-    tasks_prio[prio].lower_x.setConstant(-99999);
-    tasks_prio[prio].upper_x.setConstant(+99999);
-
-    total_eqs = 0;
-    total_ineqs = 0;
-    for(uint i = 0; i < constraints[prio].size(); i++) {
-        Constraint::Type type = constraints[prio][i]->type();
-        size_t c_size = constraints[prio][i]->size();
-
-        if(type == Constraint::bounds) {
-            tasks_prio[prio].lower_x = constraints[prio][i]->lb();
-            tasks_prio[prio].upper_x = constraints[prio][i]->ub();
-        }
-        else if (type == Constraint::equality) {
-            tasks_prio[prio].A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].b.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            total_eqs += c_size;
-        }
-        else if (type == Constraint::inequality) {
-            tasks_prio[prio].C.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
-            tasks_prio[prio].lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
-            tasks_prio[prio].upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
-            total_ineqs += c_size;
-        }
-    }
-
-    tasks_prio.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
-
-    return tasks_prio;
+    return hqp;
 }
 
 } // namespace wbc

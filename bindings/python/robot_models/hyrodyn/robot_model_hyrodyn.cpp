@@ -17,10 +17,10 @@ void RobotModelHyrodyn::update2(const base::NamedVector<base::JointState> &joint
 base::NamedVector<base::JointState> RobotModelHyrodyn::jointState2(const std::vector<std::string> &names){
     return toNamedVector(wbc::RobotModelHyrodyn::jointState(names));
 }
-void RobotModelHyrodyn::setActiveContacts(const base::NamedVector<int> & active_contacts){
+void RobotModelHyrodyn::setActiveContacts(const base::NamedVector<wbc::ActiveContact> & active_contacts){
     wbc::RobotModelHyrodyn::setActiveContacts(toActiveContacts(active_contacts));
 }
-base::NamedVector<int> RobotModelHyrodyn::getActiveContacts2(){
+base::NamedVector<wbc::ActiveContact> RobotModelHyrodyn::getActiveContacts2(){
     return fromActiveContacts(wbc::RobotModelHyrodyn::getActiveContacts());
 }
 base::NamedVector<base::JointLimitRange> RobotModelHyrodyn::jointLimits2(){

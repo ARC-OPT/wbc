@@ -14,7 +14,7 @@
                 <visual name="ALBase_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALBase_Link.stl"/>
+                                <mesh filename="../meshes/ALBase_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -23,7 +23,7 @@
                 <collision name="ALBase_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALBase_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALBase_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -50,7 +50,7 @@
                 <visual name="ALElbowAct_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALElbow_Act_Link.stl"/>
+                                <mesh filename="../meshes/ALElbow_Act_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -59,7 +59,7 @@
                 <collision name="ALElbowAct_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALElbow_Act_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALElbow_Act_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -79,7 +79,7 @@
                 <visual name="ALElbowB11_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALElbow_B11_Link.stl"/>
+                                <mesh filename="../meshes/ALElbow_B11_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -88,7 +88,7 @@
                 <collision name="ALElbowB11_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALElbow_B11_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALElbow_B11_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -101,7 +101,7 @@
                 <visual name="ALElbow_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALElbow_Link.stl"/>
+                                <mesh filename="../meshes/ALElbow_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -110,7 +110,7 @@
                 <collision name="ALElbow_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALElbow_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALElbow_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -130,7 +130,7 @@
                 <visual name="ALShoulder1_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALShoulder1_Link.stl"/>
+                                <mesh filename="../meshes/ALShoulder1_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -139,7 +139,7 @@
                 <collision name="ALShoulder1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALShoulder1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALShoulder1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -159,7 +159,7 @@
                 <visual name="ALShoulder2_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALShoulder2_Link.stl"/>
+                                <mesh filename="../meshes/ALShoulder2_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -168,7 +168,7 @@
                 <collision name="ALShoulder2_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALShoulder2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALShoulder2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -188,7 +188,7 @@
                 <visual name="ALShoulder3_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALShoulder3_Link.stl"/>
+                                <mesh filename="../meshes/ALShoulder3_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -197,7 +197,7 @@
                 <collision name="ALShoulder3_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALShoulder3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALShoulder3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -217,7 +217,7 @@
                 <visual name="ALWristAL1_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_AL1_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_AL1_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -226,7 +226,7 @@
                 <collision name="ALWristAL1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_AL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_AL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -246,7 +246,7 @@
                 <visual name="ALWristAR1_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_AR1_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_AR1_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -255,7 +255,7 @@
                 <collision name="ALWristAR1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_AR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_AR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -275,7 +275,7 @@
                 <visual name="ALWristActL_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_ActL_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_ActL_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.77647 0.75686 0.73725 1.0"/>
@@ -284,7 +284,7 @@
                 <collision name="ALWristActL_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_ActL_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_ActL_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -304,7 +304,7 @@
                 <visual name="ALWristActR_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_ActR_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_ActR_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.776470588235294 0.756862745098039 0.737254901960784 1.0"/>
@@ -313,7 +313,7 @@
                 <collision name="ALWristActR_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_ActR_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_ActR_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -347,7 +347,7 @@
                 <visual name="ALWristBL1_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL1_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BL1_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -356,7 +356,7 @@
                 <collision name="ALWristBL1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -376,7 +376,7 @@
                 <visual name="ALWristBL2_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL2_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BL2_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -385,7 +385,7 @@
                 <collision name="ALWristBL2_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BL2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -405,7 +405,7 @@
                 <visual name="ALWristBL3_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL3_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BL3_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -414,7 +414,7 @@
                 <collision name="ALWristBL3_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BL3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -434,7 +434,7 @@
                 <visual name="ALWristBL4_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL4_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BL4_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.776470588235294 0.756862745098039 0.737254901960784 1.0"/>
@@ -443,7 +443,7 @@
                 <collision name="ALWristBL4_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BL4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BL4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -477,7 +477,7 @@
                 <visual name="ALWristBR1_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR1_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BR1_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -486,7 +486,7 @@
                 <collision name="ALWristBR1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -506,7 +506,7 @@
                 <visual name="ALWristBR2_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR2_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BR2_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -515,7 +515,7 @@
                 <collision name="ALWristBR2_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BR2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -535,7 +535,7 @@
                 <visual name="ALWristBR3_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR3_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BR3_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.529411764705882 0.549019607843137 0.549019607843137 1.0"/>
@@ -544,7 +544,7 @@
                 <collision name="ALWristBR3_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BR3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -564,7 +564,7 @@
                 <visual name="ALWristBR4_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR4_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_BR4_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -573,7 +573,7 @@
                 <collision name="ALWristBR4_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_BR4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_BR4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -591,7 +591,7 @@
                 <visual name="ALWristBase_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_Base_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_Base_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -600,7 +600,7 @@
                 <collision name="ALWristBase_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_Base_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_Base_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -618,7 +618,7 @@
                 <visual name="ALWristFT_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWristFT_Link.stl"/>
+                                <mesh filename="../meshes/ALWristFT_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.698039215686274 0.698039215686274 0.698039215686274 1.0"/>
@@ -627,7 +627,7 @@
                 <collision name="ALWristFT_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWristFT_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWristFT_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -647,7 +647,7 @@
                 <visual name="ALWristPitch_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWristPitch_Link.stl"/>
+                                <mesh filename="../meshes/ALWristPitch_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -656,7 +656,7 @@
                 <collision name="ALWristPitch_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWristPitch_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWristPitch_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -688,7 +688,7 @@
                 <visual name="ALWristRoot_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_Root_Link.stl"/>
+                                <mesh filename="../meshes/ALWrist_Root_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.64706 0.61961 0.58824 1.0"/>
@@ -697,7 +697,7 @@
                 <collision name="ALWristRoot_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWrist_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWrist_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -717,7 +717,7 @@
                 <visual name="ALWristYaw_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWristYaw_Link.stl"/>
+                                <mesh filename="../meshes/ALWristYaw_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -726,7 +726,7 @@
                 <collision name="ALWristYaw_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ALWristYaw_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ALWristYaw_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -744,7 +744,7 @@
                 <visual name="ARBase_Link_Visual">
                         <origin rpy="3.141593 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARBase_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARBase_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -753,7 +753,7 @@
                 <collision name="ARBase_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARBase_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARBase_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -780,7 +780,7 @@
                 <visual name="ARElbowAct_Link_Visual">
                         <origin rpy="0.0 0.0 3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARElbow_Act_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARElbow_Act_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -789,7 +789,7 @@
                 <collision name="ARElbowAct_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARElbow_Act_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARElbow_Act_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -809,7 +809,7 @@
                 <visual name="ARElbowB11_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARElbow_B11_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARElbow_B11_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -818,7 +818,7 @@
                 <collision name="ARElbowB11_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARElbow_B11_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARElbow_B11_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -831,7 +831,7 @@
                 <visual name="ARElbow_Link_Visual">
                         <origin rpy="0.0 0.0 3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARElbow_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARElbow_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -840,7 +840,7 @@
                 <collision name="ARElbow_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARElbow_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARElbow_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -860,7 +860,7 @@
                 <visual name="ARShoulder1_Link_Visual">
                         <origin rpy="0.0 0.0 3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARShoulder1_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARShoulder1_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -869,7 +869,7 @@
                 <collision name="ARShoulder1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARShoulder1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARShoulder1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -889,7 +889,7 @@
                 <visual name="ARShoulder2_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARShoulder2_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARShoulder2_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -898,7 +898,7 @@
                 <collision name="ARShoulder2_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARShoulder2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARShoulder2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -918,7 +918,7 @@
                 <visual name="ARShoulder3_Link_Visual">
                         <origin rpy="3.141593 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARShoulder3_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARShoulder3_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -927,7 +927,7 @@
                 <collision name="ARShoulder3_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARShoulder3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARShoulder3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -947,7 +947,7 @@
                 <visual name="ARWristAL1_Link_Visual">
                         <origin rpy="-3.141593 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_AR1_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_AR1_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -956,7 +956,7 @@
                 <collision name="ARWristAL1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_AR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_AR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -976,7 +976,7 @@
                 <visual name="ARWristAR1_Link_Visual">
                         <origin rpy="-3.141593 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_AL1_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_AL1_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -985,7 +985,7 @@
                 <collision name="ARWristAR1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_AL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_AL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1005,7 +1005,7 @@
                 <visual name="ARWristActL_Link_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_ActR_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_ActR_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.776470588235294 0.756862745098039 0.737254901960784 1.0"/>
@@ -1014,7 +1014,7 @@
                 <collision name="ARWristActL_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_ActR_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_ActR_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1034,7 +1034,7 @@
                 <visual name="ARWristActR_Link_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_ActL_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_ActL_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.77647 0.75686 0.73725 1.0"/>
@@ -1043,7 +1043,7 @@
                 <collision name="ARWristActR_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_ActL_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_ActL_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1077,7 +1077,7 @@
                 <visual name="ARWristBL1_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR1_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR1_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -1086,7 +1086,7 @@
                 <collision name="ARWristBL1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1106,7 +1106,7 @@
                 <visual name="ARWristBL2_Link_Visual">
                         <origin rpy="0.0 0.0 3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR2_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR2_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -1115,7 +1115,7 @@
                 <collision name="ARWristBL2_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1135,7 +1135,7 @@
                 <visual name="ARWristBL3_Link_Visual">
                         <origin rpy="0.0 0.0 3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR3_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR3_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.529411764705882 0.549019607843137 0.549019607843137 1.0"/>
@@ -1144,7 +1144,7 @@
                 <collision name="ARWristBL3_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1164,7 +1164,7 @@
                 <visual name="ARWristBL4_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR4_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR4_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -1173,7 +1173,7 @@
                 <collision name="ARWristBL4_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BR4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BR4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1207,7 +1207,7 @@
                 <visual name="ARWristBR1_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL1_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL1_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -1216,7 +1216,7 @@
                 <collision name="ARWristBR1_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL1_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1236,7 +1236,7 @@
                 <visual name="ARWristBR2_Link_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL2_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL2_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -1245,7 +1245,7 @@
                 <collision name="ARWristBR2_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL2_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1265,7 +1265,7 @@
                 <visual name="ARWristBR3_Link_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL3_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL3_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -1274,7 +1274,7 @@
                 <collision name="ARWristBR3_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL3_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1294,7 +1294,7 @@
                 <visual name="ARWristBR4_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL4_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL4_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.776470588235294 0.756862745098039 0.737254901960784 1.0"/>
@@ -1303,7 +1303,7 @@
                 <collision name="ARWristBR4_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_BL4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_BL4_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1321,7 +1321,7 @@
                 <visual name="ARWristBase_Link_Visual">
                         <origin rpy="3.141593 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_Base_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_Base_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -1330,7 +1330,7 @@
                 <collision name="ARWristBase_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_Base_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_Base_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1348,7 +1348,7 @@
                 <visual name="ARWristFT_Link_Visual">
                         <origin rpy="0.0 0.0 3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWristFT_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWristFT_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.698039215686274 0.698039215686274 0.698039215686274 1.0"/>
@@ -1357,7 +1357,7 @@
                 <collision name="ARWristFT_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWristFT_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWristFT_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1377,7 +1377,7 @@
                 <visual name="ARWristPitch_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWristPitch_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWristPitch_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.647058823529412 0.619607843137255 0.588235294117647 1.0"/>
@@ -1386,7 +1386,7 @@
                 <collision name="ARWristPitch_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWristPitch_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWristPitch_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1418,7 +1418,7 @@
                 <visual name="ARWristRoot_Link_Visual">
                         <origin rpy="-3.141592 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_Root_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_Root_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.64706 0.61961 0.58824 1.0"/>
@@ -1427,7 +1427,7 @@
                 <collision name="ARWristRoot_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWrist_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWrist_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1447,7 +1447,7 @@
                 <visual name="ARWristYaw_Link_Visual">
                         <origin rpy="0.0 0.0 -3.141592" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWristYaw_Link.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWristYaw_Link.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -1456,7 +1456,7 @@
                 <collision name="ARWristYaw_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/ARWristYaw_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/ARWristYaw_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1476,7 +1476,7 @@
                 <visual name="BodyActL_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_ActL.stl"/>
+                                <mesh filename="../meshes/Body_ActL.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -1485,7 +1485,7 @@
                 <collision name="BodyActL_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_ActL_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Body_ActL_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1505,7 +1505,7 @@
                 <visual name="BodyActR_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_ActR.stl"/>
+                                <mesh filename="../meshes/Body_ActR.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -1514,7 +1514,7 @@
                 <collision name="BodyActR_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_ActR_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Body_ActR_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1534,7 +1534,7 @@
                 <visual name="BodyBL1_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BL1.stl"/>
+                                <mesh filename="../meshes/Body_BL1.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.64706 0.61961 0.58824 1.0"/>
@@ -1543,7 +1543,7 @@
                 <collision name="BodyBL1_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BL1_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Body_BL1_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1563,7 +1563,7 @@
                 <visual name="BodyBL2_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BL2.stl"/>
+                                <mesh filename="../meshes/Body_BL2.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.61961 0.40784 0.2 1.0"/>
@@ -1572,7 +1572,7 @@
                 <collision name="BodyBL2_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BL2_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Body_BL2_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1592,7 +1592,7 @@
                 <visual name="BodyBR1_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BR1.stl"/>
+                                <mesh filename="../meshes/Body_BR1.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.64706 0.61961 0.58824 1.0"/>
@@ -1601,7 +1601,7 @@
                 <collision name="BodyBR1_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BR1_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Body_BR1_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1621,7 +1621,7 @@
                 <visual name="BodyBR2_Visual">
                         <origin rpy="0.0 0.0 -3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BR2.stl"/>
+                                <mesh filename="../meshes/Body_BR2.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.64706 0.61961 0.58824 1.0"/>
@@ -1630,7 +1630,7 @@
                 <collision name="BodyBR2_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_BR2_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Body_BR2_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1650,7 +1650,7 @@
                 <visual name="BodyPitch_Visual">
                         <origin rpy="0.0 0.0 -1.570796" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/BodyPitch.stl"/>
+                                <mesh filename="../meshes/BodyPitch.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -1659,7 +1659,7 @@
                 <collision name="BodyPitch_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/BodyPitch_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/BodyPitch_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1679,7 +1679,7 @@
                 <visual name="BodyRoll_Visual">
                         <origin rpy="0.0 0.0 -1.570796" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/BodyRoll.stl"/>
+                                <mesh filename="../meshes/BodyRoll.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -1688,7 +1688,7 @@
                 <collision name="BodyRoll_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/BodyRoll_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/BodyRoll_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1706,7 +1706,7 @@
                 <visual name="BodyRoot_Link_Visual">
                         <origin rpy="3.141593 0.0 3.141593" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_Root_Link.stl"/>
+                                <mesh filename="../meshes/Body_Root_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="1.0 1.0 1.0 1.0"/>
@@ -1715,7 +1715,7 @@
                 <collision name="BodyRoot_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Body_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Body_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1735,7 +1735,7 @@
                 <visual name="BodyYaw_Visual">
                         <origin rpy="0.0 0.0 -1.570796" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/BodyYaw.stl"/>
+                                <mesh filename="../meshes/BodyYaw.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -1744,7 +1744,7 @@
                 <collision name="BodyYaw_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/BodyYaw_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/BodyYaw_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1786,7 +1786,7 @@
                 <visual name="base_link_torso_Visual">
                         <origin rpy="3.141593 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/base_link_torso.stl"/>
+                                <mesh filename="../meshes/base_link_torso.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.698039215686274 0.698039215686274 0.698039215686274 1.0"/>
@@ -1795,7 +1795,7 @@
                 <visual name="Connector_Torso/Head_Visual">
                         <origin rpy="-3.141592 0.0 0.0" xyz="0.3485 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Connector_Torso_Head.stl"/>
+                                <mesh filename="../meshes/Connector_Torso_Head.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -1804,7 +1804,7 @@
                 <visual name="Connector_Torso/ArmRight_Visual">
                         <origin rpy="-1.508093 0.25436 -1.3265" xyz="0.29809 -0.12609 0.025162"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Connector_Torso_ArmRight.stl"/>
+                                <mesh filename="../meshes/Connector_Torso_ArmRight.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -1813,7 +1813,7 @@
                 <visual name="Connector_Torso/ArmLeft_Visual">
                         <origin rpy="1.508093 0.25436 1.3265" xyz="0.29809 0.12609 0.025162"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Connector_Torso_ArmLeft.stl"/>
+                                <mesh filename="../meshes/Connector_Torso_ArmLeft.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -1822,7 +1822,7 @@
                 <collision name="Connector_Body/Torso_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Connector_BodyTorso_Link_simplified-full-urdf_joined_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/base_link_torso.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1840,7 +1840,7 @@
                 <visual name="Connector_Torso/Backpack_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Connector_Torso_Backpack.stl"/>
+                                <mesh filename="../meshes/Connector_Torso_Backpack.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.20784 0.30196 0.45098 1.0"/>
@@ -1849,7 +1849,7 @@
                 <collision name="Connector_Torso/Backpack_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Connector_Torso_Backpack_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Connector_Torso_Backpack_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -1867,7 +1867,7 @@
                 <visual name="GLBase_Visual">
                         <origin rpy="3.141593 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/GripperLeft_BaseFrame.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/GripperLeft_BaseFrame.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1876,7 +1876,7 @@
                 <visual name="GLF1Base_Visual">
                         <origin rpy="1.7921 0.1664 -1.533593" xyz="-0.013458 -0.038971 0.065211"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Finger_Base_Frame.stl"/>
+                                <mesh filename="../meshes/Finger_Base_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -1885,7 +1885,7 @@
                 <visual name="GLF1ProximalBar_Visual">
                         <origin rpy="0.6783 0.1664 -1.533593" xyz="-0.053439 -0.029588 0.079319"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalBar_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1894,7 +1894,7 @@
                 <visual name="GLF1ProximalSegment_Visual">
                         <origin rpy="0.6664 0.1664 -1.533593" xyz="-0.031453 -0.028781 0.079387"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1903,7 +1903,7 @@
                 <visual name="GLF1Gear_Visual">
                         <origin rpy="1.9549 0.1664 -1.533593" xyz="-0.063936 -0.036895 0.120472"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_Gear_Frame.stl"/>
+                                <mesh filename="../meshes/F_Gear_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1912,7 +1912,7 @@
                 <visual name="GLF1TopSegment_Visual">
                         <origin rpy="1.9549 0.1664 -1.533593" xyz="-0.063936 -0.036895 0.120472"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_TopSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1921,7 +1921,7 @@
                 <visual name="GLF2Base_Visual">
                         <origin rpy="1.7907 -0.12478 -1.598593" xyz="-0.014454 0.012122 0.06971"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Finger_Base_Frame.stl"/>
+                                <mesh filename="../meshes/Finger_Base_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -1930,7 +1930,7 @@
                 <visual name="GLF2ProximalBar_Visual">
                         <origin rpy="0.6769 -0.12478 -1.598593" xyz="-0.053624 0.02768 0.080161"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalBar_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1939,7 +1939,7 @@
                 <visual name="GLF2ProximalSegment_Visual">
                         <origin rpy="0.665 -0.12478 -1.598593" xyz="-0.031632 0.027073 0.080199"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1948,7 +1948,7 @@
                 <visual name="GLF2Gear_Visual">
                         <origin rpy="1.9535 -0.12478 -1.598593" xyz="-0.064179 0.033171 0.121581"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_Gear_Frame.stl"/>
+                                <mesh filename="../meshes/F_Gear_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1957,7 +1957,7 @@
                 <visual name="GLF2TopSegment_Visual">
                         <origin rpy="1.9535 -0.12478 -1.598593" xyz="-0.064179 0.033171 0.121581"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_TopSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1966,7 +1966,7 @@
                 <visual name="GLF3Base_Visual">
                         <origin rpy="1.7907 -0.124785 -1.598609" xyz="-0.013488 0.046837 0.065354"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Finger_Base_Frame.stl"/>
+                                <mesh filename="../meshes/Finger_Base_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -1975,7 +1975,7 @@
                 <visual name="GLF3ProximalBar_Visual">
                         <origin rpy="0.6769 -0.124785 -1.598609" xyz="-0.052657 0.062395 0.075805"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalBar_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1984,7 +1984,7 @@
                 <visual name="GLF3ProximalSegment_Visual">
                         <origin rpy="0.665 -0.124785 -1.598609" xyz="-0.030665 0.061788 0.075843"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -1993,7 +1993,7 @@
                 <visual name="GLF3Gear_Visual">
                         <origin rpy="1.9535 -0.124785 -1.598609" xyz="-0.063212 0.067886 0.117225"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_Gear_Frame.stl"/>
+                                <mesh filename="../meshes/F_Gear_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2002,7 +2002,7 @@
                 <visual name="GLF3TopSegment_Visual">
                         <origin rpy="1.9535 -0.124785 -1.598609" xyz="-0.063212 0.067886 0.117225"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_TopSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2011,7 +2011,7 @@
                 <visual name="GLThumb_Visual">
                         <origin rpy="0.0 0.0 1e-06" xyz="0.019161 -0.002327 0.042"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/GL_Thumb.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/GL_Thumb.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2020,7 +2020,7 @@
                 <visual name="GLF4Base_Visual">
                         <origin rpy="1.789 0.0 1.570792" xyz="0.031157 0.010673 0.070112"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Finger_Base_Frame.stl"/>
+                                <mesh filename="../meshes/Finger_Base_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -2029,7 +2029,7 @@
                 <visual name="GLF4ProximalBar_Visual">
                         <origin rpy="0.6752 0.0 1.570792" xyz="0.070723 -0.002377 0.082349"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalBar_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2038,7 +2038,7 @@
                 <visual name="GLF4ProximalSegment_Visual">
                         <origin rpy="0.6633 0.0 1.570792" xyz="0.048723 -0.002377 0.08235"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2047,7 +2047,7 @@
                 <visual name="GLF4Gear_Visual">
                         <origin rpy="1.9518 0.0 1.570792" xyz="0.081356 -0.002377 0.124112"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_Gear_Frame.stl"/>
+                                <mesh filename="../meshes/F_Gear_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2056,18 +2056,12 @@
                 <visual name="GLF4TopSegment_Visual">
                         <origin rpy="1.9518 0.0 1.570792" xyz="0.081356 -0.002377 0.124112"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_TopSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
                         </material>
                 </visual>
-                <collision name="GLBase_Link_Collision">
-                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
-                        <geometry>
-                                <mesh filename="../meshes/lfs-stl/GLBase_Link_simplified-full-urdf_joined_convexhull.stl" scale="1.0 1.0 1.0"/>
-                        </geometry>
-                </collision>
         </link>
         <joint name="GRBase" type="fixed">
                 <origin rpy="0.0 0.0 3.1415926535" xyz="0.0 0.0 0.0"/>
@@ -2083,7 +2077,7 @@
                 <visual name="GRBase_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/2FGripper_BaseFrame.stl"/>
+                                <mesh filename="../meshes/2FGripper_BaseFrame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.77647 0.75686 0.73725 1.0"/>
@@ -2092,7 +2086,7 @@
                 <visual name="GRF1Base_Visual">
                         <origin rpy="1.789 0.0 -1.5708" xyz="-0.021725 -0.013001 0.064903"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Finger_Base_Frame.stl"/>
+                                <mesh filename="../meshes/Finger_Base_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -2101,7 +2095,7 @@
                 <visual name="GRF1ProximalBar_Visual">
                         <origin rpy="0.6752 0.0 -1.5708" xyz="-0.061291 0.0 0.07714"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalBar_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2110,7 +2104,7 @@
                 <visual name="GRF1ProximalSegment_Visual">
                         <origin rpy="0.6633 0.0 -1.5708" xyz="-0.039291 0.0 0.077141"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2119,7 +2113,7 @@
                 <visual name="GRF1Gear_Visual">
                         <origin rpy="1.9518 0.0 -1.5708" xyz="-0.071924 0.0 0.118903"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_Gear_Frame.stl"/>
+                                <mesh filename="../meshes/F_Gear_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2128,7 +2122,7 @@
                 <visual name="GRF1TopSegment_Visual">
                         <origin rpy="1.9518 0.0 -1.5708" xyz="-0.071924 0.0 0.118903"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_TopSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2137,7 +2131,7 @@
                 <visual name="GRF2Base_Visual">
                         <origin rpy="1.789 0.0 1.5708" xyz="0.02175 0.012996 0.064903"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Finger_Base_Frame.stl"/>
+                                <mesh filename="../meshes/Finger_Base_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.79216 0.81961 0.93333 1.0"/>
@@ -2146,7 +2140,7 @@
                 <visual name="GRF2ProximalBar_Visual">
                         <origin rpy="0.6752 0.0 1.5708" xyz="0.061316 0.0 0.07714"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalBar_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalBar_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2155,7 +2149,7 @@
                 <visual name="GRF2ProximalSegment_Visual">
                         <origin rpy="0.6633 0.0 1.5708" xyz="0.039316 0.0 0.077141"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_ProximalSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_ProximalSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2164,7 +2158,7 @@
                 <visual name="GRF2Gear_Visual">
                         <origin rpy="1.9518 0.0 1.5708" xyz="0.071949 0.0 0.118903"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_Gear_Frame.stl"/>
+                                <mesh filename="../meshes/F_Gear_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
@@ -2173,18 +2167,12 @@
                 <visual name="GRF2TopSegment_Visual">
                         <origin rpy="1.9518 0.0 1.5708" xyz="0.071949 0.0 0.118903"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/F_TopSegment_Frame.stl"/>
+                                <mesh filename="../meshes/F_TopSegment_Frame.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.94118 0.67451 0.11765 1.0"/>
                         </material>
                 </visual>
-                <collision name="GRBase_Link_Collision">
-                        <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
-                        <geometry>
-                                <mesh filename="../meshes/lfs-stl/GRBase_Link_simplified-full-urdf_joined_convexhull.stl" scale="1.0 1.0 1.0"/>
-                        </geometry>
-                </collision>
         </link>
         <joint name="HeadActC" type="revolute">
                 <origin rpy="-1.5708 0.0 0.0" xyz="0.15925 0.0 0.0"/>
@@ -2202,7 +2190,7 @@
                 <visual name="HeadActC_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_ActC.stl"/>
+                                <mesh filename="../meshes/Head_ActC.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -2211,7 +2199,7 @@
                 <collision name="HeadActC_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_ActC_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Head_ActC_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2231,7 +2219,7 @@
                 <visual name="HeadActL_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_ActL.stl"/>
+                                <mesh filename="../meshes/Head_ActL.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -2240,7 +2228,7 @@
                 <collision name="HeadActL_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_ActL_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Head_ActL_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2260,7 +2248,7 @@
                 <visual name="HeadActR_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_ActR.stl"/>
+                                <mesh filename="../meshes/Head_ActR.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -2269,7 +2257,7 @@
                 <collision name="HeadActR_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_ActR_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Head_ActR_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2287,7 +2275,7 @@
                 <visual name="HeadBase_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_Base.stl"/>
+                                <mesh filename="../meshes/Head_Base.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -2296,7 +2284,7 @@
                 <collision name="HeadBase_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Head_Base_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Head_Base_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2316,7 +2304,7 @@
                 <visual name="HeadPitch_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/HeadPitch.stl"/>
+                                <mesh filename="../meshes/HeadPitch.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -2325,7 +2313,7 @@
                 <collision name="HeadPitch_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/HeadPitch_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/HeadPitch_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2345,7 +2333,7 @@
                 <visual name="HeadRoll_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/HeadRoll.stl"/>
+                                <mesh filename="../meshes/HeadRoll.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1.0"/>
@@ -2354,7 +2342,7 @@
                 <collision name="HeadRoll_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/HeadRoll_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/HeadRoll_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2374,7 +2362,7 @@
                 <visual name="HeadYaw_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/HeadYaw.stl"/>
+                                <mesh filename="../meshes/HeadYaw.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.498039215686275 0.498039215686275 0.498039215686275 1.0"/>
@@ -2383,7 +2371,7 @@
                 <collision name="HeadYaw_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/HeadYaw_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/HeadYaw_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2401,7 +2389,7 @@
                 <visual name="IMU_Body_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/IMU_Body.stl"/>
+                                <mesh filename="../meshes/IMU_Body.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -2410,7 +2398,7 @@
                 <collision name="IMU_Body_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/IMU_Body_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/IMU_Body_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2428,7 +2416,7 @@
                 <visual name="IMU_Torso_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/IMU_Torso.stl"/>
+                                <mesh filename="../meshes/IMU_Torso.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -2437,7 +2425,7 @@
                 <collision name="IMU_Torso_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/IMU_Torso_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/IMU_Torso_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2450,7 +2438,7 @@
                 <visual name="RH5v2_Root_Link_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/RH5v2_Root_Link.stl"/>
+                                <mesh filename="../meshes/RH5v2_Root_Link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.89804 0.91765 0.92941 1.0"/>
@@ -2459,7 +2447,7 @@
                 <collision name="RH5v2_Root_Link_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/RH5v2_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/RH5v2_Root_Link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2477,7 +2465,7 @@
                 <visual name="Stereo_Camera_Head_Visual">
                         <origin rpy="0.785398 -1.57066 0.785398" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Stereo_Camera_Head.stl"/>
+                                <mesh filename="../meshes/Stereo_Camera_Head.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.698039215686274 0.698039215686274 0.698039215686274 1.0"/>
@@ -2486,7 +2474,7 @@
                 <collision name="Stereo_Camera_Head_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Stereo_Camera_Head_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Stereo_Camera_Head_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2504,7 +2492,7 @@
                 <visual name="Structure_Sensor_Visual">
                         <origin rpy="-3.141593 0.0 1.5707" xyz="0.0765 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Structure_Sensor_Torso.stl"/>
+                                <mesh filename="../meshes/Structure_Sensor_Torso.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.69804 0.69804 0.69804 1.0"/>
@@ -2513,7 +2501,7 @@
                 <collision name="Structure_Sensor_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/Structure_Sensor_Torso_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/Structure_Sensor_Torso_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>
@@ -2531,7 +2519,7 @@
                 <visual name="platform_Visual">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/base_link.stl"/>
+                                <mesh filename="../meshes/base_link.stl"/>
                         </geometry>
                         <material name="">
                                 <color rgba="0.75294 0.75294 0.75294 1.0"/>
@@ -2540,7 +2528,7 @@
                 <collision name="platform_Collision">
                         <origin rpy="0.0 0.0 0.0" xyz="0.0 0.0 0.0"/>
                         <geometry>
-                                <mesh filename="../meshes/lfs-stl/base_link_convexhull.stl" scale="1.0 1.0 1.0"/>
+                                <mesh filename="../meshes/base_link_convexhull.stl" scale="1.0 1.0 1.0"/>
                         </geometry>
                 </collision>
         </link>

@@ -1,6 +1,5 @@
 from wbc.core import *
-from wbc.robot_models.robot_model_hyrodyn import *
-from wbc.robot_models.robot_model_kdl import *
+from wbc.robot_models.robot_model_pinocchio import *
 import numpy as np
 import nose
 
@@ -12,11 +11,13 @@ def run(robot_model):
     gravity_vector = [0,0,-9.81]
     contacts = ActiveContacts()
     contacts.names = ["RH5_Root_link", "LLAnkle_FT"]
-    contacts.elements = [1,1]
+    a = ActiveContact()
+    a.mu = 0.6
+    a.active = 1
+    contacts.elements = [a,a]
 
     r=RobotModelConfig()
     r.file="../../../models/rh5/urdf/rh5_single_leg.urdf"
-    r.submechanism_file="../../../models/rh5/hyrodyn/rh5_single_leg.yml"
     r.floating_base = False
     assert robot_model.configure(r) == True
 
@@ -81,12 +82,8 @@ def run(robot_model):
 
     robot_model.getRobotModelConfig() == r
 
-
-def test_robot_model_hyrodyn():
-    run(RobotModelHyrodyn())
-
-def test_robot_model_kdl():
-    run(RobotModelKDL())
+def test_robot_model_pinocchio():
+    run(RobotModelPinocchio())
 
 if __name__ == '__main__':
     nose.run()

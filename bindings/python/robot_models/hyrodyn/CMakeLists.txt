@@ -1,8 +1,8 @@
 PYTHON_ADD_MODULE(robot_model_hyrodyn robot_model_hyrodyn.cpp)
 target_link_libraries(robot_model_hyrodyn PUBLIC
 	${PYTHON_LIBRARIES}
-	Boost::python3
-	Boost::numpy3
+	Boost::python
+	Boost::numpy
 	wbc-robot_models-hyrodyn)
 
 target_include_directories(robot_model_hyrodyn PUBLIC

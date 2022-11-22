@@ -14,7 +14,7 @@ namespace wbc{
         b_vec.setZero();
 
         for(int i = 0; i < nc; ++i)
-            A_mtx.block(i*6, 0, 6, nj) = contacts[i] * robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]);
+            A_mtx.block(i*6, 0, 6, nj) = contacts[i].active * robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]);
     }
 
 

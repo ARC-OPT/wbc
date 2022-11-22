@@ -1,5 +1,5 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <robot_models/kdl/RobotModelKDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>
 #include <controllers/CartesianPosPDController.hpp>
@@ -43,8 +43,8 @@ int main(){
 
     double dt = 0.001;
 
-    // Create KDL based robot model
-    RobotModelPtr robot_model = std::make_shared<RobotModelKDL>();
+    // Create robot model
+    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
 
     // Configure a serial robot model with floating base and two contact points: {"LLAnkle_FT", "LRAnkle_FT"}.
     // Note that the joint names have to contain {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
@@ -60,7 +60,7 @@ int main(){
     config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
     config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    config.contact_points.elements = {1,1};
+    config.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
     if(!robot_model->configure(config))
         return -1;
 

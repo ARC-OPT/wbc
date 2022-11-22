@@ -25,6 +25,11 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
 
+    qp.lower_x.resize(0);
+    qp.upper_x.resize(0);
+    qp.lower_y.resize(0);
+    qp.upper_y.resize(0);
+    qp.A.setIdentity();
     // Task Jacobian
     base::Matrix6d A;
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
@@ -138,7 +143,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
     cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
-    for(uint j = 0; j < NO_EQ_CONSTRAINTS; j++)
+    for(uint j = 0; j < NO_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
     //cout<<"\n............................."<<endl;

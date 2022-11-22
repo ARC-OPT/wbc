@@ -34,9 +34,9 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
     srand(time(NULL));
     CartesianPosPDController ctrl;
     base::Vector6d p_gain, d_gain, max_ctrl_out, dead_zone;
-    p_gain.setConstant(1);
+    p_gain.setConstant(10);
     d_gain.setConstant(0);
-    max_ctrl_out.setConstant(0.1);
+    max_ctrl_out.setConstant(5);
     dead_zone.setConstant(0.01);
 
     BOOST_CHECK_NO_THROW(ctrl.setPGain(p_gain));
@@ -62,7 +62,7 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
     feedback.pose.orientation.setIdentity();
 
     double diff = 1e10;
-    double dt = 0.1;
+    double dt = 0.01;
 
     base::Vector3d euler = base::getEuler(feedback.pose.orientation);
     while(diff > dead_zone.norm() + 1e-3){
@@ -118,9 +118,9 @@ BOOST_AUTO_TEST_CASE(jnt_pos_pd_controller){
     joint_names.push_back("joint_b");
     JointPosPDController ctrl(joint_names);
     base::Vector2d p_gain, d_gain, max_ctrl_out, dead_zone;
-    p_gain.setConstant(1);
+    p_gain.setConstant(10);
     d_gain.setConstant(0);
-    max_ctrl_out.setConstant(0.1);
+    max_ctrl_out.setConstant(5);
     dead_zone.setConstant(0.01);
 
     BOOST_CHECK_NO_THROW(ctrl.setPGain(p_gain));

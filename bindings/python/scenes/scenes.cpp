@@ -33,10 +33,10 @@ base::NamedVector<base::Wrench> toNamedVector(const base::samples::Wrenches& wre
     return wrenches_out;
 }
 
-VelocityScene::VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<HierarchicalLSSolver> solver) :
+VelocityScene::VelocityScene(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<HierarchicalLSSolver> solver) :
     wbc::VelocityScene(robot_model, solver){
 }
-VelocityScene::VelocityScene(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
+VelocityScene::VelocityScene(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::VelocityScene(robot_model, solver){
 }
 void VelocityScene::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
@@ -61,7 +61,7 @@ base::NamedVector<wbc::TaskStatus> VelocityScene::updateTasksStatus2(){
     return toNamedVector(wbc::VelocityScene::updateTasksStatus());
 }
 
-VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(std::shared_ptr<RobotModelKDL> robot_model, std::shared_ptr<QPOASESSolver> solver) :
+VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::VelocitySceneQuadraticCost(robot_model, solver){
 }
 void VelocitySceneQuadraticCost::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
@@ -86,7 +86,7 @@ base::NamedVector<wbc::TaskStatus> VelocitySceneQuadraticCost::updateTasksStatus
     return toNamedVector(wbc::VelocitySceneQuadraticCost::updateTasksStatus());
 }
 
-AccelerationSceneTSID::AccelerationSceneTSID(std::shared_ptr<RobotModelHyrodyn> robot_model, std::shared_ptr<QPOASESSolver> solver) :
+AccelerationSceneTSID::AccelerationSceneTSID(std::shared_ptr<RobotModelPinocchio> robot_model, std::shared_ptr<QPOASESSolver> solver) :
     wbc::AccelerationSceneTSID(robot_model, solver){
 }
 void AccelerationSceneTSID::setJointReference(const std::string& task_name, const base::NamedVector<base::JointState>& ref){
@@ -120,8 +120,8 @@ BOOST_PYTHON_MODULE(scenes){
 
     np::initialize();
 
-    py::class_<wbc_py::VelocityScene>("VelocityScene", py::init<std::shared_ptr<wbc_py::RobotModelKDL>, std::shared_ptr<wbc_py::QPOASESSolver>>())
-            .def(py::init<std::shared_ptr<wbc_py::RobotModelKDL>,std::shared_ptr<wbc_py::HierarchicalLSSolver>>())
+    py::class_<wbc_py::VelocityScene>("VelocityScene", py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>, std::shared_ptr<wbc_py::QPOASESSolver>>())
+            .def(py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>,std::shared_ptr<wbc_py::HierarchicalLSSolver>>())
             .def("configure",    &wbc_py::VelocityScene::configure)
             .def("update",       &wbc_py::VelocityScene::update, py::return_value_policy<py::copy_const_reference>())
             .def("solve",        &wbc_py::VelocityScene::solve2)
@@ -130,8 +130,8 @@ BOOST_PYTHON_MODULE(scenes){
             .def("setTaskWeights",   &wbc_py::VelocityScene::setTaskWeights)
             .def("setTaskActivation",   &wbc_py::VelocityScene::setTaskActivation)
             .def("getTasksStatus",   &wbc_py::VelocityScene::getTasksStatus,  py::return_value_policy<py::copy_const_reference>())
-            .def("getNConstraintVariablesPerPrio",   &wbc_py::VelocityScene::getNConstraintVariablesPerPrio)
-            .def("hasConstraint",   &wbc_py::VelocityScene::hasConstraint)
+            .def("getNConstraintVariablesPerPrio",   &wbc_py::VelocityScene::getNTaskVariablesPerPrio)
+            .def("hasTask",   &wbc_py::VelocityScene::hasTask)
             .def("updateTasksStatus",   &wbc_py::VelocityScene::updateTasksStatus2)
             .def("getHierarchicalQP",   &wbc_py::VelocityScene::getHierarchicalQP,  py::return_value_policy<py::copy_const_reference>())
             .def("getSolverOutput",   &wbc_py::VelocityScene::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
@@ -139,7 +139,7 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getJointWeights",   &wbc_py::VelocityScene::getJointWeights2)
             .def("getActuatedJointWeights",   &wbc_py::VelocityScene::getActuatedJointWeights2);
 
-    py::class_<wbc_py::VelocitySceneQuadraticCost>("VelocitySceneQuadraticCost", py::init<std::shared_ptr<wbc_py::RobotModelKDL>, std::shared_ptr<wbc_py::QPOASESSolver>>())
+    py::class_<wbc_py::VelocitySceneQuadraticCost>("VelocitySceneQuadraticCost", py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>, std::shared_ptr<wbc_py::QPOASESSolver>>())
             .def("configure",    &wbc_py::VelocitySceneQuadraticCost::configure)
             .def("update",       &wbc_py::VelocitySceneQuadraticCost::update, py::return_value_policy<py::copy_const_reference>())
             .def("solve",        &wbc_py::VelocitySceneQuadraticCost::solve2)
@@ -148,8 +148,8 @@ BOOST_PYTHON_MODULE(scenes){
             .def("setTaskWeights",   &wbc_py::VelocitySceneQuadraticCost::setTaskWeights)
             .def("setTaskActivation",   &wbc_py::VelocitySceneQuadraticCost::setTaskActivation)
             .def("getTasksStatus",   &wbc_py::VelocitySceneQuadraticCost::getTasksStatus,  py::return_value_policy<py::copy_const_reference>())
-            .def("getNConstraintVariablesPerPrio",   &wbc_py::VelocitySceneQuadraticCost::getNConstraintVariablesPerPrio)
-            .def("hasConstraint",   &wbc_py::VelocitySceneQuadraticCost::hasConstraint)
+            .def("getNTaskVariablesPerPrio",   &wbc_py::VelocitySceneQuadraticCost::getNTaskVariablesPerPrio)
+            .def("hasTask",   &wbc_py::VelocitySceneQuadraticCost::hasTask)
             .def("updateTasksStatus",   &wbc_py::VelocitySceneQuadraticCost::updateTasksStatus2)
             .def("getHierarchicalQP",   &wbc_py::VelocitySceneQuadraticCost::getHierarchicalQP,  py::return_value_policy<py::copy_const_reference>())
             .def("getSolverOutput",   &wbc_py::VelocitySceneQuadraticCost::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())
@@ -157,7 +157,7 @@ BOOST_PYTHON_MODULE(scenes){
             .def("getJointWeights",   &wbc_py::VelocitySceneQuadraticCost::getJointWeights2)
             .def("getActuatedJointWeights",   &wbc_py::VelocitySceneQuadraticCost::getActuatedJointWeights2);
 
-    py::class_<wbc_py::AccelerationSceneTSID>("AccelerationSceneTSID", py::init<std::shared_ptr<wbc_py::RobotModelHyrodyn>, std::shared_ptr<wbc_py::QPOASESSolver>>())
+    py::class_<wbc_py::AccelerationSceneTSID>("AccelerationSceneTSID", py::init<std::shared_ptr<wbc_py::RobotModelPinocchio>, std::shared_ptr<wbc_py::QPOASESSolver>>())
             .def("configure",    &wbc_py::AccelerationSceneTSID::configure)
             .def("update",       &wbc_py::AccelerationSceneTSID::update, py::return_value_policy<py::copy_const_reference>())
             .def("solve",        &wbc_py::AccelerationSceneTSID::solve2)
@@ -166,8 +166,8 @@ BOOST_PYTHON_MODULE(scenes){
             .def("setTaskWeights",   &wbc_py::AccelerationSceneTSID::setTaskWeights)
             .def("setTaskActivation",   &wbc_py::AccelerationSceneTSID::setTaskActivation)
             .def("getTasksStatus",   &wbc_py::AccelerationSceneTSID::getTasksStatus,  py::return_value_policy<py::copy_const_reference>())
-            .def("getNConstraintVariablesPerPrio",   &wbc_py::AccelerationSceneTSID::getNConstraintVariablesPerPrio)
-            .def("hasConstraint",   &wbc_py::AccelerationSceneTSID::hasConstraint)
+            .def("getNTaskVariablesPerPrio",   &wbc_py::AccelerationSceneTSID::getNTaskVariablesPerPrio)
+            .def("hasTask",   &wbc_py::AccelerationSceneTSID::hasTask)
             .def("updateTasksStatus",   &wbc_py::AccelerationSceneTSID::updateTasksStatus2)
             .def("getHierarchicalQP",   &wbc_py::AccelerationSceneTSID::getHierarchicalQP,  py::return_value_policy<py::copy_const_reference>())
             .def("getSolverOutput",   &wbc_py::AccelerationSceneTSID::getSolverOutput,  py::return_value_policy<py::copy_const_reference>())

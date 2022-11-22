@@ -1,5 +1,5 @@
 #include <boost/test/unit_test.hpp>
-#include "robot_models/kdl/RobotModelKDL.hpp"
+#include "robot_models/pinocchio/RobotModelPinocchio.hpp"
 #include "scenes/AccelerationSceneTSID.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
 
@@ -13,12 +13,15 @@ BOOST_AUTO_TEST_CASE(simple_test){
      */
 
     // Configure Robot model
-    shared_ptr<RobotModelKDL> robot_model = make_shared<RobotModelKDL>();
+    shared_ptr<RobotModelPinocchio> robot_model = make_shared<RobotModelPinocchio>();
     RobotModelConfig config;
     config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
-    config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    config.contact_points.elements = {1,1};
+    config.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
+    wbc::ActiveContact contact(1,0.6);
+    contact.wx = 0.2;
+    contact.wy = 0.08;
+    config.contact_points.elements = {contact, contact};
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     vector<double> q_in = {0,0,-0.35,0.64,0,-0.27,
@@ -26,7 +29,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     base::samples::Joints joint_state;
     joint_state.names = robot_model->actuatedJointNames();
-    for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
+    for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
         base::JointState js;
         js.position = q_in[i];
         js.speed = js.acceleration = 0;
@@ -67,7 +70,9 @@ BOOST_AUTO_TEST_CASE(simple_test){
     base::samples::RigidBodyStateSE3 ref;
     srand (time(NULL));
     ref.acceleration.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
+    ref.acceleration.linear.setZero();
     ref.acceleration.angular = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);
+    ref.acceleration.angular.setZero();
     BOOST_CHECK_NO_THROW(wbc_scene.setReference(cart_task.name, ref));
 
     // Solve
@@ -82,6 +87,6 @@ BOOST_AUTO_TEST_CASE(simple_test){
     TasksStatus status = wbc_scene.getTasksStatus();
     for(int i = 0; i < 3; i++){
         BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-3);
-        BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i]) < 1e3);
+        BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i+3]) < 1e3);
     }
 }

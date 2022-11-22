@@ -3,18 +3,15 @@
 #include "core/RobotModelConfig.hpp"
 
 namespace wbc_py{
-wbc::ActiveContacts toActiveContacts(const base::NamedVector<int> &contacts_in){
+wbc::ActiveContacts toActiveContacts(const base::NamedVector<wbc::ActiveContact> &contacts_in){
     wbc::ActiveContacts contacts_out;
     contacts_out.elements = contacts_in.elements;
     contacts_out.names = contacts_in.names;
-    std::cout<<"CONTACT POINTS"<<std::endl;
-    for(int i = 0; i < contacts_out.size(); i++)
-        std::cout<<contacts_out.names[i]<<std::endl;
     return contacts_out;
 }
 
-base::NamedVector<int> fromActiveContacts(const wbc::ActiveContacts& contacts_in){
-    base::NamedVector<int> contacts_out;
+base::NamedVector<wbc::ActiveContact> fromActiveContacts(const wbc::ActiveContacts& contacts_in){
+    base::NamedVector<wbc::ActiveContact> contacts_out;
     contacts_out.names = contacts_in.names;
     contacts_out.elements = contacts_in.elements;
     return contacts_out;
@@ -22,10 +19,10 @@ base::NamedVector<int> fromActiveContacts(const wbc::ActiveContacts& contacts_in
 
 class RobotModelConfig : public wbc::RobotModelConfig{
 public:
-    base::NamedVector<int> getActiveContacts(){
+    base::NamedVector<wbc::ActiveContact> getActiveContacts(){
         return fromActiveContacts(contact_points);
     }
-    void setActiveContacts(base::NamedVector<int> contacts_in){
+    void setActiveContacts(base::NamedVector<wbc::ActiveContact> contacts_in){
         contact_points = toActiveContacts(contacts_in);
     }
 };
