@@ -80,13 +80,13 @@ void HierarchicalLSSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, bas
 
     for(uint prio = 0; prio < priorities.size(); prio++){
 
-        if(hierarchical_qp[prio].A.rows()        != priorities[prio].n_constraint_variables ||
-           hierarchical_qp[prio].A.cols()        != no_of_joints ||
-           hierarchical_qp[prio].lower_y.size()  != priorities[prio].n_constraint_variables){
+        if(hierarchical_qp[prio].A.rows() != priorities[prio].n_constraint_variables ||
+           hierarchical_qp[prio].A.cols() != no_of_joints ||
+           hierarchical_qp[prio].b.size() != priorities[prio].n_constraint_variables){
 
             string nc = to_string(priorities[prio].n_constraint_variables), nq = to_string(no_of_joints);
             string a_rows = to_string(hierarchical_qp[prio].A.rows()), a_cols = to_string(hierarchical_qp[prio].A.cols());
-            string y_rows = to_string(hierarchical_qp[prio].lower_y.size());
+            string y_rows = to_string(hierarchical_qp[prio].b.size());
             throw std::invalid_argument("Expected input size on priority level " + to_string(prio) + ": " +  "A: " + nc + " x " + nq +
                       ", b: " + nc + " x 1, actual input: " + "A: " + a_rows + " x " + a_cols +", b: " + y_rows + " x 1");
         }
@@ -100,7 +100,7 @@ void HierarchicalLSSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, bas
         priorities[prio].y_comp.setZero();
 
         // Compensate y for part of the solution already met in higher priorities. For the first priority y_comp will be equal to  y
-        priorities[prio].y_comp = hierarchical_qp[prio].lower_y - hierarchical_qp[prio].A*solver_output;
+        priorities[prio].y_comp = hierarchical_qp[prio].b - hierarchical_qp[prio].A*solver_output;
 
         // projection of A on the null space of previous priorities: A_proj = A * P = A * ( P(p-1) - (A_wdls)^# * A )
         // For the first priority P == Identity

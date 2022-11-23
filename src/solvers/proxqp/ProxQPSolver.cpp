@@ -74,17 +74,17 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
         _solver_ptr->update(qp.H, qp.g, qp.A, qp.b, _C_mtx, _u_vec, _l_vec);
     }
 
-    // std::cerr << "qp.nq = " << qp.nq <<std::endl;
-    // std::cerr << "qp.neq = " << qp.neq <<std::endl;
-    // std::cerr << "qp.nin = " << qp.nin <<std::endl;
-    // std::cerr << "qp.bounded = " << qp.bounded <<std::endl;
-    // std::cerr << "l: " <<_l_vec.transpose() <<std::endl;
-    // std::cerr << "u: "<<_u_vec.transpose() <<std::endl;
-    // std::cerr << "C:\n"<<_C_mtx <<std::endl;
-    // std::cerr << "A:\n"<< qp.A << std::endl;
-    // std::cerr << "b: "<< qp.b << std::endl;
-    // std::cerr << "eps_abs: " << _solver_ptr->settings.eps_abs << std::endl;
-    // std::cerr << "max_iter: " << _solver_ptr->settings.max_iter << std::endl;
+//     std::cerr << "qp.nq = " << qp.nq <<std::endl;
+//     std::cerr << "qp.neq = " << qp.neq <<std::endl;
+//     std::cerr << "qp.nin = " << qp.nin <<std::endl;
+//     std::cerr << "qp.bounded = " << qp.bounded <<std::endl;
+//     std::cerr << "l: " <<_l_vec.transpose() <<std::endl;
+//     std::cerr << "u: "<<_u_vec.transpose() <<std::endl;
+//     std::cerr << "C:\n"<<_C_mtx <<std::endl;
+//     std::cerr << "A:\n"<< qp.A << std::endl;
+//     std::cerr << "b: "<< qp.b << std::endl;
+//     std::cerr << "eps_abs: " << _solver_ptr->settings.eps_abs << std::endl;
+//     std::cerr << "max_iter: " << _solver_ptr->settings.max_iter << std::endl;
 
     _solver_ptr->solve();
     

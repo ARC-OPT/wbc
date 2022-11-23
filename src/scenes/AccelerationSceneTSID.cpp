@@ -71,7 +71,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             has_bounds = true;;
     }
 
-
+    QuadraticProgram& qp = hqp[prio];
+    qp.resize(nj+na+ncp*6, total_eqs, total_ineqs, has_bounds);
     total_eqs = total_ineqs = 0;
     for(uint i = 0; i < constraints[prio].size(); i++) {
         Constraint::Type type = constraints[prio][i]->type();
@@ -83,12 +84,11 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
         }
         else if (type == Constraint::equality) {
             qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            qp.lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            qp.upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            qp.b.segment(total_eqs, c_size) = constraints[prio][i]->b();
             total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
-            qp.A.middleRows(total_inqs, c_size) = constraints[prio][i]->A();
+            qp.C.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
             qp.lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
             qp.upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
             total_ineqs += c_size;

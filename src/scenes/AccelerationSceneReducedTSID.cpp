@@ -57,7 +57,6 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     int prio = 0; // Only one priority is implemented here!
     uint nj = robot_model->noOfJoints();
     uint ncp = robot_model->getActiveContacts().size();
-    uint nv = nj+ncp*6;
 
     //////// Constraints
 
@@ -94,13 +93,12 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         }
         else if (type == Constraint::equality) {
             qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            qp.lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            qp.upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            qp.b.segment(total_eqs, c_size) = constraints[prio][i]->b();
             total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
-            qp.A.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
-            qp.lower_y.segm, total_ineqs = 0ent(total_ineqs, c_size) = constraints[prio][i]->lb();
+            qp.C.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
+            qp.lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
             qp.upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
             total_ineqs += c_size;
         }

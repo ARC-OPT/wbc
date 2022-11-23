@@ -151,8 +151,8 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
     // Desired task space reference
     base::Vector6d y;
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
-    qp.lower_y = y - Eigen::VectorXd::Constant(qp.nq, 1e-2);
-    qp.upper_y = y + Eigen::VectorXd::Constant(qp.nq, 1e-2);
+    qp.lower_y = y - Eigen::VectorXd::Constant(qp.nq, 1e-1);
+    qp.upper_y = y + Eigen::VectorXd::Constant(qp.nq, 1e-1);
 
     qp.check();
     wbc::HierarchicalQP hqp;
@@ -208,8 +208,8 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     qp.H = A.transpose()*A;
     qp.g = -(A.transpose()*y).transpose();
 
-    qp.lower_x.setConstant(-0.4);
-    qp.upper_x.setConstant(+0.4);
+    qp.lower_x.setConstant(-1e10);
+    qp.upper_x.setConstant(+1e10);
 
     qp.check();
     wbc::HierarchicalQP hqp;

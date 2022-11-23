@@ -31,9 +31,6 @@ const HierarchicalQP& AccelerationScene::update(){
         throw std::runtime_error("Invalid task configuration");
     }
 
-    uint nv = robot_model->noOfJoints();
-    uint nc = 0;
-
     int prio = 0; // Only one priority is implemented here!
     QuadraticProgram &qp = hqp[prio];
     qp.resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
@@ -75,8 +72,6 @@ const HierarchicalQP& AccelerationScene::update(){
         qp.H += task->Aw.transpose()*task->Aw;
         qp.g -= task->Aw.transpose()*task->y_ref_root;
     }
-    const base::MatrixXd& A = tasks_prio[prio].A;
-    const base::VectorXd& y = tasks_prio[prio].lower_y;
 
     hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
     hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());

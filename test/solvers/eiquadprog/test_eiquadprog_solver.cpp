@@ -143,7 +143,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
     cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
-    for(uint j = 0; j < NO_CONSTRAINTS; j++)
+    for(uint j = 0; j < y.size(); j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
     //cout<<"\n............................."<<endl;
