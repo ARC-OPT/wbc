@@ -57,28 +57,32 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     int prio = 0; // Only one priority is implemented here!
     uint nj = robot_model->noOfJoints();
     uint ncp = robot_model->getActiveContacts().size();
-    uint nv = nj+ncp*6;
 
     //////// Constraints
 
-    size_t nc = 0;
+    bool has_bounds = false;
+    size_t total_eqs = 0, total_ineqs = 0;
     for(auto contraint : constraints[prio]) {
         contraint->update(robot_model);
-        if(contraint->type() != Constraint::bounds)
-            nc += contraint->size();
+        if(contraint->type() == Constraint::equality)
+            total_eqs += contraint->size();
+        if(contraint->type() == Constraint::inequality)
+            total_ineqs += contraint->size();
+        if(contraint->type() == Constraint::bounds)
+            has_bounds = true;
     }
 
     // QP Size: (nc x nj+nc*6)
     // Variable order: (qdd,f_ext)
     QuadraticProgram& qp = hqp[prio];
-    qp.resize(nc, nv);
+    qp.resize(nj+ncp*6, total_eqs, total_ineqs, has_bounds);
     qp.A.setZero();
     qp.lower_x.setConstant(-10000);   // bounds
     qp.upper_x.setConstant(+10000);   // bounds
     qp.lower_y.setZero(); // inequalities
     qp.upper_y.setZero(); // inequalities
 
-    uint total_eqs = 0;
+    total_eqs = 0, total_ineqs = 0;
     for(uint i = 0; i < constraints[prio].size(); i++) {
         Constraint::Type type = constraints[prio][i]->type();
         size_t c_size = constraints[prio][i]->size();
@@ -89,15 +93,14 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         }
         else if (type == Constraint::equality) {
             qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            qp.lower_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
-            qp.upper_y.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            qp.b.segment(total_eqs, c_size) = constraints[prio][i]->b();
             total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
-            qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            qp.lower_y.segment(total_eqs, c_size) = constraints[prio][i]->lb();
-            qp.upper_y.segment(total_eqs, c_size) = constraints[prio][i]->ub();
-            total_eqs += c_size;
+            qp.C.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
+            qp.lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
+            qp.upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
+            total_ineqs += c_size;
         }
     }
 

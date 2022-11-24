@@ -82,7 +82,7 @@ public:
      * @param task_name Name of the task
      * @param activation Activation value. Has to be in interval [0.0,1.0]
      */
-    void setTaskActivation(const std::string& task_name, const double activation);
+    void setTaskActivation(const std::string& task_name, double activation);
     /**
      * @brief Return a Particular task. Throw if the task does not exist
      */
@@ -96,7 +96,7 @@ public:
     /**
      * @brief Returns all tasks as vector
      */
-    const TasksStatus& getTasksStatus(){return tasks_status;}
+    const TasksStatus& getTasksStatus() const { return tasks_status; }
 
     /**
      * @brief Sort task config by the priorities of the tasks
@@ -106,12 +106,12 @@ public:
     /**
      * @brief Return number of tasks per priority, given the task config
      */
-    static std::vector<int> getNTaskVariablesPerPrio(const std::vector<TaskConfig> &config);
+    static std::vector<int> getNTaskVariablesPerPrio(const std::vector<TaskConfig>& config);
 
     /**
      * @brief updateTasksStatus Evaluate the fulfillment of the tasks given the current robot state and the solver output
      */
-    virtual const TasksStatus &updateTasksStatus() = 0;
+    virtual const TasksStatus& updateTasksStatus() = 0;
 
     /**
      * @brief Return tasks sorted by priority for the solver
@@ -121,22 +121,22 @@ public:
     /**
      * @brief Get current solver output
      */
-    const base::commands::Joints& getSolverOutput(){return solver_output_joints;}
+    const base::commands::Joints& getSolverOutput() const { return solver_output_joints; }
 
     /**
      * @brief set Joint weights by given name
      */
-    void setJointWeights(const JointWeights &weights);
+    void setJointWeights(const JointWeights& weights);
 
     /**
      * @brief Get Joint weights as Named vector
      */
-    const JointWeights &getJointWeights(){return joint_weights;}
+    const JointWeights& getJointWeights() const { return joint_weights; }
 
     /**
      * @brief Get Joint weights as Named vector
      */
-    const JointWeights &getActuatedJointWeights(){return actuated_joint_weights;}
+    const JointWeights& getActuatedJointWeights() const { return actuated_joint_weights; }
 
     /**
      * @brief Return the current robot model

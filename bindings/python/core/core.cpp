@@ -154,6 +154,12 @@ BOOST_PYTHON_MODULE(core){
            .add_property("g",
                py::make_getter(&wbc::QuadraticProgram::g, py::return_value_policy<py::copy_non_const_reference>()),
                py::make_setter(&wbc::QuadraticProgram::g))
+           .add_property("b",
+               py::make_getter(&wbc::QuadraticProgram::b, py::return_value_policy<py::copy_non_const_reference>()),
+               py::make_setter(&wbc::QuadraticProgram::b))
+           .add_property("C",
+               py::make_getter(&wbc::QuadraticProgram::C, py::return_value_policy<py::copy_non_const_reference>()),
+               py::make_setter(&wbc::QuadraticProgram::C))
            .add_property("lower_x",
                py::make_getter(&wbc::QuadraticProgram::lower_x, py::return_value_policy<py::copy_non_const_reference>()),
                py::make_setter(&wbc::QuadraticProgram::lower_x))
@@ -172,8 +178,10 @@ BOOST_PYTHON_MODULE(core){
            .add_property("Wy",
                py::make_getter(&wbc::QuadraticProgram::Wy, py::return_value_policy<py::copy_non_const_reference>()),
                py::make_setter(&wbc::QuadraticProgram::Wy))
-           .def_readwrite("nc",  &wbc::QuadraticProgram::nc)
+           .def_readwrite("neq",  &wbc::QuadraticProgram::neq)
+           .def_readwrite("nin",  &wbc::QuadraticProgram::nin)
            .def_readwrite("nq",  &wbc::QuadraticProgram::nq)
+           .def_readwrite("bounded",  &wbc::QuadraticProgram::bounded)
            .def("resize",  &wbc::QuadraticProgram::resize);
 
    py::class_<wbc::HierarchicalQP>("HierarchicalQP")

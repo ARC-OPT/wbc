@@ -2,13 +2,12 @@
 #include <iostream>
 #include <sys/time.h>
 #include "core/QuadraticProgram.hpp"
-#include "solvers/qpoases/QPOasesSolver.hpp"
+#include "solvers/proxqp/ProxQPSolver.hpp"
 
 using namespace wbc;
 using namespace std;
-using namespace qpOASES;
 
-BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
+BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
 {
     srand (time(NULL));
 
@@ -20,8 +19,6 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
 
     // Solve the problem min(||Ax-b||) without constraints --> encode the task as part of the cost function
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = A^T*A and g = -(A^T*y)^T
-    // For a 6x6 Constraint matrix this is approx. 3-5 times faster than encoding the task as constraint as below
-    // With warm start, this solver is much faster (approx. 5 times) than in the initial run
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
@@ -45,13 +42,10 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    QPOASESSolver solver;
-    Options options = solver.getOptions();
-    options.printLevel = PL_NONE;
-    solver.setOptions(options);
-    solver.setMaxNoWSR(NO_WSR);
+    ProxQPSolver solver;
+    solver.setMaxNIter(NO_WSR);
 
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
+    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     base::VectorXd solver_output;
 
@@ -62,16 +56,6 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
-    std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
-    cout<<"No of joints: "<<NO_JOINTS<<endl;
-    cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
-
-    cout<<"\nSolver Input:"<<endl;
-    cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
-    cout<<"Reference: y = "<<y.transpose()<<endl;
-
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_JOINTS; j++)
@@ -80,7 +64,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_without_constraints)
     //cout<<"\n............................."<<endl;
 }
 
-BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
+BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
 {
     srand (time(NULL));
 
@@ -92,7 +76,6 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = I  and g = 0
-    // For a 6x6 Constraint matrix this is approx. 3-5 times slower than encoding the task in the cost function as above
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
@@ -117,13 +100,10 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    QPOASESSolver solver;
-    Options options = solver.getOptions();
-    options.printLevel = PL_NONE;
-    solver.setOptions(options);
-    solver.setMaxNoWSR(NO_WSR);
+    ProxQPSolver solver;
+    solver.setMaxNIter(NO_WSR);
 
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
+    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     base::VectorXd solver_output;
 
@@ -133,25 +113,15 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
-    std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
-    cout<<"No of joints: "<<NO_JOINTS<<endl;
-    cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
-
-    cout<<"\nSolver Input:"<<endl;
-    cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
-    cout<<"Reference: y = "<<y.transpose()<<endl;
-
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
     for(uint j = 0; j < NO_EQ_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
-    //cout<<"\n............................."<<endl;*/
+    //cout<<"\n............................."<<endl;
 }
 
-BOOST_AUTO_TEST_CASE(solver_qp_oases_with_inequalities_constraints)
+BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
 {
     srand (time(NULL));
 
@@ -159,11 +129,10 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_inequalities_constraints)
     const int NO_EQ_CONSTRAINTS = 0;
     const int NO_IN_CONSTRAINTS = 6;
     const bool WITH_BOUNDS = false;
-    const int NO_WSR = 20;
+    const int NO_WSR = 40;
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = I  and g = 0
-    // For a 6x6 Constraint matrix this is approx. 3-5 times slower than encoding the task in the cost function as above
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
@@ -182,20 +151,17 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_inequalities_constraints)
     // Desired task space reference
     base::Vector6d y;
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
-    qp.lower_y = y;
-    qp.upper_y = Eigen::VectorXd::Constant(NO_IN_CONSTRAINTS, 0.0001) + y;
+    qp.lower_y = y - Eigen::VectorXd::Constant(qp.nq, 1e-1);
+    qp.upper_y = y + Eigen::VectorXd::Constant(qp.nq, 1e-1);
 
     qp.check();
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    QPOASESSolver solver;
-    Options options = solver.getOptions();
-    options.printLevel = PL_NONE;
-    solver.setOptions(options);
-    solver.setMaxNoWSR(NO_WSR);
+    ProxQPSolver solver;
+    solver.setMaxNIter(NO_WSR);
 
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
+    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     base::VectorXd solver_output;
 
@@ -205,25 +171,13 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_inequalities_constraints)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    /*cout<<"\n----------------------- Test Results ----------------------"<<endl<<endl;
-    std::cout<<"Solver took "<<useconds<<" us "<<std::endl;
-    cout<<"No of joints: "<<NO_JOINTS<<endl;
-    cout<<"No of constraints: "<<NO_CONSTRAINTS<<endl;
-
-    cout<<"\nSolver Input:"<<endl;
-    cout<<"Constraint Matrix A:"<<endl; cout<<A<<endl;
-    cout<<"Reference: y = "<<y.transpose()<<endl;
-
-    cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
-    //cout<<"Test: A * q_dot = "<<test.transpose();
-    for(uint j = 0; j < NO_IN_CONSTRAINTS; j++)
-        BOOST_CHECK(fabs(test(j) - y(j)) < 1e-3);
-
-    //cout<<"\n............................."<<endl;*/
+    
+    for(uint j = 0; j < NO_JOINTS; ++j)
+        BOOST_CHECK((qp.lower_y(j)-1e-9) <= test(j) && test(j) <= (qp.upper_y(j)+1e-9));
 }
 
-BOOST_AUTO_TEST_CASE(solver_qpoases_bounded)
+BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
 {
     srand (time(NULL));
 
@@ -231,12 +185,10 @@ BOOST_AUTO_TEST_CASE(solver_qpoases_bounded)
     const int NO_EQ_CONSTRAINTS = 0;
     const int NO_IN_CONSTRAINTS = 0;
     const bool WITH_BOUNDS = true;
-    const int NO_WSR = 20;
+    const int NO_WSR = 200;
 
-    // Solve the problem min(||Ax-b||) without constraints --> encode the task as part of the cost function
+    // Solve the problem min(||Ax-b||) with bound constraints --> encode the task as part of the cost function
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = A^T*A and g = -(A^T*y)^T
-    // For a 6x6 Constraint matrix this is approx. 3-5 times faster than encoding the task as constraint as below
-    // With warm start, this solver is much faster (approx. 5 times) than in the initial run
 
     wbc::QuadraticProgram qp;
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
@@ -256,17 +208,17 @@ BOOST_AUTO_TEST_CASE(solver_qpoases_bounded)
     qp.H = A.transpose()*A;
     qp.g = -(A.transpose()*y).transpose();
 
-    qp.lower_x.setConstant(-0.4);
-    qp.upper_x.setConstant(+0.4);
+    qp.lower_x.setConstant(-1e10);
+    qp.upper_x.setConstant(+1e10);
 
     qp.check();
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    QPOASESSolver solver;
-    solver.setMaxNoWSR(NO_WSR);
+    ProxQPSolver solver;
+    solver.setMaxNIter(NO_WSR);
 
-    BOOST_CHECK(solver.getMaxNoWSR() == NO_WSR);
+    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     base::VectorXd solver_output;
 
@@ -277,6 +229,7 @@ BOOST_AUTO_TEST_CASE(solver_qpoases_bounded)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
+    std::cerr << "output: " << solver_output.transpose() << std::endl;
     for(uint j = 0; j < NO_JOINTS; ++j)
         BOOST_CHECK((qp.lower_x(j)-1e-9) <= solver_output(j) && solver_output(j) <= (qp.upper_x(j)+1e-9));
 

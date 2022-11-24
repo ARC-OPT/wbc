@@ -31,12 +31,9 @@ const HierarchicalQP& AccelerationScene::update(){
         throw std::runtime_error("Invalid task configuration");
     }
 
-    uint nv = robot_model->noOfJoints();
-    uint nc = 0;
-
     int prio = 0; // Only one priority is implemented here!
     QuadraticProgram &qp = hqp[prio];
-    qp.resize(nc, nv);
+    qp.resize(robot_model->noOfJoints(), n_task_variables_per_prio[prio], 0, false);
 
     ///////// Constraints
 

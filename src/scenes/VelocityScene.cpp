@@ -30,11 +30,11 @@ const HierarchicalQP& VelocityScene::update(){
     ///////// Tasks
 
     // Note: This scene models all tasks as linear equality constraints in order to comply with the HLS solver
-    uint nv = robot_model->noOfJoints();
+    uint nj = robot_model->noOfJoints();
     for(uint prio = 0; prio < tasks.size(); prio++){
 
         uint nc = n_task_variables_per_prio[prio];
-        hqp[prio].resize(nc, nv);
+        hqp[prio].resize(nj, nc, 0, false);
 
         // Walk through all tasks of current priority
         uint row_index = 0;
@@ -58,8 +58,7 @@ const HierarchicalQP& VelocityScene::update(){
             // for this task is zero or if the task is in timeout
             hqp[prio].Wy.segment(row_index, n_vars) = task->weights_root * task->activation * (!task->timeout);
             hqp[prio].A.block(row_index, 0, n_vars, robot_model->noOfJoints()) = task->A;
-            hqp[prio].lower_y.segment(row_index, n_vars) = task->y_ref_root;
-            hqp[prio].upper_y.segment(row_index, n_vars) = task->y_ref_root;
+            hqp[prio].b.segment(row_index, n_vars) = task->y_ref_root;
             hqp[prio].H.setIdentity();
             hqp[prio].lower_x.resize(0);
             hqp[prio].upper_x.resize(0);

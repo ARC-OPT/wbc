@@ -21,21 +21,31 @@ class JointWeights : public base::NamedVector<double>{
  *        \end{array}
  *  \f]
  */
-class QuadraticProgram{
-public:
-    base::MatrixXd A;       /** Constraint matrix (nc x nq, where nc = number of constraints, nq = number of joints) */
+struct QuadraticProgram{
+
+    int nq;                 /** Number of variables */
+    int neq;                /** Number of equalities constraints for this prio*/
+    int nin;                /** Number of inequalities constraints for this prio*/
+
+    bool bounded;            /** Contains simple boiunds for the variables */
+
+    base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
     base::VectorXd g;       /** Gradient vector (nq x 1) */
+    base::MatrixXd A;       /** Equalities constraint matrix (neq x nq) */
+    base::VectorXd b;       /** Equalities constraint vector (neq x 1) */
+    base::MatrixXd C;       /** Inequalities constraint matrix (nin x nq) */
+    base::VectorXd lower_y; /** Lower bound of the constraint vector (nin x 1) */
+    base::VectorXd upper_y; /** Upper bound of the constraint vector (nin x 1) */
     base::VectorXd lower_x; /** Lower bound of the solution vector (nq x 1) */
     base::VectorXd upper_x; /** Upper bound of the solution vector (nq x 1) */
-    base::VectorXd lower_y; /** Lower bound of the constraint vector (nc x 1) */
-    base::VectorXd upper_y; /** Upper bound of the constraint vector (nc x 1) */
-    base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
     base::VectorXd Wy;      /** Constraint weights (nc x 1). Default entry is 1. */
-    int nc;                 /** Number of constraints for this prio*/
-    int nq;                 /** Number of all joints (actuated + unactuated)*/
 
     /** Initialize all variables with NaN */
-    void resize(const uint nc, const uint nq);
+    void resize(uint nq, uint neq, uint nin, bool bounds);
+
+    /** Check if matrix and vectors dims match with nq, neq, nin. Throw exception if not **/
+    void check() const;
+
     /** Print content to console*/
     void print() const;
 

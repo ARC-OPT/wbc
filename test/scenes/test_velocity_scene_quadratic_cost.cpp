@@ -74,6 +74,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     BOOST_CHECK_NO_THROW(wbc_scene.update());
     HierarchicalQP qp;
     wbc_scene.getHierarchicalQP(qp);
+    qp[0].bounded = false;
     qp[0].lower_x.resize(0);
     qp[0].upper_x.resize(0);
     BOOST_CHECK_NO_THROW(wbc_scene.solve(qp));

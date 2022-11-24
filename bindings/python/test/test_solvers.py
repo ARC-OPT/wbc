@@ -10,7 +10,7 @@ def run(solver):
 
     hqp = HierarchicalQP()
     qp = QuadraticProgram()
-    qp.resize(nc,nj)
+    qp.resize(nj,nc,0,False)
     qp.A = [[0.642, 0.706, 0.565,  0.48,  0.59, 0.917],
             [0.553, 0.087,  0.43,  0.71, 0.148,  0.87],
             [0.249, 0.632, 0.711,  0.13, 0.426, 0.963],
@@ -18,8 +18,7 @@ def run(solver):
             [0.315, 0.551, 0.462, 0.221, 0.638, 0.244],
             [0.891, 0.019, 0.716, 0.534, 0.725, 0.633]]
     y_ref = [0.833, 0.096, 0.078, 0.971, 0.883, 0.366]
-    qp.lower_y = y_ref
-    qp.upper_y = y_ref
+    qp.b = y_ref
     qp.g = [0]*nj
     qp.H = np.eye(nj).tolist()
     hqp.prios = [qp]

@@ -1,35 +1,37 @@
-#ifndef WBC_SOLVERS_EIQUADPROG_SOLVER_HPP
-#define WBC_SOLVERS_EIQUADPROG_SOLVER_HPP
+#ifndef WBC_SOLVERS_PROXQP_SOLVER_HPP
+#define WBC_SOLVERS_PROXQP_SOLVER_HPP
 
 #include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 
+#include <memory>
+
 #include <base/Time.hpp>
 
-#include <eiquadprog/eiquadprog-fast.hpp>
+#include <proxsuite/proxqp/dense/wrapper.hpp> 
 
 namespace wbc {
 
 class HierarchicalQP;
 
 /**
- * @brief The EiquadprogSolver class is a wrapper for the qp-solver eiquadprog (see https://github.com/stack-of-tasks/eiquadprog). It solves problems of shape:
+ * @brief The ProxQPSolver class is a wrapper for the qp-solver prox-qp (see https://github.com/Simple-Robotics/proxsuite). It solves problems of shape:
  *  \f[
  *        \begin{array}{ccc}
- *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{G}\mathbf{x}+\mathbf{x}^T\mathbf{g0}& \\
+ *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{H}\mathbf{x}+\mathbf{x}^T\mathbf{g}& \\
  *             & & \\
- *        s.t. & \mathbf{CE}x + ce0 = 0& \\
- *             & \mathbf{CI}x + ci0 \geq 0& \\
+ *        s.t. & \mathbf{Ax} = \mathbf{b}& \\
+ *             & \mathbf{l} \leq \mathbf{Cx} \leq \mathbf{u}& \\
  *        \end{array}
  *  \f]
  */
-class EiquadprogSolver : public QPSolver{
+class ProxQPSolver : public QPSolver{
 private:
-    static QPSolverRegistry<EiquadprogSolver> reg;
+    static QPSolverRegistry<ProxQPSolver> reg;
 
 public:
-    EiquadprogSolver();
-    virtual ~EiquadprogSolver();
+    ProxQPSolver();
+    virtual ~ProxQPSolver() noexcept { };
 
     /**
      * @brief solve Solve the given quadratic program
@@ -49,13 +51,20 @@ public:
     int getNter(){ return _actual_n_iter; }
 
 protected:
-    eiquadprog::solvers::EiquadprogFast _solver;
+
+    std::shared_ptr<proxsuite::proxqp::dense::QP<double>> _solver_ptr;
     
+    double _eps_abs = 1e-9;
     int _n_iter;
     int _actual_n_iter;
 
-    Eigen::MatrixXd _CI_mtx;
-    Eigen::VectorXd _ci0_vec;
+    size_t _n_var_init; // number of variables in the configured solver instance
+    size_t _n_eq_init;  // number of equalities in the configured solver instance
+    size_t _n_in_init;  // number of inequalities in the configured solver instance (inclusing bounds)
+
+    Eigen::MatrixXd _C_mtx; // inequalities matrix (including bounds)
+    Eigen::VectorXd _l_vec; // inequalities lower bounds
+    Eigen::VectorXd _u_vec; // inequalities upper bounds
 };
 
 }

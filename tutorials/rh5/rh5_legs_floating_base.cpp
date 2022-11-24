@@ -152,8 +152,11 @@ int main(){
         }
 
         // Update floating base pose, use an over-simplistic estimation
-        floating_base_state.pose.position = robot_model->rigidBodyState("LLAnkle_FT", "RH5_Root_Link").pose.position;
-        floating_base_state.pose.position*=-1;
+        base::Pose t1 = robot_model->rigidBodyState("world", "RH5_Root_Link").pose;
+        base::Pose t2 = robot_model->rigidBodyState("world", "LLAnkle_FT").pose;
+        base::Pose t3;
+        t3.fromTransform(t2.toTransform().inverse()*t1.toTransform());
+        floating_base_state.pose.position = -t3.position;
         floating_base_state.pose.position[0]=floating_base_state.pose.position[1]=0;
 
         cout<<"setpoint: x: "<<setpoint.pose.position(0)<<" y: "<<setpoint.pose.position(1)<<" z: "<<setpoint.pose.position(2)<<endl;
@@ -161,8 +164,8 @@ int main(){
         cout<<"feedback x: "<<feedback.pose.position(0)<<" y: "<<feedback.pose.position(1)<<" z: "<<feedback.pose.position(2)<<endl;
         cout<<"feedback qx: "<<feedback.pose.orientation.x()<<" qy: "<<feedback.pose.orientation.y()<<" qz: "<<feedback.pose.orientation.z()<<" qw: "<<feedback.pose.orientation.w()<<endl<<endl;
         cout<<"Solver output: "; cout<<endl;
-        cout<<"Joint Names:   "; for(int i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
-        cout<<"Velocity:      "; for(int i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
+        cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
+        cout<<"Velocity:      "; for(uint i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 
         usleep(loop_time * 1e6);

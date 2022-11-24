@@ -2,6 +2,8 @@
 #include <core/QuadraticProgram.hpp>
 #include <base-logging/Logging.hpp>
 
+#include <iostream>
+
 namespace wbc {
 
 QPSolverRegistry<QPSwiftSolver> QPSwiftSolver::reg("qpswift");
@@ -21,33 +23,27 @@ QPSwiftSolver::~QPSwiftSolver(){
 }
 
 void QPSwiftSolver::toQpSwift(const wbc::QuadraticProgram &qp){
-    A.setZero();
-    G.setZero();
-    h.setZero();
-    b.setZero();
+    
+    G.setZero();    
 
-    int j = 0, k = 0;
-    for(uint i = 0; i < qp.lower_y.size(); i++){
-        if(qp.lower_y[i] == qp.upper_y[i]){ // Equality constraints
-            A.row(j) = qp.A.row(i);
-            b[j++]   = qp.lower_y[i];
-        }
-        else{  // Inequality constraints
-            G.row(k)   = qp.A.row(i);
-            h[k++]     = qp.upper_y[i];
-            G.row(k)   = -qp.A.row(i);
-            h[k++]     = -qp.lower_y[i];
-        }
-    }
-    // Map bounds to Inequality constraints
-    for(uint i = 0; i < n_bounds; i++){
-        G(k,i) = 1.0;
-        h[k++] = qp.upper_x[i];
-        G(k,i) = -1.0;
-        h[k++] = -qp.lower_x[i];
-    }
     P = qp.H;
     c = qp.g;
+    A = qp.A;
+    b = qp.b;
+    
+    // create inequalities matrix (inequalities constraints + bounds)
+    G.middleRows(0, qp.nin) = qp.C;
+    G.middleRows(qp.nin, qp.nin) = -qp.C;
+    h.segment(0, qp.nin) = qp.upper_y;
+    h.segment(qp.nin, qp.nin) = -qp.lower_y;
+
+    if(qp.bounded){
+        G.middleRows(2*qp.nin, n_dec).diagonal().setConstant(1.0);        // map bounds as inequalities
+        G.middleRows(2*qp.nin+n_dec, n_dec).diagonal().setConstant(-1.0);
+        h.segment(2*qp.nin, n_dec) = qp.upper_x;        // map bounds as inequalities
+        h.segment(2*qp.nin+n_dec, n_dec) = -qp.lower_x;
+    }
+
     my_qp = QP_SETUP_dense(n_dec,                   // Number decision variables
                            n_ineq,                  // Number inequality constraints
                            n_eq,                    // Number equality constraints
@@ -60,7 +56,12 @@ void QPSwiftSolver::toQpSwift(const wbc::QuadraticProgram &qp){
                            NULL,
                            COLUMN_MAJOR_ORDERING);
 
-
+    my_qp->options->maxit = max_iter;
+    my_qp->options->reltol = rel_tol;
+    my_qp->options->abstol = abs_tol;
+    my_qp->options->sigma = sigma;
+    my_qp->options->verbose = verbose_level;
+    LOG_DEBUG_S << "Setup Time     : " << my_qp->stats->tsetup * 1000.0 << " ms" << std::endl;
 }
 
 void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output){
@@ -72,40 +73,26 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
 
     if(!configured){        
         // Count equality / inequality constraints
-        n_dec = qp.nq, n_ineq = 0, n_eq = 0, n_bounds = qp.lower_x.size();
-        for(uint i = 0; i < qp.lower_y.size(); i++){
-            if(qp.lower_y[i] == qp.upper_y[i])
-                n_eq++;
-            else
-                n_ineq+=2; // Inequality constraints require 2 entries, one for the upper and one for the lower bound
-        }
-        n_ineq += 2*n_bounds; // Model bounds on the decision variables as inequality constraints here
+        n_dec = qp.nq;
+        n_eq = qp.neq;
+        n_ineq = 2 * (qp.nin + qp.upper_x.size()); 
 
-        A.resize(n_eq,n_dec);
+        A.resize(n_eq, n_dec);
         b.resize(n_eq);
-        G.resize(n_ineq,n_dec);
+        G.resize(n_ineq, n_dec);
         h.resize(n_ineq);
-        P.resize(n_dec,n_dec);
+        P.resize(n_dec, n_dec);
         c.resize(n_dec);
         solver_output.resize(n_dec);
 
         LOG_DEBUG_S << "n_dec:    " << n_dec    << std::endl;
         LOG_DEBUG_S << "n_eq:     " << n_eq     << std::endl;
         LOG_DEBUG_S << "n_ineq:   " << n_ineq   << std::endl;
-        LOG_DEBUG_S << "n_bounds: " << n_bounds << std::endl;
-
-        toQpSwift(qp);
-
-        my_qp->options->maxit = max_iter;
-        my_qp->options->reltol = rel_tol;
-        my_qp->options->abstol = abs_tol;
-        my_qp->options->sigma = sigma;
-        my_qp->options->verbose = verbose_level;
-        LOG_DEBUG_S << "Setup Time     : " << my_qp->stats->tsetup * 1000.0 << " ms" << std::endl;
         configured = true;
     }
 
     toQpSwift(qp);
+
     qp_int exit_code = QP_SOLVE(my_qp);
 
     switch(exit_code){
@@ -130,7 +117,7 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
         throw std::runtime_error("QPSwiftSolver failed: Unknown error");
     }
     case QP_KKTFAIL:{
-        throw std::runtime_error("QPSwiftSolver failed:LDL Factorization failed");
+        throw std::runtime_error("QPSwiftSolver failed: LDL Factorization failed");
     }
     }
 

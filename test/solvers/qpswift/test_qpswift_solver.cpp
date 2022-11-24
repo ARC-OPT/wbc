@@ -12,7 +12,9 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_without_constraints)
     srand (time(NULL));
 
     const int NO_JOINTS = 6;
-    const int NO_CONSTRAINTS = 6;
+    const int NO_EQ_CONSTRAINTS = 0;
+    const int NO_IN_CONSTRAINTS = 0;
+    const bool WITH_BOUNDS = true;
     const int NO_WSR = 20;
 
     // Solve the problem min(||Ax-b||) without constraints --> encode the task as part of the cost function
@@ -21,13 +23,12 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_without_constraints)
     // With warm start, this solver is much faster (approx. 5 times) than in the initial run
 
     wbc::QuadraticProgram qp;
-    qp.resize(NO_CONSTRAINTS, NO_JOINTS);
+    qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
+    
+    // qp.lower_y.resize(0);
+    // qp.upper_y.resize(0);
 
-    qp.lower_x.resize(0);
-    qp.upper_x.resize(0);
-    qp.lower_y.resize(0);
-    qp.upper_y.resize(0);
-    qp.A.setIdentity();
+    // qp.A.setIdentity();
     // Task Jacobian
     base::Matrix6d A;
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
@@ -42,12 +43,12 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_without_constraints)
 
     qp.H = A.transpose()*A;
     qp.g = -(A.transpose()*y).transpose();
-    wbc::HierarchicalQP hqp;
-    qp.A = A;
-    qp.lower_x.resize(NO_JOINTS);
+    
     qp.lower_x.setConstant(-1000);
-    qp.upper_x.resize(NO_JOINTS);
     qp.upper_x.setConstant(1000);
+
+    qp.check();
+    wbc::HierarchicalQP hqp;
     hqp << qp;
 
     QPSwiftSolver solver;
@@ -72,18 +73,20 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_without_constraints)
     cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
-    for(uint j = 0; j < NO_CONSTRAINTS; j++)
+    for(uint j = 0; j < NO_JOINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
     //cout<<"\n............................."<<endl;
 }
 
-BOOST_AUTO_TEST_CASE(solver_qp_swift_with_constraints)
+BOOST_AUTO_TEST_CASE(solver_qp_swift_with_equality_constraints)
 {
     srand (time(NULL));
 
     const int NO_JOINTS = 6;
-    const int NO_CONSTRAINTS = 6;
+    const int NO_EQ_CONSTRAINTS = 6;
+    const int NO_IN_CONSTRAINTS = 0;
+    const bool WITH_BOUNDS = true;
     const int NO_WSR = 20;
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint
@@ -91,12 +94,11 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_with_constraints)
     // For a 6x6 Constraint matrix this is approx. 3-5 times slower than encoding the task in the cost function as above
 
     wbc::QuadraticProgram qp;
-    qp.resize(NO_CONSTRAINTS, NO_JOINTS);
+    qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
 
-    qp.lower_x.resize(0);
-    qp.upper_x.resize(0);
     qp.g.setZero();
     qp.H.setIdentity();
+
     // Task Jacobian
     base::Matrix6d A;
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
@@ -106,16 +108,16 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_with_constraints)
          0.891, 0.019, 0.716, 0.534, 0.725, 0.633,
          0.315, 0.551, 0.462, 0.221, 0.638, 0.244;
     qp.A = A;
+
     // Desired task space reference
     base::Vector6d y;
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
-    qp.lower_y = y;
-    qp.upper_y = y;
-    qp.lower_x.resize(NO_JOINTS);
+    qp.b = y;
+
     qp.lower_x.setConstant(-1000);
-    qp.upper_x.resize(NO_JOINTS);
     qp.upper_x.setConstant(1000);
 
+    qp.check();
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
@@ -140,7 +142,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_swift_with_constraints)
     cout<<"\nSolver Output: q_dot = "<<solver_output.transpose()<<endl;*/
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
-    for(uint j = 0; j < NO_CONSTRAINTS; j++)
+    for(uint j = 0; j < NO_EQ_CONSTRAINTS; j++)
         BOOST_CHECK(fabs(test(j) - y(j)) < 1e-9);
 
     //cout<<"\n............................."<<endl;
