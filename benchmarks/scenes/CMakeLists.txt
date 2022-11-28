@@ -3,6 +3,7 @@ target_link_libraries(benchmark_scenes
                       wbc-solvers-qpoases
                       wbc-solvers-qpswift
                       wbc-solvers-eiquadprog
+                      wbc-solvers-proxqp
                       wbc-scenes
                       wbc-robot_models-kdl
                       wbc-robot_models-hyrodyn

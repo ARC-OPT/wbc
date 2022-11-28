@@ -1,9 +1,11 @@
 #include <scenes/VelocityScene.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>
+#include <scenes/AccelerationSceneReducedTSID.hpp>
 #include <scenes/AccelerationSceneTSID.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <solvers/eiquadprog/EiquadprogSolver.hpp>
 #include <solvers/qpswift/QPSwiftSolver.hpp>
+#include <solvers/proxqp/ProxQPSolver.hpp>
 #include <robot_models/kdl/RobotModelKDL.hpp>
 #include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
 #include <robot_models/pinocchio/RobotModelPinocchio.hpp>
@@ -54,6 +56,23 @@ void evaluateAccelerationSceneTSID(map<string,RobotModelPtr> robot_models, map<s
     }
 }
 
+void evaluateAccelerationSceneReducedTSID(map<string,RobotModelPtr> robot_models, map<string,QPSolverPtr> solvers,
+                                   const string &root, const string &tip,
+                                   int n_samples, string robot_name){
+    TaskConfig cart_task("cart_pos_ctrl",0,root,tip,root,1);
+    for(auto it : robot_models){
+        for(auto itt : solvers){
+            WbcScenePtr scene = make_shared<AccelerationSceneReducedTSID>(it.second, itt.second);
+            if(!scene->configure({cart_task}))
+                throw runtime_error("Failed to configure AccelerationSceneReducedTSID");
+            map<string,base::VectorXd> results = evaluateWBCSceneRandom(scene, n_samples);
+            toCSV(results, "results/" + robot_name + "_acc_reduced_" + it.first + "_" + itt.first + ".csv");
+            cout << " ----------- Results AccelerationSceneReducedTSID (" + it.first + "," + itt.first + ") -----------" << endl;
+            printResults(results);
+        }
+    }
+}
+
 void runKUKAIiwaBenchmarks(int n_samples){
     cout << " ----------- Evaluating KUKA iiwa model -----------" << endl;
     RobotModelConfig cfg;
@@ -78,9 +97,11 @@ void runKUKAIiwaBenchmarks(int n_samples){
     solvers["qpoases"] = make_shared<QPOASESSolver>();
     solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
+    solvers["proxqp"] = make_shared<ProxQPSolver>();
 
     evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
     evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneReducedTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5SingleLegBenchmarks(int n_samples){
@@ -113,10 +134,12 @@ void runRH5SingleLegBenchmarks(int n_samples){
     solvers["qpoases"] = make_shared<QPOASESSolver>();
     solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
+    solvers["proxqp"] = make_shared<ProxQPSolver>();
 
     const string root = "RH5_Root_Link", tip = "LLAnkle_FT";
     evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
     evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneReducedTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5LegsBenchmarks(int n_samples){
@@ -125,8 +148,11 @@ void runRH5LegsBenchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
     cfg.floating_base = true;
-    cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    cfg.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
+    ActiveContact contact(1,0.6);
+    contact.wx = 0.2;
+    contact.wy = 0.08;
+    cfg.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
+    cfg.contact_points.elements = {contact, contact};
     const string robot = "rh5_legs";
 
     map<string,RobotModelPtr> robot_models;
@@ -157,10 +183,12 @@ void runRH5LegsBenchmarks(int n_samples){
     solvers["qpoases"] = make_shared<QPOASESSolver>();
     solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
+    solvers["proxqp"] = make_shared<ProxQPSolver>();
 
     const string root = "world", tip = "LLAnkle_FT";
     evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
     evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneReducedTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5Benchmarks(int n_samples){
@@ -169,8 +197,11 @@ void runRH5Benchmarks(int n_samples){
     cfg.file = "../../../models/rh5/urdf/rh5.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
-    cfg.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    cfg.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
+    ActiveContact contact(1,0.6);
+    contact.wx = 0.2;
+    contact.wy = 0.08;
+    cfg.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
+    cfg.contact_points.elements = {contact, contact};
     const string robot = "rh5";
 
     map<string,RobotModelPtr> robot_models;
@@ -202,10 +233,12 @@ void runRH5Benchmarks(int n_samples){
     solvers["qpoases"] = make_shared<QPOASESSolver>();
     solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
+    solvers["proxqp"] = make_shared<ProxQPSolver>();
 
     const string root = "world", tip = "LLAnkle_FT";
-    //evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
     evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneReducedTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runRH5v2Benchmarks(int n_samples){
@@ -238,10 +271,12 @@ void runRH5v2Benchmarks(int n_samples){
     solvers["qpoases"] = make_shared<QPOASESSolver>();
     solvers["eiquadprog"] = make_shared<EiquadprogSolver>();
     solvers["qpswift"] = make_shared<QPSwiftSolver>();
+    solvers["proxqp"] = make_shared<ProxQPSolver>();
 
     const string root = "RH5v2_Root_Link", tip = "ALWristFT_Link";
     evaluateVelocitySceneQuadraticCost(robot_models, solvers, root, tip, n_samples, robot);
     evaluateAccelerationSceneTSID(robot_models, solvers, root, tip, n_samples, robot);
+    evaluateAccelerationSceneReducedTSID(robot_models, solvers, root, tip, n_samples, robot);
 }
 
 void runBenchmarks(int n_samples){
@@ -258,6 +293,6 @@ int
 main(){
 
     srand(time(NULL));
-    int n_samples = 10;
+    int n_samples = 1000;
     runBenchmarks(n_samples);
 }

@@ -1,8 +1,8 @@
 #include <iostream>
 #include <boost/filesystem.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
-#include <scenes/AccelerationSceneTSID.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
+#include <scenes/AccelerationSceneReducedTSID.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <solvers/qpswift/QPSwiftSolver.hpp>
@@ -28,9 +28,9 @@ map<string, base::VectorXd> evaluateQPOases(RobotModelPtr robot_model, string ro
     if(type == "vel")
         scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
     else
-        scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
+        scene = std::make_shared<AccelerationSceneReducedTSID>(robot_model, solver);
     if(!scene->configure({cart_task}))
-        throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
+        throw std::runtime_error("Failed to configure evaluateAccelerationSceneReducedTSID");
 
     return evaluateWBCSceneRandom(scene, n_samples);
 }
@@ -45,9 +45,9 @@ map<string, base::VectorXd> evaluateQPSwift(RobotModelPtr robot_model, string ro
     if(type == "vel")
         scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
     else
-        scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
+        scene = std::make_shared<AccelerationSceneReducedTSID>(robot_model, solver);
     if(!scene->configure({cart_task}))
-        throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
+        throw std::runtime_error("Failed to configure evaluateAccelerationSceneReducedTSID");
 
     return evaluateWBCSceneRandom(scene, n_samples);
 }
@@ -62,9 +62,9 @@ map<string, base::VectorXd> evaluateEiquadprog(RobotModelPtr robot_model, string
     if(type == "vel")
         scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
     else
-        scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
+        scene = std::make_shared<AccelerationSceneReducedTSID>(robot_model, solver);
     if(!scene->configure({cart_task}))
-        throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
+        throw std::runtime_error("Failed to configure evaluateAccelerationSceneReducedTSID");
 
     return evaluateWBCSceneRandom(scene, n_samples);
 }
@@ -79,9 +79,9 @@ map<string, base::VectorXd> evaluateProxQP(RobotModelPtr robot_model, string roo
     if(type == "vel")
         scene = std::make_shared<VelocitySceneQuadraticCost>(robot_model, solver);
     else
-        scene = std::make_shared<AccelerationSceneTSID>(robot_model, solver);
+        scene = std::make_shared<AccelerationSceneReducedTSID>(robot_model, solver);
     if(!scene->configure({cart_task}))
-        throw std::runtime_error("Failed to configure evaluateAccelerationSceneTSID");
+        throw std::runtime_error("Failed to configure evaluateAccelerationSceneReducedTSID");
 
     return evaluateWBCSceneRandom(scene, n_samples);
 }
@@ -90,8 +90,7 @@ void runKUKAIiwaBenchmarks(int n_samples){
     
     RobotModelConfig cfg;
     cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
-    cfg.submechanism_file = "../../../models/kuka/hyrodyn/kuka_iiwa.yml";
-    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
 
     base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
@@ -124,13 +123,13 @@ void runKUKAIiwaBenchmarks(int n_samples){
     printResults(results_proxqp_vel);
     cout << " ----------- Results VelocitySceneQuadraticCost (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_vel);
-    cout << " ----------- Results AccelerationSceneTSID (QPOases) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPOases) -----------" << endl;
     printResults(results_qp_oases_acc);
-    cout << " ----------- Results AccelerationSceneTSID (QPSwift) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPSwift) -----------" << endl;
     printResults(results_qp_swift_acc);
-    cout << " ----------- Results AccelerationSceneTSID (ProxQP) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (ProxQP) -----------" << endl;
     printResults(results_proxqp_acc);
-    cout << " ----------- Results AccelerationSceneTSID (Eiquadprog) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_acc);
 }
 
@@ -138,8 +137,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
     
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
-    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
-    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
 
     base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
@@ -174,13 +172,13 @@ void runRH5SingleLegBenchmarks(int n_samples){
     printResults(results_proxqp_vel);
     cout << " ----------- Results VelocitySceneQuadraticCost (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_vel);
-    cout << " ----------- Results AccelerationSceneTSID (QPOases) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPOases) -----------" << endl;
     printResults(results_qp_oases_acc);
-    cout << " ----------- Results AccelerationSceneTSID (QPSwift) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPSwift) -----------" << endl;
     printResults(results_qp_swift_acc);
-    cout << " ----------- Results AccelerationSceneTSID (ProxQP) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (ProxQP) -----------" << endl;
     printResults(results_proxqp_acc);
-    cout << " ----------- Results AccelerationSceneTSID (Eiquadprog) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_acc);
 }
 
@@ -188,9 +186,12 @@ void runRH5LegsBenchmarks(int n_samples){
     
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
-    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
     cfg.floating_base = true;
-    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    ActiveContact contact(1,0.6);
+    contact.wx = 0.2;
+    contact.wy = 0.08;
+    cfg.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
+    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
 
     base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
@@ -218,6 +219,7 @@ void runRH5LegsBenchmarks(int n_samples){
     toCSV(results_proxqp_vel, "results/rh5_legs_vel_proxqp.csv");
     toCSV(results_eiquadprog_vel, "results/rh5_legs_vel_eiquadprog.csv");
     toCSV(results_qp_oases_acc, "results/rh5_legs_acc_qpoases.csv");
+    toCSV(results_qp_swift_acc, "results/rh5_legs_acc_qpswift.csv");
     toCSV(results_proxqp_acc, "results/rh5_legs_acc_proxqp.csv");
     toCSV(results_eiquadprog_acc, "results/rh5_legs_acc_eiquadprog.csv");
 
@@ -229,13 +231,13 @@ void runRH5LegsBenchmarks(int n_samples){
     printResults(results_proxqp_vel);
     cout << " ----------- Results VelocitySceneQuadraticCost (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_vel);
-    cout << " ----------- Results AccelerationSceneTSID (QPOases) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPOases) -----------" << endl;
     printResults(results_qp_oases_acc);
-    cout << " ----------- Results AccelerationSceneTSID (QPSwift) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPSwift) -----------" << endl;
     printResults(results_qp_swift_acc);
-    cout << " ----------- Results AccelerationSceneTSID (ProxQP) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (ProxQP) -----------" << endl;
     printResults(results_proxqp_acc);
-    cout << " ----------- Results AccelerationSceneTSID (Eiquadprog) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_acc);
 }
 
@@ -243,14 +245,17 @@ void runRH5Benchmarks(int n_samples){
     
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5/urdf/rh5.urdf";
-    cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
-    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    ActiveContact contact(1,0.6);
+    contact.wx = 0.2;
+    contact.wy = 0.08;
+    cfg.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
+    cfg.contact_points.elements = {contact, contact};
+    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
-
     base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
     base::samples::RigidBodyStateSE3 floating_base_state;
-    floating_base_state.pose.position = base::Vector3d(-0.0, 0.0, 0.87);
+    floating_base_state.pose.position = base::Vector3d(0.0, 0.0, 0.89);
     floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
     floating_base_state.twist.setZero();
     floating_base_state.acceleration.setZero();
@@ -285,13 +290,13 @@ void runRH5Benchmarks(int n_samples){
     printResults(results_proxqp_vel);
     cout << " ----------- Results VelocitySceneQuadraticCost (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_vel);
-    cout << " ----------- Results AccelerationSceneTSID (QPOases) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPOases) -----------" << endl;
     printResults(results_qp_oases_acc);
-    cout << " ----------- Results AccelerationSceneTSID (QPSwift) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPSwift) -----------" << endl;
     printResults(results_qp_swift_acc);
-    cout << " ----------- Results AccelerationSceneTSID (ProxQP) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (ProxQP) -----------" << endl;
     printResults(results_proxqp_acc);
-    cout << " ----------- Results AccelerationSceneTSID (Eiquadprog) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_acc);
 }
 
@@ -299,8 +304,7 @@ void runRH5v2Benchmarks(int n_samples){
 
     RobotModelConfig cfg;
     cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
-    cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
-    RobotModelPtr robot_model = std::make_shared<RobotModelHyrodyn>();
+    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
 
     base::samples::Joints joint_state = randomJointState(robot_model->jointLimits());
@@ -334,13 +338,13 @@ void runRH5v2Benchmarks(int n_samples){
     printResults(results_proxqp_vel);
     cout << " ----------- Results VelocitySceneQuadraticCost (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_vel);
-    cout << " ----------- Results AccelerationSceneTSID (QPOases) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPOases) -----------" << endl;
     printResults(results_qp_oases_acc);
-    cout << " ----------- Results AccelerationSceneTSID (QPSwift) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (QPSwift) -----------" << endl;
     printResults(results_qp_swift_acc);
-    cout << " ----------- Results AccelerationSceneTSID (ProxQP) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (ProxQP) -----------" << endl;
     printResults(results_proxqp_acc);
-    cout << " ----------- Results AccelerationSceneTSID (Eiquadprog) -----------" << endl;
+    cout << " ----------- Results AccelerationSceneReducedTSID (Eiquadprog) -----------" << endl;
     printResults(results_eiquadprog_acc);
 }
 
