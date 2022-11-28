@@ -132,6 +132,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     }
 
     qp.H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
+    qp.H.block(nj,nj, ncp*6, ncp*6).diagonal().array() += 1e-12;
 
     hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?

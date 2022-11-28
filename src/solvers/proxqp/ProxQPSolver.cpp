@@ -9,7 +9,7 @@
 
 namespace wbc {
 
-QPSolverRegistry<ProxQPSolver> ProxQPSolver::reg("ProxQP");
+QPSolverRegistry<ProxQPSolver> ProxQPSolver::reg("proxqp");
 
 ProxQPSolver::ProxQPSolver()
 {
