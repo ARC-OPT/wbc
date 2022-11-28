@@ -104,7 +104,7 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
 
     selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
     selection_matrix.setZero();
-    for(int i = 0; i < actuated_joint_names.size(); i++)
+    for(uint i = 0; i < actuated_joint_names.size(); i++)
         selection_matrix(i, jointIndex(actuated_joint_names[i])) = 1.0;
 
     contact_points = cfg.contact_points.names;

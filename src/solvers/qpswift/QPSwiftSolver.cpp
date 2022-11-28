@@ -121,7 +121,7 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     }
     }
 
-    for(uint i = 0; i < n_dec; i++)
+    for(int i = 0; i < n_dec; i++)
         solver_output[i] = my_qp->x[i];
 }
 
