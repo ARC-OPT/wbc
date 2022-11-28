@@ -293,6 +293,6 @@ int
 main(){
 
     srand(time(NULL));
-    int n_samples = 10;
+    int n_samples = 1000;
     runBenchmarks(n_samples);
 }

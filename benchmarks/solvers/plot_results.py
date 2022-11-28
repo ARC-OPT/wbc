@@ -10,7 +10,8 @@ robots = ["rh5_single_leg",
           "rh5v2"]
 solvers = ["qpoases",
            "eiquadprog",
-           "qpswift"]
+           "qpswift",
+           "proxqp"]
 scenes = ["vel","acc"]
 
 if(len(sys.argv) < 2):
@@ -30,13 +31,15 @@ def plotSceneSolveTime(csv_list, wbc_type, title):
     data_qpoases      = [getAvgSceneSolveTime(csv_list, r, wbc_type, "qpoases") for r in robots]
     data_eiquadprog   = [getAvgSceneSolveTime(csv_list, r, wbc_type, "eiquadprog") for r in robots]
     data_qpswift      = [getAvgSceneSolveTime(csv_list, r, wbc_type, "qpswift") for r in robots]
+    data_proxqp       = [getAvgSceneSolveTime(csv_list, r, wbc_type, "proxqp") for r in robots]
 
-    positions_group_eiquadprog   = np.array(range(len(data_eiquadprog)))-width
-    positions_group_qpoases      = np.array(range(len(data_qpoases)))
-    positions_group_qpswift      = np.array(range(len(data_qpswift)))+width
+    positions_group_eiquadprog   = np.array(range(len(data_eiquadprog)))-1.5*width
+    positions_group_qpoases      = np.array(range(len(data_qpoases)))-0.5*width
+    positions_group_qpswift      = np.array(range(len(data_qpswift)))+0.5*width
+    positions_group_proxqp       = np.array(range(len(data_proxqp)))+1.5*width
 
-    data = [data_eiquadprog,data_qpoases,data_qpswift]
-    positions = [positions_group_eiquadprog,positions_group_qpoases,positions_group_qpswift]
+    data = [data_eiquadprog,data_qpoases,data_qpswift,data_proxqp]
+    positions = [positions_group_eiquadprog,positions_group_qpoases,positions_group_qpswift,positions_group_proxqp]
 
     bplots = []
     for d,p in zip(data,positions):
@@ -45,14 +48,14 @@ def plotSceneSolveTime(csv_list, wbc_type, title):
     plt.xticks(list(range(len(robots))), robots, fontsize=20)
     plt.grid(True)
 
-    colors = ['blue','orange','green']
+    colors = ['blue','orange','green','yellow']
     for bp,c in zip(bplots,colors):
         for box in bp['boxes']:
             box.set_facecolor(color=c)
         for m in bp['medians']:
             m.set_color(color='black')
 
-    ax.legend([bp["boxes"][0] for bp in bplots], ['Eiquadprog', 'QPOases','QPSwift'], loc='upper left', fontsize=20)
+    ax.legend([bp["boxes"][0] for bp in bplots], ['Eiquadprog', 'QPOases','QPSwift','proxQP'], loc='upper left', fontsize=20)
     plt.xlabel("Robots", fontsize=30, labelpad=20)
     plt.ylabel("Time [ms]", fontsize=30, labelpad=20)
 
