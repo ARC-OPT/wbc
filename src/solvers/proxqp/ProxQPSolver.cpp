@@ -59,7 +59,7 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
         // _solver_ptr->settings.preconditioner_max_iter = 100;
         // _solver_ptr->settings.initial_guess = pqp::InitialGuessStatus::NO_INITIAL_GUESS;
 
-        _solver_ptr->init(qp.H, qp.g, qp.A, qp.b, _C_mtx, _u_vec, _l_vec);
+        _solver_ptr->init(qp.H, qp.g, qp.A, qp.b, _C_mtx, _l_vec, _u_vec);
 
         configured = true;
     }
@@ -71,7 +71,7 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
             throw std::runtime_error("QP problem changed dynamically. Not supported at the moment.");
 
         _solver_ptr->settings.initial_guess = pqp::InitialGuessStatus::WARM_START_WITH_PREVIOUS_RESULT;
-        _solver_ptr->update(qp.H, qp.g, qp.A, qp.b, _C_mtx, _u_vec, _l_vec);
+        _solver_ptr->update(qp.H, qp.g, qp.A, qp.b, _C_mtx, _l_vec, _u_vec);
     }
 
 //     std::cerr << "qp.nq = " << qp.nq <<std::endl;
