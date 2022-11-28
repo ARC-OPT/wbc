@@ -5,7 +5,7 @@ target_link_libraries(benchmark_solvers
                       wbc-solvers-eiquadprog
                       wbc-solvers-proxqp
                       wbc-scenes
-                      wbc-robot_models-hyrodyn
+                      wbc-robot_models-pinocchio
                       Boost::system
                       Boost::filesystem)
 

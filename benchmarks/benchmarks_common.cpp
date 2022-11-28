@@ -66,13 +66,12 @@ base::samples::RigidBodyStateSE3 randomFloatingBaseState(){
 
 base::samples::RigidBodyStateSE3 randomFloatingBaseState(base::samples::RigidBodyStateSE3 floating_base_state_in){
     base::samples::RigidBodyStateSE3 floating_base_state;
-    base::Vector3d euler = base::getEuler(floating_base_state_in.pose.orientation);
-    floating_base_state.pose.position = base::Vector3d(whiteNoise(1e-4),
-                                                       whiteNoise(1e-4),
-                                                       whiteNoise(1e-4));
-    floating_base_state.pose.orientation = Eigen::AngleAxisd(whiteNoise(1e-4), Eigen::Vector3d::UnitX())
-                                         * Eigen::AngleAxisd(whiteNoise(1e-4), Eigen::Vector3d::UnitY())
-                                         * Eigen::AngleAxisd(whiteNoise(1e-4), Eigen::Vector3d::UnitZ());
+    floating_base_state.pose.position = base::Vector3d(floating_base_state_in.pose.position[0]+whiteNoise(1e-4),
+                                                       floating_base_state_in.pose.position[1]+whiteNoise(1e-4),
+                                                       floating_base_state_in.pose.position[2]+whiteNoise(1e-4));
+    floating_base_state.pose.orientation = Eigen::AngleAxisd(base::getEuler(floating_base_state_in.pose.orientation)[0] + whiteNoise(1e-4), Eigen::Vector3d::UnitX())
+                                         * Eigen::AngleAxisd(base::getEuler(floating_base_state_in.pose.orientation)[1] + whiteNoise(1e-4), Eigen::Vector3d::UnitY())
+                                         * Eigen::AngleAxisd(base::getEuler(floating_base_state_in.pose.orientation)[2] + whiteNoise(1e-4), Eigen::Vector3d::UnitZ());
     floating_base_state.twist.linear = base::Vector3d(whiteNoise(1e-4),
                                                       whiteNoise(1e-4),
                                                       whiteNoise(1e-4));
@@ -107,7 +106,7 @@ map<string, base::VectorXd> evaluateWBCSceneRandom(WbcScenePtr scene, int n_samp
 
     base::VectorXd time_scene_update(n_samples);
     base::VectorXd time_scene_solve(n_samples);
-    for(int i = 0; i < n_samples; i++){
+    for(int i = 0; i <= n_samples; i++){
         for(auto w : scene->getWbcConfig())
             scene->setReference(w.name, randomConstraintReference());
 
@@ -115,15 +114,27 @@ map<string, base::VectorXd> evaluateWBCSceneRandom(WbcScenePtr scene, int n_samp
         base::samples::Joints joint_state = randomJointState(robot_model->jointState(robot_model->independentJointNames()));
         base::samples::RigidBodyStateSE3 floating_base_state = randomFloatingBaseState(scene->getRobotModel()->floatingBaseState());
         scene->getRobotModel()->update(joint_state, floating_base_state);
+        usleep(0.01*1e6);
 
-        base::Time start = base::Time::now();
-        HierarchicalQP qp = scene->update();
-        time_scene_update[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
+        if(i==0){
+            HierarchicalQP qp = scene->update();
+            scene->solve(qp);
+        }
+        else{
+            base::Time start = base::Time::now();
+            HierarchicalQP qp = scene->update();
+            time_scene_update[i-1] = (double)(base::Time::now()-start).toMicroseconds()/1000;
 
-        start = base::Time::now();
-        scene->solve(qp);
-        time_scene_solve[i] = (double)(base::Time::now()-start).toMicroseconds()/1000;
-
+            try{
+                start = base::Time::now();
+                scene->solve(qp);
+                time_scene_solve[i-1] = (double)(base::Time::now()-start).toMicroseconds()/1000;
+            }
+            catch(exception e){
+                i--;
+                continue;
+            }
+        }
         usleep(0.01*1e6);
     }
 
