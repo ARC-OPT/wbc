@@ -229,7 +229,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     gettimeofday(&end, NULL);
     long useconds = end.tv_usec - start.tv_usec;
 
-    std::cerr << "output: " << solver_output.transpose() << std::endl;
     for(uint j = 0; j < NO_JOINTS; ++j)
         BOOST_CHECK((qp.lower_x(j)-1e-9) <= solver_output(j) && solver_output(j) <= (qp.upper_x(j)+1e-9));
 
