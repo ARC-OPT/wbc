@@ -30,7 +30,7 @@ Please check out the tutorials section in the [documentation](https://arc-opt.gi
 
 ## Requirements / Dependencies
 
-Currently supported OS: Ubuntu18.04, Ubuntu20.04
+Currently supported OS: Ubuntu20.04, Ubuntu22.04
 
 Since WBC can be considered as an integrative framework that facilitates the composition of different robot control approaches, there is a number of dependencies:
 
