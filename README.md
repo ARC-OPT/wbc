@@ -26,7 +26,7 @@ The online solution of this problem is the robot joint control signal that compl
 
 ## Getting Started
 
-Please check out the tutorials section in the [documentation](https://arc-opt.github.io/) for examples of usage.
+Please check out the tutorials section in the [documentation](https://arc-opt.github.io/Documentation/) for examples of usage.
 
 ## Requirements / Dependencies
 
