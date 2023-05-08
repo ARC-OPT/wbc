@@ -20,6 +20,13 @@ sudo make -j8 install && cd ../..
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
+# RBDL
+git clone --branch v3.2.1 git@github.com:rbdl/rbdl.git
+cd rbdl
+mkdir build && cd build
+cmake .. 
+sudo make -j8 install && cd ../..
+
 # KDL 
 git clone https://github.com/orocos/orocos_kinematics_dynamics.git -b v1.5.1
 mkdir orocos_kinematics_dynamics/orocos_kdl/build

@@ -1,5 +1,5 @@
 from wbc.core import *
-from wbc.robot_models.robot_model_pinocchio import *
+from wbc.robot_models.robot_model_rbdl import *
 import numpy as np
 import nose
 
@@ -82,8 +82,8 @@ def run(robot_model):
 
     robot_model.getRobotModelConfig() == r
 
-def test_robot_model_pinocchio():
-    run(RobotModelPinocchio())
+def test_robot_model_rbdl():
+    run(RobotModelRBDL())
 
 if __name__ == '__main__':
     nose.run()

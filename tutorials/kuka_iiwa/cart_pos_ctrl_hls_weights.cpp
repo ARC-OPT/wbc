@@ -1,4 +1,4 @@
-#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
+#include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
@@ -14,7 +14,7 @@ using namespace wbc;
  */
 int main(int argc, char** argv){
 
-    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
+    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
 
     // Configure the robot model by passing the RobotModelConfig. The simplest configuration can by obtained by only setting
     // the path to the URDF file. In doing so, WBC will assume:

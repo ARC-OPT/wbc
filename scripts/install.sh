@@ -20,11 +20,11 @@ sudo make -j8 install && cd ../..
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
-# Pinocchio
-git clone --branch v2.6.8 --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
-cd pinocchio
+# RBDL
+git clone --branch v3.2.1 git@github.com:rbdl/rbdl.git
+cd rbdl
 mkdir build && cd build
-cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF
+cmake .. 
 sudo make -j8 install && cd ../..
 
 # Clone WBC repo to have the patches for KDL and qpOASES
