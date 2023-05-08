@@ -21,10 +21,10 @@ sudo make -j8 install && cd ../..
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
 # RBDL
-git clone --branch v3.2.1 git@github.com:rbdl/rbdl.git
+git clone --branch v3.2.1 --recurse-submodules git@github.com:rbdl/rbdl.git
 cd rbdl
 mkdir build && cd build
-cmake .. 
+cmake .. -DRBDL_BUILD_ADDON_URDFREADER=ON
 sudo make -j8 install && cd ../..
 
 # Clone WBC repo to have the patches for KDL and qpOASES
