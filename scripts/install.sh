@@ -4,18 +4,18 @@ sudo apt-get -y install git cmake build-essential libboost-system-dev libboost-p
 # cmake makros
 git clone https://github.com/rock-core/base-cmake.git   
 mkdir base-cmake/build && cd base-cmake/build
-cmake .. && sudo make -j8 install && cd ../..
+cmake .. && make -j8 && sudo make install && cd ../..
 
 # Logging 
 git clone https://github.com/rock-core/base-logging.git
 mkdir base-logging/build && cd base-logging/build
-cmake .. && sudo make -j8 install && cd ../..
+cmake .. && make -j8 && sudo make install && cd ../..
 
 # Base Types
 git clone https://github.com/rock-core/base-types.git
 mkdir base-types/build && cd base-types/build
 cmake .. -DUSE_SISL=OFF -DBINDINGS_RUBY=OFF -DROCK_VIZ_ENABLED=OFF
-sudo make -j8 install && cd ../..
+make -j8 && sudo make install && cd ../..
 
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
@@ -25,7 +25,7 @@ git clone --branch v3.2.1 --recurse-submodules git@github.com:rbdl/rbdl.git
 cd rbdl
 mkdir build && cd build
 cmake .. -DRBDL_BUILD_ADDON_URDFREADER=ON
-sudo make -j8 install && cd ../..
+make -j8 && sudo make install && cd ../..
 
 # Clone WBC repo to have the patches for KDL and qpOASES
 git clone https://github.com/ARC-OPT/wbc.git
@@ -39,10 +39,10 @@ cd qpOASES
 mkdir patches && cp ../wbc/patches/qpOASES.patch patches
 git apply patches/qpOASES.patch
 mkdir build && cd build
-cmake .. && sudo make -j8 install && cd ../..
+cmake .. && make -j8 && sudo make install && cd ../..
 
 # WBC
 mkdir wbc/build && cd wbc/build
 cmake ..
-sudo make -j8 install
+make -j8 && sudo make install
 
