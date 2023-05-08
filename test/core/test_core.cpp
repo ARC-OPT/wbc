@@ -75,15 +75,15 @@ BOOST_AUTO_TEST_CASE(task_config){
 }
 
 BOOST_AUTO_TEST_CASE(robot_model_factory){
-    BOOST_CHECK_NO_THROW(PluginLoader::loadPlugin("libwbc-robot_models-pinocchio.so"));
+    BOOST_CHECK_NO_THROW(PluginLoader::loadPlugin("libwbc-robot_models-rbdl.so"));
     PluginLoader::PluginMap *plugin_map = PluginLoader::getPluginMap();
-    BOOST_CHECK(plugin_map->count("libwbc-robot_models-pinocchio.so") == 1);
+    BOOST_CHECK(plugin_map->count("libwbc-robot_models-rbdl.so") == 1);
     RobotModelFactory::RobotModelMap *robot_model_map = RobotModelFactory::getRobotModelMap();
-    BOOST_CHECK(robot_model_map->count("pinocchio") == 1);
+    BOOST_CHECK(robot_model_map->count("rbdl") == 1);
     RobotModel* model;
-    BOOST_CHECK_NO_THROW(model = RobotModelFactory::createInstance("pinocchio"));
+    BOOST_CHECK_NO_THROW(model = RobotModelFactory::createInstance("rbdl"));
     BOOST_CHECK(model != 0);
-    BOOST_CHECK_NO_THROW(PluginLoader::unloadPlugin("libwbc-robot_models-pinocchio.so"));
+    BOOST_CHECK_NO_THROW(PluginLoader::unloadPlugin("libwbc-robot_models-rbdl.so"));
 }
 
 BOOST_AUTO_TEST_CASE(qp_solver_factory){
