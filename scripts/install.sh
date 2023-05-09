@@ -20,15 +20,16 @@ make -j8 && sudo make install && cd ../..
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
+# Clone WBC repo here to have the patches
+git clone https://github.com/ARC-OPT/wbc.git
+
 # RBDL
 git clone --branch v3.2.1 --recurse-submodules git@github.com:rbdl/rbdl.git
 cd rbdl
+cp ../wbc/patches/rbdl.patch . && git apply rbdl.patch
 mkdir build && cd build
 cmake .. -DRBDL_BUILD_ADDON_URDFREADER=ON
 make -j8 && sudo make install && cd ../..
-
-# Clone WBC repo to have the patches for KDL and qpOASES
-git clone https://github.com/ARC-OPT/wbc.git
 
 # If not done yet, setup a ssh key pair using the command `ssh-keygen` and add the 
 # key from `~/.ssh/id_rsa.pub `to the keys in your Gitlab account.

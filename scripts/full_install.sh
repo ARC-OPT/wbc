@@ -20,9 +20,13 @@ make -j8 && sudo make install && cd ../..
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
+# Clone WBC repo to have the patches for KDL and qpOASES
+git clone https://github.com/ARC-OPT/wbc.git
+
 # RBDL
 git clone --branch v3.2.1 git@github.com:rbdl/rbdl.git
 cd rbdl
+cp ../wbc/patches/rbdl.patch . && git apply rbdl.patch
 mkdir build && cd build
 cmake .. 
 make -j8 && sudo make install && cd ../..
@@ -40,9 +44,6 @@ cd pinocchio
 mkdir build && cd build
 cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF 
 make -j8 && sudo make install && cd ../..
-
-# Clone WBC repo to have the patches for KDL and qpOASES
-git clone https://github.com/ARC-OPT/wbc.git
 
 # KDL parser
 sudo apt-get -y install libtinyxml2-dev
