@@ -30,6 +30,10 @@ struct RobotModelFactory{
             robot_model_map = new RobotModelMap;
         return robot_model_map;
     }
+
+    static void clear(){
+        robot_model_map->clear();
+    }
 private:
     static RobotModelMap *robot_model_map;
 };
