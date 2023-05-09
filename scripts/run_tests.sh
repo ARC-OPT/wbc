@@ -12,9 +12,9 @@ cd ../core
 
 # Robot Models
 echo "Testing robot models ..."
-echo "Testing RobotModelPinocchio ..."
-cd ../robot_models/pinocchio
-./test_robot_model_pinocchio
+echo "Testing RobotModelRBDL ..."
+cd ../robot_models/rbdl
+./test_robot_model_rbdl
 cd ..
 if [ -d "kdl" ]; then
   echo "Testing RobotModelKDL ..."
@@ -22,10 +22,10 @@ if [ -d "kdl" ]; then
   ./test_robot_model_kdl
   cd ..
 fi
-if [ -d "rbdl" ]; then
-  echo "Testing RobotModelRBDL ..."
-  cd rbdl
-  ./test_robot_model_rbdl
+if [ -d "pinocchio" ]; then
+  echo "Testing RobotModelPinocchio ..."
+  cd ../robot_models/pinocchio
+  ./test_robot_model_pinocchio
   cd ..
 fi
 if [ -d "hyrodyn" ]; then

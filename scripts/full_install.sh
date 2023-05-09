@@ -4,38 +4,46 @@ sudo apt-get -y install git cmake build-essential libboost-system-dev libboost-p
 # cmake makros
 git clone https://github.com/rock-core/base-cmake.git   
 mkdir base-cmake/build && cd base-cmake/build
-cmake .. && sudo make -j8 install && cd ../..
+cmake .. && make -j8 && sudo make install && cd ../..
 
 # Logging 
 git clone https://github.com/rock-core/base-logging.git
 mkdir base-logging/build && cd base-logging/build
-cmake .. && sudo make -j8 install && cd ../..
+cmake .. && make -j8 && sudo make install && cd ../..
 
 # Base Types
 git clone https://github.com/rock-core/base-types.git
 mkdir base-types/build && cd base-types/build
 cmake .. -DUSE_SISL=OFF -DBINDINGS_RUBY=OFF -DROCK_VIZ_ENABLED=OFF
-sudo make -j8 install && cd ../..
+make -j8 && sudo make install && cd ../..
 
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
+
+# Clone WBC repo to have the patches for KDL and qpOASES
+git clone https://github.com/ARC-OPT/wbc.git
+
+# RBDL
+git clone --branch v3.2.1 git@github.com:rbdl/rbdl.git
+cd rbdl
+cp ../wbc/patches/rbdl.patch . && git apply rbdl.patch
+mkdir build && cd build
+cmake .. 
+make -j8 && sudo make install && cd ../..
 
 # KDL 
 git clone https://github.com/orocos/orocos_kinematics_dynamics.git -b v1.5.1
 mkdir orocos_kinematics_dynamics/orocos_kdl/build
 cd orocos_kinematics_dynamics/orocos_kdl/build
 cmake .. 
-sudo make -j8 install &&  cd ../../..
+make -j8 && sudo make install &&  cd ../../..
 
 # Pinocchio
 git clone --branch v2.6.8 --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
 cd pinocchio
 mkdir build && cd build
 cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF 
-sudo make -j8 install && cd ../..
-
-# Clone WBC repo to have the patches for KDL and qpOASES
-git clone https://github.com/ARC-OPT/wbc.git
+make -j8 && sudo make install && cd ../..
 
 # KDL parser
 sudo apt-get -y install libtinyxml2-dev
@@ -45,7 +53,7 @@ mkdir patches && cp ../../wbc/patches/kdl_parser.patch patches
 git apply patches/kdl_parser.patch
 mkdir build && cd build 
 cmake .. 
-sudo make -j8 install && cd ../../..
+make -j8 && sudo make install && cd ../../..
 
 # If not done yet, setup a ssh key pair using the command `ssh-keygen` and add the 
 # key from `~/.ssh/id_rsa.pub `to the keys in your Gitlab account.
@@ -56,7 +64,7 @@ cd qpOASES
 mkdir patches && cp ../wbc/patches/qpOASES.patch patches
 git apply patches/qpOASES.patch
 mkdir build && cd build
-cmake .. && sudo make -j8 install && cd ../..
+cmake .. && make -j8 && sudo make install && cd ../..
 
 # eiquadprog
 git clone --recurse-submodules https://github.com/stack-of-tasks/eiquadprog.git
@@ -64,7 +72,7 @@ cd eiquadprog
 cp ../wbc/patches/eiquadprog.patch . && git apply eiquadprog.patch
 mkdir build && cd build
 cmake ..
-sudo make -j8 install && cd ../..
+make -j8 && sudo make install && cd ../..
 
 # qpSWIFT
 git clone https://github.com/qpSWIFT/qpSWIFT.git
@@ -72,7 +80,7 @@ cd qpSWIFT
 cp ../wbc/patches/qpSWIFT.patch . && git apply qpSWIFT.patch
 mkdir build && cd build
 cmake .. 
-sudo make -j8 install && cd ../.. 
+make -j8 && sudo make install && cd ../.. 
 
 # For Python bindings
 sudo apt-get -y install python3-dev python3-numpy python3-nose libboost-python-dev libboost-numpy-dev
@@ -80,4 +88,4 @@ sudo apt-get -y install python3-dev python3-numpy python3-nose libboost-python-d
 # WBC
 mkdir wbc/build && cd wbc/build
 cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_QPSWIFT=1
-sudo make -j8 install
+make -j8 && sudo make install

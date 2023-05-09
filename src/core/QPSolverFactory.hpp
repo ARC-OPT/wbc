@@ -30,6 +30,11 @@ struct QPSolverFactory{
             qp_solver_map = new QPSolverMap;
         return qp_solver_map;
     }
+
+    static void clear(){
+        qp_solver_map->clear();
+    }
+
 private:
     static QPSolverMap *qp_solver_map;
 };
