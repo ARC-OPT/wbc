@@ -24,11 +24,11 @@ sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev
 git clone https://github.com/ARC-OPT/wbc.git
 
 # RBDL
-git clone --branch v3.2.1 git@github.com:rbdl/rbdl.git
+git clone --branch v3.2.1 --recurse-submodules https://github.com/rbdl/rbdl.git
 cd rbdl
 cp ../wbc/patches/rbdl.patch . && git apply rbdl.patch
 mkdir build && cd build
-cmake .. 
+cmake .. -DRBDL_BUILD_ADDON_URDFREADER=ON
 make -j8 && sudo make install && cd ../..
 
 # KDL 
