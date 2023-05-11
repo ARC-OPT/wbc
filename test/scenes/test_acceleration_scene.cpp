@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "robot_models/rbdl/RobotModelRBDL.hpp"
-#include "scenes/AccelerationScene.hpp"
+#include "scenes/acceleration/AccelerationScene.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
 
 using namespace std;
@@ -46,10 +46,10 @@ BOOST_AUTO_TEST_CASE(simple_test){
     cart_task.ref_frame  = "kuka_lbr_l_link_0";
     cart_task.activation = 1;
     cart_task.weights    = vector<double>(6,1);
-    AccelerationScene wbc_scene(robot_model, solver);
+    AccelerationScene wbc_scene(robot_model, solver, 1e-3);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
 
-    // Set random reference
+    // Set random reference(robot_model, solver)
     base::samples::RigidBodyStateSE3 ref;
     srand (time(NULL));
     ref.acceleration.linear = base::Vector3d(((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX, ((double)rand())/RAND_MAX);

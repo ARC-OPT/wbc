@@ -90,4 +90,6 @@ const base::samples::Joints& RobotModel::jointState(const std::vector<std::strin
     return joint_state_out;
 }
 
+RobotModelFactory::RobotModelMap* RobotModelFactory::robot_model_map = 0;
+
 } // namespace wbc

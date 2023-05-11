@@ -1,5 +1,5 @@
-#ifndef WBCSCENE_HPP
-#define WBCSCENE_HPP
+#ifndef Scene_HPP
+#define Scene_HPP
 
 #include "TaskStatus.hpp"
 #include "Constraint.hpp"
@@ -12,7 +12,7 @@ namespace wbc{
 /**
  * @brief Base class for all wbc scenes.
  */
-class WbcScene{
+class Scene{
 protected:
     RobotModelPtr robot_model;
     QPSolverPtr solver;
@@ -37,13 +37,14 @@ protected:
     void clearTasks();
 
 public:
-    WbcScene(RobotModelPtr robot_model, QPSolverPtr solver);
-    ~WbcScene();
+    Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
+    ~Scene();
+
     /**
      * @brief Configure the WBC scene. Create tasks and sort them by priority
      * @param config configuration. Size has to be > 0. All tasks have to be valid. See TaskConfig.hpp for more details.
      */
-    bool configure(const std::vector<TaskConfig> &config);
+    virtual bool configure(const std::vector<TaskConfig> &config);
 
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
@@ -80,7 +81,7 @@ public:
     /**
      * @brief Set Task activation for a  task
      * @param task_name Name of the task
-     * @param activation Activation value. Has to be in interval [0.0,1.0]
+     * @param activation Activation value. Has to be in interval [0.0Scene,1.0]
      */
     void setTaskActivation(const std::string& task_name, double activation);
     /**
@@ -155,7 +156,51 @@ public:
 
 };
 
-typedef std::shared_ptr<WbcScene> WbcScenePtr;
+typedef std::shared_ptr<Scene> ScenePtr;
+
+template<typename T,typename RobotModelPtr,typename QPSolverPtr> Scene* createT(RobotModelPtr robot_model, QPSolverPtr solver, const double dt){return new T(robot_model,solver,dt);}
+
+struct SceneFactory{
+    typedef std::map<std::string, Scene*(*)(RobotModelPtr, QPSolverPtr, double)> SceneMap;
+
+    static Scene *createInstance(const std::string& name, RobotModelPtr robot_model, QPSolverPtr solver, const double dt) {
+        SceneMap::iterator it = getSceneMap()->find(name);
+        if(it == getSceneMap()->end())
+            throw std::runtime_error("Failed to create instance of plugin " + name + ". Is the plugin registered?");
+        return it->second(robot_model, solver, dt);
+    }
+
+    template<typename T>
+    static T* createInstance(const std::string& name, RobotModelPtr robot_model, QPSolverPtr solver, const double dt){
+        Scene* tmp = createInstance(name, robot_model, solver, dt);
+        T* ret = dynamic_cast<T*>(tmp);
+        return ret;
+    }
+
+    static SceneMap *getSceneMap(){
+        if(!scene_map)
+            scene_map = new SceneMap;
+        return scene_map;
+    }
+
+    static void clear(){
+        scene_map->clear();
+    }
+
+private:
+    static SceneMap *scene_map;
+};
+
+template<typename T>
+struct SceneRegistry : SceneFactory{
+    SceneRegistry(const std::string& name) {
+        SceneMap::iterator it = getSceneMap()->find(name);
+        if(it != getSceneMap()->end())
+            throw std::runtime_error("Failed to register plugin with name " + name + ". A plugin with the same name is already registered");
+
+        getSceneMap()->insert(std::make_pair(name, &createT<T,RobotModelPtr,QPSolverPtr>));
+    }
+};
 
 } // namespace wbc
 

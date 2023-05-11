@@ -5,16 +5,16 @@
 
 namespace wbc{
 
-WbcScene::WbcScene(RobotModelPtr robot_model, QPSolverPtr solver) :
+Scene::Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
     robot_model(robot_model),
     solver(solver),
     configured(false){
 }
 
-WbcScene::~WbcScene(){
+Scene::~Scene(){
 }
 
-void WbcScene::clearTasks(){
+void Scene::clearTasks(){
 
     for(uint i = 0; i < tasks.size(); i++ ){
         for(uint j = 0; j < tasks[i].size(); j++)
@@ -26,7 +26,7 @@ void WbcScene::clearTasks(){
     configured = false;
 }
 
-bool WbcScene::configure(const std::vector<TaskConfig> &config){
+bool Scene::configure(const std::vector<TaskConfig> &config){
 
     solver->reset();
     clearTasks();
@@ -93,29 +93,29 @@ bool WbcScene::configure(const std::vector<TaskConfig> &config){
     return true;
 }
 
-void WbcScene::setReference(const std::string& constraint_name, const base::samples::Joints& ref){
+void Scene::setReference(const std::string& constraint_name, const base::samples::Joints& ref){
     TaskPtr c = getTask(constraint_name);
     if(c->config.type == cart)
         throw std::runtime_error("Constraint '" + c->config.name + "' has type cart, but you are trying to set a joint space reference");
     std::static_pointer_cast<JointTask>(c)->setReference(ref);
 }
 
-void WbcScene::setReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
+void Scene::setReference(const std::string& constraint_name, const base::samples::RigidBodyStateSE3& ref){
     TaskPtr c = getTask(constraint_name);
     if(c->config.type == jnt)
         throw std::runtime_error("Constraint '" + c->config.name + "' has type jnt, but you are trying to set a cartesian reference");
     std::static_pointer_cast<CartesianTask>(getTask(constraint_name))->setReference(ref);
 }
 
-void WbcScene::setTaskWeights(const std::string& constraint_name, const base::VectorXd &weights){
+void Scene::setTaskWeights(const std::string& constraint_name, const base::VectorXd &weights){
     getTask(constraint_name)->setWeights(weights);
 }
 
-void WbcScene::setTaskActivation(const std::string& constraint_name, const double activation){
+void Scene::setTaskActivation(const std::string& constraint_name, const double activation){
     getTask(constraint_name)->setActivation(activation);
 }
 
-TaskPtr WbcScene::getTask(const std::string& name){
+TaskPtr Scene::getTask(const std::string& name){
 
     for(size_t i = 0; i < tasks.size(); i++){
         for(size_t j = 0; j < tasks[i].size(); j++){
@@ -126,7 +126,7 @@ TaskPtr WbcScene::getTask(const std::string& name){
     throw std::invalid_argument("Invalid constraint name: " + name);
 }
 
-bool WbcScene::hasTask(const std::string &name){
+bool Scene::hasTask(const std::string &name){
 
     for(size_t i = 0; i < tasks.size(); i++){
         for(size_t j = 0; j < tasks[i].size(); j++)
@@ -136,7 +136,7 @@ bool WbcScene::hasTask(const std::string &name){
     return false;
 }
 
-void WbcScene::sortTaskConfig(const std::vector<TaskConfig>& config, std::vector< std::vector<TaskConfig> >& sorted_config){
+void Scene::sortTaskConfig(const std::vector<TaskConfig>& config, std::vector< std::vector<TaskConfig> >& sorted_config){
 
     // Get highest prio
     int max_prio = 0;
@@ -160,7 +160,7 @@ void WbcScene::sortTaskConfig(const std::vector<TaskConfig>& config, std::vector
     }
 }
 
-std::vector<int> WbcScene::getNTaskVariablesPerPrio(const std::vector<TaskConfig> &config){
+std::vector<int> Scene::getNTaskVariablesPerPrio(const std::vector<TaskConfig> &config){
 
     std::vector< std::vector<TaskConfig> > sorted_config;
     sortTaskConfig(config, sorted_config);
@@ -174,7 +174,7 @@ std::vector<int> WbcScene::getNTaskVariablesPerPrio(const std::vector<TaskConfig
     return nn_pp;
 }
 
-void WbcScene::setJointWeights(const JointWeights &weights){
+void Scene::setJointWeights(const JointWeights &weights){
 
     if(weights.elements.size() != weights.names.size()){
         LOG_ERROR_S << "Size of names and size of elements in joint weight vector do not match"<<std::endl;
@@ -198,5 +198,8 @@ void WbcScene::setJointWeights(const JointWeights &weights){
     for(auto n : actuated_joint_weights.names)
         actuated_joint_weights[n] = joint_weights[n];
 }
+
+SceneFactory::SceneMap* SceneFactory::scene_map = 0;
+
 
 } // namespace wbc

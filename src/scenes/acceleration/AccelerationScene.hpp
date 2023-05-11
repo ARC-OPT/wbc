@@ -1,7 +1,7 @@
 #ifndef ACCELERATIONSCENE_HPP
 #define ACCELERATIONSCENE_HPP
 
-#include "../core/Scene.hpp"
+#include "../../core/Scene.hpp"
 
 namespace wbc{
 
@@ -24,8 +24,9 @@ namespace wbc{
  * \f$\mathbf{W}\f$ - Diagonal task weight matrix<br>
  * \f$\dot{\mathbf{J}}\dot{\mathbf{q}}\f$ - Acceleration bias<br>
  */
-class AccelerationScene : public WbcScene{
+class AccelerationScene : public Scene{
 protected:
+
     base::VectorXd solver_output, robot_acc;
 
     /**
@@ -36,10 +37,9 @@ protected:
     base::Time stamp;
 
 public:
-    AccelerationScene(RobotModelPtr robot_model, QPSolverPtr solver) :
-        WbcScene(robot_model, solver){}
-    virtual ~AccelerationScene(){
-    }
+    AccelerationScene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
+    virtual ~AccelerationScene(){}
+
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
      * @param ctrl_output Control solution that fulfill the given tasks as good as possible

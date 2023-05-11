@@ -2,23 +2,25 @@
 #include "core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
 
-#include "../tasks/JointAccelerationTask.hpp"
-#include "../tasks/CartesianAccelerationTask.hpp"
-#include "../tasks/CoMAccelerationTask.hpp"
+#include "../../tasks/JointAccelerationTask.hpp"
+#include "../../tasks/CartesianAccelerationTask.hpp"
+#include "../../tasks/CoMAccelerationTask.hpp"
 
-#include "../constraints/RigidbodyDynamicsConstraint.hpp"
-#include "../constraints/ContactsAccelerationConstraint.hpp"
-#include "../constraints/JointLimitsAccelerationConstraint.hpp"
-#include "../constraints/ContactsFrictionSurfaceConstraint.hpp"
+#include "../../constraints/RigidbodyDynamicsConstraint.hpp"
+#include "../../constraints/ContactsAccelerationConstraint.hpp"
+#include "../../constraints/JointLimitsAccelerationConstraint.hpp"
+#include "../../constraints/ContactsFrictionSurfaceConstraint.hpp"
 
 namespace wbc {
 
-AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
-    WbcScene(robot_model,solver),
+SceneRegistry<AccelerationSceneTSID> AccelerationSceneTSID::reg("acceleration_tsid");
+
+AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
+    Scene(robot_model, solver, dt),
     hessian_regularizer(1e-8){
-    
+
     // whether or not torques are removed  from the qp problem
-    // this formulation includes torques !!! 
+    // this formulation includes torques !!!
     bool reduced = false; // DO NOT CHANGE
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
@@ -27,7 +29,6 @@ AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolver
     constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
     constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
     constraints[0].push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
-
 }
 
 TaskPtr AccelerationSceneTSID::createTask(const TaskConfig &config){
@@ -58,6 +59,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     uint nj = robot_model->noOfJoints();
     uint na = robot_model->noOfActuatedJoints();
     uint ncp = robot_model->getActiveContacts().size();
+
+    ///////// Constraints
 
     bool has_bounds = false;
     size_t total_eqs = 0, total_ineqs = 0;

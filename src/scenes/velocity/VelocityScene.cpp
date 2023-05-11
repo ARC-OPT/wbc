@@ -1,12 +1,19 @@
 #include "VelocityScene.hpp"
-#include "../core/RobotModel.hpp"
+#include "../../core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
 
-#include "../tasks/JointVelocityTask.hpp"
-#include "../tasks/CartesianVelocityTask.hpp"
-#include "../tasks/CoMVelocityTask.hpp"
+#include "../../tasks/JointVelocityTask.hpp"
+#include "../../tasks/CartesianVelocityTask.hpp"
+#include "../../tasks/CoMVelocityTask.hpp"
 
 namespace wbc{
+
+SceneRegistry<VelocityScene> VelocityScene::reg("velocity");
+
+VelocityScene::VelocityScene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
+    Scene(robot_model, solver,dt){
+
+}
 
 TaskPtr VelocityScene::createTask(const TaskConfig &config){
 

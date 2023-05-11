@@ -1,11 +1,16 @@
 #include "AccelerationScene.hpp"
-#include "../core/RobotModel.hpp"
+#include "../../core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
-#include "../tasks/JointAccelerationTask.hpp"
-#include "../tasks/CartesianAccelerationTask.hpp"
-#include "../tasks/CoMAccelerationTask.hpp"
+#include "../../tasks/JointAccelerationTask.hpp"
+#include "../../tasks/CartesianAccelerationTask.hpp"
+#include "../../tasks/CoMAccelerationTask.hpp"
 
 namespace wbc{
+
+AccelerationScene::AccelerationScene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
+    Scene(robot_model,solver,dt){
+
+}
 
 TaskPtr AccelerationScene::createTask(const TaskConfig &config){
 

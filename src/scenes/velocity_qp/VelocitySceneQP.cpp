@@ -1,39 +1,37 @@
-#include "VelocitySceneQuadraticCost.hpp"
+#include "VelocitySceneQP.hpp"
 
 #include <base/JointLimits.hpp>
 #include <base-logging/Logging.hpp>
 
-#include "../tasks/CartesianVelocityTask.hpp"
-#include "../tasks/JointVelocityTask.hpp"
-#include "../tasks/CoMVelocityTask.hpp"
+#include "../../tasks/CartesianVelocityTask.hpp"
+#include "../../tasks/JointVelocityTask.hpp"
+#include "../../tasks/CoMVelocityTask.hpp"
 
-#include "../constraints/ContactsVelocityConstraint.hpp"
-#include "../constraints/JointLimitsVelocityConstraint.hpp"
+#include "../../constraints/ContactsVelocityConstraint.hpp"
+#include "../../constraints/JointLimitsVelocityConstraint.hpp"
 
 
 namespace wbc{
 
-VelocitySceneQuadraticCost::VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
-    VelocityScene(robot_model, solver),
+SceneRegistry<VelocitySceneQP> VelocitySceneQP::reg("velocity_qp");
+
+VelocitySceneQP::VelocitySceneQP(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
+    VelocityScene(robot_model, solver, dt),
     hessian_regularizer(1e-8){
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
     constraints.resize(1);
     constraints[0].push_back(std::make_shared<ContactsVelocityConstraint>());
     constraints[0].push_back(std::make_shared<JointLimitsVelocityConstraint>(dt));
-
 }
 
-VelocitySceneQuadraticCost::~VelocitySceneQuadraticCost(){
-}
-
-const HierarchicalQP& VelocitySceneQuadraticCost::update(){
+const HierarchicalQP& VelocitySceneQP::update(){
 
     if(!configured)
-        throw std::runtime_error("VelocitySceneQuadraticCost has not been configured!. Please call configure() before calling update() for the first time!");
+        throw std::runtime_error("VelocitySceneQP has not been configured!. Please call configure() before calling update() for the first time!");
 
     if(tasks.size() != 1){
-        LOG_ERROR("Number of priorities in VelocitySceneQuadraticCost should be 1, but is %i", tasks.size());
+        LOG_ERROR("Number of priorities in VelocitySceneQP should be 1, but is %i", tasks.size());
         throw std::runtime_error("Invalid task configuration");
     }
 

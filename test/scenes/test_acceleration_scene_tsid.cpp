@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "robot_models/rbdl/RobotModelRBDL.hpp"
-#include "scenes/AccelerationSceneTSID.hpp"
+#include "scenes/acceleration_tsid/AccelerationSceneTSID.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
 
 using namespace std;
@@ -63,7 +63,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     cart_task.weights = {1,1,1,1,1,1};
     cart_task.priority = 0;
     cart_task.activation = 1;
-    AccelerationSceneTSID wbc_scene(robot_model, solver);
+    AccelerationSceneTSID wbc_scene(robot_model, solver, 1e-3);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
 
     // Set random Reference

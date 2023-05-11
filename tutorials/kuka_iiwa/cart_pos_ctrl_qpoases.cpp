@@ -1,6 +1,6 @@
 #include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <scenes/VelocitySceneQuadraticCost.hpp>
+#include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
@@ -34,7 +34,7 @@ using namespace wbc;
  * The robot end effector is supposed to move to a fixed target pose. The QP is solved using the QPOases solver. In contrast to the cart_pos_ctrl_hls example,
  * the solver output will always be within the joint velocity limits, which are defined in the kuka iiwa URDF file.
  */
-int main(int argc, char** argv){
+int main(){
 
     double dt = 0.01;
 
@@ -74,7 +74,7 @@ int main(int argc, char** argv){
     cart_task.ref_frame  = "kuka_lbr_l_link_0";  // In what frame is the task specified?
     cart_task.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
     cart_task.weights    = vector<double>(6,1);  // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
-    VelocitySceneQuadraticCost scene(robot_model, solver, dt);
+    VelocitySceneQP scene(robot_model, solver, 1e-3);
     if(!scene.configure({cart_task}))
         return -1;
 
@@ -91,7 +91,7 @@ int main(int argc, char** argv){
     uint nj = robot_model->noOfJoints();
     joint_state.resize(nj);
     joint_state.names = robot_model->jointNames();
-    for(int i = 0; i < nj; i++)
+    for(uint i = 0; i < nj; i++)
         joint_state[i].position = 0.1;
     joint_state.time = base::Time::now();
 
@@ -141,8 +141,8 @@ int main(int argc, char** argv){
         cout<<"feedback x:    "<<feedback.pose.position(0)<<" y: "<<feedback.pose.position(1)<<" z: "<<feedback.pose.position(2)<<endl;
         cout<<"feedback qx:   "<<feedback.pose.orientation.x()<<" qy: "<<feedback.pose.orientation.y()<<" qz: "<<feedback.pose.orientation.z()<<" qw: "<<feedback.pose.orientation.w()<<endl<<endl;
         cout<<"Solver output: "; cout<<endl;
-        cout<<"Joint Names:   "; for(int i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
-        cout<<"Velocity:      "; for(int i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
+        cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
+        cout<<"Velocity:      "; for(uint i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
         cout<<"solve time:    " << solve_time << " (mu s)" << endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 
