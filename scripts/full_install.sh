@@ -67,7 +67,7 @@ mkdir build && cd build
 cmake .. && make -j8 && sudo make install && cd ../..
 
 # eiquadprog
-git clone --recurse-submodules https://github.com/stack-of-tasks/eiquadprog.git
+git clone --recurse-submodules https://github.com/stack-of-tasks/eiquadprog.git -b v1.2.5
 cd eiquadprog
 cp ../wbc/patches/eiquadprog.patch . && git apply eiquadprog.patch
 mkdir build && cd build
