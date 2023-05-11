@@ -1,4 +1,4 @@
-#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
+#include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>
 #include <solvers/eiquadprog/EiquadprogSolver.hpp>
@@ -39,7 +39,7 @@ int main(int argc, char** argv){
     double dt = 0.01;
 
     // Create a robot model. Each robot model is derived from a common RobotModel class, as it will be passed to the WBC scene later on.
-    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
+    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
 
     // Configure the robot model by passing the RobotModelConfig. The simplest configuration can by obtained by only setting
     // the path to the URDF file. In doing so, WBC will assume:
