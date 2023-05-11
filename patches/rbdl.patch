@@ -1,0 +1,28 @@
+--- a/addons/urdfreader/CMakeLists.txt
++++ b/addons/urdfreader/CMakeLists.txt
+@@ -104,6 +104,9 @@ ELSE (RBDL_BUILD_STATIC)
+                )
+ ENDIF (RBDL_BUILD_STATIC)
+ 
++CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/rbdl-urdfreader.pc.in ${CMAKE_CURRENT_BINARY_DIR}/rbdl-urdfreader.pc @ONLY)
++install(FILES ${CMAKE_CURRENT_BINARY_DIR}/rbdl-urdfreader.pc DESTINATION lib/pkgconfig)
++
+ IF (RUN_AUTOMATIC_TESTS)
+   IF (URDF_BUILD_TEST)
+   ADD_CUSTOM_COMMAND (TARGET rbdl_urdfreader
+   
+--- /dev/null
++++ b/addons/urdfreader/rbdl-urdfreader.pc.in
+@@ -0,0 +1,11 @@
++prefix=@CMAKE_INSTALL_PREFIX@
++exec_prefix=@CMAKE_INSTALL_PREFIX@
++libdir=${prefix}/lib
++includedir=${prefix}/include
++
++Name: @PACKAGE_NAME@
++Description: @PACKAGE_DESCRIPTION@
++Version: @PACKAGE_VERSION@
++requires: @PKGCONFIG_REQUIRES@ tinyxml urdfdom urdfdom_headers
++Libs: -L${libdir} @PKGCONFIG_LIBS@ -lrbdl_urdfreader
++Cflags: -I${includedir} @PKGCONFIG_CFLAGS@
+
