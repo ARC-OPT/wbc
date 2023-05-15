@@ -1,5 +1,5 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
+#include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/VelocitySceneQuadraticCost.hpp>
 #include <controllers/CartesianPosPDController.hpp>
@@ -44,7 +44,7 @@ int main(){
     double dt = 0.001;
 
     // Create robot model
-    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
+    RobotModelPtr robot_model = std::make_shared<RobotModelRBDL>();
 
     // Configure a serial robot model with floating base and two contact points: {"LLAnkle_FT", "LRAnkle_FT"}.
     // Note that the joint names have to contain {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",

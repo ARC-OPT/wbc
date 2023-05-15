@@ -3,22 +3,21 @@ target_link_libraries(rh5_single_leg
                       wbc-solvers-qpoases
                       wbc-controllers
                       wbc-scenes
-                      wbc-robot_models-pinocchio
-                      wbc-robot_models-hyrodyn)
+                      wbc-robot_models-rbdl)
 
 add_executable(rh5_legs_floating_base rh5_legs_floating_base.cpp)
 target_link_libraries(rh5_legs_floating_base
                       wbc-solvers-qpoases
                       wbc-scenes
                       wbc-controllers
-                      wbc-robot_models-pinocchio
-                      wbc-robot_models-hyrodyn)
+                      wbc-robot_models-rbdl)
 
-add_executable(rh5_single_leg_hybrid rh5_single_leg_hybrid.cpp)
-target_link_libraries(rh5_single_leg_hybrid
-                      wbc-solvers-qpoases
-                      wbc-scenes
-                      wbc-controllers
-                      wbc-robot_models-pinocchio
-                      wbc-robot_models-hyrodyn)
+if(USE_HYRODYN)
+   add_executable(rh5_single_leg_hybrid rh5_single_leg_hybrid.cpp)
+   target_link_libraries(rh5_single_leg_hybrid
+                         wbc-solvers-qpoases
+                         wbc-scenes
+                         wbc-controllers
+                         wbc-robot_models-hyrodyn)
+endif()                        
 
