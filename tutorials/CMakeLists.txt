@@ -1,5 +1,3 @@
 add_subdirectory(kuka_iiwa)
-if(USE_HYRODYN)
-    add_subdirectory(rh5)
-    add_subdirectory(rh5v2)
-endif()
+add_subdirectory(rh5)
+add_subdirectory(rh5v2)

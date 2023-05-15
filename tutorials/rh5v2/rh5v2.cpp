@@ -1,8 +1,9 @@
-#include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
+#include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <scenes/AccelerationSceneTSID.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
+#include <unistd.h>
 
 using namespace std;
 using namespace wbc;
@@ -44,7 +45,7 @@ int main()
     double dt = 0.01;
 
     // Create robot model, use hyrodyn-based model in this case
-    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
 
     // Configure robot model. We configure a serial model without parallel mechanisms.
     // Blacklist the finger joints, as they are not relevant and may slow down the solver
