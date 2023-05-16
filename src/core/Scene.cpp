@@ -30,8 +30,10 @@ bool WbcScene::configure(const std::vector<TaskConfig> &config){
 
     solver->reset();
     clearTasks();
-    if(config.empty())
+    if(config.empty()){
+        LOG_ERROR("Empty WBC Task configuration");
         return false;
+    }
 
     for(auto c : config)
         c.validate();
@@ -74,12 +76,18 @@ bool WbcScene::configure(const std::vector<TaskConfig> &config){
     // Check WBC config
     for(auto cfg : wbc_config){
         if(cfg.type == cart){
-            if(!robot_model->hasLink(cfg.root))
+            if(!robot_model->hasLink(cfg.root)){
+                LOG_ERROR("Link %s is used in task config %s, but this link is not in robot model", cfg.root.c_str(), cfg.name.c_str());
                 return false;
-            if(!robot_model->hasLink(cfg.tip))
+            }
+            if(!robot_model->hasLink(cfg.tip)){
+                LOG_ERROR("Link %s is used in task config %s, but this link is not in robot model", cfg.tip.c_str(), cfg.name.c_str());
                 return false;
-            if(!robot_model->hasLink(cfg.ref_frame))
+            }
+            if(!robot_model->hasLink(cfg.ref_frame)){
+                LOG_ERROR("Link %s is used in task config %s, but this link is not in robot model", cfg.ref_frame.c_str(), cfg.name.c_str());
                 return false;
+            }
         }
 
         try{
