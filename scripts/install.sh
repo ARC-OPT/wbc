@@ -46,4 +46,4 @@ cmake .. && make -j8 && sudo make install && cd ../..
 mkdir wbc/build && cd wbc/build
 cmake ..
 make -j8 && sudo make install
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+sudo ldconfig
