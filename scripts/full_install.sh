@@ -89,4 +89,4 @@ sudo apt-get -y install python3-dev python3-numpy python3-nose libboost-python-d
 mkdir wbc/build && cd wbc/build
 cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_QPSWIFT=1
 make -j8 && sudo make install
-export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/usr/local/lib
+sudo ldconfig
