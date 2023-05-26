@@ -5,6 +5,7 @@
 #include <base/Eigen.hpp>
 #include <memory>
 #include <map>
+#include "QPSolverConfig.hpp"
 
 namespace wbc{
 

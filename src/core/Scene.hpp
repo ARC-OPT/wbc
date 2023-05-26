@@ -6,6 +6,7 @@
 #include "QuadraticProgram.hpp"
 #include "RobotModel.hpp"
 #include "QPSolver.hpp"
+#include "SceneConfig.hpp"
 
 namespace wbc{
 
