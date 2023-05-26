@@ -43,6 +43,14 @@ public:
         contact_points(contact_points){
 
     }
+    void validate(){
+        if(file.empty())
+            throw std::runtime_error("Invalid Robot model config. File path must not be empty!");
+        if(type == "hyrodyn" && submechanism_file.empty())
+            throw std::runtime_error("Invalid Robot model config. If you choose 'hyrodyn' as type, submechanism_file must not be empty!");
+        if(floating_base && contact_points.empty())
+            throw std::runtime_error("Invalid Robot model config. If floating_base is set to true, contact_points must not be empty!");
+    }
 
     /** Absolute path to URDF file describing the robot model.*/
     std::string file;
@@ -54,7 +62,7 @@ public:
       * floating_base_trans_x, floating_base_trans_y, floating_base_trans_z,
       * floating_base_rot_x, floating_base_rot_y, floating_base_rot_z*/
     bool floating_base;
-    /** Optional: Link names that are possibly in contact with the environment. These have to valid link names in the robot model.*/
+    /** Optional: Link names that are possibly in contact with the environment. These have to be valid link names in the robot model.*/
     ActiveContacts contact_points;
 };
 
