@@ -26,6 +26,7 @@ namespace wbc{
  */
 class AccelerationScene : public Scene{
 protected:
+    static SceneRegistry<AccelerationScene> reg;
 
     base::VectorXd solver_output, robot_acc;
 

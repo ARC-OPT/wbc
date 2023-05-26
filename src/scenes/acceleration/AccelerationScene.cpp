@@ -7,6 +7,8 @@
 
 namespace wbc{
 
+SceneRegistry<AccelerationScene> AccelerationScene::reg("acceleration");
+
 AccelerationScene::AccelerationScene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
     Scene(robot_model,solver,dt){
 
