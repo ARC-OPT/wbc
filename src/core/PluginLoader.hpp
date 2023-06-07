@@ -24,6 +24,7 @@ public:
         if(it == getPluginMap()->end())
             throw std::runtime_error("Failed to unload plugin " + name + ". Is the plugin loaded?");
         dlclose(it->second);
+        plugin_map->erase(name);
     }
 
     static PluginMap *getPluginMap(){

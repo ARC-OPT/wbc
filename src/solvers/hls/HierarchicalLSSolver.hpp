@@ -3,7 +3,6 @@
 
 #include <base/Eigen.hpp>
 #include <vector>
-#include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 
 namespace wbc{

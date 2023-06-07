@@ -1,6 +1,6 @@
 #include <boost/test/unit_test.hpp>
 #include "robot_models/rbdl/RobotModelRBDL.hpp"
-#include "scenes/VelocityScene.hpp"
+#include "scenes/velocity/VelocityScene.hpp"
 #include "solvers/hls/HierarchicalLSSolver.hpp"
 
 using namespace std;
@@ -19,7 +19,7 @@ BOOST_AUTO_TEST_CASE(configuration_test){
     config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
     QPSolverPtr solver = std::make_shared<HierarchicalLSSolver>();
-    VelocityScene wbc_scene(robot_model, solver);
+    VelocityScene wbc_scene(robot_model, solver, 1e-3);
 
     // Check if configuration works
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
@@ -65,7 +65,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     (std::dynamic_pointer_cast<HierarchicalLSSolver>(solver))->setMaxSolverOutputNorm(1000);
 
     // Configure scene
-    VelocityScene wbc_scene(robot_model, solver);
+    VelocityScene wbc_scene(robot_model, solver, 1e-3);
     TaskConfig cart_task("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
 

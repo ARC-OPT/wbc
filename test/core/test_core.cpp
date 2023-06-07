@@ -1,8 +1,9 @@
 #include <boost/test/unit_test.hpp>
 #include <core/TaskConfig.hpp>
 #include <core/PluginLoader.hpp>
-#include <core/RobotModelFactory.hpp>
-#include <core/QPSolverFactory.hpp>
+#include <core/RobotModel.hpp>
+#include <core/QPSolver.hpp>
+#include <core/Scene.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -95,5 +96,18 @@ BOOST_AUTO_TEST_CASE(qp_solver_factory){
     QPSolver* model;
     BOOST_CHECK_NO_THROW(model = QPSolverFactory::createInstance("qpoases"));
     BOOST_CHECK(model != 0);
+}
+
+BOOST_AUTO_TEST_CASE(scene_factory){
+    BOOST_CHECK_NO_THROW(PluginLoader::loadPlugin("libwbc-scenes-velocity.so"));
+    SceneFactory::SceneMap *scene_map = SceneFactory::getSceneMap();
+    BOOST_CHECK(scene_map->size() == 1);
+    BOOST_CHECK(scene_map->count("velocity") == 1);
+    BOOST_CHECK(scene_map->at("velocity") != 0);
+    Scene* scene;
+    RobotModelPtr robot_model;
+    QPSolverPtr solver;
+    BOOST_CHECK_NO_THROW(scene = SceneFactory::createInstance("velocity", robot_model, solver, 1e-3));
+    BOOST_CHECK(scene != 0);
 }
 

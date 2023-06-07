@@ -1,7 +1,6 @@
 #ifndef ROBOT_MODEL_RBDL_HPP
 #define ROBOT_MODEL_RBDL_HPP
 
-#include "../../core/RobotModelFactory.hpp"
 #include "core/RobotModel.hpp"
 #include <rbdl/rbdl.h>
 

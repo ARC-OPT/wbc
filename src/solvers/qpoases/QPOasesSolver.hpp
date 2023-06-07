@@ -1,7 +1,6 @@
 #ifndef WBC_SOLVERS_QP_OASES_SOLVER_HPP
 #define WBC_SOLVERS_QP_OASES_SOLVER_HPP
 
-#include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 #include <qpOASES.hpp>
 #include <base/Time.hpp>

@@ -1,7 +1,7 @@
-#ifndef VELOCITYSCENEQUADRATICCOST_HPP
-#define VELOCITYSCENEQUADRATICCOST_HPP
+#ifndef VelocitySceneQP_HPP
+#define VelocitySceneQP_HPP
 
-#include "../scenes/VelocityScene.hpp"
+#include "../velocity/VelocityScene.hpp"
 
 namespace wbc{
 
@@ -30,8 +30,10 @@ namespace wbc{
  *
  *
  */
-class VelocitySceneQuadraticCost : public VelocityScene{
+class VelocitySceneQP : public VelocityScene{
 protected:
+    static SceneRegistry<VelocitySceneQP> reg;
+
     base::VectorXd s_vals, tmp;
     base::MatrixXd sing_vect_r, U;
     double hessian_regularizer;
@@ -42,8 +44,8 @@ public:
      * @param robot_model Pointer to the robot model
      * @param solver Solver used to solver the qp optimization problem
      */
-    VelocitySceneQuadraticCost(RobotModelPtr robot_model, QPSolverPtr solver, double dt=0.001);
-    virtual ~VelocitySceneQuadraticCost();
+    VelocitySceneQP(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
+    virtual ~VelocitySceneQP(){}
 
     /**
      * @brief Update the wbc scene

@@ -1,6 +1,6 @@
 #include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <scenes/VelocityScene.hpp>
+#include <scenes/velocity/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <controllers/JointPosPDController.hpp>
@@ -57,7 +57,7 @@ int main(int argc, char** argv){
     cart_task.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
     cart_task.weights    = vector<double>(6,1);  // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
 
-    VelocityScene scene(robot_model, solver);
+    VelocityScene scene(robot_model, solver, 1e-3);
 
     if(!scene.configure({cart_task, jnt_task}))
         return -1;

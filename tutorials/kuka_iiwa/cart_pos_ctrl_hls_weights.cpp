@@ -1,6 +1,6 @@
 #include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <scenes/VelocityScene.hpp>
+#include <scenes/velocity/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
@@ -12,7 +12,7 @@ using namespace wbc;
  * Same Velocity-based example as in tutorial 01. Only that the tasks weights are modified, so that the solution only considers the
  * task space position, not the orientation.
  */
-int main(int argc, char** argv){
+int main(){
 
     RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
 
@@ -48,7 +48,7 @@ int main(int argc, char** argv){
 
     // Set the task weights for the orientation dof to zero! As a result, the orientation will be arbitrary, only the position will be tracked!
     cart_task.weights    = {1,1,1,0,0,0};
-    VelocityScene scene(robot_model, solver);
+    VelocityScene scene(robot_model, solver, 1e-3);
     if(!scene.configure({cart_task}))
         return -1;
 
@@ -72,7 +72,7 @@ int main(int argc, char** argv){
     uint nj = robot_model->noOfJoints();
     joint_state.resize(nj);
     joint_state.names = robot_model->jointNames(); // All joints from the robot
-    for(int i = 0; i < nj; i++)
+    for(uint i = 0; i < nj; i++)
         joint_state[i].position = 0.1;
     joint_state.time = base::Time::now(); // Set a valid timestamp, otherwise the robot model will throw an error
 
@@ -119,8 +119,8 @@ int main(int argc, char** argv){
         cout<<"feedback x:    "<<feedback.pose.position(0)<<" y: "<<feedback.pose.position(1)<<" z: "<<feedback.pose.position(2)<<endl;
         cout<<"feedback qx:   "<<feedback.pose.orientation.x()<<" qy: "<<feedback.pose.orientation.y()<<" qz: "<<feedback.pose.orientation.z()<<" qw: "<<feedback.pose.orientation.w()<<endl<<endl;
         cout<<"Solver output: "; cout<<endl;
-        cout<<"Joint Names:   "; for(int i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
-        cout<<"Velocity:      "; for(int i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
+        cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
+        cout<<"Velocity:      "; for(uint i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 
         usleep(loop_time * 1e6);

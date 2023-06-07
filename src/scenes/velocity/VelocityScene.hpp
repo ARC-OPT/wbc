@@ -1,7 +1,7 @@
 #ifndef VELOCITYSCENE_HPP
 #define VELOCITYSCENE_HPP
 
-#include "../core/Scene.hpp"
+#include "../../core/Scene.hpp"
 
 namespace wbc{
 
@@ -22,10 +22,11 @@ namespace wbc{
  *
  * The tasks are all modeled as linear equality tasks to the above optimization problem. The task hierarchies are kept, i.e., multiple priorities are possible, depending on the solver.
  */
-class VelocityScene : public WbcScene{
+class VelocityScene : public Scene{
 protected:
+    static SceneRegistry<VelocityScene> reg;
+
     base::VectorXd solver_output, q, qd, qdd;
-    bool compute_id;
 
     /**
      * @brief Create a task and add it to the WBC scene
@@ -33,10 +34,7 @@ protected:
     virtual TaskPtr createTask(const TaskConfig &config);
 
 public:
-    VelocityScene(RobotModelPtr robot_model, QPSolverPtr solver) :
-        WbcScene(robot_model, solver),
-        compute_id(false){
-    }
+    VelocityScene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
     virtual ~VelocityScene(){
     }
 

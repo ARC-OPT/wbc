@@ -1,7 +1,7 @@
 #ifndef WBCACCELERATIONSCENEREDUCEDTSID_HPP
 #define WBCACCELERATIONSCENEREDUCEDTSID_HPP
 
-#include "../core/Scene.hpp"
+#include "../../core/Scene.hpp"
 #include <base/samples/Wrenches.hpp>
 
 namespace wbc{
@@ -36,8 +36,10 @@ namespace wbc{
  * accelerations \f$\mathbf{v}_{d}\f$ under consideration of the equations of motion (eom), rigid contacts and joint force/torque limits. Note that onyl a single hierarchy level is allowed here,
  * prioritization can be achieved by assigning suitable task weights \f$\mathbf{W}\f$.
  */
-class AccelerationSceneReducedTSID : public WbcScene{
+class AccelerationSceneReducedTSID : public Scene{
 protected:
+    static SceneRegistry<AccelerationSceneReducedTSID> reg;
+
     // Helper variables
     base::VectorXd solver_output, robot_acc, solver_output_acc;
     base::samples::Wrenches contact_wrenches;
@@ -51,9 +53,9 @@ protected:
     base::Time stamp;
 
 public:
-    AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt=0.001);
-    virtual ~AccelerationSceneReducedTSID(){
-    }
+    AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
+    virtual ~AccelerationSceneReducedTSID(){}
+
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
      * @param ctrl_output Control solution that fulfill the given tasks as good as possible

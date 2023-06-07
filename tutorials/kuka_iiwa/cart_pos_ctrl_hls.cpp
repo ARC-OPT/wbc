@@ -1,6 +1,6 @@
 #include <core/RobotModelConfig.hpp>
 #include <robot_models/rbdl/RobotModelRBDL.hpp>
-#include <scenes/VelocityScene.hpp>
+#include <scenes/velocity/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
@@ -34,7 +34,7 @@ using namespace wbc;
  * i.e., it provides the minimal joint velocities that produce the desired spatial velocity. A 7 dof arm is redundant by 1 dof when considering the task of, e.g.,
  * controlling the full pose (position and orientation) of a robot's end effector. In principle, the number of dof can be arbitrary in WBC, as redundancy resolution is automatically handled by the solver.
  */
-int main(int argc, char** argv){
+int main(){
 
     // Create a robot model. Each robot model is derived from a common RobotModel class, as it will be passed to the WBC scene later on.
     RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
@@ -69,7 +69,7 @@ int main(int argc, char** argv){
     cart_task.ref_frame  = "kuka_lbr_l_link_0";  // In what frame is the task specified?
     cart_task.activation = 1;                    // (0..1) initial task activation. 1 - Task should be active initially
     cart_task.weights    = vector<double>(6,1);  // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
-    VelocityScene scene(robot_model, solver);
+    VelocityScene scene(robot_model, solver, 1e-3);
     if(!scene.configure({cart_task}))
         return -1;
 
@@ -86,7 +86,7 @@ int main(int argc, char** argv){
     uint nj = robot_model->noOfJoints();
     joint_state.resize(nj);
     joint_state.names = robot_model->jointNames(); // All joints from the robot
-    for(int i = 0; i < nj; i++)
+    for(uint i = 0; i < nj; i++)
         joint_state[i].position = 0.1;
     joint_state.time = base::Time::now(); // Set a valid timestamp, otherwise the robot model will throw an error
 

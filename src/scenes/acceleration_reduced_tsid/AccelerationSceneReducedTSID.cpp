@@ -2,32 +2,36 @@
 #include "core/RobotModel.hpp"
 #include <base-logging/Logging.hpp>
 
-#include "../tasks/JointAccelerationTask.hpp"
-#include "../tasks/CartesianAccelerationTask.hpp"
-#include "../tasks/CoMAccelerationTask.hpp"
+#include "../../tasks/JointAccelerationTask.hpp"
+#include "../../tasks/CartesianAccelerationTask.hpp"
+#include "../../tasks/CoMAccelerationTask.hpp"
 
-#include "../constraints/RigidbodyDynamicsConstraint.hpp"
-#include "../constraints/ContactsAccelerationConstraint.hpp"
-#include "../constraints/JointLimitsAccelerationConstraint.hpp"
-#include "../constraints/EffortLimitsAccelerationConstraint.hpp"
-#include "../constraints/ContactsFrictionSurfaceConstraint.hpp"
+#include "../../constraints/RigidbodyDynamicsConstraint.hpp"
+#include "../../constraints/ContactsAccelerationConstraint.hpp"
+#include "../../constraints/JointLimitsAccelerationConstraint.hpp"
+#include "../../constraints/EffortLimitsAccelerationConstraint.hpp"
+#include "../../constraints/ContactsFrictionSurfaceConstraint.hpp"
 
 
 namespace wbc {
 
-AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, double dt) :
-    WbcScene(robot_model,solver),
+SceneRegistry<AccelerationSceneReducedTSID> AccelerationSceneReducedTSID::reg("acceleration_reduced_tsid");
+
+AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
+    Scene(robot_model, solver, dt),
     hessian_regularizer(1e-8){
 
-    bool reduced_problem = true;
-    
+    // whether or not torques are removed  from the qp problem
+    // this formulation includes torques !!!
+    bool reduced = true; // DO NOT CHANGE
+
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
     constraints.resize(1);
-    constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced_problem));
-    constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced_problem));
-    constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced_problem));
+    constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
+    constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
+    constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
     constraints[0].push_back(std::make_shared<EffortLimitsAccelerationConstraint>());
-    constraints[0].push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced_problem));
+    constraints[0].push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
 }
 
 TaskPtr AccelerationSceneReducedTSID::createTask(const TaskConfig &config){
