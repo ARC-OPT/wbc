@@ -1,7 +1,7 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <scenes/VelocitySceneQuadraticCost.hpp>
+#include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 
 using namespace wbc;
@@ -52,7 +52,7 @@ int main(){
     cart_task.ref_frame = "RH5_Root_Link";   // In what frame is the task specified?
     cart_task.activation = 1;                // (0..1) initial task activation. 1 - Task should be active initially
     cart_task.weights = vector<double>(6,1); // Task weights. Can be used to balance the relativ importance of the task variables (e.g. position vs. orienration)
-    VelocitySceneQuadraticCost scene(robot_model, solver, dt);
+    VelocitySceneQP scene(robot_model, solver, dt);
     if(!scene.configure({cart_task}))
         return -1;
 

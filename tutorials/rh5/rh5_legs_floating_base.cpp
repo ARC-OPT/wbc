@@ -1,7 +1,7 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <core/RobotModelConfig.hpp>
-#include <scenes/VelocitySceneQuadraticCost.hpp>
+#include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <unistd.h>
@@ -87,7 +87,7 @@ int main(){
     cart_task.ref_frame = "world";
     cart_task.activation = 1;
     cart_task.weights = vector<double>(6,1);
-    VelocitySceneQuadraticCost scene(robot_model, solver, dt);
+    VelocitySceneQP scene(robot_model, solver, dt);
     if(!scene.configure({cart_task}))
         return -1;
 
