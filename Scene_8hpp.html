@@ -53,7 +53,8 @@ $(function() {
   <div class="summary">
 <a href="#nested-classes">Classes</a> &#124;
 <a href="#namespaces">Namespaces</a> &#124;
-<a href="#typedef-members">Typedefs</a>  </div>
+<a href="#typedef-members">Typedefs</a> &#124;
+<a href="#func-members">Functions</a>  </div>
   <div class="headertitle"><div class="title">Scene.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -62,13 +63,18 @@ $(function() {
 <code>#include &quot;<a class="el" href="QuadraticProgram_8hpp_source.html">QuadraticProgram.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="RobotModel_8hpp_source.html">RobotModel.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="QPSolver_8hpp_source.html">QPSolver.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="SceneConfig_8hpp_source.html">SceneConfig.hpp</a>&quot;</code><br />
 </div>
 <p><a href="Scene_8hpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
-<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1WbcScene.html">wbc::WbcScene</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for all wbc scenes.  <a href="classwbc_1_1WbcScene.html#details">More...</a><br /></td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html">wbc::Scene</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Base class for all wbc scenes.  <a href="classwbc_1_1Scene.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1SceneFactory.html">wbc::SceneFactory</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1SceneRegistry.html">wbc::SceneRegistry&lt; T &gt;</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="namespaces" name="namespaces"></a>
@@ -78,8 +84,14 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="typedef-members" name="typedef-members"></a>
 Typedefs</h2></td></tr>
-<tr class="memitem:ad9d363286aa1781e6dda6eaf960859f6"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1WbcScene.html">WbcScene</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#ad9d363286aa1781e6dda6eaf960859f6">wbc::WbcScenePtr</a></td></tr>
-<tr class="separator:ad9d363286aa1781e6dda6eaf960859f6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4ac80a6080fd9e5b2fc92056e4845a51"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1Scene.html">Scene</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a4ac80a6080fd9e5b2fc92056e4845a51">wbc::ScenePtr</a></td></tr>
+<tr class="separator:a4ac80a6080fd9e5b2fc92056e4845a51"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
+Functions</h2></td></tr>
+<tr class="memitem:a7c98d103306026a27e6332939383c52e"><td class="memTemplParams" colspan="2">template&lt;typename T , typename <a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> , typename <a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a> &gt; </td></tr>
+<tr class="memitem:a7c98d103306026a27e6332939383c52e"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1Scene.html">Scene</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a7c98d103306026a27e6332939383c52e">wbc::createT</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, <a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a> solver, const double dt)</td></tr>
+<tr class="separator:a7c98d103306026a27e6332939383c52e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->
