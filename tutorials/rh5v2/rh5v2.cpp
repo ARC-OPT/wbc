@@ -1,6 +1,6 @@
 #include <robot_models/rbdl/RobotModelRBDL.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <scenes/AccelerationSceneTSID.hpp>
+#include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
