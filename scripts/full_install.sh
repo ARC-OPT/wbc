@@ -24,11 +24,11 @@ sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev
 git clone https://github.com/ARC-OPT/wbc.git
 
 # RBDL
-git clone --branch v3.2.1 git@github.com:rbdl/rbdl.git
+git clone --branch v3.2.1 --recurse-submodules https://github.com/rbdl/rbdl.git
 cd rbdl
-cp ../wbc/patches/rbdl.patch . && git apply rbdl.patch
+git apply ../wbc/patches/rbdl.patch --ignore-whitespace
 mkdir build && cd build
-cmake .. 
+cmake .. -DRBDL_BUILD_ADDON_URDFREADER=ON
 make -j8 && sudo make install && cd ../..
 
 # KDL 
@@ -67,7 +67,7 @@ mkdir build && cd build
 cmake .. && make -j8 && sudo make install && cd ../..
 
 # eiquadprog
-git clone --recurse-submodules https://github.com/stack-of-tasks/eiquadprog.git
+git clone --recurse-submodules https://github.com/stack-of-tasks/eiquadprog.git -b v1.2.5
 cd eiquadprog
 cp ../wbc/patches/eiquadprog.patch . && git apply eiquadprog.patch
 mkdir build && cd build
@@ -89,3 +89,4 @@ sudo apt-get -y install python3-dev python3-numpy python3-nose libboost-python-d
 mkdir wbc/build && cd wbc/build
 cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_QPSWIFT=1
 make -j8 && sudo make install
+sudo ldconfig

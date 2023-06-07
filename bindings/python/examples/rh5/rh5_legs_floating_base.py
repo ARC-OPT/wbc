@@ -1,5 +1,5 @@
 from wbc.core import *
-from wbc.robot_models.robot_model_pinocchio import RobotModelPinocchio
+from wbc.robot_models.robot_model_rbdl import RobotModelRBDL
 from wbc.scenes import AccelerationSceneTSID
 from wbc.solvers.qpoases_solver import QPOASESSolver
 from wbc.controllers import CartesianPosPDController
@@ -13,7 +13,7 @@ floating_base_state.pose.orientation    = [0,0,0,1]
 floating_base_state.twist.linear        = floating_base_state.twist.angular        = [0,0,0]
 floating_base_state.acceleration.linear = floating_base_state.acceleration.angular = [0,0,0]
 
-robot_model=RobotModelPinocchio()
+robot_model=RobotModelRBDL()
 r=RobotModelConfig()
 r.file="../../../../models/rh5/urdf/rh5_legs.urdf"
 r.floating_base = True
