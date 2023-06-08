@@ -1,6 +1,6 @@
 from wbc.core import *
 from wbc.robot_models.robot_model_rbdl import RobotModelRBDL
-from wbc.scenes import VelocityScene
+from wbc.scenes.velocity_scene import VelocityScene
 from wbc.solvers.hls_solver import HierarchicalLSSolver
 from wbc.controllers import CartesianPosPDController
 import time
@@ -32,7 +32,7 @@ cfg.type = TaskType.cart
 cfg.weights = [1]*6
 
 # Configure WBC Scene
-scene=VelocityScene(robot_model, solver)
+scene=VelocityScene(robot_model, solver, 0.001)
 if scene.configure([cfg]) == False:
     print("Failed to configure scene")
     exit(0)
