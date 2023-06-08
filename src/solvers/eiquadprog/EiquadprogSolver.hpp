@@ -1,7 +1,6 @@
 #ifndef WBC_SOLVERS_EIQUADPROG_SOLVER_HPP
 #define WBC_SOLVERS_EIQUADPROG_SOLVER_HPP
 
-#include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 
 #include <base/Time.hpp>
