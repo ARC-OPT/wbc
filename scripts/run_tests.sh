@@ -63,6 +63,12 @@ if [ -d "eiquadprog" ]; then
   ./test_eiquadprog_solver
   cd ..
 fi
+if [ -d "proxqp" ]; then
+  echo "Testing ProxQPSolver ..."
+  cd eiquadprog
+  ./test_proxqp_solver
+  cd ..
+fi
 if [ -d "qpswift" ]; then
   echo "Testing QPSwiftSolver ..."
   cd qpswift   
