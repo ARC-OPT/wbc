@@ -51,6 +51,7 @@ const HierarchicalQP& AccelerationScene::update(){
     hqp[prio].A.setZero();
     hqp[prio].lower_y.setZero();
     hqp[prio].upper_y.setZero();
+    hqp[prio].b.setZero();
 
 
     ///////// Tasks
