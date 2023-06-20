@@ -82,6 +82,13 @@ mkdir build && cd build
 cmake .. 
 make -j8 && sudo make install && cd ../.. 
 
+# proxQP
+git clone --recurse-submodules https://github.com/qSimple-Robotics/proxsuite.git proxqp
+cd proxqp
+mkdir build && cd build
+cmake .. -DBUILD_TESTING=OFF -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_WITH_VECTORIZATION_SUPPORT=OFF
+make -j8 && sudo make install && cd ../..
+
 # For Python bindings
 sudo apt-get -y install python3-dev python3-numpy python3-nose libboost-python-dev libboost-numpy-dev
 

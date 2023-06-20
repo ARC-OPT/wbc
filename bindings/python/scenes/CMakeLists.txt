@@ -1,16 +1,8 @@
-PYTHON_ADD_MODULE(scenes scenes.cpp)
+add_subdirectory(velocity)
+add_subdirectory(velocity_qp)
+add_subdirectory(acceleration)
+add_subdirectory(acceleration_tsid)
+add_subdirectory(acceleration_reduced_tsid)
 
-# Set up the libraries and header search paths for this target
-target_link_libraries(scenes PUBLIC
-	wbc-scenes
-        wbc-robot_models-rbdl
-	wbc-solvers-hls
-        wbc-solvers-qpoases
-        Boost::python
-        Boost::numpy)
-
-target_include_directories(scenes PUBLIC
-	${PYTHON_INCLUDE_DIRS})
-
-install(TARGETS scenes
-        DESTINATION ${PYTHON_INSTALL_PATH}/wbc)
+install(FILES __init__.py
+        DESTINATION ${PYTHON_INSTALL_PATH}/wbc/scenes)

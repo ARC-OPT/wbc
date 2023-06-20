@@ -1,14 +1,13 @@
 #ifndef WBC_SOLVERS_PROXQP_SOLVER_HPP
 #define WBC_SOLVERS_PROXQP_SOLVER_HPP
 
-#include "../../core/QPSolverFactory.hpp"
 #include "../../core/QPSolver.hpp"
 
 #include <memory>
 
 #include <base/Time.hpp>
 
-#include <proxsuite/proxqp/dense/wrapper.hpp> 
+#include <proxsuite/proxqp/dense/wrapper.hpp>
 
 namespace wbc {
 
@@ -43,7 +42,7 @@ public:
 
     /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
     void setMaxNIter(const uint& n){ _n_iter = n; }
-    
+
     /** Get the maximum number of working set recalculations to be performed during the initial homotopy*/
     uint getMaxNIter(){ return _n_iter; }
 
@@ -53,7 +52,7 @@ public:
 protected:
 
     std::shared_ptr<proxsuite::proxqp::dense::QP<double>> _solver_ptr;
-    
+
     double _eps_abs = 1e-9;
     int _n_iter;
     int _actual_n_iter;

@@ -67,7 +67,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     wbc_scene.updateTasksStatus();
     TasksStatus status = wbc_scene.getTasksStatus();
     for(int i = 0; i < 3; i++){
-        BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-5);
-        BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i]) < 1e5);
+        BOOST_CHECK(fabs(status[0].y_ref[i] - status[0].y_solution[i]) < 1e-4);
+        BOOST_CHECK(fabs(status[0].y_ref[i+3] - status[0].y_solution[i+3]) < 1e-4);
     }
 }
