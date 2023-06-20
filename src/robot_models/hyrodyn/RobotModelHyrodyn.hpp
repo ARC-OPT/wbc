@@ -1,8 +1,7 @@
 #ifndef ROBOTMODELHYRODYN_HPP
 #define ROBOTMODELHYRODYN_HPP
 
-#include "../../core/RobotModelFactory.hpp"
-#include "../../core/RobotModelConfig.hpp"
+#include "../../core/RobotModel.hpp"
 
 #include <hyrodyn/robot_model_hyrodyn.hpp>
 #include <base/commands/Joints.hpp>

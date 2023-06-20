@@ -65,7 +65,7 @@ if [ -d "eiquadprog" ]; then
 fi
 if [ -d "proxqp" ]; then
   echo "Testing ProxQPSolver ..."
-  cd eiquadprog
+  cd proxqp
   ./test_proxqp_solver
   cd ..
 fi
