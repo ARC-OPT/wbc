@@ -26,7 +26,7 @@ class VelocityScene : public Scene{
 protected:
     static SceneRegistry<VelocityScene> reg;
 
-    base::VectorXd solver_output, q, qd, qdd;
+    base::VectorXd q, qd, qdd;
 
     /**
      * @brief Create a task and add it to the WBC scene
