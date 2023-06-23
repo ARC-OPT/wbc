@@ -26,6 +26,7 @@ protected:
     base::commands::Joints solver_output_joints;
     JointWeights joint_weights, actuated_joint_weights;
     std::vector<TaskConfig> wbc_config;
+    base::VectorXd solver_output;
 
     /**
      * brief Create a task and add it to the WBC scene
@@ -124,6 +125,11 @@ public:
      * @brief Get current solver output
      */
     const base::commands::Joints& getSolverOutput() const { return solver_output_joints; }
+
+    /**
+     * @brief Get current solver output in raw values
+     */
+    const base::VectorXd& getSolverOutputRaw() const { return solver_output; }
 
     /**
      * @brief set Joint weights by given name

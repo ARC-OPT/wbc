@@ -41,7 +41,7 @@ protected:
     static SceneRegistry<AccelerationSceneTSID> reg;
 
     // Helper variables
-    base::VectorXd solver_output, robot_acc, solver_output_acc;
+    base::VectorXd robot_acc, solver_output_acc;
     base::samples::Wrenches contact_wrenches;
     double hessian_regularizer;
 
