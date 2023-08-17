@@ -67,7 +67,7 @@ public:
     /** Unique identifier of the constraint. Must not be empty*/
     std::string name;
 
-    /** Constraint type, can be one of 'jnt' (joint space) or 'cart' (Cartesian) */
+    /** Task type, can be one of 'jnt' (joint space) or 'cart' (Cartesian) */
     TaskType type;
 
     /** Priority of this task. Must be >= 0! 0 corresponds to the highest priority. */
