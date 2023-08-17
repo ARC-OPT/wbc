@@ -150,6 +150,9 @@ Static Public Member Functions</h2></td></tr>
 <tr class="memitem:a373240ad62e602c7dd88ca435d350bd9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a373240ad62e602c7dd88ca435d350bd9">sortTaskConfig</a> (const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;config, std::vector&lt; std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &gt; &amp;sorted_config)</td></tr>
 <tr class="memdesc:a373240ad62e602c7dd88ca435d350bd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort task config by the priorities of the tasks.  <br /></td></tr>
 <tr class="separator:a373240ad62e602c7dd88ca435d350bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a07f0e263475dcdb0bed5d7747a97c48c"><td class="memItemLeft" align="right" valign="top">static uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a07f0e263475dcdb0bed5d7747a97c48c">getNTaskVariables</a> (const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;config)</td></tr>
+<tr class="memdesc:a07f0e263475dcdb0bed5d7747a97c48c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return number of tasks per priority, given the task config.  <br /></td></tr>
+<tr class="separator:a07f0e263475dcdb0bed5d7747a97c48c"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeade320f19eb1e3d92caf306789e9ad9"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#aeade320f19eb1e3d92caf306789e9ad9">getNTaskVariablesPerPrio</a> (const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;config)</td></tr>
 <tr class="memdesc:aeade320f19eb1e3d92caf306789e9ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return number of tasks per priority, given the task config.  <br /></td></tr>
 <tr class="separator:aeade320f19eb1e3d92caf306789e9ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -416,6 +419,34 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Get Joint weights as Named vector. </p>
+
+</div>
+</div>
+<a id="a07f0e263475dcdb0bed5d7747a97c48c" name="a07f0e263475dcdb0bed5d7747a97c48c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a07f0e263475dcdb0bed5d7747a97c48c">&#9670;&#160;</a></span>getNTaskVariables()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint wbc::Scene::getNTaskVariables </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;&#160;</td>
+          <td class="paramname"><em>config</em></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel">static</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Return number of tasks per priority, given the task config. </p>
 
 </div>
 </div>
