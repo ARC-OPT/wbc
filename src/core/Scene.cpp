@@ -168,6 +168,13 @@ void Scene::sortTaskConfig(const std::vector<TaskConfig>& config, std::vector< s
     }
 }
 
+uint Scene::getNTaskVariables(const std::vector<TaskConfig> &config){
+    uint n_task_variables = 0;
+    for(const TaskConfig& cfg : config)
+        n_task_variables += cfg.nVariables();
+    return n_task_variables;
+}
+
 std::vector<int> Scene::getNTaskVariablesPerPrio(const std::vector<TaskConfig> &config){
 
     std::vector< std::vector<TaskConfig> > sorted_config;

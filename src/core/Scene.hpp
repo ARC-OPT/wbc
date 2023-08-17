@@ -109,6 +109,11 @@ public:
     /**
      * @brief Return number of tasks per priority, given the task config
      */
+    static uint getNTaskVariables(const std::vector<TaskConfig>& config);
+
+    /**
+     * @brief Return number of tasks per priority, given the task config
+     */
     static std::vector<int> getNTaskVariablesPerPrio(const std::vector<TaskConfig>& config);
 
     /**

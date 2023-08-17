@@ -14,6 +14,9 @@ public:
     ActiveContact(int active, double mu) : active(active), mu(mu){
 
     }
+    ActiveContact(int active, double mu, double wx, double wy) : active(active), mu(mu), wx(wx), wy(wy){
+
+    }
     int active; /** In contact*/
     double mu;  /** Friction coeffcient*/
     double wx;  /** x-dimension of the contact surface (only for surface contacts)*/
