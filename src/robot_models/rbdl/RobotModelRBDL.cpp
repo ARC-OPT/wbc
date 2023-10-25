@@ -41,8 +41,25 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
     }
     base_frame = robot_urdf->getRoot()->name;
 
-    // Add floating base
     joint_names = URDFTools::jointNamesFromURDF(robot_urdf);
+
+    // Temporary workaround: RBDL does not support rotations of the link invertias. Set them to zero.
+    // Note: This will lead to inconsistent behavior in acceleration-based WBC
+    for(auto &l : robot_urdf->links_){
+        if(l.second->inertial)
+            l.second->inertial->origin.rotation.setFromRPY(0,0,0);
+    }
+    TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
+    std::string robot_urdf_file = "/tmp/robot.urdf";
+    doc->SaveFile(robot_urdf_file);
+
+    if(!Addons::URDFReadFromFile(robot_urdf_file.c_str(), rbdl_model.get(), cfg.floating_base)){
+        LOG_ERROR_S << "Unable to parse urdf from file " << cfg.file << std::endl;
+        return false;
+    }
+
+    // Add floating base to robot_urdf. We will not load this URDF model in RBDL, since RBDL adds its own floating base.
+    // However, we need the robot_urdf for some internal functionalities.
     has_floating_base = cfg.floating_base;
     world_frame = base_frame;
     if(cfg.floating_base){
@@ -50,16 +67,11 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
         world_frame = robot_urdf->getRoot()->name;
     }
 
-    if(!Addons::URDFReadFromFile(cfg.file.c_str(), rbdl_model.get(), cfg.floating_base)){
-        LOG_ERROR_S << "Unable to parse urdf from file " << cfg.file << std::endl;
-        return false;
-    }
-
     actuated_joint_names = joint_names;
     joint_names = independent_joint_names = joint_names_floating_base + joint_names;
 
     // Read Joint Limits
-    URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);    
+    URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
     // 2. Verify consistency of URDF and config
 
