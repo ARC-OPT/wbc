@@ -1,7 +1,6 @@
 #ifndef ROBOT_MODEL_PINOCCHIO_HPP
 #define ROBOT_MODEL_PINOCCHIO_HPP
 
-#include "../../core/RobotModelFactory.hpp"
 #include "../../core/RobotModel.hpp"
 #include <pinocchio/multibody/fwd.hpp>
 #include <pinocchio/parsers/urdf.hpp>
