@@ -15,7 +15,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     // Configure Robot model
     shared_ptr<RobotModelRBDL> robot_model = make_shared<RobotModelRBDL>();
     RobotModelConfig config;
-    config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
+    config.file_or_string = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
     config.contact_points.names = {"FL_SupportCenter", "FR_SupportCenter"};
     wbc::ActiveContact contact(1,0.6);

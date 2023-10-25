@@ -198,6 +198,9 @@ public:
     /** @brief Is floating base robot?*/
     bool hasFloatingBase(){return has_floating_base;}
 
+    /** @brief Load URDF model from either file or string*/
+    urdf::ModelInterfaceSharedPtr loadRobotURDF(const std::string& file_or_string);
+
 };
 typedef std::shared_ptr<RobotModel> RobotModelPtr;
 

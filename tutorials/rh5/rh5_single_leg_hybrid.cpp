@@ -27,7 +27,7 @@ int main(){
 
     // Configure the full robot model, containing all linear actuators and parallel mechanisms.
     RobotModelConfig config;
-    config.file = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
+    config.file_or_string = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
     config.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
     if(!robot_model->configure(config))
         return -1;

@@ -46,7 +46,7 @@ int main(){
     // Also, we have to pass a submechanism files, which describes the parallel structures inside the robot architecture
     // In this case, there are not parallel structure, since we use the abstract model
     RobotModelConfig config;
-    config.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
+    config.file_or_string = "../../../models/rh5/urdf/rh5_single_leg.urdf";
     config.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
     if(!robot_model->configure(config))
         return -1;

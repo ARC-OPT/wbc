@@ -27,9 +27,9 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     // 1. Load Robot Model
 
     robot_model_config = cfg;
-    robot_urdf = urdf::parseURDFFile(cfg.file);
+    robot_urdf = loadRobotURDF(cfg.file_or_string);
     if(!robot_urdf){
-        LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
+        LOG_ERROR("Unable to parse urdf model");
         return false;
     }
     base_frame = robot_urdf->getRoot()->name;

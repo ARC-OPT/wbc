@@ -120,7 +120,7 @@ BOOST_PYTHON_MODULE(core){
                 py::make_setter(&base::NamedVector<base::JointLimitRange>::elements));
 
    py::class_<wbc_py::RobotModelConfig>("RobotModelConfig")
-            .def_readwrite("file",                 &wbc::RobotModelConfig::file)
+            .def_readwrite("file_or_string",       &wbc::RobotModelConfig::file_or_string)
             .def_readwrite("submechanism_file",    &wbc::RobotModelConfig::submechanism_file)
             .def_readwrite("floating_base",        &wbc::RobotModelConfig::floating_base)
             .def_readwrite("floating_base",        &wbc::RobotModelConfig::floating_base)
@@ -238,4 +238,3 @@ BOOST_PYTHON_MODULE(core){
                py::make_getter(&wbc::TasksStatus::elements, py::return_value_policy<py::copy_non_const_reference>()),
                py::make_setter(&wbc::TasksStatus::elements));
 }
-

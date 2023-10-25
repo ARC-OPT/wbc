@@ -16,7 +16,7 @@ BOOST_AUTO_TEST_CASE(configuration_test){
 
     shared_ptr<RobotModelRBDL> robot_model = make_shared<RobotModelRBDL>();
     RobotModelConfig config;
-    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.file_or_string = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
     QPSolverPtr solver = std::make_shared<HierarchicalLSSolver>();
     VelocityScene wbc_scene(robot_model, solver, 1e-3);
@@ -47,7 +47,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     // Configure Robot model
     shared_ptr<RobotModelRBDL> robot_model = make_shared<RobotModelRBDL>();
     RobotModelConfig config;
-    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.file_or_string = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     BOOST_CHECK(robot_model->configure(config));
 
     base::samples::Joints joint_state;

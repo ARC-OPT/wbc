@@ -35,11 +35,11 @@ public:
         floating_base = false;
         type = "rbdl";
     }
-    RobotModelConfig(const std::string& file,
+    RobotModelConfig(const std::string& file_or_string,
                      const bool floating_base = false,
                      const ActiveContacts &contact_points = ActiveContacts(),
                      const std::string& submechanism_file = "") :
-        file(file),
+        file_or_string(file_or_string),
         submechanism_file(submechanism_file),
         type("rbdl"),
         floating_base(floating_base),
@@ -47,16 +47,16 @@ public:
 
     }
     void validate(){
-        if(file.empty())
-            throw std::runtime_error("Invalid Robot model config. File path must not be empty!");
+        if(file_or_string.empty())
+            throw std::runtime_error("Invalid Robot model config. File path or string must not be empty!");
         if(type == "hyrodyn" && submechanism_file.empty())
             throw std::runtime_error("Invalid Robot model config. If you choose 'hyrodyn' as type, submechanism_file must not be empty!");
         if(floating_base && contact_points.empty())
             throw std::runtime_error("Invalid Robot model config. If floating_base is set to true, contact_points must not be empty!");
     }
 
-    /** Absolute path to URDF file describing the robot model.*/
-    std::string file;
+    /** Absolute path to URDF file describing the robot model or URDF string.*/
+    std::string file_or_string;
     /** Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms.*/
     std::string submechanism_file;
     /** Model type. Must be the exact name of one of the registered robot model plugins. See src/robot_models for all available plugins. Default is rbdl*/

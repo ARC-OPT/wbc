@@ -2,6 +2,8 @@
 #include <base-logging/Logging.hpp>
 #include <base/samples/RigidBodyStateSE3.hpp>
 #include <base/samples/Joints.hpp>
+#include <fstream>
+#include <urdf_parser/urdf_parser.h>
 
 namespace wbc{
 
@@ -88,6 +90,14 @@ const base::samples::Joints& RobotModel::jointState(const std::vector<std::strin
         }
     }
     return joint_state_out;
+}
+
+urdf::ModelInterfaceSharedPtr RobotModel::loadRobotURDF(const std::string& file_or_string){
+    std::ifstream fs(file_or_string.c_str());
+    if(fs)
+        return urdf::parseURDFFile(file_or_string);
+    else
+        return urdf::parseURDF(file_or_string);
 }
 
 RobotModelFactory::RobotModelMap* RobotModelFactory::robot_model_map = 0;

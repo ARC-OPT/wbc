@@ -129,11 +129,11 @@ map<string,base::VectorXd> evaluateRobotModel(RobotModelPtr robot_model, const s
     return results;
 }
 
-void runKUKAIiwaBenchmarks(int n_samples){    
+void runKUKAIiwaBenchmarks(int n_samples){
     cout << " ----------- Evaluating KUKA iiwa model -----------" << endl;
 
     RobotModelConfig cfg;
-    cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    cfg.file_or_string = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     cfg.submechanism_file = "../../../models/kuka/hyrodyn/kuka_iiwa.yml";
 
     RobotModelPtr robot_model_kdl =  std::make_shared<RobotModelKDL>();
@@ -170,7 +170,7 @@ void runKUKAIiwaBenchmarks(int n_samples){
 void runRH5SingleLegBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Single Leg model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_single_leg.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
 
     RobotModelPtr robot_model_kdl =  std::make_shared<RobotModelKDL>();
@@ -183,7 +183,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
     if(!robot_model_hyrodyn->configure(cfg))abort();
     if(!robot_model_pinocchio->configure(cfg))abort();
     if(!robot_model_rbdl->configure(cfg))abort();
-    cfg.file = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
     if(!robot_model_hyrodyn_hybrid->configure(cfg))abort();
 
@@ -196,7 +196,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
 
     toCSV(results_kdl, "results/rh5_single_leg_robot_model_kdl.csv");
     toCSV(results_hyrodyn, "results/rh5_single_leg_robot_model_hyrodyn.csv");
-    toCSV(results_hyrodyn_hybrid, "results/rh5_single_leg_robot_model_hyrodyn_hybrid.csv");    
+    toCSV(results_hyrodyn_hybrid, "results/rh5_single_leg_robot_model_hyrodyn_hybrid.csv");
     toCSV(results_pinocchio, "results/rh5_single_leg_robot_model_pinocchio.csv");
     toCSV(results_rbdl, "results/rh5_single_leg_robot_model_rbdl.csv");
 
@@ -216,7 +216,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
 void runRH5LegsBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Legs model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_legs.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
     cfg.floating_base = true;
 
@@ -230,7 +230,7 @@ void runRH5LegsBenchmarks(int n_samples){
     if(!robot_model_hyrodyn->configure(cfg))abort();
     if(!robot_model_pinocchio->configure(cfg))abort();
     if(!robot_model_rbdl->configure(cfg))abort();
-    cfg.file = "../../../models/rh5/urdf/rh5_legs_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_legs_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs_hybrid.yml";
     if(!robot_model_hyrodyn_hybrid->configure(cfg))abort();
 
@@ -262,7 +262,7 @@ void runRH5LegsBenchmarks(int n_samples){
 void runRH5Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
 
@@ -276,7 +276,7 @@ void runRH5Benchmarks(int n_samples){
     if(!robot_model_hyrodyn->configure(cfg))abort();
     if(!robot_model_pinocchio->configure(cfg))abort();
     if(!robot_model_rbdl->configure(cfg))abort();
-    cfg.file = "../../../models/rh5/urdf/rh5_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_hybrid.yml";
     if(!robot_model_hyrodyn_hybrid->configure(cfg))abort();
 
@@ -308,7 +308,7 @@ void runRH5Benchmarks(int n_samples){
 void runRH5v2Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5v2 model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
+    cfg.file_or_string = "../../../models/rh5v2/urdf/rh5v2.urdf";
     cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
 
     RobotModelPtr robot_model_kdl =  std::make_shared<RobotModelKDL>();
@@ -321,7 +321,7 @@ void runRH5v2Benchmarks(int n_samples){
     if(!robot_model_hyrodyn->configure(cfg))abort();
     if(!robot_model_pinocchio->configure(cfg))abort();
     if(!robot_model_rbdl->configure(cfg))abort();
-    cfg.file = "../../../models/rh5v2/urdf/rh5v2_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5v2/urdf/rh5v2_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2_hybrid.yml";
     if(!robot_model_hyrodyn_hybrid->configure(cfg))abort();
 
