@@ -150,7 +150,7 @@ def run_acceleration_wbc(scene, robot_model):
 def test_configure():
     robot_model=RobotModelRBDL()
     r=RobotModelConfig()
-    r.file="../../../models/kuka/urdf/kuka_iiwa.urdf"
+    r.file_or_string="../../../models/kuka/urdf/kuka_iiwa.urdf"
     r.actuated_joint_names = ["kuka_lbr_l_joint_1", "kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3", "kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5", "kuka_lbr_l_joint_6", "kuka_lbr_l_joint_7"]
     r.joint_names = r.actuated_joint_names
     assert robot_model.configure(r) == True
@@ -175,7 +175,7 @@ def test_configure():
 def test_solver_output():
     robot_model=RobotModelRBDL()
     r=RobotModelConfig()
-    r.file="../../../models/kuka/urdf/kuka_iiwa.urdf"
+    r.file_or_string="../../../models/kuka/urdf/kuka_iiwa.urdf"
     r.actuated_joint_names = ["kuka_lbr_l_joint_1", "kuka_lbr_l_joint_2", "kuka_lbr_l_joint_3", "kuka_lbr_l_joint_4", "kuka_lbr_l_joint_5", "kuka_lbr_l_joint_6", "kuka_lbr_l_joint_7"]
     r.joint_names = r.actuated_joint_names
     assert robot_model.configure(r) == True

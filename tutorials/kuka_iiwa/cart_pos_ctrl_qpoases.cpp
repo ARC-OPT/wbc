@@ -48,7 +48,7 @@ int main(){
     // - The order of joints used inside WBC is the same as the one obtained by the URDF parser (which is alphabetic)
     // For all configuration options, check core/RobotModelConfig.hpp
     RobotModelConfig config;
-    config.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    config.file_or_string = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     if(!robot_model->configure(config))
         return -1;
 

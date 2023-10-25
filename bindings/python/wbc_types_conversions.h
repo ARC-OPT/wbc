@@ -34,7 +34,7 @@ wbc::RobotModelConfig toRobotModelConfig(RobotModelConfig cfg_in){
 
 RobotModelConfig fromRobotModelConfig(wbc::RobotModelConfig cfg_in){
     RobotModelConfig cfg;
-    cfg.file = cfg_in.file;
+    cfg.file_or_string = cfg_in.file_or_string;
     cfg.submechanism_file = cfg_in.submechanism_file;
     cfg.floating_base = cfg_in.floating_base;
     cfg.contact_points = cfg_in.contact_points;

@@ -57,7 +57,7 @@ int main(){
     floating_base_state.acceleration.setZero();
     floating_base_state.time = base::Time::now();
     RobotModelConfig config;
-    config.file = "../../../models/rh5/urdf/rh5_legs.urdf";
+    config.file_or_string = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
     config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
     config.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};

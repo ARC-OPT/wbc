@@ -89,7 +89,7 @@ map<string, base::VectorXd> evaluateProxQP(RobotModelPtr robot_model, string roo
 void runKUKAIiwaBenchmarks(int n_samples){
     
     RobotModelConfig cfg;
-    cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    cfg.file_or_string = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
 
@@ -136,7 +136,7 @@ void runKUKAIiwaBenchmarks(int n_samples){
 void runRH5SingleLegBenchmarks(int n_samples){
     
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_single_leg.urdf";
     RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
 
@@ -185,7 +185,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
 void runRH5LegsBenchmarks(int n_samples){
     
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_legs.urdf";
     cfg.floating_base = true;
     ActiveContact contact(1,0.6);
     contact.wx = 0.2;
@@ -244,7 +244,7 @@ void runRH5LegsBenchmarks(int n_samples){
 void runRH5Benchmarks(int n_samples){
     
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5.urdf";
     cfg.floating_base = true;
     ActiveContact contact(1,0.6);
     contact.wx = 0.2;
@@ -303,7 +303,7 @@ void runRH5Benchmarks(int n_samples){
 void runRH5v2Benchmarks(int n_samples){
 
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
+    cfg.file_or_string = "../../../models/rh5v2/urdf/rh5v2.urdf";
     RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
     if(!robot_model->configure(cfg))abort();
 

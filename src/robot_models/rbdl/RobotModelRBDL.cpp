@@ -34,9 +34,9 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
     // 1. Load Robot Model
 
     robot_model_config = cfg;
-    robot_urdf = urdf::parseURDFFile(cfg.file);
+    robot_urdf = loadRobotURDF(cfg.file_or_string);
     if(!robot_urdf){
-        LOG_ERROR("Unable to parse urdf model from file %s", cfg.file.c_str());
+        LOG_ERROR("Unable to parse robot urdf model");
         return false;
     }
     base_frame = robot_urdf->getRoot()->name;
@@ -54,7 +54,7 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
     doc->SaveFile(robot_urdf_file);
 
     if(!Addons::URDFReadFromFile(robot_urdf_file.c_str(), rbdl_model.get(), cfg.floating_base)){
-        LOG_ERROR_S << "Unable to parse urdf from file " << cfg.file << std::endl;
+        LOG_ERROR_S << "Unable to parse urdf from file " << robot_urdf_file << std::endl;
         return false;
     }
 

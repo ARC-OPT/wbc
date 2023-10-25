@@ -17,7 +17,7 @@ def run(robot_model):
     contacts.elements = [a,a]
 
     r=RobotModelConfig()
-    r.file="../../../models/rh5/urdf/rh5_single_leg.urdf"
+    r.file_or_string="../../../models/rh5/urdf/rh5_single_leg.urdf"
     r.floating_base = False
     assert robot_model.configure(r) == True
 

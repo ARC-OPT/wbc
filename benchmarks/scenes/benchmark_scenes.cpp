@@ -76,7 +76,7 @@ void evaluateAccelerationSceneReducedTSID(map<string,RobotModelPtr> robot_models
 void runKUKAIiwaBenchmarks(int n_samples){
     cout << " ----------- Evaluating KUKA iiwa model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
+    cfg.file_or_string = "../../../models/kuka/urdf/kuka_iiwa.urdf";
     cfg.submechanism_file = "../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     const string root = "kuka_lbr_l_link_0", tip = "kuka_lbr_l_tcp";
     const string robot = "kuka_iiwa";
@@ -107,7 +107,7 @@ void runKUKAIiwaBenchmarks(int n_samples){
 void runRH5SingleLegBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Single Leg model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5_single_leg.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_single_leg.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg.yml";
     const string robot = "rh5_single_leg";
 
@@ -121,7 +121,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
             abort();
     }
     robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
-    cfg.file = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_single_leg_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_single_leg_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
     for(auto it : robot_models){
@@ -145,7 +145,7 @@ void runRH5SingleLegBenchmarks(int n_samples){
 void runRH5LegsBenchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Legs Model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5_legs.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_legs.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs.yml";
     cfg.floating_base = true;
     ActiveContact contact(1,0.6);
@@ -164,7 +164,7 @@ void runRH5LegsBenchmarks(int n_samples){
         if(!it.second->configure(cfg)) abort();
     }
     robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
-    cfg.file = "../../../models/rh5/urdf/rh5_legs_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_legs_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_legs_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
     for(auto it : robot_models){
@@ -194,7 +194,7 @@ void runRH5LegsBenchmarks(int n_samples){
 void runRH5Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5 Model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5/urdf/rh5.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5.yml";
     cfg.floating_base = true;
     ActiveContact contact(1,0.6);
@@ -213,7 +213,7 @@ void runRH5Benchmarks(int n_samples){
         if(!it.second->configure(cfg)) abort();
     }
     robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
-    cfg.file = "../../../models/rh5/urdf/rh5_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5/urdf/rh5_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5/hyrodyn/rh5_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
     for(auto it : robot_models){
@@ -244,7 +244,7 @@ void runRH5Benchmarks(int n_samples){
 void runRH5v2Benchmarks(int n_samples){
     cout << " ----------- Evaluating RH5v2 model -----------" << endl;
     RobotModelConfig cfg;
-    cfg.file = "../../../models/rh5v2/urdf/rh5v2.urdf";
+    cfg.file_or_string = "../../../models/rh5v2/urdf/rh5v2.urdf";
     cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2.yml";
     const string robot = "rh5v2";
 
@@ -257,7 +257,7 @@ void runRH5v2Benchmarks(int n_samples){
         if(!it.second->configure(cfg)) abort();
     }
     robot_models["hyrodyn_hybrid"] =  make_shared<RobotModelHyrodyn>();
-    cfg.file = "../../../models/rh5v2/urdf/rh5v2_hybrid.urdf";
+    cfg.file_or_string = "../../../models/rh5v2/urdf/rh5v2_hybrid.urdf";
     cfg.submechanism_file = "../../../models/rh5v2/hyrodyn/rh5v2_hybrid.yml";
     if(!robot_models["hyrodyn_hybrid"]->configure(cfg)) abort();
     for(auto it : robot_models){
