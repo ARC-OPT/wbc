@@ -40,7 +40,7 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
         return false;
     }
     base_frame = robot_urdf->getRoot()->name;
-
+    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
     joint_names = URDFTools::jointNamesFromURDF(robot_urdf);
 
     // Temporary workaround: RBDL does not support rotations of the link invertias. Set them to zero.

@@ -40,6 +40,7 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
         return false;
     }
     base_frame =  robot_urdf->getRoot()->name;
+    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
 
     try{
         if(cfg.floating_base){
@@ -362,7 +363,7 @@ const base::MatrixXd &RobotModelPinocchio::jacobianDot(const std::string &root_f
     throw std::runtime_error("Not implemented: jacobianDot has not been implemented for RobotModelPinocchio");
 }
 
-const base::MatrixXd &RobotModelPinocchio::jointSpaceInertiaMatrix(){   
+const base::MatrixXd &RobotModelPinocchio::jointSpaceInertiaMatrix(){
 
     if(joint_state.time.isNull()){
         LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");

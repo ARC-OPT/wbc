@@ -38,6 +38,7 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
         LOG_ERROR("Unable to parse urdf model")
         return false;
     }
+    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
     base_frame =  robot_urdf->getRoot()->name;
 
     // Joint names from URDF without floating base
@@ -313,7 +314,7 @@ const base::MatrixXd &RobotModelKDL::comJacobian(){
         if(segmentName == full_tree.getRootSegment()->second.segment.getName())
             continue;
         std::string segmentNameCOG = segmentName + "_COG";
-        
+
         KDL::Vector segmentCOG = segment.getInertia().getCOG();
         double segmentMass = segment.getInertia().getMass();
 
@@ -328,7 +329,7 @@ const base::MatrixXd &RobotModelKDL::comJacobian(){
 
         COGSegmentNames.push_back(segmentNameCOG);
     }
-    
+
     // compute com jacobian as (mass) weighted average over COG frame jacobians
     for(const auto& segment_name : COGSegmentNames)
         com_jac += (mass_map[segment_name] / totalMass) *
@@ -427,7 +428,7 @@ void RobotModelKDL::recursiveCOM(const KDL::SegmentMap::const_iterator& currentS
     KDL::Segment segment = currentSegment->second.segment;
 #endif
     // If the segment has a real joint, get the joint position
-    if( segment.getJoint().getType() != KDL::Joint::None ) {        
+    if( segment.getJoint().getType() != KDL::Joint::None ) {
         const std::string name = segment.getJoint().getName();
         if(joint_idx_map_kdl.count(name)==0){
             LOG_ERROR_S  << "recursiveCOM: KDL tree contains joint " << name << " but this joint does not exist in joint idx map" << std::endl;
