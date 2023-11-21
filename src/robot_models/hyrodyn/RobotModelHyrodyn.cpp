@@ -33,6 +33,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
         return false;
     }
     base_frame = robot_urdf->getRoot()->name;
+    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
 
     // Add floating base
     has_floating_base = cfg.floating_base;

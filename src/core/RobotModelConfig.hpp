@@ -67,6 +67,8 @@ public:
     bool floating_base;
     /** Optional: Link names that are possibly in contact with the environment. These have to be valid link names in the robot model.*/
     ActiveContacts contact_points;
+
+    std::vector<std::string> joint_blacklist;
 };
 
 }
