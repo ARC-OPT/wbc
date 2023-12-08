@@ -46,9 +46,9 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     // Read Joint Limits
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
 
-    TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
+    auto *doc = urdf::exportURDF(robot_urdf);
     std::string robot_urdf_file = "/tmp/floating_base_model.urdf";
-    doc->SaveFile(robot_urdf_file);
+    doc->SaveFile(robot_urdf_file.c_str());
     try{
         hyrodyn.load_robotmodel(robot_urdf_file, cfg.submechanism_file);
     }

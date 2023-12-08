@@ -49,9 +49,9 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
         if(l.second->inertial)
             l.second->inertial->origin.rotation.setFromRPY(0,0,0);
     }
-    TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
+    auto *doc = urdf::exportURDF(robot_urdf);
     std::string robot_urdf_file = "/tmp/robot.urdf";
-    doc->SaveFile(robot_urdf_file);
+    doc->SaveFile(robot_urdf_file.c_str());
 
     if(!Addons::URDFReadFromFile(robot_urdf_file.c_str(), rbdl_model.get(), cfg.floating_base)){
         LOG_ERROR_S << "Unable to parse urdf from file " << robot_urdf_file << std::endl;

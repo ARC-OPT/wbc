@@ -3,6 +3,7 @@
 #include <base-logging/Logging.hpp>
 #include <urdf_model/link.h>
 #include <stack>
+#include <iostream>
 
 namespace wbc {
 
@@ -123,8 +124,8 @@ std::vector<std::string> URDFTools::addFloatingBaseToURDF(urdf::ModelInterfaceSh
 
     std::vector<std::string> floating_base_names = {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
                                                     "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"};
-    TiXmlDocument *doc = urdf::exportURDF(robot_urdf);
-    TiXmlPrinter printer;
+    auto *doc = urdf::exportURDF(robot_urdf);
+    tinyxml2::XMLPrinter printer;
     doc->Accept(&printer);
     std::string robot_xml_string = printer.CStr();
     robot_xml_string.erase(robot_xml_string.find("</robot>"), std::string("</robot>").length());

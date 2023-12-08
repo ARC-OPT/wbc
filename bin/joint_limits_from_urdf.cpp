@@ -2,6 +2,7 @@
 #include <tools/URDFTools.hpp>
 #include <base/JointLimits.hpp>
 #include <boost/program_options.hpp>
+#include <iostream>
 
 using namespace wbc;
 using namespace std;
