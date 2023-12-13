@@ -1,6 +1,7 @@
 #include "RobotModelHyrodyn.hpp"
 #include <base-logging/Logging.hpp>
 #include <urdf_parser/urdf_parser.h>
+#include <tinyxml2.h>
 #include <tools/URDFTools.hpp>
 
 namespace wbc{
