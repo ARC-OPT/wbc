@@ -2,6 +2,7 @@
 #include <base/JointLimits.hpp>
 #include <base-logging/Logging.hpp>
 #include <urdf_model/link.h>
+#include <tinyxml2.h>
 #include <stack>
 #include <iostream>
 
