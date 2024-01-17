@@ -83,7 +83,7 @@ cmake ..
 make -j8 && sudo make install && cd ../.. 
 
 # proxQP
-git clone --recurse-submodules https://github.com/qSimple-Robotics/proxsuite.git proxqp
+git clone --recurse-submodules https://github.com/Simple-Robotics/proxsuite.git proxqp
 cd proxqp
 mkdir build && cd build
 cmake .. -DBUILD_TESTING=OFF -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_WITH_VECTORIZATION_SUPPORT=OFF
