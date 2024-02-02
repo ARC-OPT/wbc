@@ -75,4 +75,3 @@ if [ -d "qpswift" ]; then
   ./test_qpswift_solver
   cd ../../..
 fi
-
