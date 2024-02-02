@@ -89,11 +89,8 @@ mkdir build && cd build
 cmake .. -DBUILD_TESTING=OFF -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_WITH_VECTORIZATION_SUPPORT=OFF
 make -j8 && sudo make install && cd ../..
 
-# For Python bindings
-sudo apt-get -y install python3-dev python3-numpy python3-nose libboost-python-dev libboost-numpy-dev
-
 # WBC
 mkdir wbc/build && cd wbc/build
-cmake .. -DUSE_PYTHON=1 -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_PINOCCHIO=1 -DUSE_QPSWIFT=1 -DUSE_PROXQP=1
+cmake .. -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_PINOCCHIO=1 -DUSE_QPSWIFT=1 -DUSE_PROXQP=1
 make -j8 && sudo make install && cd ../..
 sudo ldconfig
