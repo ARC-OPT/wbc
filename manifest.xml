@@ -25,9 +25,7 @@
 
   <classifiers>
     <classifier>c++</classifier>
-    <classifier>rock</classifier>
     <classifier>ubuntu</classifier>
-    <classifier>python</classifier>
   </classifiers>
 
   <depend package="base/types" />

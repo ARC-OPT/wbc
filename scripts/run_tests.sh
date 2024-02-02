@@ -76,10 +76,3 @@ if [ -d "qpswift" ]; then
   cd ../../..
 fi
 
-# Python bindings
-if [ -d "bindings" ]; then
-  echo "Testing Python bindings ..."
-  cd ../bindings/python/test
-  nosetests3
-fi
-

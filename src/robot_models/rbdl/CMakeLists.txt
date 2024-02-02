@@ -17,6 +17,8 @@ target_link_libraries(${TARGET_NAME} PUBLIC
                       PkgConfig::rbdl
                       PkgConfig::rbdl-urdfreader)
 
+target_include_directories(${TARGET_NAME} PUBLIC ../../core)
+
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
        SOVERSION ${API_VERSION})
