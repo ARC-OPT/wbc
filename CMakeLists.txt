@@ -7,11 +7,19 @@ set(PROJECT_VERSION 0.2)
 set(API_VERSION ${PROJECT_VERSION})
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
+
+option(ROBOT_MODEL_PINOCCHIO "Build the Pinocchio-based robot model" OFF)
+option(ROBOT_MODEL_KDL "Build the KDL-based robot model" OFF)
+option(ROBOT_MODEL_HYRODYN "Build the HyRoDyn-based robot model" OFF)
+option(SOLVER_PROXQP "Build the ProxQP-based solver" OFF)
+option(SOLVER_EIQUADPROG "Build the Eiquadprog-based solver" OFF)
+option(SOLVER_QPSWIFT "Build the QPSwift-based solver" OFF)
+
 add_subdirectory(src)
-add_subdirectory(test)
 add_subdirectory(tutorials)
 
 find_package(Doxygen)
+
 if(DOXYGEN_FOUND)
     set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
     set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)

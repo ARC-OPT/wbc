@@ -1,77 +1,99 @@
 # Controllers
 echo "Testing controllers ..."
-cd build/test/controllers
+cd build/src
+cd controllers/test
 ./test_pid_controllers
 ./test_pos_pd_controllers
 ./test_pot_field_controllers
+cd ../..
 
 # Core
 echo "Testing core library ..."
-cd ../core
+cd core/test
 ./test_core
+cd ../..
 
 # Robot Models
 echo "Testing robot models ..."
 echo "Testing RobotModelRBDL ..."
-cd ../robot_models/rbdl
+cd robot_models/rbdl/test
 ./test_robot_model_rbdl
-cd ..
+cd ../..
 if [ -d "kdl" ]; then
   echo "Testing RobotModelKDL ..."
-  cd kdl
+  cd kdl/test
   ./test_robot_model_kdl
-  cd ..
+  cd ../..
 fi
 if [ -d "pinocchio" ]; then
   echo "Testing RobotModelPinocchio ..."
-  cd ../robot_models/pinocchio
+  cd pinocchio/test
   ./test_robot_model_pinocchio
-  cd ..
+  cd ../..
 fi
 if [ -d "hyrodyn" ]; then
   echo "Testing RobotModelHyrodyn ..."
-  cd hyrodyn
+  cd hyrodyn/test
   ./test_robot_model_hyrodyn
-  cd ..
+  cd ../..
 fi
+cd ..
 
 # Scenes
 echo "Testing scenes ..."
-cd ../scenes
+
 echo "Testing VelocityScene ..."
+cd scenes/velocity/test
 ./test_velocity_scene
+cd ../..
+
 echo "Testing VelocitySceneQuadraticCost ..."
+cd velocity_qp/test
 ./test_velocity_scene_quadratic_cost
+cd ../..
+
+
 echo "Testing AccelerationScene ..."
+cd acceleration/test
 ./test_acceleration_scene
+cd ../..
+
 echo "Testing AccelerationSceneTSID ..."
+cd acceleration_tsid/test
 ./test_acceleration_scene_tsid
+cd ../..
+
 echo "Testing AccelerationSceneReducedTSID ..."
+cd acceleration_reduced_tsid/test
 ./test_acceleration_scene_reduced_tsid
+cd ../../..
 
 # Solvers
 echo "Testing hls ..."
-cd ../solvers/hls 
+cd solvers/hls/test
 ./test_hls_solver  
+cd ../..
+
 echo "Testing QPOasesSolver ..."
-cd ../qpoases
+cd qpoases/test
 ./test_qpoases_solver
-cd ..
+cd ../..
 if [ -d "eiquadprog" ]; then
   echo "Testing EiquadprogSolver ..."
-  cd eiquadprog 
+  cd eiquadprog/test
   ./test_eiquadprog_solver
-  cd ..
+  cd ../..
 fi
 if [ -d "proxqp" ]; then
   echo "Testing ProxQPSolver ..."
-  cd proxqp
+  cd proxqp/test
   ./test_proxqp_solver
-  cd ..
+  cd ../..
 fi
 if [ -d "qpswift" ]; then
   echo "Testing QPSwiftSolver ..."
-  cd qpswift   
+  cd qpswift/test
   ./test_qpswift_solver
-  cd ../../..
+  cd ../..
 fi
+cd ..

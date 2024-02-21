@@ -44,6 +44,6 @@ cmake .. && make -j8 && sudo make install && cd ../..
 
 # WBC
 mkdir wbc/build && cd wbc/build
-cmake ..
+cmake .. -DCMAKE_BUILD_TYPE=RELEASE
 make -j8 && sudo make install
 sudo ldconfig
