@@ -10,7 +10,7 @@ list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
 add_subdirectory(src)
 add_subdirectory(test)
 add_subdirectory(tutorials)
-add_subdirectory(bin)
+
 find_package(Doxygen)
 if(DOXYGEN_FOUND)
     set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
