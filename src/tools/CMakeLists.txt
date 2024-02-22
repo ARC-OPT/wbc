@@ -6,7 +6,7 @@ file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/types "*.cpp")
 pkg_search_module(base-types REQUIRED IMPORTED_TARGET base-types)
 pkg_search_module(base-logging REQUIRED IMPORTED_TARGET base-logging)
 pkg_search_module(urdfdom REQUIRED IMPORTED_TARGET urdfdom)
-pkg_search_module(tinyxml REQUIRED IMPORTED_TARGET tinyxml)
+pkg_search_module(tinyxml REQUIRED IMPORTED_TARGET tinyxml2)
 pkg_search_module(eigen3 REQUIRED IMPORTED_TARGET eigen3)
 
 list(APPEND PKGCONFIG_REQUIRES base-types)
