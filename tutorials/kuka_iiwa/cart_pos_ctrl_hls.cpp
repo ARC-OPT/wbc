@@ -1,5 +1,5 @@
 #include <core/RobotModelConfig.hpp>
-#include <robot_models/rbdl/RobotModelRBDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <scenes/velocity/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
@@ -37,7 +37,7 @@ using namespace wbc;
 int main(){
 
     // Create a robot model. Each robot model is derived from a common RobotModel class, as it will be passed to the WBC scene later on.
-    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure the robot model by passing the RobotModelConfig. The simplest configuration can by obtained by only setting
     // the path to the URDF file. In doing so, WBC will assume:

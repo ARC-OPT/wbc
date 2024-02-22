@@ -23,7 +23,7 @@ int main(){
     double dt = 0.001;
 
     // Create Hyrodyn based robot model.  In this case, we use the Hyrodyn-based model, which allows handling of parallel mechanisms.
-    RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure the full robot model, containing all linear actuators and parallel mechanisms.
     RobotModelConfig config;

@@ -3,14 +3,14 @@ target_link_libraries(rh5_single_leg
                       wbc-solvers-qpoases
                       wbc-controllers
                       wbc-scenes-velocity_qp
-                      wbc-robot_models-rbdl)
+                      wbc-robot_models-pinocchio)
 
 add_executable(rh5_legs_floating_base rh5_legs_floating_base.cpp)
 target_link_libraries(rh5_legs_floating_base
                       wbc-solvers-qpoases
                       wbc-scenes-velocity_qp
                       wbc-controllers
-                      wbc-robot_models-rbdl)
+                      wbc-robot_models-pinocchio)
 
 if(ROBOT_MODEL_HYRODYN)
    add_executable(rh5_single_leg_hybrid rh5_single_leg_hybrid.cpp)

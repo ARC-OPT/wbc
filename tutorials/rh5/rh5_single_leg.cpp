@@ -1,5 +1,5 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <robot_models/rbdl/RobotModelRBDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>
@@ -39,7 +39,7 @@ int main(){
     double dt = 0.001;
 
     // Create Hyrodyn based robot model.  In this case, we use the Hyrodyn-based model, which allows handling of parallel mechanisms.
-    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure the model. We pass a serial model description to RobotModelHyrodyn, which means that the solution will be identical
     // to the one obtained by  RobotModelPinocchio. RobotModelHyrodyn assumes that you specify correctly all joints (actuated and unactuated).

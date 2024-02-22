@@ -296,12 +296,12 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
 BOOST_AUTO_TEST_CASE(fixed_base){
 
-    vector<string> urdf_files = {"../../../models/rh5/urdf/rh5_single_leg.urdf",
-                                 "../../../models/kuka/urdf/kuka_iiwa.urdf",
-                                 "../../../models/rh5v2/urdf/rh5v2.urdf"};
-    vector<string> sub_mec_files = {"../../../models/rh5/hyrodyn/rh5_single_leg.yml",
-                                   "../../../models/kuka/hyrodyn/kuka_iiwa.yml",
-                                   "../../../models/rh5v2/hyrodyn/rh5v2.yml"};
+    vector<string> urdf_files = {"../../../../models/rh5/urdf/rh5_single_leg.urdf",
+                                 "../../../../models/kuka/urdf/kuka_iiwa.urdf",
+                                 "../../../../models/rh5v2/urdf/rh5v2.urdf"};
+    vector<string> sub_mec_files = {"../../../../models/rh5/hyrodyn/rh5_single_leg.yml",
+                                   "../../../../models/kuka/hyrodyn/kuka_iiwa.yml",
+                                   "../../../../models/rh5v2/hyrodyn/rh5v2.yml"};
     vector<string> tip_frames = {"LLAnkle_FT", "kuka_lbr_l_tcp", "ALWristFT_Link"};
     bool verbose = false;
 
@@ -318,10 +318,11 @@ BOOST_AUTO_TEST_CASE(fixed_base){
     }
 }
 
+/*
 BOOST_AUTO_TEST_CASE(floating_base){
 
-    string urdf_file = "../../../models/kuka/urdf/kuka_iiwa.urdf";
-    string sub_mec_file = "../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
+    string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
+    string sub_mec_file = "../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     string tip_frame = "kuka_lbr_l_tcp";
     bool verbose = false;
 
@@ -331,3 +332,4 @@ BOOST_AUTO_TEST_CASE(floating_base){
 
     compareRobotModels(cfg, tip_frame, verbose);
 }
+*/

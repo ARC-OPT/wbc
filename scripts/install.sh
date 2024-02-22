@@ -23,12 +23,11 @@ sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev
 # Clone WBC repo here to have the patches
 git clone https://github.com/ARC-OPT/wbc.git
 
-# RBDL
-git clone --branch v3.2.1 --recurse-submodules https://github.com/rbdl/rbdl.git
-cd rbdl
-git apply ../wbc/patches/rbdl.patch --ignore-whitespace
+# Pinocchio
+git clone --branch v2.6.8 --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
+cd pinocchio
 mkdir build && cd build
-cmake .. -DRBDL_BUILD_ADDON_URDFREADER=ON
+cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=RELEASE
 make -j8 && sudo make install && cd ../..
 
 # If not done yet, setup a ssh key pair using the command `ssh-keygen` and add the 

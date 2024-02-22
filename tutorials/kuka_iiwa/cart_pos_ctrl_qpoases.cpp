@@ -1,4 +1,4 @@
-#include <robot_models/rbdl/RobotModelRBDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
@@ -39,7 +39,7 @@ int main(){
     double dt = 0.01;
 
     // Create a robot model. Each robot model is derived from a common RobotModel class, as it will be passed to the WBC scene later on.
-    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure the robot model by passing the RobotModelConfig. The simplest configuration can by obtained by only setting
     // the path to the URDF file. In doing so, WBC will assume:
@@ -110,6 +110,7 @@ int main(){
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
 
         // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model
+        auto s = std::chrono::high_resolution_clock::now();
         robot_model->update(joint_state);
 
         // Update controller. The feedback is the pose of the tip link described in ref_frame link
@@ -125,7 +126,6 @@ int main(){
 
         // Solve the QP. The output is the joint velocity that achieves the task space velocity demanded by the controller, i.e.,
         // this joint velocity will drive the end effector to the reference x_r
-        auto s = std::chrono::high_resolution_clock::now();
         solver_output = scene.solve(hqp);
         auto e = std::chrono::high_resolution_clock::now();
         double solve_time = std::chrono::duration_cast<std::chrono::microseconds>(e-s).count();
