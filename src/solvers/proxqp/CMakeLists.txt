@@ -5,7 +5,7 @@ pkg_search_module(proxsuite REQUIRED IMPORTED_TARGET proxsuite)
 set(SOURCES ProxQPSolver.cpp)
 set(HEADERS ProxQPSolver.hpp)
 
-list(APPEND PKGCONFIG_REQUIRES proxqp)
+list(APPEND PKGCONFIG_REQUIRES proxsuite)
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
