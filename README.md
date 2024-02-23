@@ -23,7 +23,12 @@ See the [manifest.xml](https://github.com/ARC-OPT/wbc/blob/master/manifest.xml) 
 
 ## Testing
 
-Please check the unit tests [here](https://github.com/ARC-OPT/wbc/tree/master/test), as well the [tutorials](https://github.com/ARC-OPT/wbc/tree/master/tutorials)
+To execute unit tests for the WBC library, run
+```
+sh scripts/run_tests.sh
+```
+from the library's root folder. This will execute unit tests for all installed components, e.g. solvers, robot models, etc...
+You can also check the [tutorials](https://github.com/ARC-OPT/wbc/tree/master/tutorials) to for some comprehensive examples.
 
 ## Contributing
 
