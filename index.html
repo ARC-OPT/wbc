@@ -54,47 +54,54 @@ $(function() {
 <h1><a class="anchor" id="autotoc_md0"></a>
 WBC - Whole-Body Control</h1>
 <p><a href="https://arc-opt.github.io/wbc/index.html">Code API</a> | <a href="https://arc-opt.github.io/Documentation/">Full Documentation</a></p>
-<p>WBC is C++ library for optimization-based control of redundant robots. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks.</p>
+<p>WBC is C++ library for optimization-based control of redundant robots target for software developers in robotics. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. The idea of WBC is to phrase the control problem in terms of costs and constraints of an optimization problem (typically a quadratic program or QP) and design a set of feedback controllers around it. The QP minimizes the control errors, trading off the different objectives and produces a joint space command on velocity, acceleration or torque level, which is applied to the robot actuators. WBC is meant for</p><ul>
+<li>Controlling redundant robots, particularly floating base systems like humanoids or quadrupeds</li>
+<li>Controlling multiple tasks simultaneously</li>
+<li>reactive robot control, i.e. it does not plan ahead the next robot control actions</li>
+</ul>
 <p>WBC was initiated and is currently developed at the <a href="http://robotik.dfki-bremen.de/en/startpage.html">Robotics Innovation Center</a> of the <a href="http://www.dfki.de">German Research Center for Artificial Intelligence (DFKI)</a> in Bremen. It is part of the ARC-OPT (Adaptive Robot Control using Optimization) framework, which facilitates learning and optimizing whole-body controllers from data obtained, e.g., in user demonstrations. Also see the <a href="https://robotik.dfki-bremen.de/en/research/softwaretools/arc-opt/">ARC-OPT website</a> of the Robotics Innovation Center.</p>
 <p><img src="https://github.com/ARC-OPT/wbc/blob/master/doc/images/DFKI_Logo_e_schrift.jpg" alt="" width="400" class="inline"/></p>
 <h2><a class="anchor" id="autotoc_md1"></a>
+How does it compare to other WBC libraries?</h2>
+<p>There are multiple other libraries for Whole-Body Control, e.g., <a href="https://github.com/stack-of-tasks/tsid">TSID</a> or ControlIt! (<a href="https://github.com/liangfok/controlit">https://github.com/liangfok/controlit</a>). Compared to these, the ARC-OPT Whole-Body Control library provides various WBC implementations on velocity, acceleration, and torque level. It is modular as it separates modeling, QP problem specification, and solving, allowing to evaluate and benchmark different robot models, QP solvers, and various WBC implementations. Furthermore, it implements a WBC approach for robots with closed-loop structures as described in this <a href="https://arc-opt.github.io/Documentation/publications/icra_2022/index.html">paper</a> (will be made open-source soon).</p>
+<h2><a class="anchor" id="autotoc_md2"></a>
 Requirements / Dependencies</h2>
 <p>Currently supported OS: Ubuntu20.04, Ubuntu22.04</p>
 <p>See the <a href="https://github.com/ARC-OPT/wbc/blob/master/manifest.xml">manifest.xml</a> for required and optional dependencies.</p>
-<h2><a class="anchor" id="autotoc_md2"></a>
+<h2><a class="anchor" id="autotoc_md3"></a>
 Installation</h2>
-<h3><a class="anchor" id="autotoc_md3"></a>
+<h3><a class="anchor" id="autotoc_md4"></a>
 Basic Install</h3>
 <p>This will install the WBC core library with a single robot model (pinocchio) and QP solver (qpoases) respectively. Download this <a href="https://github.com/ARC-OPT/wbc/blob/master/scripts/install.sh?raw=1">install script</a>, store it in a folder of your choice (e.g., arc-opt) and execute it:</p>
 <div class="fragment"><div class="line">mkdir ~/arc-opt &amp;&amp; cd ~/arc-opt</div>
 <div class="line">wget https://raw.githubusercontent.com/ARC-OPT/wbc/master/scripts/install.sh</div>
 <div class="line">sh install.sh</div>
-</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md4"></a>
+</div><!-- fragment --> <h3><a class="anchor" id="autotoc_md5"></a>
 Full Install</h3>
 <p>This will install the WBC core library plus multiple robot models and solvers. Download this <a href="https://github.com/ARC-OPT/wbc/blob/master/scripts/full_install.sh?raw=1">install script</a>, store it in a folder of your choice (e.g., arc-opt) and execute it:</p>
 <div class="fragment"><div class="line">mkdir ~/arc-opt &amp;&amp; cd ~/arc-opt</div>
 <div class="line">wget https://raw.githubusercontent.com/ARC-OPT/wbc/master/scripts/full_install.sh</div>
 <div class="line">sh full_install.sh</div>
-</div><!-- fragment --><h2><a class="anchor" id="autotoc_md5"></a>
+</div><!-- fragment --><h2><a class="anchor" id="autotoc_md6"></a>
 Testing</h2>
 <p>To execute unit tests for the WBC library, run </p><div class="fragment"><div class="line">sh scripts/run_tests.sh</div>
 </div><!-- fragment --><p> from the library's root folder. This will execute unit tests for all installed components, e.g. solvers, robot models, etc...</p>
-<h2><a class="anchor" id="autotoc_md6"></a>
+<h2><a class="anchor" id="autotoc_md7"></a>
 Examples</h2>
 <p>You can also check the <a href="https://github.com/ARC-OPT/wbc/tree/master/tutorials">tutorials</a> to for some comprehensive examples.</p>
-<h2><a class="anchor" id="autotoc_md7"></a>
+<h2><a class="anchor" id="autotoc_md8"></a>
 Contributing</h2>
 <p>Please use the <a href="https://github.com/ARC-OPT/wbc/issues">issue tracker</a> to submit bug reports and feature requests. Please use merge requests as described <a href="https://github.com/ARC-OPT/wbc/blob/master/CONTRIBUTING.md">here</a> to add/adapt functionality.</p>
-<h2><a class="anchor" id="autotoc_md8"></a>
+<h2><a class="anchor" id="autotoc_md9"></a>
 License</h2>
 <p>WBC is distributed under the <a href="https://opensource.org/licenses/BSD-3-Clause">3-clause BSD license</a>.</p>
-<h2><a class="anchor" id="autotoc_md9"></a>
+<h2><a class="anchor" id="autotoc_md10"></a>
 Acknowledge WBC</h2>
 <p>If you use WBC within your scientific work, please cite <a href="https://arc-opt.github.io/Documentation/publications/icra_2022/index.html">this paper</a>.</p>
-<h2><a class="anchor" id="autotoc_md10"></a>
+<h2><a class="anchor" id="autotoc_md11"></a>
 Funding</h2>
 <p>WBC has been developed in the research projects <a href="https://robotik.dfki-bremen.de/en/research/projects/transfit/">TransFit</a> (Grant number 50RA1701) and <a href="https://robotik.dfki-bremen.de/en/research/projects/besman.html">BesMan</a> (Grant number 50RA1216) funded by the German Aerospace Center (DLR) with funds from the German Federal Ministry for Economic Affairs and Climate Action (BMWK). It is further developed in the <a href="https://robotik.dfki-bremen.de/en/research/projects/m-rock/">M-Rock</a> (Grant number 01IW21002) and <a href="https://robotik.dfki-bremen.de/en/research/projects/veryhuman/">VeryHuman</a> (Grant number 01IW20004) projects funded by the German Aerospace Center (DLR) with federal funds from the German Federal Ministry of Education and Research (BMBF).</p>
-<h2><a class="anchor" id="autotoc_md11"></a>
+<h2><a class="anchor" id="autotoc_md12"></a>
 Maintainer / Authors / Contributers</h2>
 <p>Dennis Mronga, <a href="#" onclick="location.href='mai'+'lto:'+'den'+'ni'+'s.m'+'ro'+'nga'+'@d'+'fki'+'.d'+'e'; return false;">denni<span class="obfuscator">.nosp@m.</span>s.mr<span class="obfuscator">.nosp@m.</span>onga@<span class="obfuscator">.nosp@m.</span>dfki<span class="obfuscator">.nosp@m.</span>.de</a></p>
 <p>Copyright 2017, DFKI GmbH / Robotics Innovation Center </p>
