@@ -19,7 +19,24 @@ See the [manifest.xml](https://github.com/ARC-OPT/wbc/blob/master/manifest.xml) 
 
 ## Installation
 
-[Installation instructions](https://arc-opt.github.io/Documentation/installation/installation_no_rock.html) 
+### Basic Install
+
+This will install the WBC core library with a single robot model (pinocchio) and QP solver (qpoases) respectively. Download this [install script](https://github.com/ARC-OPT/wbc/blob/master/scripts/install.sh?raw=1), store it in a folder of your choice (e.g., arc-opt) and execute it:
+
+```
+mkdir ~/arc-opt && cd ~/arc-opt
+wget https://raw.githubusercontent.com/ARC-OPT/wbc/master/scripts/install.sh
+sh install.sh
+```
+### Full Install
+
+This will install the WBC core library plus multiple robot models and solvers. Download this [install script](https://github.com/ARC-OPT/wbc/blob/master/scripts/full_install.sh?raw=1), store it in a folder of your choice (e.g., arc-opt) and execute it:
+
+```
+mkdir ~/arc-opt && cd ~/arc-opt
+wget https://raw.githubusercontent.com/ARC-OPT/wbc/master/scripts/full_install.sh
+sh full_install.sh
+```
 
 ## Testing
 
