@@ -3,7 +3,7 @@
 
 #include <base/samples/RigidBodyStateSE3.hpp>
 #include <base/samples/Joints.hpp>
-#include <wbc/core/RobotModel.hpp>
+#include "../../core/RobotModel.hpp"
 
 namespace wbc {
 void printRbs(base::samples::RigidBodyStateSE3 rbs);

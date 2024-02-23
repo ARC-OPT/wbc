@@ -3,11 +3,11 @@
 #include <boost/test/unit_test.hpp>
 #include "../RobotModelKDL.hpp"
 #include "../KinematicChainKDL.hpp"
-#include <wbc/core/RobotModelConfig.hpp>
+#include "../../../core/RobotModelConfig.hpp"
 #include <kdl/chainfksolverpos_recursive.hpp>
 #include <kdl/chainfksolvervel_recursive.hpp>
 #include <kdl/chainjnttojacsolver.hpp>
-#include <wbc/tools/URDFTools.hpp>
+#include "../../../tools/URDFTools.hpp"
 #include <kdl_parser/kdl_parser.hpp>
 #include "../../test/test_robot_model.hpp"
 

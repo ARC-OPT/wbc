@@ -1,7 +1,7 @@
 #ifndef ROBOTMODELKDL_HPP
 #define ROBOTMODELKDL_HPP
 
-#include "core/RobotModel.hpp"
+#include "../../core/RobotModel.hpp"
 
 #include <kdl/tree.hpp>
 #include <kdl/jacobian.hpp>

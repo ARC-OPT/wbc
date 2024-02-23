@@ -3,7 +3,7 @@
 #include <boost/test/unit_test.hpp>
 #include <iostream>
 #include <sys/time.h>
-#include <wbc/core/QuadraticProgram.hpp>
+#include "../../../core/QuadraticProgram.hpp"
 #include "../EiquadprogSolver.hpp"
 
 using namespace wbc;
