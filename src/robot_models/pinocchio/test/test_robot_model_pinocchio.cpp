@@ -2,8 +2,8 @@
 #define BOOST_TEST_MAIN
 #include <boost/test/unit_test.hpp>
 #include "../RobotModelPinocchio.hpp"
-#include <wbc/core/RobotModelConfig.hpp>
-#include <wbc/tools/URDFTools.hpp>
+#include "../../../core/RobotModelConfig.hpp"
+#include "../../../tools/URDFTools.hpp"
 #include "../../test/test_robot_model.hpp"
 
 using namespace std;

@@ -1,5 +1,5 @@
 #include "QPSwiftSolver.hpp"
-#include <wbc/core/QuadraticProgram.hpp>
+#include "../../core/QuadraticProgram.hpp"
 #include <base-logging/Logging.hpp>
 
 #include <iostream>
