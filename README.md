@@ -18,7 +18,7 @@ WBC was initiated and is currently developed at the [Robotics Innovation Center]
 
 ## How does it compare to other WBC libraries?
 
-There are multiple other libraries for Whole-Body Control, e.g., [TSID](https://github.com/stack-of-tasks/tsid) or ControlIt! (https://github.com/liangfok/controlit). Compared to these, the ARC-OPT Whole-Body Control library provides various WBC implementations on velocity, acceleration, and torque level. It is modular as it separates modeling, QP problem specification, and solving, allowing to evaluate and benchmark different robot models, QP solvers, and various WBC implementations. Furthermore, it implements a WBC approach for robots with closed-loop structures as described in this [paper](https://arc-opt.github.io/Documentation/publications/icra_2022/index.html) (will be made open-source soon).
+There are multiple other libraries for Whole-Body Control, e.g., [TSID](https://github.com/stack-of-tasks/tsid) or [ControlIt!](https://github.com/liangfok/controlit). Compared to these, the ARC-OPT Whole-Body Control library provides various WBC implementations on velocity, acceleration, and torque level. It is modular as it separates modeling, QP problem specification, and solving, allowing to evaluate and benchmark different robot models, QP solvers, and various WBC implementations. Furthermore, it implements a WBC approach for robots with closed-loop structures as described in this [paper](https://arc-opt.github.io/Documentation/publications/icra_2022/index.html) (will be made open-source soon).
 
 ## Requirements / Dependencies
 
