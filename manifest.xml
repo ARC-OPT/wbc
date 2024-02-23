@@ -30,11 +30,11 @@
 
   <depend package="base/types" />
   <depend package="control/qpOASES" />
-  <depend package="control/rbdl" />
+  <depend package="control/pinocchio" />
   
   <depend package="control/kdl_parser" optional="1"/>
   <depend package="control/hyrodyn" optional="1"/>
-  <depend package="control/pinocchio" optional="1"/>  
+  <depend package="control/rbdl" optional="1"/>  
   <depend package="control/proxqp" optional="1"/>  
   <depend package="control/qpSWIFT" optional="1"/>
   <depend package="control/eiquadprog" optional="1"/>

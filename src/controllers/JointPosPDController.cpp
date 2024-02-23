@@ -1,6 +1,6 @@
 #include "JointPosPDController.hpp"
 
-namespace ctrl_lib{
+namespace wbc{
 
 JointPosPDController::JointPosPDController(const std::vector<std::string>& joint_names) :
     PosPDController(joint_names.size()),

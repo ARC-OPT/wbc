@@ -33,7 +33,7 @@ struct RobotModelConfig{
 public:
     RobotModelConfig(){
         floating_base = false;
-        type = "rbdl";
+        type = "pinocchio";
     }
     RobotModelConfig(const std::string& file_or_string,
                      const bool floating_base = false,
@@ -41,7 +41,7 @@ public:
                      const std::string& submechanism_file = "") :
         file_or_string(file_or_string),
         submechanism_file(submechanism_file),
-        type("rbdl"),
+        type("pinocchio"),
         floating_base(floating_base),
         contact_points(contact_points){
 
@@ -59,7 +59,7 @@ public:
     std::string file_or_string;
     /** Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms.*/
     std::string submechanism_file;
-    /** Model type. Must be the exact name of one of the registered robot model plugins. See src/robot_models for all available plugins. Default is rbdl*/
+    /** Model type. Must be the exact name of one of the registered robot model plugins. See src/robot_models for all available plugins. Default is pinocchio*/
     std::string type;
     /** Optional: Attach a virtual 6 DoF floating base to the model: Naming scheme of the joints is currently fixed:
       * floating_base_trans_x, floating_base_trans_y, floating_base_trans_z,

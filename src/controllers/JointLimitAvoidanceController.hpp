@@ -6,7 +6,7 @@
 #include <base/JointLimits.hpp>
 #include <base/commands/Joints.hpp>
 
-namespace ctrl_lib {
+namespace wbc {
 
 class JointLimitAvoidanceController : public PotentialFieldsController{
 protected:

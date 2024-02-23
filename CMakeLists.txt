@@ -1,4 +1,4 @@
-cmake_minimum_required (VERSION 2.8.11)
+cmake_minimum_required (VERSION 3.16.3)
 project(wbc)
 
 include(FindPkgConfig)
@@ -7,15 +7,19 @@ set(PROJECT_VERSION 0.2)
 set(API_VERSION ${PROJECT_VERSION})
 
 list(APPEND CMAKE_MODULE_PATH ${PROJECT_SOURCE_DIR}/cmake)
-if(USE_HYRODYN AND USE_PINOCCHIO AND USE_KDL AND USE_EIQUADPROG AND USE_QPSWIFT AND USE_PROXQP)
-    message("Detected Full install, adding benchmark folder")
-    add_subdirectory(benchmarks)
-endif()
+
+option(ROBOT_MODEL_RBDL "Also build the RBDL-based robot model, by default only pinocchio is built" OFF)
+option(ROBOT_MODEL_KDL "Also build the KDL-based robot model, by default only pinocchio is built" OFF)
+option(ROBOT_MODEL_HYRODYN "Also build the HyRoDyn-based robot model, by default only pinocchio is built" OFF)
+option(SOLVER_PROXQP "Build the ProxQP-based solver, by default only hls and qpoases are built" OFF)
+option(SOLVER_EIQUADPROG "Build the Eiquadprog-based solver, by default only hls and qpoases are built" OFF)
+option(SOLVER_QPSWIFT "Build the QPSwift-based solver, by default only hls and qpoases are built" OFF)
+
 add_subdirectory(src)
-add_subdirectory(test)
 add_subdirectory(tutorials)
-add_subdirectory(bin)
+
 find_package(Doxygen)
+
 if(DOXYGEN_FOUND)
     set(doxyfile_in ${CMAKE_CURRENT_SOURCE_DIR}/Doxyfile)
     set(doxyfile ${CMAKE_CURRENT_BINARY_DIR}/Doxyfile)

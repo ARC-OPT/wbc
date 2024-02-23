@@ -6,7 +6,6 @@
 
 using namespace std;
 using namespace wbc;
-using namespace ctrl_lib;
 
 /**
  * Acceleration-based example, same problem as in the rh5v2 example. The only difference is that here we use the hybrid robot model, i.e. we

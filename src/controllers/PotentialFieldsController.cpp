@@ -2,7 +2,7 @@
 #include <stdexcept>
 #include <limits>
 
-using namespace ctrl_lib;
+using namespace wbc;
 using namespace std;
 
 PotentialFieldsController::PotentialFieldsController(const uint _dimension)

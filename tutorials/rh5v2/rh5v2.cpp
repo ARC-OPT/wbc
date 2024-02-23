@@ -1,4 +1,4 @@
-#include <robot_models/rbdl/RobotModelRBDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
 #include <tools/JointIntegrator.hpp>
@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace wbc;
-using namespace ctrl_lib;
+using namespace wbc;
 
 /**
  * Acceleration-based example, Cartesian position control of the RH5v2 arms (fixed base, no contacts).
@@ -45,7 +45,7 @@ int main()
     double dt = 0.01;
 
     // Create robot model, use hyrodyn-based model in this case
-    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure robot model. We configure a serial model without parallel mechanisms.
     // Blacklist the finger joints, as they are not relevant and may slow down the solver

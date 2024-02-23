@@ -91,6 +91,7 @@ make -j8 && sudo make install && cd ../..
 
 # WBC
 mkdir wbc/build && cd wbc/build
-cmake .. -DUSE_EIQUADPROG=1 -DUSE_KDL=1 -DUSE_PINOCCHIO=1 -DUSE_QPSWIFT=1 -DUSE_PROXQP=1
-make -j8 && sudo make install && cd ../..
+cmake .. -DROBOT_MODEL_RBDL=ON -DROBOT_MODEL_KDL=ON -DSOLVER_PROXQP=ON -DSOLVER_EIQUADPROG=ON -DSOLVER_QPSWIFT=ON -DCMAKE_BUILD_TYPE=RELEASE
+make -j8 && sudo make install && cd ..
+
 sudo ldconfig

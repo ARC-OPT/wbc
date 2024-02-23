@@ -1,10 +1,10 @@
-#ifndef CTRL_LIB_JOINT_POS_PD_CONTROLLER_HPP
-#define CTRL_LIB_JOINT_POS_PD_CONTROLLER_HPP
+#ifndef WBC_JOINT_POS_PD_CONTROLLER_HPP
+#define WBC_JOINT_POS_PD_CONTROLLER_HPP
 
 #include "PosPDController.hpp"
 #include <base/commands/Joints.hpp>
 
-namespace ctrl_lib {
+namespace wbc {
 
 /**
  * @brief The JointPosPDController class implements a PD Controller with feed forward on the base-Joints type. The following control schemes are available:

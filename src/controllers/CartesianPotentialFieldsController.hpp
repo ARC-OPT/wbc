@@ -4,7 +4,7 @@
 #include "PotentialFieldsController.hpp"
 #include <base/samples/RigidBodyStateSE3.hpp>
 
-namespace ctrl_lib{
+namespace wbc{
 
 /**
  * @brief The PotentialFieldsController class implements a multi potential field controller in Cartesian space.

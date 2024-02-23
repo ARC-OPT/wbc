@@ -2,7 +2,7 @@
 #include "ControllerTools.hpp"
 #include <base/samples/RigidBodyStateSE3.hpp>
 
-namespace ctrl_lib{
+namespace wbc{
 
 CartesianPosPDController::CartesianPosPDController() :
     PosPDController(6){

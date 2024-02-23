@@ -1,15 +1,16 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <robot_models/rbdl/RobotModelRBDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <unistd.h>
+#include <chrono>
 
 using namespace wbc;
 using namespace std;
 using namespace qpOASES;
-using namespace ctrl_lib;
+using namespace wbc;
 
 /**
  * Velocity-based example, Cartesian position control on two 6 dof legs of the RH5 humanoid including floating base and two contact points (feet).
@@ -44,7 +45,7 @@ int main(){
     double dt = 0.001;
 
     // Create robot model
-    RobotModelPtr robot_model = std::make_shared<RobotModelRBDL>();
+    RobotModelPtr robot_model = std::make_shared<RobotModelPinocchio>();
 
     // Configure a serial robot model with floating base and two contact points: {"LLAnkle_FT", "LRAnkle_FT"}.
     // Note that the joint names have to contain {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
@@ -126,6 +127,9 @@ int main(){
     base::commands::Joints solver_output;
     while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
 
+
+        auto s = std::chrono::high_resolution_clock::now();
+
         // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
         // Note that you have to pass the floating base state as well now!
         robot_model->update(joint_state, floating_base_state);
@@ -151,6 +155,10 @@ int main(){
             joint_state[i].speed = solver_output[i].speed;
         }
 
+
+        auto e = std::chrono::high_resolution_clock::now();
+        double solve_time = std::chrono::duration_cast<std::chrono::microseconds>(e-s).count();
+
         // Update floating base pose, use an over-simplistic estimation
         base::Pose t1 = robot_model->rigidBodyState("world", "RH5_Root_Link").pose;
         base::Pose t2 = robot_model->rigidBodyState("world", "LLAnkle_FT").pose;
@@ -166,6 +174,7 @@ int main(){
         cout<<"Solver output: "; cout<<endl;
         cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
         cout<<"Velocity:      "; for(uint i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
+        cout<<"solve time:    " << solve_time << " (mu s)" << endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 
         usleep(loop_time * 1e6);

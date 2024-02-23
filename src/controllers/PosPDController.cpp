@@ -1,6 +1,6 @@
 #include "PosPDController.hpp"
 
-namespace ctrl_lib {
+namespace wbc {
 
 PosPDController::PosPDController(size_t dim_controller) :
     dim_controller(dim_controller){

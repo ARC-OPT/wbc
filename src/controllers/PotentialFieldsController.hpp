@@ -4,7 +4,7 @@
 #include "PotentialFieldInfo.hpp"
 #include <vector>
 
-namespace ctrl_lib{
+namespace wbc{
 
 /**
  * @brief Base class for potential field controllers

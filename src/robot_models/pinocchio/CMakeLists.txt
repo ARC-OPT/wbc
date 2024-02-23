@@ -27,3 +27,4 @@ CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}.pc.in ${CMAKE_CURRENT_
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.pc DESTINATION lib/pkgconfig)
 INSTALL(FILES ${HEADERS} DESTINATION include/wbc/robot_models/pinocchio)
 
+add_subdirectory(test)

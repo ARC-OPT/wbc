@@ -3,7 +3,7 @@
 
 #include <base/Eigen.hpp>
 
-namespace ctrl_lib {
+namespace wbc {
 
 /**
  * @brief The PosPDController class implements the following two control scemes

@@ -5,7 +5,7 @@
 #include <base/samples/Wrench.hpp>
 #include <base/samples/RigidBodyStateSE3.hpp>
 
-namespace ctrl_lib {
+namespace wbc {
 
 /**
  * @brief CartesianForcePIDController implements a PID Controller on a Wrench data type

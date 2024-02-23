@@ -1,5 +1,5 @@
 #include <core/RobotModelConfig.hpp>
-#include <robot_models/rbdl/RobotModelRBDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <scenes/velocity/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
@@ -37,7 +37,7 @@ using namespace wbc;
 int main(){
 
     // Create a robot model. Each robot model is derived from a common RobotModel class, as it will be passed to the WBC scene later on.
-    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure the robot model by passing the RobotModelConfig. The simplest configuration can by obtained by only setting
     // the path to the URDF file. In doing so, WBC will assume:
@@ -78,7 +78,7 @@ int main(){
     //    v_d = kd*v_r + kp(x_r - x).
     //
     // As we don't use feed forward velocity here, we can ignore the factor kd.
-    ctrl_lib::CartesianPosPDController controller;
+    CartesianPosPDController controller;
     controller.setPGain(base::Vector6d::Constant(1)); // Set kp
 
     // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed

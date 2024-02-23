@@ -1,4 +1,4 @@
-#include <robot_models/rbdl/RobotModelRBDL.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity/VelocityScene.hpp>
 #include <solvers/hls/HierarchicalLSSolver.hpp>
@@ -15,7 +15,7 @@ using namespace wbc;
  */
 int main(int argc, char** argv){
 
-    RobotModelPtr robot_model = make_shared<RobotModelRBDL>();
+    RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
 
     // Configure the robot model by passing the RobotModelConfig. The simplest configuration can by obtained by only setting
     // the path to the URDF file. In doing so, WBC will assume:
@@ -63,9 +63,9 @@ int main(int argc, char** argv){
         return -1;
 
     // Configure the controllers, one Cartesian position controller, one joint Position controller
-    ctrl_lib::CartesianPosPDController cart_controller;
+    CartesianPosPDController cart_controller;
     cart_controller.setPGain(base::Vector6d::Constant(1)); // Set kp
-    ctrl_lib::JointPosPDController jnt_controller(jnt_task.joint_names);
+    JointPosPDController jnt_controller(jnt_task.joint_names);
     base::VectorXd p_gain(1);
     p_gain.setConstant(1);
     jnt_controller.setPGain(p_gain);

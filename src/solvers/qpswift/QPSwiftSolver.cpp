@@ -1,5 +1,5 @@
 #include "QPSwiftSolver.hpp"
-#include <core/QuadraticProgram.hpp>
+#include <wbc/core/QuadraticProgram.hpp>
 #include <base-logging/Logging.hpp>
 
 #include <iostream>
@@ -23,14 +23,14 @@ QPSwiftSolver::~QPSwiftSolver(){
 }
 
 void QPSwiftSolver::toQpSwift(const wbc::QuadraticProgram &qp){
-    
-    G.setZero();    
+
+    G.setZero();
 
     P = qp.H;
     c = qp.g;
     A = qp.A;
     b = qp.b;
-    
+
     // create inequalities matrix (inequalities constraints + bounds)
     G.middleRows(0, qp.nin) = qp.C;
     G.middleRows(qp.nin, qp.nin) = -qp.C;
@@ -71,11 +71,11 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
 
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
 
-    if(!configured){        
+    if(!configured){
         // Count equality / inequality constraints
         n_dec = qp.nq;
         n_eq = qp.neq;
-        n_ineq = 2 * (qp.nin + qp.upper_x.size()); 
+        n_ineq = 2 * (qp.nin + qp.upper_x.size());
 
         A.resize(n_eq, n_dec);
         b.resize(n_eq);

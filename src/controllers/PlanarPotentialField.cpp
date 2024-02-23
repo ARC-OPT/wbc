@@ -1,6 +1,6 @@
 #include "PlanarPotentialField.hpp"
 
-using namespace ctrl_lib;
+using namespace wbc;
 
 PlanarPotentialField::PlanarPotentialField(const std::string &_name)
     : PotentialField(3, _name){
