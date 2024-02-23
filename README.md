@@ -7,7 +7,7 @@
 
 <img src="doc/images/wbc_principle.svg" alt="drawing" width="600"/>
 
-WBC is C++ library for optimization-based control of redundant robots. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. The idea of WBC is to describe a control problem as costs and constraints of an optimization problem (typically a quadratic program or QP) and design a set of feedback controllers around it. The QP minimizes the control errors, trading off the different objectives and produces a joint space command on velocity, acceleration or torque level, which is applied to the robot actuators. WBC is meant for
+WBC is C++ library for optimization-based control of redundant robots. The idea of WBC is to describe a control problem as costs and constraints of an optimization problem (typically a quadratic program or QP) and design a set of feedback controllers around it. The QP minimizes the control errors, trading off the different objectives and produces a joint space command on velocity, acceleration or torque level, which is applied to the robot actuators. WBC is meant for
 * Controlling redundant robots, particularly floating base systems like humanoids or quadrupeds
 * Controlling multiple tasks simultaneously
 * reactive robot control, i.e. it does not plan ahead the next robot control actions
