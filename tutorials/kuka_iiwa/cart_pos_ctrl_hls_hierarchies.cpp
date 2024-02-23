@@ -63,9 +63,9 @@ int main(int argc, char** argv){
         return -1;
 
     // Configure the controllers, one Cartesian position controller, one joint Position controller
-    ctrl_lib::CartesianPosPDController cart_controller;
+    CartesianPosPDController cart_controller;
     cart_controller.setPGain(base::Vector6d::Constant(1)); // Set kp
-    ctrl_lib::JointPosPDController jnt_controller(jnt_task.joint_names);
+    JointPosPDController jnt_controller(jnt_task.joint_names);
     base::VectorXd p_gain(1);
     p_gain.setConstant(1);
     jnt_controller.setPGain(p_gain);

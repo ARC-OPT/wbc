@@ -10,7 +10,7 @@
 #include <base/samples/RigidBodyStateSE3.hpp>
 
 using namespace std;
-using namespace ctrl_lib;
+using namespace wbc;
 
 
 BOOST_AUTO_TEST_CASE(configuration_test){

@@ -1,10 +1,10 @@
-#ifndef CTRL_LIB_CART_POS_PD_CONTROLLER_HPP
-#define CTRL_LIB_CART_POS_PD_CONTROLLER_HPP
+#ifndef WBC_CART_POS_PD_CONTROLLER_HPP
+#define WBC_CART_POS_PD_CONTROLLER_HPP
 
 #include "PosPDController.hpp"
 #include <base/samples/RigidBodyStateSE3.hpp>
 
-namespace ctrl_lib {
+namespace wbc {
 
 /**
  * @brief The CartesianPosPDController class implements a PD Controller with feed forward on the RigidBodyStateSE3 type. The following control schemes are available:

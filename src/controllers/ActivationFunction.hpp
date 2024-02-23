@@ -4,7 +4,7 @@
 #include <base/Eigen.hpp>
 #include <stdexcept>
 
-namespace ctrl_lib{
+namespace wbc{
 
 enum activationType{NO_ACTIVATION,              /** Activation values will always be one */
                     STEP_ACTIVATION,            /** If input > threshold, activation will be one, else 0 */

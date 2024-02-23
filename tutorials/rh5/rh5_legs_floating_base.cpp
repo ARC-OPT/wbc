@@ -10,7 +10,7 @@
 using namespace wbc;
 using namespace std;
 using namespace qpOASES;
-using namespace ctrl_lib;
+using namespace wbc;
 
 /**
  * Velocity-based example, Cartesian position control on two 6 dof legs of the RH5 humanoid including floating base and two contact points (feet).

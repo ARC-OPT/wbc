@@ -1,6 +1,6 @@
 #include "JointTorquePIDController.hpp"
 
-namespace ctrl_lib{
+namespace wbc{
 
 JointTorquePIDController::JointTorquePIDController(const std::vector<std::string>& joint_names) :
     PIDController(joint_names.size()),

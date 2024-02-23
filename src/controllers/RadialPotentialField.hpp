@@ -2,7 +2,7 @@
 
 #include "PotentialField.hpp"
 
-namespace ctrl_lib{
+namespace wbc{
 
 /**
  * @brief Radial Potential field. The computed gradient will be constant on volumnes with

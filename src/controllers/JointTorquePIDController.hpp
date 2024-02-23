@@ -4,7 +4,7 @@
 #include "PIDController.hpp"
 #include <base/commands/Joints.hpp>
 
-namespace ctrl_lib{
+namespace wbc{
 
 class JointTorquePIDController : public PIDController{
 protected:

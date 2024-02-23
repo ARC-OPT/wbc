@@ -4,7 +4,7 @@
 
 using namespace std;
 
-namespace ctrl_lib {
+namespace wbc {
 
 JointLimitAvoidanceController::JointLimitAvoidanceController(const base::JointLimits& limits,
                                                              const base::VectorXd &influence_distance) :

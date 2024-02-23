@@ -7,7 +7,6 @@
 using namespace wbc;
 using namespace std;
 using namespace qpOASES;
-using namespace ctrl_lib;
 
 /**
  * Velocity-based example, exact same problem as in the rh5_single_leg example. The only difference is that here we use the hybrid robot model, i.e. we

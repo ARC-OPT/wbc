@@ -1,6 +1,6 @@
 #include "RadialPotentialField.hpp"
 
-using namespace ctrl_lib;
+using namespace wbc;
 
 RadialPotentialField::RadialPotentialField(const uint _dimension, const std::string& _name)
     : PotentialField(_dimension, _name){

@@ -10,7 +10,7 @@
 #include "../JointLimitAvoidanceController.hpp"
 
 using namespace std;
-using namespace ctrl_lib;
+using namespace wbc;
 
 void runPotentialFieldController(std::string filename,
                                  CartesianPotentialFieldsController* ctrl,

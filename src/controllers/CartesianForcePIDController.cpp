@@ -1,6 +1,6 @@
 #include "CartesianForcePIDController.hpp"
 
-namespace ctrl_lib {
+namespace wbc {
 
 CartesianForcePIDController::CartesianForcePIDController() :
     PIDController(6){

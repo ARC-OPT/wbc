@@ -8,7 +8,7 @@
 using namespace wbc;
 using namespace std;
 using namespace qpOASES;
-using namespace ctrl_lib;
+using namespace wbc;
 
 /**
  * Velocity-based example, Cartesian position control on 6 dof leg of the RH5 humanoid (fixed base/fully actuated, serial robot model). In the example the following problem is solved:

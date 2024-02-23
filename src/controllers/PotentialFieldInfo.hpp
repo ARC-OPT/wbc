@@ -3,7 +3,7 @@
 
 #include "PotentialField.hpp"
 
-namespace ctrl_lib {
+namespace wbc {
 
 struct PotentialFieldInfo{
 

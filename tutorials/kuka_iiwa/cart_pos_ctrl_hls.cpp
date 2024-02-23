@@ -78,7 +78,7 @@ int main(){
     //    v_d = kd*v_r + kp(x_r - x).
     //
     // As we don't use feed forward velocity here, we can ignore the factor kd.
-    ctrl_lib::CartesianPosPDController controller;
+    CartesianPosPDController controller;
     controller.setPGain(base::Vector6d::Constant(1)); // Set kp
 
     // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed

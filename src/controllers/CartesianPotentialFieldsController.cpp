@@ -1,7 +1,7 @@
 #include "CartesianPotentialFieldsController.hpp"
 #include <stdexcept>
 
-using namespace ctrl_lib;
+using namespace wbc;
 
 CartesianPotentialFieldsController::CartesianPotentialFieldsController() :
     PotentialFieldsController(3){

@@ -4,7 +4,7 @@
 #include <base/Eigen.hpp>
 #include "PIDCtrlParams.hpp"
 
-namespace ctrl_lib{
+namespace wbc{
 
 /**
  * @brief The PIDController class implements an n-dimensional PID controller

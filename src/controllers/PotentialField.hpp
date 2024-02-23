@@ -5,7 +5,7 @@
 #include <stdexcept>
 #include <memory>
 
-namespace ctrl_lib{
+namespace wbc{
 
 /**
  *  @brief Base class for potential fields

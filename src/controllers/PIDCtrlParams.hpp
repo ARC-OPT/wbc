@@ -3,7 +3,7 @@
 
 #include <base/Eigen.hpp>
 
-namespace ctrl_lib{
+namespace wbc{
 
 class PIDCtrlParams{
 public:

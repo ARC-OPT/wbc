@@ -2,7 +2,7 @@
 
 using namespace std;
 
-namespace ctrl_lib{
+namespace wbc{
 
 PIDController::PIDController(uint dimension) :
     dimension(dimension){

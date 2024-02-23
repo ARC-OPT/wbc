@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace wbc;
-using namespace ctrl_lib;
+using namespace wbc;
 
 /**
  * Acceleration-based example, Cartesian position control of the RH5v2 arms (fixed base, no contacts).
