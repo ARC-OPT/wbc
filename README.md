@@ -45,6 +45,9 @@ To execute unit tests for the WBC library, run
 sh scripts/run_tests.sh
 ```
 from the library's root folder. This will execute unit tests for all installed components, e.g. solvers, robot models, etc...
+
+## Examples 
+
 You can also check the [tutorials](https://github.com/ARC-OPT/wbc/tree/master/tutorials) to for some comprehensive examples.
 
 ## Contributing
