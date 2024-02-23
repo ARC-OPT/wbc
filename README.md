@@ -5,11 +5,18 @@
 
 [Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/)
 
-WBC is C++ library for optimization-based control of redundant robots. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. 
+WBC is C++ library for optimization-based control of redundant robots target for software developers in robotics. It allows intuitive specification and execution of reactive robot control problems that involve multiple simultaneously running tasks. The idea of WBC is to phrase the control problem in terms of costs and constraints of an optimization problem (typically a quadratic program or QP) and design a set of feedback controllers around it. The QP minimizes the control errors, trading off the different objectives and produces a joint space command on velocity, acceleration or torque level, which is applied to the robot actuators. WBC is meant for
+* Controlling redundant robots, particularly floating base systems like humanoids or quadrupeds
+* Controlling multiple tasks simultaneously
+* reactive robot control, i.e. it does not plan ahead the next robot control actions
 
 WBC was initiated and is currently developed at the [Robotics Innovation Center](http://robotik.dfki-bremen.de/en/startpage.html) of the [German Research Center for Artificial Intelligence (DFKI)](http://www.dfki.de) in Bremen. It is part of the ARC-OPT (Adaptive Robot Control using Optimization) framework, which facilitates learning and optimizing whole-body controllers from data obtained, e.g., in user demonstrations. Also see the [ARC-OPT website](https://robotik.dfki-bremen.de/en/research/softwaretools/arc-opt/) of the Robotics Innovation Center.
 
 <img src="https://github.com/ARC-OPT/wbc/blob/master/doc/images/DFKI_Logo_e_schrift.jpg"  width="400" >
+
+## How does it compare to other WBC libraries?
+
+There are multiple other libraries for Whole-Body Control, e.g., [TSID](https://github.com/stack-of-tasks/tsid) or ControlIt! (https://github.com/liangfok/controlit). Compared to these, the ARC-OPT Whole-Body Control library provides various WBC implementations on velocity, acceleration, and torque level. It is modular as it separates modeling, QP problem specification, and solving, allowing to evaluate and benchmark different robot models, QP solvers, and various WBC implementations. Furthermore, it implements a WBC approach for robots with closed-loop structures as described in this [paper](https://arc-opt.github.io/Documentation/publications/icra_2022/index.html) (will be made open-source soon).
 
 ## Requirements / Dependencies
 
