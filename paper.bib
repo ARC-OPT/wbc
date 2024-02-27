@@ -1,1 +1,109 @@
+@INPROCEEDINGS{Sentis2006,
+  author={Sentis, L. and Khatib, O.},
+  booktitle={Proceedings 2006 IEEE International Conference on Robotics and Automation, 2006. ICRA 2006.}, 
+  title={A whole-body control framework for humanoids operating in human environments}, 
+  year={2006},
+  volume={},
+  number={},
+  pages={2641-2648},
+  keywords={Humans;Kinematics;Monitoring;Runtime;Force control;Humanoid robots;Jacobian matrices;Artificial intelligence;Null space;Collaboration},
+  doi={10.1109/ROBOT.2006.1642100}}
+
+@article{delprete2016,
+  TITLE = {{Implementing Torque Control with High-Ratio Gear Boxes and without Joint-Torque Sensors}},
+  AUTHOR = {del Prete, Andrea and Mansard, Nicolas and Ramos Ponce, Oscar Efrain and Stasse, Olivier and Nori, Francesco},
+  URL = {https://hal.science/hal-01136936},
+  JOURNAL = {{International Journal of Humanoid Robotics}},
+  HAL_LOCAL_REFERENCE = {Rapport LAAS n{\textdegree} 15104},
+  PUBLISHER = {{World Scientific Publishing}},
+  VOLUME = {13},
+  NUMBER = {1},
+  PAGES = {1550044},
+  YEAR = {2016},
+  MONTH = Mar,
+  KEYWORDS = {torque control ; force control ; inverse dynamics},
+  PDF = {https://hal.science/hal-01136936v2/file/paper_201403_hal.pdf},
+  HAL_ID = {hal-01136936},
+  HAL_VERSION = {v2},
+  NOTE = {Software Repository: \url{https://github.com/stack-of-tasks/tsid}}
+}
+
+@INPROCEEDINGS{Posa2016,
+  author={Posa, Michael and Kuindersma, Scott and Tedrake, Russ},
+  booktitle={2016 IEEE International Conference on Robotics and Automation (ICRA)}, 
+  title={Optimization and stabilization of trajectories for constrained dynamical systems}, 
+  year={2016},
+  volume={},
+  number={},
+  pages={1366-1373},
+  keywords={Manifolds;Robot kinematics;Heuristic algorithms;Trajectory optimization;Legged locomotion},
+  doi={10.1109/ICRA.2016.7487270},
+  note={Software Repository: \url{https://github.com/DAIRLab/dairlib/blob/main/systems/controllers/constrained_lqr_controller.h}}
+}
+
+@article{Koolen2016,
+author = {Koolen, Twan and Bertrand, Sylvain and Thomas, Gray and De Boer, Tomas and Wu, Tingfan and Smith, Jesper and Englsberger, Johannes and Pratt, Jerry},
+year = {2016},
+month = {03},
+pages = {1650007-1},
+title = {Design of a Momentum-Based Control Framework and Application to the Humanoid Robot Atlas},
+volume = {13},
+journal = {International Journal of Humanoid Robotics},
+doi = {10.1142/S0219843616500079},
+note = {Software Wiki: \url{https://bitbucket.org/ihmcrobotics/ihmc_ros/wiki/whole-body-controller}}
+}
+
+@INPROCEEDINGS{Mronga2022,
+  author={Mronga, Dennis and Kumar, Shivesh and Kirchner, Frank},
+  booktitle={2022 International Conference on Robotics and Automation (ICRA)}, 
+  title={Whole-Body Control of Series-Parallel Hybrid Robots}, 
+  year={2022},
+  volume={},
+  number={},
+  pages={228-234},
+  keywords={Legged locomotion;Automation;Humanoid robots;Computer architecture;Topology;Computational efficiency;Behavioral sciences},
+  doi={10.1109/ICRA46639.2022.9811616}
+}
+
+
+@article{Mronga2021,
+title = {Learning context-adaptive task constraints for robotic manipulation},
+journal = {Robotics and Autonomous Systems},
+volume = {141},
+pages = {103779},
+year = {2021},
+issn = {0921-8890},
+doi = {https://doi.org/10.1016/j.robot.2021.103779},
+url = {https://www.sciencedirect.com/science/article/pii/S0921889021000646},
+author = {Dennis Mronga and Frank Kirchner},
+keywords = {Context-adaptive control, Constraint-based robot control, Programming-by-demonstration, Gaussian mixture regression, Dual-arm manipulation},
+abstract = {Constraint-based control approaches offer a flexible way to specify robotic manipulation tasks and execute them on robots with many degrees of freedom. However, the specification of task constraints and their associated priorities usually requires a human-expert and often leads to tailor-made solutions for specific situations. This paper presents our recent efforts to automatically derive task constraints for a constraint-based robot controller from data and adapt them with respect to previously unseen situations (contexts). We use a programming-by-demonstration approach to generate training data in multiple variations (context changes) of a given task. From this data we learn a probabilistic model that maps context variables to task constraints and their respective soft task priorities. We evaluate our approach with 3 different dual-arm manipulation tasks on an industrial robot and show that it performs better than comparable approaches with respect to reproduction accuracy in previously unseen contexts.}
+}
+
+@article{Mronga2020,
+    author = {Mronga, Dennis and Knobloch, Tobias and de Gea Fernández, José and Kirchner, Frank},
+    title = {A Constraint-Based Approach for Human-Robot Collision Avoidance},
+    year = {2020},
+    pages = {1--17},
+    journal = {Advanced Robotics},
+    publisher = {Taylor & Francis Online}
+}
+
+
+@Article{Popescu2022,
+AUTHOR = {Popescu, Mihaela and Mronga, Dennis and Bergonzani, Ivan and Kumar, Shivesh and Kirchner, Frank},
+TITLE = {Experimental Investigations into Using Motion Capture State Feedback for Real-Time Control of a Humanoid Robot},
+JOURNAL = {Sensors},
+VOLUME = {22},
+YEAR = {2022},
+NUMBER = {24},
+ARTICLE-NUMBER = {9853},
+URL = {https://www.mdpi.com/1424-8220/22/24/9853},
+PubMedID = {36560239},
+ISSN = {1424-8220},
+ABSTRACT = {Regardless of recent advances, humanoid robots still face significant difficulties in performing locomotion tasks. Among the key challenges that must be addressed to achieve robust bipedal locomotion are dynamically consistent motion planning, feedback control, and state estimation of such complex systems. In this paper, we investigate the use of an external motion capture system to provide state feedback to an online whole-body controller. We present experimental results with the humanoid robot RH5 performing two different whole-body motions: squatting with both feet in contact with the ground and balancing on one leg. We compare the execution of these motions using state feedback from (i) an external motion tracking system and (ii) an internal state estimator based on inertial measurement unit (IMU), forward kinematics, and contact sensing. It is shown that state-of-the-art motion capture systems can be successfully used in the high-frequency feedback control loop of humanoid robots, providing an alternative in cases where state estimation is not reliable.},
+DOI = {10.3390/s22249853}
+}
+
+
 
