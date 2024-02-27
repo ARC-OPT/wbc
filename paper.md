@@ -29,18 +29,18 @@ ARC-OPT supports the software developer in designing robot controllers by provid
 
 # Description
 
-![ARC-OPT library overview](wbc_overview.svg)
+![ARC-OPT library overview](wbc_overview.png)
 
 ARC-OPT separates the implementation of controllers, robot models, solvers, and scenes, which allows a modular composition of the Whole-Body Control problem:
 
 * A **controller** implements a function in the robot's task space, e.g., 'maintain balance', 'avoid obstacle', or 'follow trajectory'. ARC-OPT provides various controllers in joint or Cartesian space, like PD-Controllers, or repulsive potential fields. 
 * The **scene** sets up the QP, where the costs can be configured at runtime, and the constraints are specific for the implemented scene. Different QPs are currently implemented on  velocity, acceleration and torque level.
-* The **robot model** computes the kinematic and dynamic information that the scene requires to set up the QP, like Jacobians, mass-inertia matrices, and gravity terms. ARC-OPT implements various robot models based on Pinocchio [], RBDL [], KDL [], and Hyrodyn [].
-* The **solver** solves the QP set up by the scene to produce the require control input for the robot. ARC-OPT provides various QP solvers based on open-source implementations, e.g.,  qpOASES [], eiquadprog [], proxQP, and qpSwift [].
+* The **robot model** computes the kinematic and dynamic information that the scene requires to set up the QP, like Jacobians, mass-inertia matrices, and gravity terms. ARC-OPT implements various robot models based on Pinocchio [@carpentier2019pinocchio], RBDL [@Felis2016], KDL [@kdl2021], and Hyrodyn [@2019_Kumar_HyRoDynApproach_IDETC].
+* The **solver** solves the QP set up by the scene to produce the require control input for the robot. ARC-OPT provides various QP solvers based on open-source implementations, e.g.,  qpOASES [@Ferreau2014], eiquadprog [@Eiquadprog2021], proxQP [@bambade2022], and qpSwift [@pandala2019qpswift].
 
 # Example
 
-Acceleration/torque-level QP: Tasks are formulated within the cost function. Equations of motion, rigid contacts and joint torque limits serve as constraints. The decision variables are the joint accelerations $$\ddot{q}$$, joint torques $\tau$ and contact wrenches $$f$$:
+Acceleration/torque-level QP: Tasks are formulated within the cost function. Equations of motion, rigid contacts and joint torque limits serve as constraints. The decision variables are the joint accelerations $\ddot{\mathbf{q}}$, joint torques $\mathbf{\tau}$ and contact wrenches $\mathbf{f}$:
 
 $$\begin{array}{cc}
 \underset{\ddot{\mathbf{q}}, \boldsymbol{\tau}, \mathbf{f}}{\text{min}} & \|\mathbf{J}\ddot{\mathbf{q}} + \dot{\mathbf{J}}\dot{\mathbf{q}} - \dot{\mathbf{v}}_d\|_2 \\
@@ -49,12 +49,12 @@ $$\begin{array}{cc}
        & \boldsymbol{\tau}_m \leq \boldsymbol{\tau} \leq \boldsymbol{\tau}_M \\
 \end{array}$$
 
-here ${\mathbf{J}$ is the robot Jacobian, $\mathbf{v}_d$ the desired task space velocity, $\dot{\mathbf{q}}_m$ and $\dot{\mathbf{q}}_M$ the minimal and maximal robot joint velocity. 
+here $\mathbf{J}$ is the robot Jacobian, $\mathbf{v}_d$ the desired task space velocity, $\dot{\mathbf{q}}_m$ and $\dot{\mathbf{q}}_M$ the minimal and maximal robot joint velocity. 
 
 with Cartesian position control:
 
 $$
-\dot{v}_d = \dot{v}_r + k_d(v_r-v) + k_p(x_r-x)
+\dot{\mathbf{v}}_d = \dot{\mathbf{v}}_r + \mathbf{K}_d(\mathbf{v}_r-\mathbf{v}) + \mathbf{K}_p(\mathbf{x}_r-\mathbf{x})
 $$
 
 The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022],[@Mronga2021],[@Mronga2020],[@Popescu2022].
