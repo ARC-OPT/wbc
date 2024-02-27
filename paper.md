@@ -31,33 +31,16 @@ ARC-OPT supports the software developer in designing robot controllers by provid
 
 ![ARC-OPT library overview](wbc_overview.svg)
 
-ARC-OPT separates the implementation of controllers, robot models, solvers, and scenes, which allows a modular composition of the Whole-Body Control problem.
+ARC-OPT separates the implementation of controllers, robot models, solvers, and scenes, which allows a modular composition of the Whole-Body Control problem:
 
-## Controller
-
-A controller implements a function in the robot's task space, e.g., 'maintain balance', 'avoid obstacle', or 'follow trajectory'. ARC-OPT provides various controllers in joint or Cartesian space, like PD-Controllers, or repulsive potential fields. 
-
-## Scene 
-The scene sets up the QP, where the costs can be configured at runtime, and the constraints are specific for the implemented scene. Different QPs are currently implemented in ARC-OPT, for example:
-
-### Velocity-level
-Tasks are formulated within the cost function. Rigid and joint velocity limits are used as constraints. The decision
-variables are the joint velocities $\dot{q}$:
-
-
-### Acceleration-level [@delprete2016]
-Tasks are formulated within the cost function. Equations of motion, rigid contacts and joint torque limits serve as constraints. The decision variables are the joint accelerations $$\ddot{q}$$, joint torques $\tau$ and contact wrenches $$f$$:
-
-
-## Robot Model
-The robot model computes the kinematic and dynamic information that the scene requires to set up the QP, like Jacobians, mass-inertia matrices, and gravity terms. ARC-OPT implements various robot models based on Pinocchio [], RBDL [], KDL [], and Hyrodyn [].
-
-## Solver
-The solver solves the QP set up by the scene. ARC-OPT provides various QP solvers based on open-source implementation using qpOASES [], eiquadprog [], proxQP, and qpSwift [].
+* A **controller** implements a function in the robot's task space, e.g., 'maintain balance', 'avoid obstacle', or 'follow trajectory'. ARC-OPT provides various controllers in joint or Cartesian space, like PD-Controllers, or repulsive potential fields. 
+* The **scene** sets up the QP, where the costs can be configured at runtime, and the constraints are specific for the implemented scene. Different QPs are currently implemented on  velocity, acceleration and torque level.
+* The **robot model** computes the kinematic and dynamic information that the scene requires to set up the QP, like Jacobians, mass-inertia matrices, and gravity terms. ARC-OPT implements various robot models based on Pinocchio [], RBDL [], KDL [], and Hyrodyn [].
+* The **solver** solves the QP set up by the scene to produce the require control input for the robot. ARC-OPT provides various QP solvers based on open-source implementations, e.g.,  qpOASES [], eiquadprog [], proxQP, and qpSwift [].
 
 # Example
 
-Acceleration/torque-level QP: 
+Acceleration/torque-level QP: Tasks are formulated within the cost function. Equations of motion, rigid contacts and joint torque limits serve as constraints. The decision variables are the joint accelerations $$\ddot{q}$$, joint torques $\tau$ and contact wrenches $$f$$:
 
 $$\begin{array}{cc}
 \underset{\ddot{\mathbf{q}}, \boldsymbol{\tau}, \mathbf{f}}{\text{min}} & \|\mathbf{J}\ddot{\mathbf{q}} + \dot{\mathbf{J}}\dot{\mathbf{q}} - \dot{\mathbf{v}}_d\|_2 \\
