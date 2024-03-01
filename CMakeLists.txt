@@ -1,7 +1,8 @@
 cmake_minimum_required (VERSION 3.16.3)
 project(wbc)
 
-include(FindPkgConfig)
+find_package(PkgConfig REQUIRED)
+find_package(Boost REQUIRED COMPONENTS system filesystem unit_test_framework serialization)
 
 set(PROJECT_VERSION 0.2)
 set(API_VERSION ${PROJECT_VERSION})
