@@ -1,4 +1,3 @@
-find_package(Boost COMPONENTS system filesystem unit_test_framework serialization REQUIRED)
 add_executable(test_pot_field_controllers test_pot_field_controllers.cpp)
 target_link_libraries(test_pot_field_controllers
                       wbc-controllers
