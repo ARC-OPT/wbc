@@ -25,3 +25,10 @@ target_link_libraries(cart_pos_ctrl_hls_hierarchies
                       wbc-scenes-velocity
                       wbc-robot_models-pinocchio
                       wbc-controllers)
+
+add_executable(cart_pos_ctrl_dynamic cart_pos_ctrl_dynamic.cpp)
+target_link_libraries(cart_pos_ctrl_dynamic
+                      wbc-solvers-qpoases
+                      wbc-scenes-acceleration_tsid
+                      wbc-robot_models-pinocchio
+                      wbc-controllers)
