@@ -11,11 +11,11 @@ authors:
     affiliation: 1
   - name: Frank Kirchner
     orcid: 0000-0002-1713-9784
-    affiliation: 2
+    affiliation: "1,2"
 affiliations:
  - name: German Research Center for Artificial Intelligence (DFKI), Bremen, Germany
    index: 1
- - name: German Research Center for Artificial Intelligence (DFKI) and University of Bremen, Bremen, Germany
+ - name: University of Bremen, Bremen, Germany
    index: 2
 date: 06 March 2024
 bibliography: paper.bib
@@ -26,11 +26,11 @@ bibliography: paper.bib
 
 ARC-OPT (Adaptive Robot Control using Optimization) is a C++ library for Whole-Body Control (WBC) [@Sentis2006] of complex robotic systems, such as humanoids, quadrupedal robots, or mobile manipulators.  
 
-WBC aims to describe a robot control problem in terms of costs and constraints of a quadratic program (QP) and design a set of feedback controllers around it, each dedicated to a specific robot tasks. In every control cycle, the QP is solved and the solution is applied to the robot's actuators. WBC is a reactive control approach, which targets redundant robots and is able to control multiple tasks simultaneously, like, e.g., grasping and balancing on a humanoid robot.
+WBC aims to describe a robot control problem in terms of costs and constraints of a quadratic program (QP) and to design a set of feedback controllers around it, each dedicated to a specific robot tasks. In every control cycle, the QP is solved and the solution is applied to the robot's actuators. WBC is a reactive control approach, which targets redundant robots and is able to control multiple tasks simultaneously, like, e.g., grasping and balancing on a humanoid robot.
 
 # Statement of need
 
-ARC-OPT supports the software developer in designing robot controllers by providing configuration options for different pre-defined WBC problems. In contrast to existing libraries [@delprete2016],[@Posa2016], ARC-OPT provides unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and robot model libraries on these problems. Finally, it provides a WBC approach for robots with parallel kinematic loops, as described in [@Mronga2022].
+ARC-OPT supports the software developer in designing robot controllers by providing configuration options for different pre-defined WBC problems. In contrast to existing libraries [@delprete2016],[@Posa2016], ARC-OPT provides unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and rigid body dynamics libraries on these problems. Finally, it provides a WBC approach for robots with parallel kinematic loops, as described in [@Mronga2022].
 
 # Description
 
@@ -41,7 +41,9 @@ ARC-OPT separates the implementation of controllers, robot models, solvers, and 
 * A **controller** implements a function in the robot's task space, e.g., for maintaining balance, avoiding an obstacle, or following a trajectory. ARC-OPT provides various controllers in joint or Cartesian space, like PD-Controllers, or repulsive potential fields.
 * The **scene** sets up the QP, where the costs can be configured at runtime, and the constraints are specific for the implemented scene. Different scenes are currently implemented on velocity, acceleration and torque level.
 * The **robot model** computes the kinematic and dynamic information that the scene requires to set up the QP, like Jacobians, mass-inertia matrices, and gravity terms. ARC-OPT implements various robot models based on Pinocchio [@carpentier2019pinocchio], RBDL [@Felis2016], KDL [@kdl2021], and Hyrodyn [@2019_Kumar_HyRoDynApproach_IDETC].
-* The **solver** solves the QP set up by the scene to produce the required control input for the robot. ARC-OPT provides various QP solvers based on open-source implementations, e.g.,  qpOASES [@Ferreau2014], eiquadprog [@Eiquadprog2021], proxQP [@bambade2022], and qpSwift [@pandala2019qpswift].
+* The **solver** solves the QP, which has been set up in the scene, and produces the required control input for the robot joints. ARC-OPT provides various QP solvers based on open-source implementations, e.g.,  qpOASES [@Ferreau2014], eiquadprog [@Eiquadprog2021], proxQP [@bambade2022], and qpSwift [@pandala2019qpswift].
+
+Apart from this, ARC-OPT implements various concepts typically used in WBC, like floating base dynamics, friction cone constraints, cost weighting, and task hierarchies.
 
 # Example
 
@@ -54,15 +56,14 @@ $$\begin{array}{cc}
        & \boldsymbol{\tau}_m \leq \boldsymbol{\tau} \leq \boldsymbol{\tau}_M \\
 \end{array}$$
 
-where $\mathbf{J}$ is the robot Jacobian, $\dot{\mathbf{v}}_d$ the desired task space acceleration,  $\mathbf{H}$ the mass-inertia matrix, $\mathbf{h}$ the vector of gravity and Coriolis terms, $\boldsymbol{\tau} the robot joint torques$, $\mathbf{f}$ the contact wrenches,  $\mathbf{J}_c$ the contact Jacobian,  $\boldsymbol{\tau}_m$ and $\boldsymbol{\tau}_M$ the joint torque limits.
-
-To implement a Cartesian position controller, e.g., for robot manipulator, the following controller can be used to generate $\dot{\mathbf{v}}_d$:
+where $\mathbf{J}$ is the robot Jacobian, $\dot{\mathbf{v}}_d$ the desired task space acceleration,  $\ddot{\mathbf{q}},\dot{\mathbf{q}},\mathbf{q}$ the joint accelerations, velocities and positions, $\mathbf{H}$ the mass-inertia matrix, $\mathbf{h}$ the vector of gravity and Coriolis terms, $\boldsymbol{\tau}$ the robot joint torques, $\mathbf{f}$ the contact wrenches,  $\mathbf{J}_c$ the contact Jacobian,  and $\boldsymbol{\tau}_m,\boldsymbol{\tau}_M$ the joint torque limits. To implement a simple Cartesian position controller for, e.g., controlling the end effector of a robot manipulator, the following PD-controller can be used to generate $\dot{\mathbf{v}}_d$:
 
 $$
 \dot{\mathbf{v}}_d = \dot{\mathbf{v}}_r + \mathbf{K}_d(\mathbf{v}_r-\mathbf{v}) + \mathbf{K}_p(\mathbf{x}_r-\mathbf{x})
 $$
 
-where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices $\mathbf{x},\mathbf{v}$ the actual position and velocity in Cartesian space, $\dot{\mathbf{v}}_r,\mathbf{v}_r,\mathbf{x}_r$ the reference acceleration, velocity, and position. This example is implemented for a 7 DoF KUKA iiwa robot arm in the ARC-OPT tutorials\footnote{\url{https://github.com/ARC-OPT/wbc/blob/master/tutorials/kuka_iiwa/cart_pos_ctrl_dynamic.cpp}}.
+where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the end effector position and velocity, $\dot{\mathbf{v}}_r,\mathbf{v}_r,\mathbf{x}_r$ the reference acceleration, velocity, and position. This example is implemented for a 7 DoF KUKA iiwa robot arm in the ARC-OPT tutorials\footnote{\url{https://github.com/ARC-OPT/wbc/blob/master/tutorials/kuka_iiwa/cart_pos_ctrl_dynamic.cpp}}.
+
 The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022],[@Mronga2021],[@Mronga2020],[@Popescu2022].
 
 # Acknowledgements
