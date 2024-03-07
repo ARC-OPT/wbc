@@ -66,7 +66,7 @@ where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the
 
 The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022],[@Mronga2021],[@Mronga2020],[@Popescu2022], and evaluated on different robots, like, e.g., the RH5 humanoid [@Eer2021DesignAA] shown in Figure \ref{fig:rh5}.
 
-![RH5 Humanoid robot standing on one leg using the ARC-OPT library\label{fig:rh5}(rh5_one_leg.png)
+![RH5 Humanoid robot standing on one leg using the ARC-OPT library\label{fig:rh5}](rh5_one_leg.png)
 
 
 # Acknowledgements
