@@ -5,7 +5,7 @@
 
 [Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/)
 
-<img src="doc/images/wbc_principle.svg" alt="drawing" width="600"/>
+<img src="doc/images/wbc_principle.svg" width="600"/>
 
 WBC is C++ library for optimization-based control of redundant robots. The idea of WBC is to describe a control problem as costs and constraints of an optimization problem (typically a quadratic program or QP) and design a set of feedback controllers around it. The QP minimizes the control errors, trading off the different objectives and produces a joint space command on velocity, acceleration or torque level, which is applied to the robot actuators. WBC is meant for
 * Controlling redundant robots, particularly floating base systems like humanoids or quadrupeds
