@@ -68,7 +68,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     // Configure scene
     VelocityScene wbc_scene(robot_model, solver, 1e-3);
-    TaskConfig cart_task("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1);
+    TaskConfig cart_task("cart_pos_ctrl_left", 0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", cart, 1);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);
 
     // Set random Reference

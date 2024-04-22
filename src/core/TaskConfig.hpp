@@ -15,9 +15,10 @@ namespace wbc{
  *                       control, e.g. avoiding the joint limits, maintaining a certain elbow position, joint position control, ...
  */
 enum TaskType{unset = -1,
-                jnt = 0,
-                cart = 1,
-                com = 2};
+              jnt = 0,
+              cart = 1,
+              com = 2,
+              wrench_forward = 3};
 
 /**
  * @brief Defines a task in the whole body control problem. Valid Configurations are e.g.
@@ -46,6 +47,7 @@ public:
                      const std::string root,
                      const std::string tip,
                      const std::string ref_frame,
+                     const TaskType type = cart,
                      const double activation = 0,
                      const std::vector<double> weights = {1,1,1,1,1,1},
                      const double timeout = 0);
@@ -54,13 +56,15 @@ public:
                      const int priority,
                      const std::vector<std::string> joint_names,
                      const std::vector<double> weights,
+                     const TaskType type = jnt,
                      const double activation = 0,
                      const double timeout = 0);
     /** Default constructor for a com task*/
     TaskConfig(const std::string &name,
                      const int priority,
-                     const std::vector<double> weights = {1,1,1},
+                     const TaskType type = com,
                      const double activation = 0,
+                     const std::vector<double> weights = {1,1,1},
                      const double timeout = 0);
     ~TaskConfig();
 

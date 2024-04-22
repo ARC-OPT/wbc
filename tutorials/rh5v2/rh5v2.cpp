@@ -65,8 +65,8 @@ int main()
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
     AccelerationSceneTSID scene(robot_model, solver, dt);
     vector<TaskConfig> wbc_config;
-    wbc_config.push_back(TaskConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
-    wbc_config.push_back(TaskConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
+    wbc_config.push_back(TaskConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", cart, 1.0));
+    wbc_config.push_back(TaskConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", cart, 1.0));
     if(!scene.configure(wbc_config))
         return -1;
 

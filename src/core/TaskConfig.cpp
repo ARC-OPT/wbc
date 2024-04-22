@@ -16,11 +16,12 @@ TaskConfig::TaskConfig(const std::string &name,
                                    const std::string root,
                                    const std::string tip,
                                    const std::string ref_frame,
+                                   const TaskType type,
                                    const double activation,
                                    const std::vector<double> weights,
                                    const double timeout) :
     name(name),
-    type(cart),
+    type(type),
     priority(priority),
     weights(weights),
     activation(activation),
@@ -34,10 +35,11 @@ TaskConfig::TaskConfig(const std::string &name,
                                    const int priority,
                                    const std::vector<std::string> joint_names,
                                    const std::vector<double> weights,
+                                   const TaskType type,
                                    const double activation,
                                    const double timeout) :
     name(name),
-    type(jnt),
+    type(type),
     priority(priority),
     joint_names(joint_names),
     weights(weights),
@@ -47,11 +49,12 @@ TaskConfig::TaskConfig(const std::string &name,
 
 TaskConfig::TaskConfig(const std::string &name,
                                    const int priority,
-                                   const std::vector<double> weights,
+                                   const TaskType type,
                                    const double activation,
+                                   const std::vector<double> weights,
                                    const double timeout) :
     name(name),
-    type(com),
+    type(type),
     priority(priority),
     weights(weights),
     activation(activation),
@@ -71,7 +74,7 @@ void TaskConfig::validate() const{
     if(priority < 0){
         LOG_ERROR("Task %s: Priority has to be >= 0, but is %i", name.c_str(), priority);
         throw std::invalid_argument("Invalid task config");}
-    if(type == cart){
+    if(type == cart || type == wrench_forward){
         if(root.empty()){
             LOG_ERROR("Task %s: Root frame is empty", name.c_str());
             throw std::invalid_argument("Invalid task config");}
@@ -100,7 +103,7 @@ void TaskConfig::validate() const{
                 throw std::invalid_argument("Invalid task config");}
     }
     else{
-        LOG_ERROR("Task %s: Invalid task type. Allowed types are 'jnt' and 'cart'", name.c_str());
+        LOG_ERROR("Task %s: Invalid task type. Allowed types are 'jnt', 'cart', 'com' and 'wrench_forward', but given type is %i", name.c_str(), type);
         throw std::invalid_argument("Invalid task config");}
 
     for(size_t i = 0; i < weights.size(); i++)
@@ -114,6 +117,8 @@ unsigned int TaskConfig::nVariables() const{
         return 6;
     else if(type == com)
         return 3;
+    else if(type == wrench_forward)
+        return 6;
     else
         return joint_names.size();
 }

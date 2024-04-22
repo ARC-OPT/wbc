@@ -5,6 +5,7 @@
 #include "../../tasks/JointAccelerationTask.hpp"
 #include "../../tasks/CartesianAccelerationTask.hpp"
 #include "../../tasks/CoMAccelerationTask.hpp"
+#include "../../tasks/WrenchForwardTask.hpp"
 
 #include "../../constraints/RigidbodyDynamicsConstraint.hpp"
 #include "../../constraints/ContactsAccelerationConstraint.hpp"
@@ -42,6 +43,8 @@ TaskPtr AccelerationSceneReducedTSID::createTask(const TaskConfig &config){
         return std::make_shared<CoMAccelerationTask>(config, robot_model->noOfJoints());
     else if(config.type == jnt)
         return std::make_shared<JointAccelerationTask>(config, robot_model->noOfJoints());
+    else if(config.type == wrench_forward)
+        return std::make_shared<WrenchForwardTask>(config, robot_model->noOfJoints());
     else{
         LOG_ERROR("Task with name %s has an invalid task type: %i", config.name.c_str(), config.type);
         throw std::invalid_argument("Invalid task config");
@@ -131,8 +134,23 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
-        qp.H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw; // NOTE! good only if tasks involve only acceleration
-        qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
+        // Decide on which output variables the tasks are to be mapped: qdd or f_ext
+        if(task->config.type == wrench_forward){ // f_ext
+            const ActiveContacts &cp = robot_model->getActiveContacts();
+            const std::string contact_link = task->config.ref_frame;
+            if(std::find(cp.names.begin(), cp.names.end(), contact_link) == cp.names.end()){
+                LOG_ERROR("Reference frame defined in wrench task %s must match one of the contact points defined robot model", task->config.name.c_str());
+                LOG_ERROR("You set reference frame %s, but this frame is not a contact point", contact_link.c_str());
+                throw std::runtime_error("Invalid task configuration");
+            }
+            uint idx = cp.mapNameToIndex(contact_link);
+            qp.H.block(nj+idx*6,nj+idx*6,6,6) += task->Aw.transpose()*task->Aw;
+            qp.g.segment(nj+idx*6,6) -= task->Aw.transpose()*task->y_ref_root;
+        }
+        else{ // qdd
+            qp.H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
+            qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
+        }
     }
 
     qp.H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;

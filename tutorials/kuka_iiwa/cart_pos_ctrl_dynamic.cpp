@@ -63,7 +63,7 @@ int main()
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
     AccelerationSceneTSID scene(robot_model, solver, dt);
     vector<TaskConfig> wbc_config;
-    wbc_config.push_back(TaskConfig("cart_pos_ctrl",  0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", 1.0));
+    wbc_config.push_back(TaskConfig("cart_pos_ctrl",  0, "kuka_lbr_l_link_0", "kuka_lbr_l_tcp", "kuka_lbr_l_link_0", cart, 1.0));
     if(!scene.configure(wbc_config))
         return -1;
 
