@@ -18,6 +18,8 @@ void WrenchForwardTask::update(RobotModelPtr robot_model){
 
     // Also convert the weight vector from ref frame to the root frame. Take the absolute values after rotation, since weights can only
     // assume positive values
+
+    ref_frame_pose = robot_model->rigidBodyState(config.root, config.ref_frame).pose;
     ref_frame_rotation = ref_frame_pose.orientation.toRotationMatrix();
     weights_root.segment(0,3) = ref_frame_rotation * weights.segment(0,3);
     weights_root.segment(3,3) = ref_frame_rotation * weights.segment(3,3);
@@ -36,8 +38,8 @@ void WrenchForwardTask::setReference(const base::samples::RigidBodyStateSE3& ref
     else
         this->time = ref.time;
 
-    this->y_ref.segment(0,3) = ref_wrench.force;
-    this->y_ref.segment(3,3) = ref_wrench.torque;
+    this->y_ref.segment(0,3) = ref.wrench.force;
+    this->y_ref.segment(3,3) = ref.wrench.torque;
 }
 
 

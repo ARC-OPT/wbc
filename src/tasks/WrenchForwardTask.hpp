@@ -7,7 +7,6 @@ namespace wbc{
 
 class WrenchForwardTask : public CartesianTask{
 protected:
-    base::Wrench ref_wrench;
     base::Pose ref_frame_pose;
     base::MatrixXd ref_frame_rotation;
 
