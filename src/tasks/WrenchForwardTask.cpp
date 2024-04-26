@@ -13,6 +13,7 @@ void WrenchForwardTask::update(RobotModelPtr robot_model){
     // Task Jacobian is identity here: The external wrenches are explicit variables in the QP,
     // so the reference wrench is simply forward to these variables
     A = Eigen::MatrixXd::Identity(config.nVariables(),config.nVariables());
+    Aw = Eigen::MatrixXd::Identity(config.nVariables(),config.nVariables());
 
     this->y_ref_root = y_ref;
 
