@@ -72,8 +72,10 @@ const HierarchicalQP& AccelerationScene::update(){
            task->y_ref_root.setZero();
         }
 
-        for(int i = 0; i < task->A.rows(); i++)
+        for(int i = 0; i < task->A.rows(); i++){
             task->Aw.row(i) = task->weights_root(i) * task->A.row(i) * task->activation * (!task->timeout);
+            task->y_ref_root(i) = task->y_ref_root(i) * task->weights_root(i) * task->activation;
+        }
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
