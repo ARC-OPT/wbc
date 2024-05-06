@@ -108,7 +108,6 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     for(uint i = 0; i < actuated_joint_names.size(); i++)
         selection_matrix(i, jointIndex(actuated_joint_names[i])) = 1.0;
 
-    contact_points = cfg.contact_points.names;
     active_contacts = cfg.contact_points;
 
     LOG_DEBUG("------------------- WBC RobotModelPinocchio -----------------");
