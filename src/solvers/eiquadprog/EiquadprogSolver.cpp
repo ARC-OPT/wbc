@@ -44,13 +44,6 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
 
         configured = true;
     }
-    else 
-    {
-        if(n_var != _CI_mtx.cols())
-            throw std::runtime_error("QP problem changed dynamically. Not supported at the moment.");
-        if(n_in != _CI_mtx.rows())
-            throw std::runtime_error("QP problem changed dynamically. Not supported at the moment.");
-    }
 
     _CI_mtx.setZero();
 
