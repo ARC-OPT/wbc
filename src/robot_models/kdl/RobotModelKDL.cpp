@@ -84,7 +84,6 @@ bool RobotModelKDL::configure(const RobotModelConfig& cfg){
     tau.resize(noOfJoints());
     zero.resize(noOfJoints());
     zero.data.setZero();
-    contact_points = cfg.contact_points.names;
     active_contacts = cfg.contact_points;
     joint_space_inertia_mat.resize(noOfJoints(), noOfJoints());
     bias_forces.resize(noOfJoints());

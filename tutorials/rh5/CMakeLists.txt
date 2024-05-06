@@ -18,6 +18,7 @@ if(ROBOT_MODEL_HYRODYN)
                          wbc-solvers-qpoases
                          wbc-scenes-velocity_qp
                          wbc-controllers
+                         wbc-robot_models-pinocchio
                          wbc-robot_models-hyrodyn)
 endif()                        
 

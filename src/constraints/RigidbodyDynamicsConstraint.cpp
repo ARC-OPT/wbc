@@ -20,9 +20,11 @@ namespace wbc{
             b_vec.resize(6);
 
             A_mtx.block(0,  0, 6, nj) =  robot_model->jointSpaceInertiaMatrix().topRows<6>();
-            for(uint i = 0; i < contacts.size(); i++)
-                A_mtx.block(0, nj+i*6, 6, 6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose().topRows<6>();
+            for(uint i = 0; i < contacts.size(); i++){
+                if(contacts[i].active)
+                    A_mtx.block(0, nj+i*6, 6, 6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose().topRows<6>();
             b_vec = -robot_model->biasForces().topRows<6>();
+            }
         }
         else
         {
@@ -33,9 +35,11 @@ namespace wbc{
 
             A_mtx.block(0,  0, nj, nj) =  robot_model->jointSpaceInertiaMatrix();
             A_mtx.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
-            for(uint i = 0; i < contacts.size(); i++)
-                A_mtx.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose();
-            b_vec = -robot_model->biasForces();
+            for(uint i = 0; i < contacts.size(); i++){
+                if(contacts[i].active)
+                    A_mtx.block(0, nj+na+i*6, nj, 6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose();
+                b_vec = -robot_model->biasForces();
+            }
         }
 
     }

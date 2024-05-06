@@ -1,5 +1,6 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
+#include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>

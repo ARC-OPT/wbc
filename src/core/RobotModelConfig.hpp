@@ -24,6 +24,14 @@ public:
 };
 
 class ActiveContacts : public base::NamedVector<ActiveContact>{
+public:
+    uint getNumberOfActiveContacts() const{
+        uint nac = 0;
+        for(auto e : elements){
+            if(e.active) nac++;
+        }
+        return nac;
+    }
 };
 
 /**

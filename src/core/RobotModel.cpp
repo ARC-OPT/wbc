@@ -21,7 +21,6 @@ void RobotModel::clear(){
     joint_names.clear();
     actuated_joint_names.clear();
     joint_names_floating_base.clear();
-    contact_points.clear();
     base_frame="";
     world_frame="";
     gravity = base::Vector3d(0,0,-9.81);

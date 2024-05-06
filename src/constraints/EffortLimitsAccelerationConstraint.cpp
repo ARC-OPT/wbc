@@ -22,8 +22,11 @@ namespace wbc{
         //! NOTE! -> not considering selection matrix
 
         A_mtx.block(0,0,na,nj) = robot_model->jointSpaceInertiaMatrix().bottomRows(na);
-        for(uint i=0; i < nc; ++i)
-            A_mtx.block(0,nj+i*6,na,6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose().bottomRows(na);
+        for(uint i=0; i < nc; ++i){
+            if(contacts[i].active){
+                A_mtx.block(0,nj+i*6,na,6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose().bottomRows(na);
+            }
+        }
 
         // enforce joint effort limits (only if torques are part of the optimization problem)
         Eigen::VectorXd b = robot_model->biasForces().tail(na);

@@ -417,13 +417,13 @@ void RobotModelHyrodyn::computeInverseDynamics(base::commands::Joints &solver_ou
     }
     hyrodyn.calculate_forward_system_state();
 
-    uint nc = contact_points.size();
+    uint nc = robot_model_config.contact_points.size();
     hyrodyn.wrench_interaction.resize(nc);
-    hyrodyn.wrench_points = contact_points;
+    hyrodyn.wrench_points = robot_model_config.contact_points.names;
     hyrodyn.wrench_resolution.resize(nc);
     hyrodyn.f_ext.resize(nc);
     for(uint i = 0; i < nc; i++){
-        const std::string &name = contact_points[i];
+        const std::string &name = hyrodyn.wrench_points[i];
         hyrodyn.wrench_interaction[i] = true; // Resistive
         hyrodyn.wrench_resolution[i] = true; // body coordinates
         try{

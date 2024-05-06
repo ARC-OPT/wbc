@@ -26,7 +26,6 @@ protected:
     /** ID of kinematic chain given root and tip*/
     const std::string chainID(const std::string& root, const std::string& tip){return root + "_" + tip;}
 
-    std::vector<std::string> contact_points;
     ActiveContacts active_contacts;
     base::Vector3d gravity;
     base::samples::RigidBodyStateSE3 floating_base_state;
