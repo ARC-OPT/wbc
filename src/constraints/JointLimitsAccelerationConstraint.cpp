@@ -15,7 +15,7 @@ namespace wbc{
         uint nj = robot_model->noOfJoints();
         uint na = robot_model->noOfActuatedJoints();
         uint nc = robot_model->getActiveContacts().size();
-        uint nv = reduced ? nj+6*nc : nj+na+6*nc;
+        uint nv = reduced ? nj+3*nc : nj+na+3*nc;
 
         lb_vec.resize(nv);
         ub_vec.resize(nv);

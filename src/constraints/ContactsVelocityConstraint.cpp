@@ -8,13 +8,19 @@ namespace wbc{
 
         uint nj = robot_model->noOfJoints();
         uint nc = contacts.size();
+        uint nac = contacts.getNumberOfActiveContacts();
 
-        A_mtx.resize(nc*3, nj);
-        b_vec.resize(nc*3);
+        A_mtx.resize(nac*3, nj);
+        b_vec.resize(nac*3);
         b_vec.setZero();
 
-        for(uint i = 0; i < nc; ++i)
-            A_mtx.block(i*3, 0, 3, nj) = robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).topRows<3>();
+        uint row_idx = 0;
+        for(uint i = 0; i < nc; ++i){
+            if(contacts[i].active){
+                A_mtx.block(row_idx*3, 0, 3, nj) = robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).topRows<3>();
+                row_idx++;
+            }
+        }
     }
 
 

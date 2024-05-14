@@ -421,7 +421,7 @@ void RobotModelPinocchio::computeInverseDynamics(base::commands::Joints &solver_
     if(has_floating_base)
         start_idx = 6;
 
-    for(uint i = 0; i < noOfJoints(); i++){
+    for(uint i = 0; i < noOfActuatedJoints(); i++){
         const std::string &name = actuatedJointNames()[i];
         solver_output[name].effort = data->tau[i+start_idx];
     }

@@ -16,7 +16,7 @@ namespace wbc{
         lb_vec.setConstant(-10000);
         ub_vec.setConstant(+10000);
         
-        A_mtx.resize(na, nj+6*nc);
+        A_mtx.resize(na, nj+3*nc);
         A_mtx.setZero();
 
         //! NOTE! -> not considering selection matrix
@@ -24,7 +24,7 @@ namespace wbc{
         A_mtx.block(0,0,na,nj) = robot_model->jointSpaceInertiaMatrix().bottomRows(na);
         for(uint i=0; i < nc; ++i){
             if(contacts[i].active){
-                A_mtx.block(0,nj+i*6,na,6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose().bottomRows(na);
+                A_mtx.block(0,nj+i*3,na,3) = -robot_model->spaceJacobian(robot_model->worldFrame(), contacts.names[i]).topRows(3).transpose().bottomRows(na);
             }
         }
 

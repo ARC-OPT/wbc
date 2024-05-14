@@ -45,6 +45,8 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
         configured = true;
     }
 
+    _CI_mtx.resize(n_in,n_var);
+    _ci0_vec.resize(n_in);
     _CI_mtx.setZero();
 
     // create inequalities constraint matric (inequalities + bounds)
@@ -59,6 +61,7 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
     namespace eq = eiquadprog::solvers;
 
     Eigen::VectorXd out(qp.nq);
+
     eq::EiquadprogFast_status status = _solver.solve_quadprog(
         qp.H, qp.g, qp.A, -qp.b, _CI_mtx, _ci0_vec, out);
     

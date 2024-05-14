@@ -74,7 +74,7 @@ void TaskConfig::validate() const{
     if(priority < 0){
         LOG_ERROR("Task %s: Priority has to be >= 0, but is %i", name.c_str(), priority);
         throw std::invalid_argument("Invalid task config");}
-    if(type == cart || type == wrench_forward){
+    if(type == cart){
         if(root.empty()){
             LOG_ERROR("Task %s: Root frame is empty", name.c_str());
             throw std::invalid_argument("Invalid task config");}
@@ -102,6 +102,20 @@ void TaskConfig::validate() const{
                 LOG_ERROR("Task %s: Name of joint %i is empty", name.c_str(), i);
                 throw std::invalid_argument("Invalid task config");}
     }
+    else if(type == wrench_forward){
+        if(root.empty()){
+            LOG_ERROR("Task %s: Root frame is empty", name.c_str());
+            throw std::invalid_argument("Invalid task config");}
+        if(tip.empty()){
+            LOG_ERROR("Task %s: Tip frame is empty", name.c_str());
+            throw std::invalid_argument("Invalid task config");}
+        if(ref_frame.empty()){
+            LOG_ERROR("Task %s: Ref frame is empty", name.c_str());
+            throw std::invalid_argument("Invalid task config");}
+        if(weights.size() != 3){
+            LOG_ERROR("Task %s: Size of weight vector should be 3, but is %i", name.c_str(), weights.size());
+            throw std::invalid_argument("Invalid task config");}
+    }
     else{
         LOG_ERROR("Task %s: Invalid task type. Allowed types are 'jnt', 'cart', 'com' and 'wrench_forward', but given type is %i", name.c_str(), type);
         throw std::invalid_argument("Invalid task config");}
@@ -118,7 +132,7 @@ unsigned int TaskConfig::nVariables() const{
     else if(type == com)
         return 3;
     else if(type == wrench_forward)
-        return 6;
+        return 3;
     else
         return joint_names.size();
 }

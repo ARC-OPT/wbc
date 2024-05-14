@@ -14,7 +14,7 @@ namespace wbc{
         // number of optimization variables:
         // - Reduced TSID (no torques): Number robot joints nj (incl. floating base) + 6 x number of contacts nc
         // - Full TSID: Number robot joints (incl. floating base) nj + Number actuated robot joints na + 6 x number of contacts nc
-        uint nv = reduced ? (nj + nc*6) : (nj + na + nc*6);
+        uint nv = reduced ? (nj + nc*3) : (nj + na + nc*3);
 
         // Constrain only contact positions (number of constraints = 3 x number of contacts), not orientations
         // (e.g. in case of point contact, the rotation is allowed to change). Also constrain only the active contacts

@@ -11,7 +11,7 @@
 #include "../../constraints/ContactsAccelerationConstraint.hpp"
 #include "../../constraints/JointLimitsAccelerationConstraint.hpp"
 #include "../../constraints/EffortLimitsAccelerationConstraint.hpp"
-#include "../../constraints/ContactsFrictionSurfaceConstraint.hpp"
+#include "../../constraints/ContactsFrictionPointConstraint.hpp"
 
 
 namespace wbc {
@@ -32,7 +32,7 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
     constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
     constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
     constraints[0].push_back(std::make_shared<EffortLimitsAccelerationConstraint>());
-    constraints[0].push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
+    constraints[0].push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
 }
 
 TaskPtr AccelerationSceneReducedTSID::createTask(const TaskConfig &config){
@@ -82,7 +82,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     // QP Size: (nc x nj+nc*6)
     // Variable order: (qdd,f_ext)
     QuadraticProgram& qp = hqp[prio];
-    qp.resize(nj+ncp*6, total_eqs, total_ineqs, has_bounds);
+    qp.resize(nj+ncp*3, total_eqs, total_ineqs, has_bounds);
     qp.A.setZero();
     qp.lower_x.setConstant(-10000);   // bounds
     qp.upper_x.setConstant(+10000);   // bounds
@@ -146,8 +146,9 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
                 throw std::runtime_error("Invalid task configuration");
             }
             uint idx = cp.mapNameToIndex(contact_link);
-            qp.H.block(nj+idx*6,nj+idx*6,6,6) += task->Aw.transpose()*task->Aw;
-            qp.g.segment(nj+idx*6,6) -= task->Aw.transpose()*task->y_ref_root;
+
+            qp.H.block(nj+idx*3,nj+idx*3,3,3) += task->Aw.transpose()*task->Aw;
+            qp.g.segment(nj+idx*3,3) -= task->Aw.transpose()*task->y_ref_root;
         }
         else{ // qdd
             qp.H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
@@ -156,7 +157,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     }
 
     qp.H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
-    qp.H.block(nj,nj, ncp*6, ncp*6).diagonal().array() += 1e-12;
+    qp.H.block(nj,nj, ncp*3, ncp*3).diagonal().array() += 1e-12;
 
     hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
     hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
@@ -177,12 +178,12 @@ const base::commands::Joints& AccelerationSceneReducedTSID::solve(const Hierarch
     uint nc = contacts.size();
 
     auto qdd_out = Eigen::Map<Eigen::VectorXd>(solver_output.data(), nj);
-    auto fext_out = Eigen::Map<Eigen::VectorXd>(solver_output.data()+nj, 6*nc);
+    auto fext_out = Eigen::Map<Eigen::VectorXd>(solver_output.data()+nj, 3*nc);
 
     // computing torques from accelerations and forces (using last na equation from dynamic equations of motion)
     Eigen::VectorXd tau_out = robot_model->jointSpaceInertiaMatrix().bottomRows(na) * qdd_out;
-    for(uint c = 0; c < nc; ++c)
-        tau_out += -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[c]).transpose().bottomRows(na) * fext_out.segment<6>(c*6);
+    for(uint c = 0; c < nc; c++)
+        tau_out += -robot_model->spaceJacobian(robot_model->worldFrame(), contacts.names[c]).transpose().bottomRows(na) * fext_out.segment<3>(c*3);
     tau_out += robot_model->biasForces().bottomRows(na);
 
     solver_output_joints.resize(robot_model->noOfActuatedJoints());
@@ -212,8 +213,8 @@ const base::commands::Joints& AccelerationSceneReducedTSID::solve(const Hierarch
     contact_wrenches.resize(nc);
     contact_wrenches.names = contacts.names;
     for(uint i = 0; i < nc; i++){
-        contact_wrenches[i].force = fext_out.segment(i*6, 3);
-        contact_wrenches[i].torque = fext_out.segment(i*6+3, 3);
+        contact_wrenches[i].force = fext_out.segment(i*3, 3);
+        //contact_wrenches[i].torque = fext_out.segment(i*6+3, 3);
     }
 
     contact_wrenches.time = base::Time::now();
