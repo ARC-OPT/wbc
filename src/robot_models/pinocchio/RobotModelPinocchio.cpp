@@ -159,15 +159,17 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
         }
 
         // Pinocchio expects the floating base twist/acceleration in local coordinates. However, we
-        // want to give the linear part in world coordinates and the angular part in local coordinates
+        // want to give the linear part in world coordinates and the angular part in local coordinates, aligned wrt. world
         floating_base_state = floating_base_state_in;
         base::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
 
         base::Twist fb_twist = floating_base_state.twist;
         fb_twist.linear = fb_rot.transpose() * floating_base_state.twist.linear;
+        fb_twist.angular = fb_rot.transpose() * floating_base_state.twist.angular;
 
         base::Acceleration fb_acc = floating_base_state.acceleration;
         fb_acc.linear = fb_rot.transpose() * floating_base_state.acceleration.linear;
+        fb_acc.angular = fb_rot.transpose() * floating_base_state.acceleration.angular;
 
         base::Vector3d euler = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         for(int i = 0; i < 3; i++){
