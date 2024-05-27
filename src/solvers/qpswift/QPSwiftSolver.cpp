@@ -11,8 +11,8 @@ QPSolverRegistry<QPSwiftSolver> QPSwiftSolver::reg("qpswift");
 QPSwiftSolver::QPSwiftSolver(){
     my_qp = 0;
     max_iter = 1000;
-    rel_tol = 1e-6;
-    abs_tol = 1e-6;
+    rel_tol = 1e-5;
+    abs_tol = 1e-5;
     sigma = 100;
     verbose_level = 0;
 }
@@ -70,6 +70,9 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
         throw std::runtime_error("QPSwiftSolver::solve: Number of task hierarchies must be 1 for the current implementation");
 
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
+
+    if(n_dec != qp.nq || n_eq != qp.neq || n_ineq != qp.nin)
+        configured = false;
 
     if(!configured){
         // Count equality / inequality constraints

@@ -64,6 +64,8 @@ protected:
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A;
     base::Time stamp;
+    size_t nc;
+    size_t nv;
 };
 
 }

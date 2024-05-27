@@ -14,6 +14,7 @@ QPOASESSolver::QPOASESSolver(){
     n_wsr = 1000;
     options.setToFast();
     options.printLevel = PL_NONE;
+    nc = nv = 0;
 }
 
 QPOASESSolver::~QPOASESSolver(){
@@ -28,10 +29,16 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
     qp.check();
 
-    size_t nc = qp.C.rows() + qp.A.rows();
+    if(configured){
+        if(nc != (size_t)(qp.C.rows() + qp.A.rows()) || nv != (size_t)qp.A.cols())
+            configured = false;
+    }
+
+    nc = qp.C.rows() + qp.A.rows();
+    nv = qp.A.cols();
 
     if(!configured){
-        sq_problem = SQProblem(qp.A.cols(), nc);
+        sq_problem = SQProblem(nv, nc);
         sq_problem.setOptions(options);
         configured = true;
     }
