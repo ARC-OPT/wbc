@@ -69,19 +69,19 @@ void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::V
     solver_output = out;
 
     if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_UNBOUNDED){
-        qp.print();
+        //qp.print();
         throw std::runtime_error("Eiquadprog returned error status:unbounded.");
     }
     if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_MAX_ITER_REACHED){
-        qp.print();
+        //qp.print();
         throw std::runtime_error("Eiquadprog returned error status: max iterations reached.");
     }
     if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_REDUNDANT_EQUALITIES){
-        qp.print();
+        //qp.print();
         throw std::runtime_error("Eiquadprog returned error status: redundant equalities.");
     }
     if(status == eq::EiquadprogFast_status::EIQUADPROG_FAST_INFEASIBLE){
-        qp.print();
+        //qp.print();
         throw std::runtime_error("Eiquadprog returned error status: infeasible.");
     }
 

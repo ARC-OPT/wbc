@@ -192,12 +192,12 @@ const base::commands::Joints& AccelerationSceneReducedTSID::solve(const Hierarch
         const std::string& name = robot_model->actuatedJointNames()[i];
         uint idx = robot_model->jointIndex(name);
         if(base::isNaN(qdd_out[idx])){
-            hqp[0].print();
+            //hqp[0].print();
             throw std::runtime_error("Solver output (acceleration) for joint " + name + " is NaN");
         }
         uint start_idx = robot_model->hasFloatingBase() ? 6 : 0;
         if(base::isNaN(tau_out[idx-start_idx])){
-            hqp[0].print();
+            //hqp[0].print();
             throw std::runtime_error("Solver output (force/torque) for joint " + name + " is NaN");
         }
         solver_output_joints[name].acceleration = qdd_out[idx];
