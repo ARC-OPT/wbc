@@ -30,7 +30,7 @@ WBC aims to describe a robot control problem in terms of costs and constraints o
 
 # Statement of need
 
-ARC-OPT supports the software developer in designing robot controllers by providing configuration options for different pre-defined WBC problems. In contrast to existing libraries [@delprete2016],[@Posa2016], ARC-OPT provides unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and rigid body dynamics libraries on these problems. Finally, it provides a WBC approach for robots with parallel kinematic loops, as described in [@Mronga2022].
+ARC-OPT supports the software developer in designing robot controllers by providing configuration options for different pre-defined WBC problems. In contrast to existing libraries [@delprete2016],[@Posa2016],[@Smits2009] ARC-OPT provides unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and rigid body dynamics libraries on these problems. Finally, it provides a WBC approach for robots with parallel kinematic loops, as described in [@Mronga2022].
 
 # Description
 
