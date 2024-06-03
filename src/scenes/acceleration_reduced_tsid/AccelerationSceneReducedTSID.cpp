@@ -155,7 +155,6 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
         }
     }
-
     qp.H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
     qp.H.block(nj,nj, ncp*3, ncp*3).diagonal().array() += 1e-12;
 
@@ -183,7 +182,7 @@ const base::commands::Joints& AccelerationSceneReducedTSID::solve(const Hierarch
     // computing torques from accelerations and forces (using last na equation from dynamic equations of motion)
     Eigen::VectorXd tau_out = robot_model->jointSpaceInertiaMatrix().bottomRows(na) * qdd_out;
     for(uint c = 0; c < nc; c++)
-        tau_out += -robot_model->spaceJacobian(robot_model->worldFrame(), contacts.names[c]).transpose().bottomRows(na) * fext_out.segment<3>(c*3);
+        tau_out += -robot_model->spaceJacobian(robot_model->worldFrame(), contacts.names[c]).topRows<3>().transpose().bottomRows(na) * fext_out.segment<3>(c*3);
     tau_out += robot_model->biasForces().bottomRows(na);
 
     solver_output_joints.resize(robot_model->noOfActuatedJoints());
