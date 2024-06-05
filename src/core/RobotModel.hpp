@@ -200,6 +200,13 @@ public:
     /** @brief Load URDF model from either file or string*/
     urdf::ModelInterfaceSharedPtr loadRobotURDF(const std::string& file_or_string);
 
+    /** Build a new model from given URDF */
+    virtual bool constructModelFromURDF(){return false;}
+
+    /** Return current URDF model*/
+    urdf::ModelInterfaceSharedPtr getURDFModel(){return robot_urdf;}
+
+
 };
 typedef std::shared_ptr<RobotModel> RobotModelPtr;
 

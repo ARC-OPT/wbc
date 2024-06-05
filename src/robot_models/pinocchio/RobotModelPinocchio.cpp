@@ -429,4 +429,21 @@ void RobotModelPinocchio::computeInverseDynamics(base::commands::Joints &solver_
     }
 }
 
+bool RobotModelPinocchio::constructModelFromURDF(){
+    try{
+        if(robot_model_config.floating_base){
+            pinocchio::urdf::buildModel(robot_urdf,pinocchio::JointModelFreeFlyer(), model);
+        }
+        else{
+            pinocchio::urdf::buildModel(robot_urdf, model);
+        }
+    }
+    catch(std::invalid_argument e){
+        LOG_ERROR_S << "RobotModelPinocchio: Failed to load urdf model"<<std::endl;
+        return false;
+    }
+    data = std::make_shared<pinocchio::Data>(model);
+    return true;
+}
+
 }

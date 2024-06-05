@@ -94,6 +94,9 @@ public:
     /** @brief Compute and return the inverse dynamics solution*/
     virtual void computeInverseDynamics(base::commands::Joints &solver_output);
 
+    /** Build a new model from given URDF */
+    virtual bool constructModelFromURDF();
+
 };
 
 }
