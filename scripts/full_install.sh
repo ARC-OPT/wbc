@@ -89,9 +89,21 @@ mkdir build && cd build
 cmake .. -DBUILD_TESTING=OFF -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_WITH_VECTORIZATION_SUPPORT=OFF
 make -j8 && sudo make install && cd ../..
 
+# OSQP
+git clone https://github.com/osqp/osqp.git
+cd osqp
+mkdir build && cd build
+cmake ..
+make -j8 && sudo make install && cd ../..
+git clone https://github.com/robotology/osqp-eigen.git
+cd osqp-eigen
+mkdir build && cd build
+cmake ..
+make -j8 && sudo make install && cd ../..
+
 # WBC
 mkdir wbc/build && cd wbc/build
-cmake .. -DROBOT_MODEL_RBDL=ON -DROBOT_MODEL_KDL=ON -DSOLVER_PROXQP=ON -DSOLVER_EIQUADPROG=ON -DSOLVER_QPSWIFT=ON -DCMAKE_BUILD_TYPE=RELEASE
+cmake .. -DROBOT_MODEL_RBDL=ON -DROBOT_MODEL_KDL=ON -DSOLVER_PROXQP=ON -DSOLVER_EIQUADPROG=ON -DSOLVER_QPSWIFT=ON -DSOLVER_OSQP=ON -DCMAKE_BUILD_TYPE=RELEASE
 make -j8 && sudo make install && cd ..
 
 sudo ldconfig
