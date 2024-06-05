@@ -96,4 +96,10 @@ if [ -d "qpswift" ]; then
   ./test_qpswift_solver
   cd ../..
 fi
+if [ -d "osqp" ]; then
+  echo "Testing OSQPsolver ..."
+  cd osqp/test
+  ./test_osqp_solver
+  cd ../..
+fi
 cd ..
