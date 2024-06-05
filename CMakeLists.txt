@@ -1,5 +1,6 @@
 cmake_minimum_required (VERSION 3.16.3)
 project(wbc)
+include(CTest)
 
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem unit_test_framework serialization)
