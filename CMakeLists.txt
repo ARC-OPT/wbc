@@ -1,9 +1,11 @@
 cmake_minimum_required (VERSION 3.16.3)
 project(wbc)
+include(CTest)
 
 find_package(PkgConfig REQUIRED)
 find_package(Boost REQUIRED COMPONENTS system filesystem unit_test_framework serialization)
 
+set(CMAKE_CXX_STANDARD 14)
 set(PROJECT_VERSION 0.2)
 set(API_VERSION ${PROJECT_VERSION})
 
@@ -15,6 +17,7 @@ option(ROBOT_MODEL_HYRODYN "Also build the HyRoDyn-based robot model, by default
 option(SOLVER_PROXQP "Build the ProxQP-based solver, by default only hls and qpoases are built" OFF)
 option(SOLVER_EIQUADPROG "Build the Eiquadprog-based solver, by default only hls and qpoases are built" OFF)
 option(SOLVER_QPSWIFT "Build the QPSwift-based solver, by default only hls and qpoases are built" OFF)
+option(SOLVER_OSQP "Build the OSQP-based solver, by default only hls and qpoases are built" OFF)
 
 add_subdirectory(src)
 add_subdirectory(tutorials)

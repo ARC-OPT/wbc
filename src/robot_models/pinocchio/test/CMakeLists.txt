@@ -5,3 +5,5 @@ target_link_libraries(test_robot_model_pinocchio
                       Boost::system
                       Boost::filesystem
                       Boost::serialization)
+
+add_test(NAME test_robot_model_pinocchio COMMAND test_robot_model_pinocchio)
