@@ -4,7 +4,7 @@
 #include "../../core/QPSolver.hpp"
 
 #include <memory>
-
+#include <iostream>
 #include <base/Time.hpp>
 
 #include <proxsuite/proxqp/dense/wrapper.hpp>
