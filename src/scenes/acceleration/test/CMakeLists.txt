@@ -4,3 +4,5 @@ target_link_libraries(test_acceleration_scene
                       wbc-robot_models-pinocchio
                       wbc-solvers-qpoases
                       Boost::unit_test_framework)
+
+add_test(NAME test_acceleration_scene COMMAND test_acceleration_scene)
