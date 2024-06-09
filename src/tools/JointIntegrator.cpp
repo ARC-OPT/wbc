@@ -3,15 +3,16 @@
 
 namespace wbc {
 
-void JointIntegrator::integrate(const base::samples::Joints& joint_state, base::commands::Joints &cmd, double cycle_time, IntegrationMethod method){
+void JointIntegrator::integrate(const base::samples::Joints& joint_state, base::commands::Joints &cmd, double cycle_time, IntegrationMethod method, bool use_cur_state){
 
+    cur_joint_state = joint_state;
     if(initialized){
         switch (method) {
         case RECTANGULAR:
-            integrateRectangular(cmd,cycle_time);
+            integrateRectangular(cmd,cycle_time,use_cur_state);
             break;
         case TRAPEZOIDAL:
-            integrateTrapezoidal(cmd,cycle_time);
+            integrateTrapezoidal(cmd,cycle_time,use_cur_state);
             break;
         default:
             throw std::runtime_error("Invalid integration Method: " + std::to_string(method));
@@ -43,7 +44,13 @@ void JointIntegrator::integrate(const base::samples::Joints& joint_state, base::
     prev_cmd = cmd;
 }
 
-void JointIntegrator::integrateRectangular(base::commands::Joints &cmd, double cycle_time){
+void JointIntegrator::integrateRectangular(base::commands::Joints &cmd, double cycle_time, bool use_cur_state){
+
+    if(use_cur_state){
+        for(uint i = 0; i < cmd.size(); i++)
+            prev_cmd[i] = cur_joint_state[cmd.names[i]];
+    }
+
     for(uint i = 0; i < cmd.size(); i++)
     {
         double h = cycle_time;
@@ -67,15 +74,20 @@ void JointIntegrator::integrateRectangular(base::commands::Joints &cmd, double c
     }
 }
 
-void JointIntegrator::integrateTrapezoidal(base::commands::Joints &cmd, double cycle_time){
+void JointIntegrator::integrateTrapezoidal(base::commands::Joints &cmd, double cycle_time, bool use_cur_state){
+
+    if(use_cur_state){
+        for(uint i = 0; i < cmd.size(); i++)
+            prev_cmd[i] = cur_joint_state[cmd.names[i]];
+    }
     for(uint i = 0; i < cmd.size(); i++)
     {
         double h = cycle_time/2;
         double q_prev = prev_cmd[i].position;
         double qd_prev = prev_cmd[i].speed;
+        double qdd_prev = prev_cmd[i].acceleration;
         double qd = cmd[i].speed;
         double qdd = cmd[i].acceleration;
-        double qdd_prev = cmd[i].acceleration;
 
         switch(cmdMode(cmd[i]))
         {
