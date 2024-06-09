@@ -3,7 +3,6 @@
 #include <boost/test/unit_test.hpp>
 #include "robot_models/hyrodyn/RobotModelHyrodyn.hpp"
 #include "robot_models/rbdl/RobotModelRBDL.hpp"
-#include "robot_models/kdl/RobotModelKDL.hpp"
 #include "robot_models/pinocchio/RobotModelPinocchio.hpp"
 #include "test_robot_model.hpp"
 
@@ -71,9 +70,6 @@ void compareVect(base::VectorXd vect_a, base::VectorXd vect_b, vector<string> jo
 
 void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = false){
 
-    RobotModelKDL robot_model_kdl;
-    BOOST_CHECK(robot_model_kdl.configure(cfg));
-
     RobotModelPinocchio robot_model_pinocchio;
     BOOST_CHECK(robot_model_pinocchio.configure(cfg));
 
@@ -85,8 +81,6 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     if(verbose){
         cout << "---------------- Joint order ----------------" << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        for(auto n : robot_model_kdl.jointNames()) cout<<n<<" "; cout<<endl;
         cout<< " .......... RobotModelPinocchio .........." << endl;
         for(auto n : robot_model_pinocchio.jointNames()) cout<<n<<" "; cout<<endl;
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -95,29 +89,24 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
         for(auto n : robot_model_hyrodyn.jointNames()) cout<<n<<" "; cout<<endl;
     }
 
-    base::samples::Joints joint_state = makeRandomJointState(robot_model_kdl.actuatedJointNames());
+    base::samples::Joints joint_state = makeRandomJointState(robot_model_pinocchio.actuatedJointNames());
     base::samples::RigidBodyStateSE3 floating_base_state = makeRandomFloatingBaseState();
 
-    BOOST_CHECK_NO_THROW(robot_model_kdl.update(joint_state,floating_base_state));
     BOOST_CHECK_NO_THROW(robot_model_pinocchio.update(joint_state,floating_base_state));
     BOOST_CHECK_NO_THROW(robot_model_rbdl.update(joint_state,floating_base_state));
     BOOST_CHECK_NO_THROW(robot_model_hyrodyn.update(joint_state,floating_base_state));
 
     // FK
 
-    base::samples::RigidBodyStateSE3 rbs_kdl = robot_model_kdl.rigidBodyState(robot_model_kdl.worldFrame(), tip_frame);
     base::samples::RigidBodyStateSE3 rbs_pinocchio = robot_model_pinocchio.rigidBodyState(robot_model_pinocchio.worldFrame(), tip_frame);
     base::samples::RigidBodyStateSE3 rbs_rbdl = robot_model_rbdl.rigidBodyState(robot_model_rbdl.worldFrame(), tip_frame);
     base::samples::RigidBodyStateSE3 rbs_hyrodyn = robot_model_hyrodyn.rigidBodyState(robot_model_hyrodyn.worldFrame(), tip_frame);
 
-    compareRbs(rbs_kdl, rbs_pinocchio);
-    compareRbs(rbs_kdl, rbs_rbdl);
-    compareRbs(rbs_kdl, rbs_hyrodyn);
+    compareRbs(robot_model_pinocchio, rbs_rbdl);
+    compareRbs(robot_model_pinocchio, rbs_hyrodyn);
 
     if(verbose){
         cout << "---------------- Forward Kinematics ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        printRbs(rbs_kdl);
         cout<< " .......... RobotModelPinocchio .........." << endl;
         printRbs(rbs_pinocchio);
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -128,19 +117,15 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     // Space Jacobian
 
-    base::MatrixXd Js_kdl = robot_model_kdl.spaceJacobian(robot_model_kdl.worldFrame(), tip_frame);
     base::MatrixXd Js_pinocchio = robot_model_pinocchio.spaceJacobian(robot_model_pinocchio.worldFrame(), tip_frame);
     base::MatrixXd Js_rbdl = robot_model_rbdl.spaceJacobian(robot_model_rbdl.worldFrame(), tip_frame);
     base::MatrixXd Js_hyrodyn = robot_model_hyrodyn.spaceJacobian(robot_model_hyrodyn.worldFrame(), tip_frame);
 
-    compareJacobian(Js_kdl,Js_pinocchio,robot_model_kdl.jointNames(), robot_model_pinocchio.jointNames(), cfg.floating_base);
-    compareJacobian(Js_kdl,Js_rbdl,robot_model_kdl.jointNames(), robot_model_rbdl.jointNames(), cfg.floating_base);
-    compareJacobian(Js_kdl,Js_hyrodyn,robot_model_kdl.jointNames(), robot_model_hyrodyn.jointNames(), cfg.floating_base);
+    compareJacobian(Js_pinocchio,Js_rbdl,robot_model_pinocchio.jointNames(), robot_model_rbdl.jointNames(), cfg.floating_base);
+    compareJacobian(Js_pinocchio,Js_hyrodyn,robot_model_pinocchio.jointNames(), robot_model_hyrodyn.jointNames(), cfg.floating_base);
 
     if(verbose){
         cout << "---------------- Space Jacobian ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        cout << Js_kdl << endl << endl;
         cout<< " .......... RobotModelPinocchio .........." << endl;
         cout << Js_pinocchio << endl << endl;
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -151,19 +136,15 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     // Body Jacobian
 
-    base::MatrixXd Jb_kdl = robot_model_kdl.bodyJacobian(robot_model_kdl.worldFrame(), tip_frame);
     base::MatrixXd Jb_pinocchio = robot_model_pinocchio.bodyJacobian(robot_model_pinocchio.worldFrame(), tip_frame);
     base::MatrixXd Jb_rbdl = robot_model_rbdl.bodyJacobian(robot_model_rbdl.worldFrame(), tip_frame);
     base::MatrixXd Jb_hyrodyn = robot_model_hyrodyn.bodyJacobian(robot_model_hyrodyn.worldFrame(), tip_frame);
 
-    compareJacobian(Jb_kdl,Jb_pinocchio,robot_model_kdl.jointNames(), robot_model_pinocchio.jointNames(), cfg.floating_base);
-    compareJacobian(Jb_kdl,Jb_rbdl,robot_model_kdl.jointNames(), robot_model_rbdl.jointNames(), cfg.floating_base);
-    compareJacobian(Jb_kdl,Jb_hyrodyn,robot_model_kdl.jointNames(), robot_model_hyrodyn.jointNames(), cfg.floating_base);
+    compareJacobian(Jb_pinocchio,Jb_rbdl,robot_model_pinocchio.jointNames(), robot_model_rbdl.jointNames(), cfg.floating_base);
+    compareJacobian(Jb_pinocchio,Jb_hyrodyn,robot_model_pinocchio.jointNames(), robot_model_hyrodyn.jointNames(), cfg.floating_base);
 
     if(verbose){
         cout << "---------------- Body Jacobian ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl ;
-        cout << Jb_kdl << endl << endl;
         cout<< " .......... RobotModelPinocchio .........." << endl;
         cout << Jb_pinocchio << endl << endl;
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -174,19 +155,15 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     // CoM Jacobian
 
-    base::MatrixXd Jcom_kdl = robot_model_kdl.comJacobian();
     base::MatrixXd Jcom_pinocchio = robot_model_pinocchio.comJacobian();
     base::MatrixXd Jcom_rbdl = robot_model_rbdl.comJacobian();
     base::MatrixXd Jcom_hyrodyn = robot_model_hyrodyn.comJacobian();
 
-    compareJacobian(Jcom_kdl,Jcom_pinocchio,robot_model_kdl.jointNames(), robot_model_pinocchio.jointNames(), cfg.floating_base);
-    compareJacobian(Jcom_kdl,Jcom_rbdl,robot_model_kdl.jointNames(), robot_model_rbdl.jointNames(), cfg.floating_base);
-    compareJacobian(Jcom_kdl,Jcom_hyrodyn,robot_model_kdl.jointNames(), robot_model_hyrodyn.jointNames(), cfg.floating_base);
+    compareJacobian(robot_model_pinocchio,Jcom_rbdl,robot_model_kdl.jointNames(), robot_model_rbdl.jointNames(), cfg.floating_base);
+    compareJacobian(robot_model_pinocchio,Jcom_hyrodyn,robot_model_kdl.jointNames(), robot_model_hyrodyn.jointNames(), cfg.floating_base);
 
     if(verbose){
         cout << "---------------- CoM Jacobian ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        cout << Jcom_kdl << endl << endl;
         cout<< " .......... RobotModelPinocchio .........." << endl;
         cout << Jcom_pinocchio << endl << endl;
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -197,19 +174,15 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     // Center of Mass
 
-    base::samples::RigidBodyStateSE3 com_kdl = robot_model_kdl.centerOfMass();
     base::samples::RigidBodyStateSE3 com_pinocchio = robot_model_pinocchio.centerOfMass();
     base::samples::RigidBodyStateSE3 com_rbdl = robot_model_rbdl.centerOfMass();
     base::samples::RigidBodyStateSE3 com_hyrodyn = robot_model_hyrodyn.centerOfMass();
 
-    compareRbs(com_kdl,com_pinocchio);
-    compareRbs(com_kdl,com_rbdl);
-    compareRbs(com_kdl,com_hyrodyn);
+    compareRbs(robot_model_pinocchio,com_rbdl);
+    compareRbs(robot_model_pinocchio,com_hyrodyn);
 
     if(verbose){
         cout << "---------------- CoM ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        printRbs(com_kdl);
         cout<< " .......... RobotModelPinocchio .........." << endl;
         printRbs(com_pinocchio);
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -220,24 +193,19 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     // Spatial acceleration bias
 
-    base::Acceleration acc_kdl = robot_model_kdl.spatialAccelerationBias(robot_model_kdl.worldFrame(), tip_frame);
     base::Acceleration acc_pinocchio = robot_model_pinocchio.spatialAccelerationBias(robot_model_pinocchio.worldFrame(), tip_frame);
     base::Acceleration acc_rbdl = robot_model_rbdl.spatialAccelerationBias(robot_model_rbdl.worldFrame(), tip_frame);
     base::Acceleration acc_hyrodyn = robot_model_hyrodyn.spatialAccelerationBias(robot_model_hyrodyn.worldFrame(), tip_frame);
 
     for(int i = 0; i < 3; i++){
-        BOOST_CHECK(fabs(acc_kdl.linear[i] - acc_pinocchio.linear[i]) < 1e-3);
-        BOOST_CHECK(fabs(acc_kdl.linear[i] - acc_rbdl.linear[i]) < 1e-3);
-        BOOST_CHECK(fabs(acc_kdl.linear[i] - acc_hyrodyn.linear[i]) < 1e-3);
-        BOOST_CHECK(fabs(acc_kdl.angular[i] - acc_pinocchio.angular[i]) < 1e-3);
-        BOOST_CHECK(fabs(acc_kdl.angular[i] - acc_rbdl.angular[i]) < 1e-3);
-        BOOST_CHECK(fabs(acc_kdl.angular[i] - acc_hyrodyn.angular[i]) < 1e-3);
+        BOOST_CHECK(fabs(acc_pinocchio.linear[i] - acc_rbdl.linear[i]) < 1e-3);
+        BOOST_CHECK(fabs(acc_pinocchio.linear[i] - acc_hyrodyn.linear[i]) < 1e-3);
+        BOOST_CHECK(fabs(acc_pinocchio.angular[i] - acc_rbdl.angular[i]) < 1e-3);
+        BOOST_CHECK(fabs(acc_pinocchio.angular[i] - acc_hyrodyn.angular[i]) < 1e-3);
     }
 
     if(verbose){
         cout << "---------------- Spatial Acceleration Bias ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        cout<< acc_kdl.linear.transpose() << " " << acc_kdl.angular.transpose() << endl << endl;
         cout<< " .......... RobotModelPinocchio .........." << endl;
         cout<< acc_pinocchio.linear.transpose() << " " << acc_pinocchio.angular.transpose() << endl << endl;
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -248,19 +216,15 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     // Bias Forces
 
-    base::VectorXd C_kdl = robot_model_kdl.biasForces();
     base::VectorXd C_pinocchio = robot_model_pinocchio.biasForces();
     base::VectorXd C_rbdl = robot_model_rbdl.biasForces();
     base::VectorXd C_hyrodyn = robot_model_hyrodyn.biasForces();
 
-    compareVect(C_kdl,C_pinocchio,robot_model_kdl.jointNames(), robot_model_pinocchio.jointNames());
-    compareVect(C_kdl,C_rbdl,robot_model_kdl.jointNames(), robot_model_rbdl.jointNames());
-    compareVect(C_kdl,C_hyrodyn,robot_model_kdl.jointNames(), robot_model_hyrodyn.jointNames());
+    compareVect(C_pinocchio,C_rbdl,robot_model_pinocchio.jointNames(), robot_model_rbdl.jointNames());
+    compareVect(C_pinocchio,C_hyrodyn,robot_model_pinocchio.jointNames(), robot_model_hyrodyn.jointNames());
 
     if(verbose){
         cout << "---------------- Bias Forces ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        cout<< C_kdl.transpose() << endl << endl;
         cout<< " .......... RobotModelPinocchio .........." << endl;
         cout<< C_pinocchio.transpose() << endl << endl;
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -271,19 +235,15 @@ void compareRobotModels(RobotModelConfig cfg, string tip_frame, bool verbose = f
 
     // Mass-inertia matrix
 
-    base::MatrixXd Hq_kdl = robot_model_kdl.jointSpaceInertiaMatrix();
     base::MatrixXd Hq_pinocchio = robot_model_pinocchio.jointSpaceInertiaMatrix();
     base::MatrixXd Hq_rbdl = robot_model_rbdl.jointSpaceInertiaMatrix();
     base::MatrixXd Hq_hyrodyn = robot_model_hyrodyn.jointSpaceInertiaMatrix();
 
-    compareMassInertiaMat(Hq_kdl,Hq_pinocchio,robot_model_kdl.jointNames(), robot_model_pinocchio.jointNames());
-    compareMassInertiaMat(Hq_kdl,Hq_rbdl,robot_model_kdl.jointNames(), robot_model_rbdl.jointNames());
-    compareMassInertiaMat(Hq_kdl,Hq_hyrodyn,robot_model_kdl.jointNames(), robot_model_hyrodyn.jointNames());
+    compareMassInertiaMat(Hq_pinocchio,Hq_rbdl,Hq_pinocchio.jointNames(), robot_model_rbdl.jointNames());
+    compareMassInertiaMat(Hq_pinocchio,Hq_hyrodyn,Hq_pinocchio.jointNames(), robot_model_hyrodyn.jointNames());
 
     if(verbose){
         cout << "---------------- Mass-Inertia Matrix ----------------" << endl << endl;
-        cout<< " .......... RobotModelKDL .........." << endl;
-        cout<< Hq_kdl << endl << endl;
         cout<< " .......... RobotModelPinocchio .........." << endl;
         cout<< Hq_pinocchio << endl << endl;
         cout<< " .......... RobotModelRBDL .........." << endl;
@@ -318,7 +278,6 @@ BOOST_AUTO_TEST_CASE(fixed_base){
     }
 }
 
-/*
 BOOST_AUTO_TEST_CASE(floating_base){
 
     string urdf_file = "../../../../models/kuka/urdf/kuka_iiwa.urdf";
@@ -332,4 +291,3 @@ BOOST_AUTO_TEST_CASE(floating_base){
 
     compareRobotModels(cfg, tip_frame, verbose);
 }
-*/

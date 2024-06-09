@@ -51,9 +51,9 @@ sh full_install.sh
 
 To execute unit tests for the WBC library, run
 ```
-sh scripts/run_tests.sh
+make test
 ```
-from the library's root folder. This will execute unit tests for all installed components, e.g. solvers, robot models, etc...
+from the library's build folder. This will execute unit tests for all installed components, e.g. solvers, robot models, etc...
 
 ## Examples 
 

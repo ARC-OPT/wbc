@@ -5,7 +5,3 @@ endif()
 if(ROBOT_MODEL_HYRODYN)
     add_subdirectory(hyrodyn)
 endif()
-if(ROBOT_MODEL_KDL)
-    add_subdirectory(kdl)
-endif()
-
