@@ -3,7 +3,7 @@
 
 # WBC - Whole-Body Control
 
-[Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/)
+[Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/) | [Scientific Paper](https://arc-opt.github.io/Documentation/publications/icra_2022/index.html)
 
 <img src="doc/images/wbc_principle.svg" width="600"/>
 
