@@ -1,6 +1,5 @@
 #include "EiquadprogSolver.hpp"
 #include "../../core/QuadraticProgram.hpp"
-#include <base/Eigen.hpp>
 #include <Eigen/Core>
 #include <iostream>
 
@@ -18,14 +17,13 @@ EiquadprogSolver::~EiquadprogSolver()
 
 }
 
-void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output)
+void EiquadprogSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output)
 {
 
-    if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("EiquadprogSolver::solve: Constraints vector size must be 1 for the current implementation");
+    assert(hierarchical_qp.size() == 1);
 
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
-    qp.check();
+    assert(qp.isValid());
 
     size_t n_in = (qp.bounded ? (2 * (qp.nin + qp.nq)) : (2*qp.nin));
     size_t n_eq = qp.neq;

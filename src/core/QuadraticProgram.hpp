@@ -1,14 +1,10 @@
-#ifndef WBC_TYPES_QUADRATIC_PROGRAM_HPP
-#define WBC_TYPES_QUADRATIC_PROGRAM_HPP
+#ifndef WBC_CORE_QUADRATIC_PROGRAM_HPP
+#define WBC_CORE_QUADRATIC_PROGRAM_HPP
 
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/samples/Joints.hpp>
+#include <Eigen/Core>
+#include <vector>
 
 namespace wbc{
-
-class JointWeights : public base::NamedVector<double>{
-};
 
 /**
  * @brief Describes a quadratic program of the form
@@ -29,22 +25,22 @@ struct QuadraticProgram{
 
     bool bounded;            /** Contains simple boiunds for the variables */
 
-    base::MatrixXd H;       /** Hessian Matrix (nq x nq) */
-    base::VectorXd g;       /** Gradient vector (nq x 1) */
-    base::MatrixXd A;       /** Equalities constraint matrix (neq x nq) */
-    base::VectorXd b;       /** Equalities constraint vector (neq x 1) */
-    base::MatrixXd C;       /** Inequalities constraint matrix (nin x nq) */
-    base::VectorXd lower_y; /** Lower bound of the constraint vector (nin x 1) */
-    base::VectorXd upper_y; /** Upper bound of the constraint vector (nin x 1) */
-    base::VectorXd lower_x; /** Lower bound of the solution vector (nq x 1) */
-    base::VectorXd upper_x; /** Upper bound of the solution vector (nq x 1) */
-    base::VectorXd Wy;      /** Constraint weights (nc x 1). Default entry is 1. */
+    Eigen::MatrixXd H;       /** Hessian Matrix (nq x nq) */
+    Eigen::VectorXd g;       /** Gradient vector (nq x 1) */
+    Eigen::MatrixXd A;       /** Equalities constraint matrix (neq x nq) */
+    Eigen::VectorXd b;       /** Equalities constraint vector (neq x 1) */
+    Eigen::MatrixXd C;       /** Inequalities constraint matrix (nin x nq) */
+    Eigen::VectorXd lower_y; /** Lower bound of the constraint vector (nin x 1) */
+    Eigen::VectorXd upper_y; /** Upper bound of the constraint vector (nin x 1) */
+    Eigen::VectorXd lower_x; /** Lower bound of the solution vector (nq x 1) */
+    Eigen::VectorXd upper_x; /** Upper bound of the solution vector (nq x 1) */
+    Eigen::VectorXd Wy;      /** Constraint weights (nc x 1). Default entry is 1. */
 
     /** Initialize all variables with NaN */
     void resize(uint nq, uint neq, uint nin, bool bounds);
 
     /** Check if matrix and vectors dims match with nq, neq, nin. Throw exception if not **/
-    void check() const;
+    bool isValid() const;
 
     /** Print content to console*/
     void print() const;
@@ -55,9 +51,8 @@ struct QuadraticProgram{
  * @brief Describes a hierarchy of quadratic programs
  */
 struct HierarchicalQP{
-    base::Time time;
     std::vector<QuadraticProgram> prios;           /** Hierarchical organized QPs. The first entriy is the highest priority*/
-    base::VectorXd Wq;                             /** Joint weights (all joints) */
+    Eigen::VectorXd Wq;                            /** Joint weights (all joints) */
 
     size_t size() const {
         return prios.size();
@@ -76,4 +71,4 @@ struct HierarchicalQP{
 
 }
 
-#endif // LINEAR_EQUALITY_CONSTRAINTS_HPP
+#endif // WBC_CORE_QUADRATIC_PROGRAM_HPP

@@ -1,8 +1,5 @@
 #include "VelocitySceneQP.hpp"
 
-#include <base/JointLimits.hpp>
-#include <base-logging/Logging.hpp>
-
 #include "../../tasks/CartesianVelocityTask.hpp"
 #include "../../tasks/JointVelocityTask.hpp"
 #include "../../tasks/CoMVelocityTask.hpp"
@@ -16,7 +13,7 @@ namespace wbc{
 SceneRegistry<VelocitySceneQP> VelocitySceneQP::reg("velocity_qp");
 
 VelocitySceneQP::VelocitySceneQP(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
-    VelocityScene(robot_model, solver, dt),
+    Scene(robot_model, solver, dt),
     hessian_regularizer(1e-8){
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
@@ -27,15 +24,10 @@ VelocitySceneQP::VelocitySceneQP(RobotModelPtr robot_model, QPSolverPtr solver, 
 
 const HierarchicalQP& VelocitySceneQP::update(){
 
-    if(!configured)
-        throw std::runtime_error("VelocitySceneQP has not been configured!. Please call configure() before calling update() for the first time!");
+    assert(configured);
+    assert(tasks.size() == 1);
 
-    if(tasks.size() != 1){
-        LOG_ERROR("Number of priorities in VelocitySceneQP should be 1, but is %i", tasks.size());
-        throw std::runtime_error("Invalid task configuration");
-    }
-
-    int nj = robot_model->noOfJoints();
+    uint nj = robot_model->nj();
     uint prio = 0;
 
     ///////// Constraints
@@ -94,35 +86,58 @@ const HierarchicalQP& VelocitySceneQP::update(){
         
         TaskPtr task = tasks[prio][i];
 
-        task->checkTimeout();
+        assert(task->type == TaskType::spatial_velocity ||
+               task->type == TaskType::com_velocity ||
+               task->type == TaskType::joint_velocity);
+
         task->update(robot_model);
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the task again
         if(task->activation == 0){
            task->y_ref.setZero();
-           task->y_ref_root.setZero();
+           task->y_ref_world.setZero();
         }
 
         for(int i = 0; i < task->A.rows(); i++){
-            task->Aw.row(i) = task->weights_root(i) * task->A.row(i) * task->activation * (!task->timeout);
-            task->y_ref_root(i) = task->y_ref_root(i) * task->weights_root(i) * task->activation;
+            task->Aw.row(i) = task->weights_world(i) * task->A.row(i) * task->activation;
+            task->y_ref_world(i) = task->y_ref_world(i) * task->weights_world(i) * task->activation;
         }
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
 
         qp.H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
-        qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_root;
+        qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_world;
 
     } // tasks on prio
 
     // Add regularization term
     qp.H.block(0,0,nj,nj).diagonal().array() += hessian_regularizer;
 
-    hqp.Wq = base::VectorXd::Map(joint_weights.elements.data(), robot_model->noOfJoints());
-    hqp.time = base::Time::now(); //  TODO: Use latest time stamp from all tasks!?
+    hqp.Wq = Eigen::VectorXd::Map(joint_weights.data(), robot_model->nj());
 
     return hqp;
+}
+
+const types::JointCommand& VelocitySceneQP::solve(const HierarchicalQP& hqp){
+
+    // solve
+    solver_output.resize(hqp[0].nq);
+    solver->solve(hqp, solver_output);
+
+    // Convert Output
+    uint nj = robot_model->nj();
+    uint na = robot_model->na();
+    uint nfb = robot_model->nfb();
+    solver_output_joints.resize(na);
+
+    for(uint i = 0; i < solver_output.size(); i++){
+        if(std::isnan(solver_output[i]))
+            throw std::runtime_error("Solver output is NaN");
+    }
+
+    solver_output_joints.velocity = solver_output.segment(nfb,nj-nfb);
+    return solver_output_joints;
 }
 
 } // namespace wbc

@@ -1,10 +1,8 @@
-#ifndef CONSTRAINT_HPP
-#define CONSTRAINT_HPP
+#ifndef WBC_CORE_CONSTRAINT_HPP
+#define WBC_CORE_CONSTRAINT_HPP
 
 #include "RobotModel.hpp"
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/NamedVector.hpp>
+#include <Eigen/Core>
 #include <memory>
 
 namespace wbc{
@@ -34,16 +32,16 @@ public:
     Type type(); 
 
     /** @brief return constraint matrix A */
-    const base::MatrixXd& A();
+    const Eigen::MatrixXd& A();
 
     /** @brief return constraint vector b */
-    const base::VectorXd& b();
+    const Eigen::VectorXd& b();
 
     /** @brief return constraint lower bound lb */
-    const base::VectorXd& lb();
+    const Eigen::VectorXd& lb();
 
     /** @brief return constraint upper bound ub */
-    const base::VectorXd& ub();
+    const Eigen::VectorXd& ub();
 
     /** @brief return size of the constraint (i.e. number of rows of the constraint matrix) */
     uint size();
@@ -59,19 +57,19 @@ protected:
     Type c_type;
 
     /** Constraint matrix */
-    base::MatrixXd A_mtx;
+    Eigen::MatrixXd A_mtx;
 
     /** Constraint vector */
-    base::VectorXd b_vec;
+    Eigen::VectorXd b_vec;
 
     /** Constraint lower bound */
-    base::VectorXd lb_vec;
+    Eigen::VectorXd lb_vec;
 
     /** Constraint upper bound */
-    base::VectorXd ub_vec;
+    Eigen::VectorXd ub_vec;
 
 };
 typedef std::shared_ptr<Constraint> ConstraintPtr;
 
 } // namespace wbc
-#endif
+#endif // WBC_CORE_CONSTRAINT_HPP

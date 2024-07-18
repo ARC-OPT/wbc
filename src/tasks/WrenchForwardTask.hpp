@@ -1,17 +1,18 @@
-#ifndef WRENCHFORWARDTASK_HPP
-#define WRENCHFORWARDTASK_HPP
+#ifndef WBC_TASKS_WRENCHFORWARDTASK_HPP
+#define WBC_TASKS_WRENCHFORWARDTASK_HPP
 
-#include "CartesianTask.hpp"
+#include "../core/Task.hpp"
 
 namespace wbc{
 
-class WrenchForwardTask : public CartesianTask{
+class WrenchForwardTask : public Task{
 protected:
-    base::Pose ref_frame_pose;
-    base::MatrixXd ref_frame_rotation;
-
+    Eigen::MatrixXd ref_frame_rotation;
+    const std::string ref_frame;
 public:
-    WrenchForwardTask(TaskConfig config, uint n_robot_joints);
+    WrenchForwardTask(TaskConfig config,
+                      const std::string &ref_frame,
+                      uint nj);
     virtual ~WrenchForwardTask() = default;
 
     /**
@@ -24,7 +25,11 @@ public:
      * @brief Update the Cartesian reference input for this task.
      * @param ref Reference input for this task. Only the wrench part is relevant (Must have a valid force and torque!)
      */
-    virtual void setReference(const base::samples::RigidBodyStateSE3& ref) override;
+    void setReference(const types::Wrench& ref);
+
+    /** @brief Returns the reference frame. This is the frame in which the task reference is assumed to be given. In this case the given reference wrench
+     *  will be transformed from this frame to world frame*/
+    const std::string& refFrame(){return ref_frame;}
 };
 
 }

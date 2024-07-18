@@ -1,16 +1,18 @@
-#ifndef WBC_SOLVERS_SOLVER_HPP
-#define WBC_SOLVERS_SOLVER_HPP
+#ifndef WBC_CORE_QPSOLVER_HPP
+#define WBC_CORE_QPSOLVER_HPP
 
+#include <Eigen/Core>
 #include <vector>
-#include <base/Eigen.hpp>
 #include <memory>
 #include <map>
-#include "QPSolverConfig.hpp"
 
 namespace wbc{
 
 class HierarchicalQP;
 
+/**
+ * @brief Base class for all QP solvers
+ */
 class QPSolver{
 protected:
     bool configured;
@@ -19,10 +21,10 @@ public:
     virtual ~QPSolver();
     /**
      * @brief solve Solve the given quadratic program
-     * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
-     * @param solver_output solution of the quadratic program
+     * @param hierarchical_qp Description of the (hierarchical) quadratic program to solve.
+     * @param solver_output solution of the quadratic program as vector
      */
-    virtual void solve(const HierarchicalQP& hierarchical_qp, base::VectorXd &solver_output) = 0;
+    virtual void solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd &solver_output) = 0;
 
     /** @brief reset Enforces reconfiguration at next call to solve() */
     void reset(){configured=false;}
@@ -38,7 +40,7 @@ struct QPSolverFactory{
     static QPSolver *createInstance(const std::string& name) {
         QPSolverMap::iterator it = getQPSolverMap()->find(name);
         if(it == getQPSolverMap()->end())
-            throw std::runtime_error("Failed to create instance of plugin " + name + ". Is the plugin registered?");
+            return 0;
         return it->second();
     }
 
@@ -74,4 +76,4 @@ struct QPSolverRegistry : QPSolverFactory{
 };
 }
 
-#endif
+#endif // WBC_CORE_QPSOLVER_HPP

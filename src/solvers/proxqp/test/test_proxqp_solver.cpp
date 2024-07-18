@@ -26,7 +26,7 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
 
     // Task Jacobian
-    base::Matrix6d A;
+    Eigen::MatrixXd A(6,6);
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
          0.553, 0.087,  0.43,  0.71, 0.148,  0.87,
          0.249, 0.632, 0.711,  0.13, 0.426, 0.963,
@@ -34,13 +34,13 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
          0.891, 0.019, 0.716, 0.534, 0.725, 0.633,
          0.315, 0.551, 0.462, 0.221, 0.638, 0.244;
     // Desired task space reference
-    base::Vector6d y;
+    Eigen::VectorXd y(6);
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
 
     qp.H = A.transpose()*A;
     qp.g = -(A.transpose()*y).transpose();
 
-    qp.check();
+    BOOST_CHECK(qp.isValid());
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
@@ -49,14 +49,13 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
 
     BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
-    base::VectorXd solver_output;
+    Eigen::VectorXd solver_output;
 
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
     BOOST_CHECK_NO_THROW(solver.solve(hqp, solver_output));
     gettimeofday(&end, NULL);
-    long useconds = end.tv_usec - start.tv_usec;
 
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
@@ -85,7 +84,7 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
     qp.g.setZero();
     qp.H.setIdentity();
     // Task Jacobian
-    base::Matrix6d A;
+    Eigen::MatrixXd A(6,6);
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
          0.553, 0.087,  0.43,  0.71, 0.148,  0.87,
          0.249, 0.632, 0.711,  0.13, 0.426, 0.963,
@@ -94,11 +93,11 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
          0.315, 0.551, 0.462, 0.221, 0.638, 0.244;
     qp.A = A;
     // Desired task space reference
-    base::Vector6d y;
+    Eigen::VectorXd y(6);
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
     qp.b = y;
 
-    qp.check();
+    BOOST_CHECK(qp.isValid());
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
@@ -107,13 +106,13 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
 
     BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
-    base::VectorXd solver_output;
+    Eigen::VectorXd solver_output;
 
     struct timeval start, end;
     gettimeofday(&start, NULL);
     BOOST_CHECK_NO_THROW(solver.solve(hqp, solver_output));
     gettimeofday(&end, NULL);
-    long useconds = end.tv_usec - start.tv_usec;
+    //long useconds = end.tv_usec - start.tv_usec;
 
     Eigen::VectorXd test = A*solver_output;
     //cout<<"Test: A * q_dot = "<<test.transpose();
@@ -142,7 +141,7 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
     qp.g.setZero();
     qp.H.setIdentity();
     // Task Jacobian
-    base::Matrix6d A;
+    Eigen::MatrixXd A(6,6);
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
          0.553, 0.087,  0.43,  0.71, 0.148,  0.87,
          0.249, 0.632, 0.711,  0.13, 0.426, 0.963,
@@ -151,12 +150,12 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
          0.315, 0.551, 0.462, 0.221, 0.638, 0.244;
     qp.C = A;
     // Desired task space reference
-    base::Vector6d y;
+    Eigen::VectorXd y(6);
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
     qp.lower_y = y - Eigen::VectorXd::Constant(qp.nq, 1e-1);
     qp.upper_y = y + Eigen::VectorXd::Constant(qp.nq, 1e-1);
 
-    qp.check();
+    BOOST_CHECK(qp.isValid());
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
@@ -165,13 +164,13 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
 
     BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
-    base::VectorXd solver_output;
+    Eigen::VectorXd solver_output;
 
     struct timeval start, end;
     gettimeofday(&start, NULL);
     BOOST_CHECK_NO_THROW(solver.solve(hqp, solver_output));
     gettimeofday(&end, NULL);
-    long useconds = end.tv_usec - start.tv_usec;
+    //long useconds = end.tv_usec - start.tv_usec;
 
     Eigen::VectorXd test = A*solver_output;
 
@@ -196,7 +195,7 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     qp.resize(NO_JOINTS, NO_EQ_CONSTRAINTS, NO_IN_CONSTRAINTS, WITH_BOUNDS);
 
     // Task Jacobian
-    base::Matrix6d A;
+    Eigen::MatrixXd A(6,6);
     A << 0.642, 0.706, 0.565,  0.48,  0.59, 0.917,
          0.553, 0.087,  0.43,  0.71, 0.148,  0.87,
          0.249, 0.632, 0.711,  0.13, 0.426, 0.963,
@@ -204,7 +203,7 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
          0.891, 0.019, 0.716, 0.534, 0.725, 0.633,
          0.315, 0.551, 0.462, 0.221, 0.638, 0.244;
     // Desired task space reference
-    base::Vector6d y;
+    Eigen::VectorXd y(6);
     y << 0.833, 0.096, 0.078, 0.971, 0.883, 0.366;
 
     qp.H = A.transpose()*A;
@@ -213,7 +212,7 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     qp.lower_x.setConstant(-1e10);
     qp.upper_x.setConstant(+1e10);
 
-    qp.check();
+    BOOST_CHECK(qp.isValid());
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
@@ -222,14 +221,13 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
 
     BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
-    base::VectorXd solver_output;
+    Eigen::VectorXd solver_output;
 
     struct timeval start, end;
     gettimeofday(&start, NULL);
 
     BOOST_CHECK_NO_THROW(solver.solve(hqp, solver_output));
     gettimeofday(&end, NULL);
-    long useconds = end.tv_usec - start.tv_usec;
 
     for(uint j = 0; j < NO_JOINTS; ++j)
         BOOST_CHECK((qp.lower_x(j)-1e-9) <= solver_output(j) && solver_output(j) <= (qp.upper_x(j)+1e-9));

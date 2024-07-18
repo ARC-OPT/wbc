@@ -1,6 +1,5 @@
 #include "ProxQPSolver.hpp"
 #include "../../core/QuadraticProgram.hpp"
-#include <base/Eigen.hpp>
 #include <Eigen/Core>
 #include <iostream>
 
@@ -21,15 +20,14 @@ ProxQPSolver::ProxQPSolver()
 /// min  0.5 * x'Hx + g'x
 /// s.t. Ax = b
 ///      l < Cx < u 
-void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output)
+void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output)
 {
     namespace pqp = proxsuite::proxqp;
 
-    if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("ProxQPSolver::solve: Constraints vector size must be 1 for the current implementation");
+    assert(hierarchical_qp.size() == 1);
 
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
-    qp.check();
+    assert(qp.isValid());
 
     
     size_t n_var = qp.A.cols();
@@ -72,31 +70,12 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, base::Vecto
         _solver_ptr->update(qp.H, qp.g, qp.A, qp.b, _C_mtx, _l_vec, _u_vec);
     }
 
-//     std::cerr << "qp.nq = " << qp.nq <<std::endl;
-//     std::cerr << "qp.neq = " << qp.neq <<std::endl;
-//     std::cerr << "qp.nin = " << qp.nin <<std::endl;
-//     std::cerr << "qp.bounded = " << qp.bounded <<std::endl;
-//     std::cerr << "l: " <<_l_vec.transpose() <<std::endl;
-//     std::cerr << "u: "<<_u_vec.transpose() <<std::endl;
-//     std::cerr << "C:\n"<<_C_mtx <<std::endl;
-//     std::cerr << "A:\n"<< qp.A << std::endl;
-//     std::cerr << "b: "<< qp.b << std::endl;
-//     std::cerr << "eps_abs: " << _solver_ptr->settings.eps_abs << std::endl;
-//     std::cerr << "max_iter: " << _solver_ptr->settings.max_iter << std::endl;
-
     _solver_ptr->solve();
     
     solver_output.resize(qp.nq);
     solver_output = _solver_ptr->results.x;
 
     auto status = _solver_ptr->results.info.status;
-
-    // if(status == pqp::QPSolverOutput::PROXQP_MAX_ITER_REACHED)
-    //     std::cerr << "ProxQP returned error status: max iterations reached." << std::endl;
-    // if(status == pqp::QPSolverOutput::PROXQP_PRIMAL_INFEASIBLE)
-    //     std::cerr << "ProxQP returned error status: problem is primal infeasible." << std::endl;
-    // if(status == pqp::QPSolverOutput::PROXQP_DUAL_INFEASIBLE)
-    //     std::cerr << "ProxQP returned error status: problem is dual infeasible." << std::endl;
 
     if(status == pqp::QPSolverOutput::PROXQP_MAX_ITER_REACHED)
         throw std::runtime_error("ProxQP returned error status: max iterations reached.");

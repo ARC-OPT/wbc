@@ -30,10 +30,10 @@ public:
      * @brief Compute control update according to potential field equation
      * @param gradient Computed gradient. Will be resized if gradient.size() != dimension.
      */
-    virtual const base::VectorXd& update(const base::VectorXd& position);
+    virtual const Eigen::VectorXd& update(const Eigen::VectorXd& position);
 
     /** Normal that defines the orientation of the plane*/
-    base::VectorXd n;
+    Eigen::VectorXd n;
 };
 
 typedef std::shared_ptr<PlanarPotentialField> PlanarPotentialFieldPtr;

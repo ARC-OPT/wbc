@@ -1,5 +1,5 @@
 #include "JointLimitsAccelerationConstraint.hpp"
-
+#include <iostream>
 namespace wbc{
 
     JointLimitsAccelerationConstraint::JointLimitsAccelerationConstraint(double dt, bool reduced) 
@@ -12,9 +12,10 @@ namespace wbc{
 
     void JointLimitsAccelerationConstraint::update(RobotModelPtr robot_model) {
         
-        uint nj = robot_model->noOfJoints();
-        uint na = robot_model->noOfActuatedJoints();
-        uint nc = robot_model->getActiveContacts().size();
+        uint nj = robot_model->nj();
+        uint na = robot_model->na();
+        uint nc = robot_model->nc();
+        uint nfb = robot_model->nfb();
         uint nv = reduced ? nj+3*nc : nj+na+3*nc;
 
         lb_vec.resize(nv);
@@ -26,7 +27,7 @@ namespace wbc{
         bool check_velocities = true;
         bool check_positions = true;
         
-        auto state = robot_model->jointState(robot_model->actuatedJointNames());
+        auto state = robot_model->jointState();
 
         // check if a value is not nan otherwise return a substiture value
         // used for acceleration limits since they might not be define in URDFs
@@ -37,29 +38,30 @@ namespace wbc{
         };
 
         // joint acceleration, velocity and position limits
-        for(auto n : robot_model->actuatedJointNames()){
-            size_t idx = robot_model->jointIndex(n);
-            const base::JointLimitRange &range = robot_model->jointLimits().getElementByName(n);
+        joint_limits = robot_model->jointLimits();
+        uint start_idx = nfb;
 
-            double pos = state[n].position;
-            double vel = state[n].speed;
+        for(size_t i = 0; i < nj - nfb; i++){
+
+            double pos = state.position[i];
+            double vel = state.velocity[i];
 
             // enforce joint acceleration and velocity limit
             if(check_accelerations)
             {
-                lb_vec(idx) = check_number(range.min.acceleration, -10000);
-                ub_vec(idx) = check_number(range.max.acceleration, +10000);
+                lb_vec(i+start_idx) = check_number(joint_limits.min.acceleration[i], -10000);
+                ub_vec(i+start_idx) = check_number(joint_limits.max.acceleration[i], +10000);
             }
             if(check_velocities)
             {
-                lb_vec(idx) = std::max(lb_vec(idx), (range.min.speed - vel) / dt);
-                ub_vec(idx) = std::min(ub_vec(idx), (range.max.speed - vel) / dt);
+                lb_vec(i+start_idx) = std::max(lb_vec(i+start_idx), (joint_limits.min.velocity[i] - vel) / dt);
+                ub_vec(i+start_idx) = std::min(ub_vec(i+start_idx), (joint_limits.max.velocity[i] - vel) / dt);
             }
             // enforce joint position limit
             if(check_positions)
             {
-                lb_vec(idx) = std::max(lb_vec(idx), 2*(range.min.position - pos - dt*vel) / (dt*dt));
-                ub_vec(idx) = std::min(ub_vec(idx), 2*(range.max.position - pos - dt*vel) / (dt*dt));
+                lb_vec(i+start_idx) = std::max(lb_vec(i+start_idx), 2*(joint_limits.min.position[i] - pos - dt*vel) / (dt*dt));
+                ub_vec(i+start_idx) = std::min(ub_vec(i+start_idx), 2*(joint_limits.max.position[i] - pos - dt*vel) / (dt*dt));
             }
         }
 
@@ -68,10 +70,9 @@ namespace wbc{
         if(reduced)
             return;
 
-        for(int i = 0; i < robot_model->noOfActuatedJoints(); i++){
-            const std::string& name = robot_model->actuatedJointNames()[i];
-            lb_vec(i+nj) = robot_model->jointLimits()[name].min.effort;
-            ub_vec(i+nj) = robot_model->jointLimits()[name].max.effort;
+        for(size_t i = 0; i < na; i++){
+            lb_vec(i+nj+start_idx) = joint_limits.min.effort[i];
+            ub_vec(i+nj+start_idx) = joint_limits.max.effort[i];
         }
     }
 

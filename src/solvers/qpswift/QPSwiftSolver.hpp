@@ -12,12 +12,12 @@ private:
     static QPSolverRegistry<QPSwiftSolver> reg;
 
 protected:
-    base::MatrixXd P;   /** Cost function Hessian matrix*/
-    base::VectorXd c;   /** Cost function gradient*/
-    base::MatrixXd A;   /** Equality constraint matrix*/
-    base::MatrixXd G;   /** Inequality constraint matrix*/
-    base::VectorXd b;   /** Equality constraint vector*/
-    base::VectorXd h;   /** Inequality constraint vector*/
+    Eigen::MatrixXd P;   /** Cost function Hessian matrix*/
+    Eigen::VectorXd c;   /** Cost function gradient*/
+    Eigen::MatrixXd A;   /** Equality constraint matrix*/
+    Eigen::MatrixXd G;   /** Inequality constraint matrix*/
+    Eigen::VectorXd b;   /** Equality constraint vector*/
+    Eigen::VectorXd h;   /** Inequality constraint vector*/
     int n_dec;          /** Number decision variables*/
     int n_ineq;         /** Number inequality constraints*/
     int n_eq;           /** Number equality constraints*/
@@ -39,7 +39,7 @@ public:
      * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);
+    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output);
 
     void setMaxIter(uint val){max_iter=val;}
     void setRelTol(double val){rel_tol=val;}

@@ -9,12 +9,13 @@ OsqpSolver::OsqpSolver() : configured(false){
 OsqpSolver::~OsqpSolver(){
 }
 
-void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output){
+void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output){
 
-    if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("OsqpSolver::solve: Constraints vector size must be 1 for the current implementation");
+    assert(hierarchical_qp.size() == 1);
 
     const QuadraticProgram& qp = hierarchical_qp[0];
+    assert(qp.isValid());
+
     uint nc = qp.bounded ? qp.neq + qp.nin + qp.nq : qp.neq + qp.nin;
 
     if(!configured){

@@ -8,13 +8,14 @@
 #include "../RadialPotentialField.hpp"
 #include "../PlanarPotentialField.hpp"
 #include "../JointLimitAvoidanceController.hpp"
+#
 
 using namespace std;
 using namespace wbc;
 
 void runPotentialFieldController(std::string filename,
                                  CartesianPotentialFieldsController* ctrl,
-                                 base::samples::RigidBodyStateSE3 start_pos,
+                                 types::RigidBodyState start_pos,
                                  double cycleTime){
 
     FILE* fp = fopen(filename.c_str(), "w");
@@ -28,7 +29,7 @@ void runPotentialFieldController(std::string filename,
     cout << "Prop. Gain is " << ctrl->getPGain().transpose() << endl;
     sleep(1);*/
 
-    base::samples::RigidBodyStateSE3 feedback = start_pos, control_output;
+    types::RigidBodyState feedback = start_pos, control_output;
     std::vector<PotentialFieldPtr> fields = ctrl->getFields();
 
     for(uint i = 0; i < 100000; i++)
@@ -73,7 +74,7 @@ BOOST_AUTO_TEST_CASE(radial_field)
     std::vector<PotentialFieldPtr> fields;
     fields.push_back(field);
 
-    base::VectorXd p_gain;
+    Eigen::VectorXd p_gain;
     p_gain.setConstant(dim, propGain);
 
     CartesianPotentialFieldsController controller;
@@ -81,14 +82,14 @@ BOOST_AUTO_TEST_CASE(radial_field)
     controller.setPGain(p_gain);
 
     BOOST_CHECK(controller.getPGain() == p_gain);
-    BOOST_CHECK(controller.getMaxControlOutput() == base::Vector3d::Constant(std::numeric_limits<double>::max()));
+    BOOST_CHECK(controller.getMaxControlOutput() == Eigen::Vector3d::Constant(std::numeric_limits<double>::max()));
     BOOST_CHECK(controller.getDimension() == 3);
-    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d::Zero());
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == Eigen::Vector3d::Zero());
     BOOST_CHECK(controller.getFields()[0]->influence_distance == influence_distance);
     BOOST_CHECK(controller.getFields()[0]->dimension == 3);
     BOOST_CHECK(controller.getFields()[0]->name == "radial_field");
 
-    base::samples::RigidBodyStateSE3 start_pos;
+    types::RigidBodyState start_pos;
     start_pos.pose.position << 1,0,0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
 
@@ -116,7 +117,7 @@ BOOST_AUTO_TEST_CASE(constrained_radial_field)
     std::vector<PotentialFieldPtr> fields;
     fields.push_back(field);
 
-    base::VectorXd p_gain, max_ctrl_out;
+    Eigen::VectorXd p_gain, max_ctrl_out;
     p_gain.setConstant(dim, propGain);
     max_ctrl_out.setConstant(dim, max_control_output);
 
@@ -128,12 +129,12 @@ BOOST_AUTO_TEST_CASE(constrained_radial_field)
     BOOST_CHECK(controller.getPGain() == p_gain);
     BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
     BOOST_CHECK(controller.getDimension() == 3);
-    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d::Zero());
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == Eigen::Vector3d::Zero());
     BOOST_CHECK(controller.getFields()[0]->influence_distance == influence_distance);
     BOOST_CHECK(controller.getFields()[0]->dimension == 3);
     BOOST_CHECK(controller.getFields()[0]->name == "constrained_radial_field");
 
-    base::samples::RigidBodyStateSE3 start_pos;
+    types::RigidBodyState start_pos;
     start_pos.pose.position << 1,0,0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
 
@@ -163,7 +164,7 @@ BOOST_AUTO_TEST_CASE(planar_field){
     std::vector<PotentialFieldPtr> fields;
     fields.push_back(field);
 
-    base::VectorXd p_gain, max_ctrl_out;
+    Eigen::VectorXd p_gain, max_ctrl_out;
     p_gain.setConstant(dim, propGain);
     max_ctrl_out.setConstant(dim, max_control_output);
 
@@ -175,12 +176,12 @@ BOOST_AUTO_TEST_CASE(planar_field){
     BOOST_CHECK(controller.getPGain() == p_gain);
     BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
     BOOST_CHECK(controller.getDimension() == 3);
-    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d::Zero());
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == Eigen::Vector3d::Zero());
     BOOST_CHECK(controller.getFields()[0]->influence_distance == influence_distance);
     BOOST_CHECK(controller.getFields()[0]->dimension == 3);
     BOOST_CHECK(controller.getFields()[0]->name == "planar_field");
 
-    base::samples::RigidBodyStateSE3 start_pos;
+    types::RigidBodyState start_pos;
     start_pos.pose.position << 0,0.2,0;
 
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
@@ -211,7 +212,7 @@ BOOST_AUTO_TEST_CASE(multi_radial_field)
     fields.push_back(field1);
     fields.push_back(field2);
 
-    base::VectorXd p_gain, max_ctrl_out;
+    Eigen::VectorXd p_gain, max_ctrl_out;
     p_gain.setConstant(dim, propGain);
     max_ctrl_out.setConstant(dim, maxCtrlOut);
 
@@ -223,16 +224,16 @@ BOOST_AUTO_TEST_CASE(multi_radial_field)
     BOOST_CHECK(controller.getPGain() == p_gain);
     BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
     BOOST_CHECK(controller.getDimension() == 3);
-    BOOST_CHECK(controller.getFields()[0]->pot_field_center == base::Vector3d(0, 0, 0));
+    BOOST_CHECK(controller.getFields()[0]->pot_field_center == Eigen::Vector3d(0, 0, 0));
     BOOST_CHECK(controller.getFields()[0]->influence_distance == field1->influence_distance);
     BOOST_CHECK(controller.getFields()[0]->dimension == 3);
     BOOST_CHECK(controller.getFields()[0]->name == "radial_field_1");
-    BOOST_CHECK(controller.getFields()[1]->pot_field_center == base::Vector3d(2, 0.2, 0));
+    BOOST_CHECK(controller.getFields()[1]->pot_field_center == Eigen::Vector3d(2, 0.2, 0));
     BOOST_CHECK(controller.getFields()[1]->influence_distance == field2->influence_distance);
     BOOST_CHECK(controller.getFields()[1]->dimension == 3);
     BOOST_CHECK(controller.getFields()[1]->name == "radial_field_2");
 
-    base::samples::RigidBodyStateSE3 start_pos;
+    types::RigidBodyState start_pos;
     start_pos.pose.position << 0.0, 0.1, 0.0;
     runPotentialFieldController("tmp.txt", &controller, start_pos, cycleTime);
 
@@ -256,26 +257,21 @@ BOOST_AUTO_TEST_CASE(joint_limit_avoidance)
     const double maxCtrlOut = 0.1;
     const double influence_dist = 0.1;
 
-    base::VectorXd p_gain, max_ctrl_out;
+    Eigen::VectorXd p_gain, max_ctrl_out;
     p_gain.setConstant(dim, propGain);
     max_ctrl_out.setConstant(dim, maxCtrlOut);
 
-    base::JointLimits limits;
-    base::JointLimitRange range_1;
-    range_1.max.position = 1.0;
-    range_1.min.position = -1.0;
-    base::JointLimitRange range_2;
-    range_2.max.position = 0.5;
-    range_2.min.position = -0.5;
-    limits.elements.push_back(range_1);
-    limits.elements.push_back(range_2);
-    limits.names.push_back("joint_1");
-    limits.names.push_back("joint_2");
+    types::JointLimits limits;
+    limits.resize(2);
+    limits.max.position[0] = 1.0;
+    limits.min.position[0] = -1.0;
+    limits.max.position[1] = 0.5;
+    limits.min.position[1] = -0.5;
 
-    base::VectorXd influence_distance(limits.size());
+    Eigen::VectorXd influence_distance(limits.min.position.size());
     influence_distance.setConstant(influence_dist);
 
-    JointLimitAvoidanceController controller(limits, influence_distance);
+    JointLimitAvoidanceController controller(limits, {"joint_1","joint_2"}, influence_distance);
     controller.setPGain(p_gain);
     controller.setMaxControlOutput(max_ctrl_out);
 
@@ -283,24 +279,18 @@ BOOST_AUTO_TEST_CASE(joint_limit_avoidance)
     BOOST_CHECK(controller.getMaxControlOutput() == max_ctrl_out);
     BOOST_CHECK(controller.getDimension() == dim);
 
-    base::samples::Joints feedback;
-    feedback.names.push_back("joint_1");
-    feedback.names.push_back("joint_2");
-    base::JointState pos_1;
-    pos_1.position = 0.95;
-    base::JointState pos_2;
-    pos_2.position = -0.45;
-    feedback.elements.push_back(pos_1);
-    feedback.elements.push_back(pos_2);
+    types::JointState feedback;
+    feedback.resize(2);
+    feedback.position[0] = 0.95;
+    feedback.position[1] = -0.45;
 
     double dt = 0.01;
-    base::commands::Joints control_out;
+    types::JointCommand control_out;
     int n = 0;
     while(n++<100){
         BOOST_CHECK_NO_THROW(control_out = controller.update(feedback));
 
-        feedback[0].position += control_out[0].speed * dt;
-        feedback[1].position += control_out[1].speed * dt;
+        feedback.position += control_out.velocity * dt;
 
        /* printf("Current position:  %.4f %.4f\n", feedback[0].position, feedback[1].position);
         printf("Control output:    %.4f %.4f\n", control_out[0].speed, control_out[1].speed);

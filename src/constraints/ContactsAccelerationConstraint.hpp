@@ -1,11 +1,7 @@
-#ifndef CONTACTS_ACCELERATION_CONSTRAINT_HPP
-#define CONTACTS_ACCELERATION_CONSTRAINT_HPP
+#ifndef WBC_CORE_CONTACTS_ACCELERATION_CONSTRAINT_HPP
+#define WBC_CORE_CONTACTS_ACCELERATION_CONSTRAINT_HPP
 
 #include "../core/Constraint.hpp"
-
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/NamedVector.hpp>
 #include <memory>
 
 namespace wbc{
@@ -32,4 +28,4 @@ private:
 typedef std::shared_ptr<ContactsAccelerationConstraint> ContactsAccelerationConstraintPtr;
 
 } // namespace wbc
-#endif
+#endif // WBC_CORE_CONTACTS_ACCELERATION_CONSTRAINT_HPP

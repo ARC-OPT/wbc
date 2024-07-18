@@ -1,8 +1,8 @@
 #include "QPOasesSolver.hpp"
 #include "../../core/QuadraticProgram.hpp"
-#include <base/Eigen.hpp>
 #include <Eigen/Core>
 #include <iostream>
+#include "../../tools/Logger.hpp"
 
 using namespace qpOASES;
 
@@ -21,13 +21,11 @@ QPOASESSolver::~QPOASESSolver(){
 
 }
 
-void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output){
+void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
 
-    if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("QPOASESSolver::solve: Number of task hierarchies must be 1 for the current implementation");
-
+    assert(hierarchical_qp.size() == 1);
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
-    qp.check();
+    assert(qp.isValid());
 
     if(configured){
         if(nc != (size_t)(qp.C.rows() + qp.A.rows()) || nv != (size_t)qp.A.cols())
@@ -135,7 +133,8 @@ void QPOASESSolver::setOptionsPreset(const qpOASES::optionPresets& opt){
         break;
     }
     default:{
-        throw std::runtime_error("QPOASESSolver::setOptionsPreset: Invalid preset: " + std::to_string(opt));
+        log(logERROR)<<"QPOASESSolver::setOptionsPreset: Invalid preset: " << opt;
+        assert(opt == qp_default || opt == qp_reliable || opt == qp_fast || opt == qp_unset);
     }
     }
     sq_problem.setOptions(options);

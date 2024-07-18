@@ -3,7 +3,6 @@
 
 #include "../../core/QPSolver.hpp"
 #include <qpOASES.hpp>
-#include <base/Time.hpp>
 
 namespace qpOASES {
 enum optionPresets{qp_default, qp_reliable, qp_fast, qp_unset};
@@ -37,7 +36,7 @@ public:
      * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);
+    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output);
 
     /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
     void setMaxNoWSR(const uint& n){n_wsr = n;}
@@ -63,7 +62,6 @@ protected:
     qpOASES::returnValue ret_val;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A;
-    base::Time stamp;
     size_t nc;
     size_t nv;
 };

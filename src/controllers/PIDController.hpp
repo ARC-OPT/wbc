@@ -1,7 +1,7 @@
 #ifndef PID_CONTROLLER_HPP
 #define PID_CONTROLLER_HPP
 
-#include <base/Eigen.hpp>
+#include <Eigen/Core>
 #include "PIDCtrlParams.hpp"
 
 namespace wbc{
@@ -31,15 +31,15 @@ class PIDController{
 protected:
     PIDCtrlParams pid_params;
     uint dimension;
-    base::VectorXd control_error;
-    base::VectorXd prev_control_error;
-    base::VectorXd dead_zone;
-    base::VectorXd max_ctrl_output;
-    base::VectorXd integral;
-    base::VectorXd derivative;
-    base::VectorXd control_output;
-    base::VectorXd setpoint;
-    base::VectorXd feedback;
+    Eigen::VectorXd control_error;
+    Eigen::VectorXd prev_control_error;
+    Eigen::VectorXd dead_zone;
+    Eigen::VectorXd max_ctrl_output;
+    Eigen::VectorXd integral;
+    Eigen::VectorXd derivative;
+    Eigen::VectorXd control_output;
+    Eigen::VectorXd setpoint;
+    Eigen::VectorXd feedback;
 
 public:
     PIDController(uint dimension);
@@ -50,16 +50,16 @@ public:
 
     void setPID(const PIDCtrlParams &params);
     const PIDCtrlParams &getPID(){return pid_params;}
-    void setMaxCtrlOutput(const base::VectorXd &max);
-    const base::VectorXd &maxCtrlOutput(){return max_ctrl_output;}
-    void setDeadZone(const base::VectorXd &dz);
-    const base::VectorXd &deadZone(){return dead_zone;}
-    void applySaturation(const base::VectorXd& in, const base::VectorXd& max, base::VectorXd &out);
-    void applyDeadZone(const base::VectorXd& in, const base::VectorXd& min, base::VectorXd& out);
+    void setMaxCtrlOutput(const Eigen::VectorXd &max);
+    const Eigen::VectorXd &maxCtrlOutput(){return max_ctrl_output;}
+    void setDeadZone(const Eigen::VectorXd &dz);
+    const Eigen::VectorXd &deadZone(){return dead_zone;}
+    void applySaturation(const Eigen::VectorXd& in, const Eigen::VectorXd& max, Eigen::VectorXd &out);
+    void applyDeadZone(const Eigen::VectorXd& in, const Eigen::VectorXd& min, Eigen::VectorXd& out);
     uint getDimension(){return dimension;}
-    base::VectorXd getControlError(){return control_error;}
+    Eigen::VectorXd getControlError(){return control_error;}
 
-    virtual const base::VectorXd& computeDerivative(const double delta_t);
+    virtual const Eigen::VectorXd& computeDerivative(const double delta_t);
 };
 
 }

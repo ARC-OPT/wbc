@@ -1,83 +1,64 @@
-#ifndef ROBOTMODELCONFIG_HPP
-#define ROBOTMODELCONFIG_HPP
+#ifndef WBC_CORE_ROBOTMODELCONFIG_HPP
+#define WBC_CORE_ROBOTMODELCONFIG_HPP
 
-#include <base/samples/RigidBodyStateSE3.hpp>
-#include <base/NamedVector.hpp>
+#include <vector>
+#include <string>
 
 namespace wbc{
 
-class ActiveContact{
+/**
+ * @brief Describes a rigid contact between a robot link and the environment. This can be either a point or surface contact
+ */
+class Contact{
 public:
-    ActiveContact(){
+    Contact(){
 
     }
-    ActiveContact(int active, double mu) : active(active), mu(mu){
+    Contact(std::string frame_id, int active, double mu) : frame_id(frame_id), active(active), mu(mu){
 
     }
-    ActiveContact(int active, double mu, double wx, double wy) : active(active), mu(mu), wx(wx), wy(wy){
+    Contact(std::string frame_id, int active, double mu, double wx, double wy) : frame_id(frame_id), active(active), mu(mu), wx(wx), wy(wy){
 
     }
-    int active; /** In contact*/
-    double mu;  /** Friction coeffcient*/
-    double wx;  /** x-dimension of the contact surface (only for surface contacts)*/
-    double wy;  /** y-dimension of the contact surface (only for surface contacts)*/
-};
-
-class ActiveContacts : public base::NamedVector<ActiveContact>{
-public:
-    uint getNumberOfActiveContacts() const{
-        uint nac = 0;
-        for(auto e : elements){
-            if(e.active) nac++;
-        }
-        return nac;
-    }
+    std::string frame_id; /** ID of the link in contact */
+    int active;           /** Is the link with ID frame_id currently in contact?*/
+    double mu;            /** Friction coeffcient*/
+    double wx;            /** x-dimension of the contact surface (only for surface contacts)*/
+    double wy;            /** y-dimension of the contact surface (only for surface contacts)*/
 };
 
 /**
- * @brief Robot Model configuration class
+ * @brief Robot Model configuration class, containts information like urdf file, type of robot model to be loaded, etc.
  */
 struct RobotModelConfig{
 public:
     RobotModelConfig(){
         floating_base = false;
-        type = "pinocchio";
     }
     RobotModelConfig(const std::string& file_or_string,
                      const bool floating_base = false,
-                     const ActiveContacts &contact_points = ActiveContacts(),
-                     const std::string& submechanism_file = "") :
+                     const std::vector<Contact> &contact_points = std::vector<Contact>(),
+                     const std::string& submechanism_file = "",
+                     const std::vector<std::string> &joint_blacklist = std::vector<std::string>()) :
         file_or_string(file_or_string),
         submechanism_file(submechanism_file),
-        type("pinocchio"),
         floating_base(floating_base),
-        contact_points(contact_points){
+        contact_points(contact_points),
+        joint_blacklist(joint_blacklist){
 
-    }
-    void validate(){
-        if(file_or_string.empty())
-            throw std::runtime_error("Invalid Robot model config. File path or string must not be empty!");
-        if(type == "hyrodyn" && submechanism_file.empty())
-            throw std::runtime_error("Invalid Robot model config. If you choose 'hyrodyn' as type, submechanism_file must not be empty!");
-        if(floating_base && contact_points.empty())
-            throw std::runtime_error("Invalid Robot model config. If floating_base is set to true, contact_points must not be empty!");
     }
 
     /** Absolute path to URDF file describing the robot model or URDF string.*/
     std::string file_or_string;
     /** Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms.*/
     std::string submechanism_file;
-    /** Model type. Must be the exact name of one of the registered robot model plugins. See src/robot_models for all available plugins. Default is pinocchio*/
-    std::string type;
-    /** Optional: Attach a virtual 6 DoF floating base to the model: Naming scheme of the joints is currently fixed:
-      * floating_base_trans_x, floating_base_trans_y, floating_base_trans_z,
-      * floating_base_rot_x, floating_base_rot_y, floating_base_rot_z*/
+    /** Does the robot have a floating base? Attaches a virtual 6 DoF floating base to the model, default is false*/
     bool floating_base;
     /** Optional: Link names that are possibly in contact with the environment. These have to be valid link names in the robot model.*/
-    ActiveContacts contact_points;
-
+    std::vector<Contact> contact_points;
+    /** Optional: List of joints, which shall be ignored by the WBC, i.e., these joints will be set to "fixed" joints in the loaded urdf model*/
     std::vector<std::string> joint_blacklist;
 };
 
 }
-#endif // ROBOTMODELCONFIG_HPP
+#endif // WBC_CORE_ROBOTMODELCONFIG_HPP

@@ -1,11 +1,8 @@
-#ifndef RIGIDBODY_DYNAMICS_CONSTRAINT_HPP
-#define RIGIDBODY_DYNAMICS_CONSTRAINT_HPP
+#ifndef WBC_CORE_RIGIDBODY_DYNAMICS_CONSTRAINT_HPP
+#define WBC_CORE_RIGIDBODY_DYNAMICS_CONSTRAINT_HPP
 
 #include "../core/Constraint.hpp"
 
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/NamedVector.hpp>
 #include <memory>
 
 namespace wbc{
@@ -31,4 +28,4 @@ protected:
 typedef std::shared_ptr<RigidbodyDynamicsConstraint> RigidbodyDynamicsConstraintPtr;
 
 } // namespace wbc
-#endif
+#endif // WBC_CORE_RIGIDBODY_DYNAMICS_CONSTRAINT_HPP

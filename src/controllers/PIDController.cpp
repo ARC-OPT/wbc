@@ -1,4 +1,5 @@
 #include "PIDController.hpp"
+#include <iostream>
 
 using namespace std;
 
@@ -39,7 +40,7 @@ void PIDController::update(const double delta_t){
     applySaturation(control_output, max_ctrl_output, control_output);
 }
 
-void PIDController::applySaturation(const base::VectorXd& in, const base::VectorXd& max, base::VectorXd &out){
+void PIDController::applySaturation(const Eigen::VectorXd& in, const Eigen::VectorXd& max, Eigen::VectorXd &out){
     //Apply saturation. Scale all values according to the maximum output
     double eta = 1;
     for(uint i = 0; i < in.size(); i++)
@@ -47,7 +48,7 @@ void PIDController::applySaturation(const base::VectorXd& in, const base::Vector
     out = eta * in;
 }
 
-void PIDController::applyDeadZone(const base::VectorXd& in, const base::VectorXd& min, base::VectorXd& out){
+void PIDController::applyDeadZone(const Eigen::VectorXd& in, const Eigen::VectorXd& min, Eigen::VectorXd& out){
     for(uint i = 0; i < in.size(); i++){
         if(fabs(in(i)) < min(i))
             out(i) = 0.0;
@@ -61,31 +62,24 @@ void PIDController::applyDeadZone(const base::VectorXd& in, const base::VectorXd
 }
 
 void PIDController::setPID(const PIDCtrlParams &params){
-    if(params.p_gain.size() != dimension)
-        throw runtime_error("Size of p_gain is " + to_string(params.p_gain.size()) + " but should be " + to_string(dimension));
-    if(params.i_gain.size() != dimension)
-        throw runtime_error("Size of i_gain is " + to_string(params.i_gain.size()) + " but should be " + to_string(dimension));
-    if(params.d_gain.size() != dimension)
-        throw runtime_error("Size of d_gain is " + to_string(params.d_gain.size()) + " but should be " + to_string(dimension));
-    if(params.windup.size() != dimension)
-        throw runtime_error("Size of windup is " + to_string(params.windup.size()) + " but should be " + to_string(dimension));
+    assert(params.p_gain.size() == dimension);
+    assert(params.i_gain.size() == dimension);
+    assert(params.d_gain.size() == dimension);
+    assert(params.windup.size() == dimension);
     pid_params = params;
 }
 
-void PIDController::setMaxCtrlOutput(const base::VectorXd &max){
-    if(max.size() != dimension)
-        throw runtime_error("Size of Max. Ctrl Output is " + to_string(max.size()) + " but should be " + to_string(dimension));
+void PIDController::setMaxCtrlOutput(const Eigen::VectorXd &max){
+    assert(max.size() == dimension);
     max_ctrl_output = max;
 }
 
-void PIDController::setDeadZone(const base::VectorXd &dz){
-    if(dz.size() != dimension)
-        throw std::runtime_error("setDeadZone: Invalid dead zone. Size is "
-                                 + std::to_string(dz.size()) + " but should be " + std::to_string(dimension));
+void PIDController::setDeadZone(const Eigen::VectorXd &dz){
+    assert(dead_zone.size() == dimension);
     dead_zone = dz;
 }
 
-const base::VectorXd& PIDController::computeDerivative(const double delta_t){
+const Eigen::VectorXd& PIDController::computeDerivative(const double delta_t){
 
     derivative = (control_error - prev_control_error)/delta_t;
     prev_control_error = control_error;

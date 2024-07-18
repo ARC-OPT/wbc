@@ -13,7 +13,7 @@ public:
     OsqpSolver();
     ~OsqpSolver();
 
-    virtual void solve(const HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output);
+    virtual void solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output);
 
 protected:
     bool configured;

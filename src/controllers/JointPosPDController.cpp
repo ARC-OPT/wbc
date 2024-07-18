@@ -2,61 +2,76 @@
 
 namespace wbc{
 
-JointPosPDController::JointPosPDController(const std::vector<std::string>& joint_names) :
-    PosPDController(joint_names.size()),
-    joint_names(joint_names){
-
-    control_output.resize(joint_names.size());
-    control_output.names = joint_names;
+JointPosPDController::JointPosPDController(uint dim) :
+    dim_controller(dim){
 }
 
-void JointPosPDController::extractFeedback(const base::samples::Joints& feedback){
-        for(size_t i = 0; i < joint_names.size(); i++){
-            base::JointState joint_state;
-            try{
-                joint_state = feedback.getElementByName(joint_names[i]);
-            }
-            catch(std::exception e){
-                throw std::runtime_error("JointPosPDController::update: Feedback vector does not contain element " + joint_names[i]);
-            }
-            pos(i) = joint_state.position;
-            vel(i) = joint_state.speed;
-            acc(i) = joint_state.acceleration;
-        }
+
+const Eigen::VectorXd& JointPosPDController::update(const Eigen::VectorXd& ref_pos,
+                                                    const Eigen::VectorXd& ref_vel,
+                                                    const Eigen::VectorXd& pos){
+
+    assert(ref_pos.size() == dim_controller);
+    assert(ref_vel.size() == dim_controller);
+    assert(pos.size() == dim_controller);
+    assert(p_gain.size() == dim_controller);
+    assert(u_max.size() == dim_controller);
+
+    // Compute controller output
+    u = p_gain.cwiseProduct(ref_pos - pos) + ref_vel;
+
+    // Apply Saturation
+    applySaturation(u, u_max, u);
+
+    return u;
 }
 
-void JointPosPDController::extractSetpoint(const base::commands::Joints& setpoint){
-    // If a setpoint value is not given, set setpoint == feedback
-    ref_pos = pos;
-    ref_vel = vel;
-    for(size_t i = 0; i < joint_names.size(); i++){
-        base::JointState joint_state;
-        try{
-            joint_state = setpoint.getElementByName(joint_names[i]);
-        }
-        catch(std::exception e){
-            throw std::runtime_error("JointPosPDController::update: Setpoint vector contains " + setpoint.names[i]
-                                     + " but this element has not been configured in the controller");
-        }
-        ref_pos(i) = joint_state.position;
-        ref_vel(i) = joint_state.speed;
-        ref_acc(i) = joint_state.acceleration;
-    }
+/** @brief Compute acceleration level control output*/
+const Eigen::VectorXd& JointPosPDController::update(const Eigen::VectorXd& ref_pos,
+                                                    const Eigen::VectorXd& ref_vel,
+                                                    const Eigen::VectorXd& ref_acc,
+                                                    const Eigen::VectorXd& pos,
+                                                    const Eigen::VectorXd& vel){
+
+    assert(ref_pos.size() == dim_controller);
+    assert(ref_vel.size() == dim_controller);
+    assert(ref_acc.size() == dim_controller);
+    assert(pos.size() == dim_controller);
+    assert(vel.size() == dim_controller);
+    assert(p_gain.size() == dim_controller);
+    assert(d_gain.size() == dim_controller);
+    assert(u_max.size() == dim_controller);
+
+    // Compute controller output
+    u = p_gain.cwiseProduct(ref_pos - pos) + d_gain.cwiseProduct(ref_vel - vel) + ref_acc;
+
+    // Apply Saturation
+    applySaturation(u, u_max, u);
+
+    return u;
 }
 
-const base::commands::Joints& JointPosPDController::update(const base::commands::Joints& setpoint, const base::samples::Joints& feedback){
-    extractFeedback(feedback);
-    extractSetpoint(setpoint);
-
-    PosPDController::update();
-
-    for(size_t i = 0; i < joint_names.size(); i++){
-        control_output[i].position     = std::numeric_limits<double>::quiet_NaN();
-        control_output[i].speed        = control_out_vel(i);
-        control_output[i].acceleration = control_out_acc(i);
-    }
-    control_output.time = base::Time::now();
-
-    return control_output;
+void JointPosPDController::setPGain(const Eigen::VectorXd &gain){
+    assert((size_t)gain.size() == dim_controller);
+    p_gain = gain;
 }
+
+void JointPosPDController::setDGain(const Eigen::VectorXd &gain){
+    assert((size_t)gain.size() == dim_controller);
+    d_gain = gain;
+}
+
+void JointPosPDController::setMaxCtrlOutput(const Eigen::VectorXd &max_ctrl_out){
+    assert((size_t)max_ctrl_out.size() == dim_controller);
+    u_max = max_ctrl_out;
+}
+
+void JointPosPDController::applySaturation(const Eigen::VectorXd& in, const Eigen::VectorXd& max, Eigen::VectorXd &out){
+    //Apply saturation. Scale all values according to the maximum output
+    double eta = 1;
+    for(uint i = 0; i < in.size(); i++)
+        eta = std::min( eta, max(i)/fabs(in(i)) );
+    out = eta * in;
+}
+
 }

@@ -3,14 +3,10 @@ set(TARGET_NAME wbc-tools)
 file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/types "*.hpp")
 file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/types "*.cpp")
 
-pkg_search_module(base-types REQUIRED IMPORTED_TARGET base-types)
-pkg_search_module(base-logging REQUIRED IMPORTED_TARGET base-logging)
 pkg_search_module(urdfdom REQUIRED IMPORTED_TARGET urdfdom)
 pkg_search_module(tinyxml REQUIRED IMPORTED_TARGET tinyxml)
 pkg_search_module(eigen3 REQUIRED IMPORTED_TARGET eigen3)
 
-list(APPEND PKGCONFIG_REQUIRES base-types)
-list(APPEND PKGCONFIG_REQUIRES base-logging)
 list(APPEND PKGCONFIG_REQUIRES urdfdom)
 list(APPEND PKGCONFIG_REQUIRES tinyxml)
 list(APPEND PKGCONFIG_REQUIRES eigen3)
@@ -23,8 +19,6 @@ target_include_directories(${TARGET_NAME} PUBLIC
 	$<INSTALL_INTERFACE:include>)
 
 target_link_libraries(${TARGET_NAME} PUBLIC
-                      PkgConfig::base-types
-                      PkgConfig::base-logging
                       PkgConfig::urdfdom
                       PkgConfig::tinyxml
                       PkgConfig::eigen3)

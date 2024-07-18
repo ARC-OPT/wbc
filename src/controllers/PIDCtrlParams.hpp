@@ -1,7 +1,7 @@
 #ifndef PID_CTRL_PARAMS_HPP
 #define PID_CTRL_PARAMS_HPP
 
-#include <base/Eigen.hpp>
+#include <Eigen/Core>
 
 namespace wbc{
 
@@ -14,10 +14,10 @@ public:
         d_gain.setConstant(n, 0);
         windup.setConstant(n, std::numeric_limits<double>::max());
     }
-    base::VectorXd p_gain;
-    base::VectorXd i_gain;
-    base::VectorXd d_gain;
-    base::VectorXd windup;
+    Eigen::VectorXd p_gain;
+    Eigen::VectorXd i_gain;
+    Eigen::VectorXd d_gain;
+    Eigen::VectorXd windup;
 };
 }
 

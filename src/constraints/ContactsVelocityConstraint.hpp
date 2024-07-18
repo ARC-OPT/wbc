@@ -1,11 +1,7 @@
-#ifndef CONTACTS_VELOCITY_CONSTRAINT_HPP
-#define CONTACTS_VELOCITY_CONSTRAINT_HPP
+#ifndef WBC_CORE_CONTACTS_VELOCITY_CONSTRAINT_HPP
+#define WBC_CORE_CONTACTS_VELOCITY_CONSTRAINT_HPP
 
 #include "../core/Constraint.hpp"
-
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/NamedVector.hpp>
 #include <memory>
 
 namespace wbc{
@@ -27,4 +23,4 @@ public:
 typedef std::shared_ptr<ContactsVelocityConstraint> ContactsVelocityConstraintPtr;
 
 } // namespace wbc
-#endif
+#endif // WBC_CORE_CONTACTS_VELOCITY_CONSTRAINT_HPP

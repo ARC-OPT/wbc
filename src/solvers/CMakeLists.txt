@@ -1,5 +1,4 @@
 add_subdirectory(qpoases)
-add_subdirectory(hls)
 if(SOLVER_EIQUADPROG)
     add_subdirectory(eiquadprog)
 endif()

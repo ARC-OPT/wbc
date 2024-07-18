@@ -1,6 +1,4 @@
 #include "Task.hpp"
-#include <base-logging/Logging.hpp>
-#include <base/Float.hpp>
 
 namespace wbc{
 
@@ -8,19 +6,20 @@ Task::Task(){
 
 }
 
-Task::Task(const TaskConfig& _config, uint n_robot_joints) :
-    config(_config){
+Task::Task(TaskConfig config, uint nv, uint nj, TaskType type) :
+    config(config), nv(nv), nj(nj), type(type){
 
-    unsigned int no_variables = config.nVariables();
+    y_ref.resize(nv);
+    y_ref_world.resize(nv);
+    weights.resize(nv);
+    weights_world.resize(nv);
 
-    y_ref.resize(no_variables);
-    y_ref_root.resize(no_variables);
-    weights.resize(no_variables);
-    weights_root.resize(no_variables);
-
-    A.resize(no_variables, n_robot_joints);
-    Aw.resize(no_variables, n_robot_joints);
+    A.resize(nv, nj);
+    Aw.resize(nv, nj);
     reset();
+
+    setWeights(Eigen::Map<Eigen::VectorXd>(config.weights.data(),config.weights.size()));
+    setActivation(config.activation);
 }
 
 Task::~Task(){
@@ -28,49 +27,27 @@ Task::~Task(){
 }
 
 void Task::reset(){
-
-    unsigned int no_variables = config.nVariables();
-
-    y_ref_root.setConstant(no_variables, base::NaN<double>());
-    y_ref.setZero(no_variables);
+    y_ref_world.setConstant(nv, std::numeric_limits<double>::quiet_NaN());
+    y_ref.setZero(nv);
     A.setZero();
     Aw.setZero();
-    activation = config.activation;
-    for(uint i = 0; i < no_variables; i++){
-        weights(i) = config.weights[i];
-        weights_root(i) = config.weights[i];
+    activation = 0;
+    for(uint i = 0; i < nv; i++){
+        weights(i) = 1.0;
+        weights_world(i) = 1.0;
     }
-    // Reset timeout and time. Like this, tasks can get activated only after they received a reference value
-    timeout = 1;
-    time.microseconds = 0;
 }
 
-void Task::checkTimeout(){
-    timeout = (int)time.isNull(); // If there has never been a reference value, set the task to timeout
-    if(config.timeout > 0)
-        timeout = (int)(base::Time::now() - time).toSeconds() > config.timeout;
-}
-
-void Task::setWeights(const base::VectorXd& weights){
-    if(config.nVariables() != weights.size()){
-        LOG_ERROR("Task %s: Size of weight vector should be %i but is %i", config.name.c_str(), config.nVariables(), weights.size())
-        throw std::invalid_argument("Invalid task weights");
-    }
-
-    for(uint i = 0; i < weights.size(); i++)
-        if(weights(i) < 0){
-            LOG_ERROR("Task %s: Weight values should be > 0, but weight %i is %f", config.name.c_str(), i, weights(i));
-            throw std::invalid_argument("Invalid task weights");
-        }
+void Task::setWeights(const Eigen::VectorXd& weights){
+    assert(nv == weights.size());
+    for(uint i = 0; i < nv; i++)
+        assert(weights[i] >= 0);
 
     this->weights = weights;
 }
 
 void Task::setActivation(const double activation){
-    if(activation < 0 || activation > 1){
-        LOG_ERROR("Task %s: Activation has to be between 0 and 1 but is %f", config.name.c_str(), activation);
-        throw std::invalid_argument("Invalid task activation");
-    }
+    assert(activation >= 0 && activation <= 1);
     this->activation = activation;
 }
 

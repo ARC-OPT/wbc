@@ -8,7 +8,6 @@ namespace wbc {
 struct PotentialFieldInfo{
 
     void fromPotentialField(PotentialFieldPtr field){
-        time = field->time;
         dimension = field->dimension;
         influence_distance = field->influence_distance;
         distance = field->distance;
@@ -18,8 +17,6 @@ struct PotentialFieldInfo{
         name = field->name;
     }
 
-    base::Time time;
-
     /** Dimension of the potential field, e.g. a potential field in 3d space would have size 3.*/
     uint dimension;
 
@@ -27,16 +24,16 @@ struct PotentialFieldInfo{
     double influence_distance;
 
     /** Distance vector to the potential field. */
-    base::VectorXd distance;
+    Eigen::VectorXd distance;
 
     /** Euclidean distance of the distance vector*/
     double euclidean_distance;
 
     /** Gradient vector for this field*/
-    base::VectorXd gradient;
+    Eigen::VectorXd gradient;
 
     /** Potential field center position*/
-    base::VectorXd pot_field_center;
+    Eigen::VectorXd pot_field_center;
 
     /** ID of the potential field*/
     std::string name;

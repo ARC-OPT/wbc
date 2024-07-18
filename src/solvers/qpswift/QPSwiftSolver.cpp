@@ -1,8 +1,6 @@
 #include "QPSwiftSolver.hpp"
 #include "../../core/QuadraticProgram.hpp"
-#include <base-logging/Logging.hpp>
-
-#include <iostream>
+#include "../../tools/Logger.hpp"
 
 namespace wbc {
 
@@ -61,15 +59,13 @@ void QPSwiftSolver::toQpSwift(const wbc::QuadraticProgram &qp){
     my_qp->options->abstol = abs_tol;
     my_qp->options->sigma = sigma;
     my_qp->options->verbose = verbose_level;
-    LOG_DEBUG_S << "Setup Time     : " << my_qp->stats->tsetup * 1000.0 << " ms" << std::endl;
 }
 
-void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output){
+void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
 
-    if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("QPSwiftSolver::solve: Number of task hierarchies must be 1 for the current implementation");
-
+    assert(hierarchical_qp.size() == 1);
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
+    assert(qp.isValid());
 
     if(n_dec != qp.nq || n_eq != qp.neq || n_ineq != qp.nin)
         configured = false;
@@ -87,10 +83,6 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
         P.resize(n_dec, n_dec);
         c.resize(n_dec);
         solver_output.resize(n_dec);
-
-        LOG_DEBUG_S << "n_dec:    " << n_dec    << std::endl;
-        LOG_DEBUG_S << "n_eq:     " << n_eq     << std::endl;
-        LOG_DEBUG_S << "n_ineq:   " << n_ineq   << std::endl;
         configured = true;
     }
 
@@ -100,20 +92,9 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
 
     switch(exit_code){
     case QP_OPTIMAL:{
-        LOG_DEBUG_S << "Solve Time     : " << (my_qp->stats->tsolve + my_qp->stats->tsetup) * 1000.0 << " ms" << std::endl;
-        LOG_DEBUG_S << "KKT_Solve Time : " << my_qp->stats->kkt_time * 1000.0  << " ms" << std::endl;
-        LOG_DEBUG_S << "LDL Time       : " << my_qp->stats->ldl_numeric * 1000.0 << " ms" << std::endl;
-        LOG_DEBUG_S << "Diff	       : " << (my_qp->stats->kkt_time - my_qp->stats->ldl_numeric) * 1000.0 << " ms" << std::endl;
-        LOG_DEBUG_S << "Iterations     : " << my_qp->stats->IterationCount << std::endl;
-        LOG_DEBUG_S << "QPSwiftSolver: Optimal Solution Found" << std::endl;
         break;
     }
     case QP_MAXIT:{
-        LOG_DEBUG_S << "Solve Time     : " << my_qp->stats->tsolve * 1000.0 << " ms" << std::endl;
-        LOG_DEBUG_S << "KKT_Solve Time : " << my_qp->stats->kkt_time * 1000.0 << " ms" << std::endl;
-        LOG_DEBUG_S << "LDL Time       : " << my_qp->stats->ldl_numeric * 1000.0 << " ms" << std::endl;
-        LOG_DEBUG_S << "Diff	       : " << (my_qp->stats->kkt_time - my_qp->stats->ldl_numeric) * 1000.0 << " ms" << std::endl;
-        LOG_DEBUG_S << "Iterations     : " << my_qp->stats->IterationCount << std::endl;
         throw std::runtime_error("QPSwiftSolver failed: Maximum Iterations reached");
     }
     case QP_FATAL:{

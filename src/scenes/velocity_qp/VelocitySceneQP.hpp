@@ -1,7 +1,7 @@
-#ifndef VelocitySceneQP_HPP
-#define VelocitySceneQP_HPP
+#ifndef WBC_VELOCITY_SCENE_QP_HPP
+#define WBC_VELOCITY_SCENE_QP_HPP
 
-#include "../velocity/VelocityScene.hpp"
+#include "../../core/Scene.hpp"
 
 namespace wbc{
 
@@ -30,12 +30,10 @@ namespace wbc{
  *
  *
  */
-class VelocitySceneQP : public VelocityScene{
+class VelocitySceneQP : public Scene{
 protected:
     static SceneRegistry<VelocitySceneQP> reg;
 
-    base::VectorXd s_vals, tmp;
-    base::MatrixXd sing_vect_r, U;
     double hessian_regularizer;
 
 public:
@@ -53,6 +51,12 @@ public:
     virtual const HierarchicalQP& update();
 
     /**
+     * @brief Solve the given optimization problem
+     * @return Solver output as joint velocity command
+     */
+    virtual const types::JointCommand& solve(const HierarchicalQP& hqp);
+
+    /**
      * @brief setHessianRegularizer
      * @param reg This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8
      */
@@ -66,4 +70,4 @@ public:
 
 } // namespace wbc
 
-#endif
+#endif // WBC_VELOCITY_SCENE_QP_HPP

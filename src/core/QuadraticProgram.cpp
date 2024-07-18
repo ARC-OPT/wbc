@@ -1,5 +1,6 @@
 #include "QuadraticProgram.hpp"
 #include <iostream>
+#include "../tools/Logger.hpp"
 
 namespace wbc {
 
@@ -39,42 +40,65 @@ void QuadraticProgram::resize(const uint _nq, const uint _neq, const uint _nin, 
     Wy.setOnes(neq+nin);
 }
 
-void QuadraticProgram::check() const {
+bool QuadraticProgram::isValid() const {
     if(bounded) {
-        if(lower_x.size() != nq)
-            std::cout<<"Quadratic program with " + std::to_string(nq) + " variables has bounds "
-                + "but lower bound has size " + std::to_string(lower_x.size())<<std::endl;
-        if(upper_x.size() != nq)
-            std::cout<<"Quadratic program with " + std::to_string(nq) + " variables has bounds "
-                + "but upper bound has size " + std::to_string(upper_x.size())<<std::endl;
+        if(lower_x.size() != nq){
+            log(logERROR)<<"Quadratic program with " << std::to_string(nq) << " variables has bounds "
+                << "but lower bound has size " << std::to_string(lower_x.size());
+            return false;
+        }
+        if(upper_x.size() != nq){
+            log(logERROR)<<"Quadratic program with " << std::to_string(nq) << " variables has bounds "
+                << "but upper bound has size " << std::to_string(upper_x.size());
+            return false;
+        }
     }
     else {
-        if(lower_x.size() != 0)
-            std::cout<<"Quadratic program has not bounds "
-                "but lower bound has size " + std::to_string(lower_x.size()) + " (nq:" + std::to_string(nq) + ")"<<std::endl;
-        if(upper_x.size() != 0)
-            std::cout<<"Quadratic program has not bounds "
-                "but upper bound has size " + std::to_string(lower_x.size()) + " (nq:" + std::to_string(nq) + ")"<<std::endl;
+        if(lower_x.size() != 0){
+            log(logERROR)<<"Quadratic program has no bounds but lower bound has size " <<
+                           std::to_string(lower_x.size()) << " (nq:" << std::to_string(nq) << ")";
+            return false;
+        }
+        if(upper_x.size() != 0){
+            log(logERROR)<<"Quadratic program has not bounds "
+                "but upper bound has size " << std::to_string(lower_x.size()) << " (nq:" << std::to_string(nq) << ")";
+            return false;
+        }
     }
-    if(C.rows() != nin || C.cols() != nq)
-        std::cout<<"Inequality constraint matrix C should have size " + std::to_string(nin) + "x" + std::to_string(nq) +
-            "but has size " +  std::to_string(C.rows()) + "x" + std::to_string(C.cols())<<std::endl;
-    if(lower_y.size() != nin)
-        std::cout<<"Number of inequality constraints in quadratic program is " + std::to_string(nin)
-            + ", but lower bound has size " + std::to_string(lower_y.size())<<std::endl;
-    if(upper_y.size() != nin)
-        std::cout<<"Number of inequality constraints in quadratic program is " + std::to_string(nin)
-            + ", but lower bound has size " + std::to_string(lower_y.size())<<std::endl;
-    if(A.rows() != neq || A.cols() != nq)
-        std::cout<<"Equality constraint matrix A should have size " + std::to_string(neq) + "x" + std::to_string(nq) +
-            "but has size " +  std::to_string(A.rows()) + "x" + std::to_string(A.cols())<<std::endl;
-    if(b.size() != neq)
-            std::cout<<"Equality constraint vector b should have size " + std::to_string(neq) + "but has size " + std::to_string(b.size())<<std::endl;
-    if(H.rows() != nq || H.cols() != nq)
-        std::cout<<"Hessian matrix H should have size " + std::to_string(nq) + "x" + std::to_string(nq) +
-            "but has size " +  std::to_string(H.rows()) + "x" + std::to_string(H.cols())<<std::endl;
-    if(g.size() != nq)
-        std::cout<<"Gradient vector g should have size " + std::to_string(nq) + "but has size " + std::to_string(g.size())<<std::endl;
+    if(C.rows() != nin || C.cols() != nq){
+        log(logERROR)<<"Inequality constraint matrix C should have size " << std::to_string(nin) << "x" << std::to_string(nq) <<
+            "but has size " <<  std::to_string(C.rows()) << "x" << std::to_string(C.cols());
+        return false;
+    }
+    if(lower_y.size() != nin){
+        log(logERROR)<<"Number of inequality constraints in quadratic program is " << std::to_string(nin)
+            << ", but lower bound has size " << std::to_string(lower_y.size());
+        return false;
+    }
+    if(upper_y.size() != nin){
+        log(logERROR)<<"Number of inequality constraints in quadratic program is " << std::to_string(nin)
+            << ", but lower bound has size " << std::to_string(lower_y.size());
+        return false;
+    }
+    if(A.rows() != neq || A.cols() != nq){
+        log(logERROR)<<"Equality constraint matrix A should have size " << std::to_string(neq) << "x" << std::to_string(nq) <<
+            "but has size " <<  std::to_string(A.rows()) << "x" << std::to_string(A.cols());
+        return false;
+    }
+    if(b.size() != neq){
+        log(logERROR)<<"Equality constraint vector b should have size " << std::to_string(neq) << "but has size " << std::to_string(b.size());
+        return false;
+    }
+    if(H.rows() != nq || H.cols() != nq){
+        log(logERROR)<<"Hessian matrix H should have size " << std::to_string(nq) << "x" << std::to_string(nq) <<
+            "but has size " <<  std::to_string(H.rows()) << "x" << std::to_string(H.cols());
+        return false;
+    }
+    if(g.size() != nq){
+        log(logERROR)<<"Gradient vector g should have size " << std::to_string(nq) << "but has size " << std::to_string(g.size());
+        return false;
+    }
+    return true;
 }
 
 void QuadraticProgram::print() const {

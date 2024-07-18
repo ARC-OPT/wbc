@@ -1,20 +1,20 @@
-#include "CartesianForcePIDController.hpp"
+#include "WrenchPIDController.hpp"
 
 namespace wbc {
 
-CartesianForcePIDController::CartesianForcePIDController() :
+WrenchPIDController::WrenchPIDController() :
     PIDController(6){
 
 }
 
-const base::VectorXd CartesianForcePIDController::wrenchToRaw(const base::samples::Wrench& wrench, base::VectorXd& raw){
+const Eigen::VectorXd WrenchPIDController::wrenchToRaw(const types::Wrench& wrench, Eigen::VectorXd& raw){
     raw.resize(6);
     raw.segment(0,3) = wrench.force;
     raw.segment(3,3) = wrench.torque;
     return raw;
 }
 
-const base::samples::RigidBodyStateSE3& CartesianForcePIDController::update(const base::samples::Wrench& setpoint, const base::samples::Wrench& feedback, const double dt){
+const types::RigidBodyState& WrenchPIDController::update(const types::Wrench& setpoint, const types::Wrench& feedback, const double dt){
 
     wrenchToRaw(setpoint, this->setpoint);
     wrenchToRaw(feedback, this->feedback);
@@ -23,7 +23,6 @@ const base::samples::RigidBodyStateSE3& CartesianForcePIDController::update(cons
 
     control_output_wrench.twist.linear  = control_output.segment(0,3);
     control_output_wrench.twist.angular = control_output.segment(3,3);
-    control_output_wrench.time = base::Time::now();
 
     return control_output_wrench;
 }

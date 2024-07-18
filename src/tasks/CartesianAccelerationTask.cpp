@@ -1,59 +1,48 @@
 #include "CartesianAccelerationTask.hpp"
-#include <base-logging/Logging.hpp>
-#include <base/samples/RigidBodyStateSE3.hpp>
+#include "../tools/Logger.hpp"
 
 namespace wbc{
 
-base::Vector6d operator+(base::Vector6d a, base::Acceleration b){
-    a.segment(0,3) += b.linear;
-    a.segment(3,3) += b.angular;
-    return a;
-}
-
-base::Vector6d operator-(base::Vector6d a, base::Acceleration b){
-    a.segment(0,3) -= b.linear;
-    a.segment(3,3) -= b.angular;
-    return a;
-}
-
-CartesianAccelerationTask::CartesianAccelerationTask(TaskConfig config, uint n_robot_joints)
-    : CartesianTask(config, n_robot_joints){
+CartesianAccelerationTask::CartesianAccelerationTask(TaskConfig config,
+                                                     const std::string &tip_frame,
+                                                     const std::string &ref_frame,
+                                                     uint nj)
+    : Task(config, 6, nj, TaskType::spatial_acceleration), tip_frame(tip_frame), ref_frame(ref_frame){
 }
 
 void CartesianAccelerationTask::update(RobotModelPtr robot_model){
     // Task Jacobian
-    A = robot_model->spaceJacobian(config.root, config.tip);
+    A = robot_model->spaceJacobian(tip_frame);
 
     // Desired task space acceleration: y_r = y_d - Jdot*qdot
-    y_ref = y_ref - robot_model->spatialAccelerationBias(config.root, config.tip);
+    y_ref.segment(0,3) -= robot_model->spatialAccelerationBias(tip_frame).linear;
+    y_ref.segment(3,3) -= robot_model->spatialAccelerationBias(tip_frame).angular;
 
-    // Convert input acceleration from the reference frame of the constraint to the base frame of the robot. We transform only the orientation of the
+    // Convert reference acceleration to world frame. We transform only the orientation of the
     // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
-    // be the origin of ref frame, not the root frame. This is more intuitive when controlling the orientation of e.g. a robot' s end effector.
-    base::samples::RigidBodyStateSE3 ref_frame = robot_model->rigidBodyState(config.root, config.ref_frame);
-    y_ref_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * y_ref.segment(0,3);
-    y_ref_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * y_ref.segment(3,3);
+    // be the origin of ref frame, not the root frame.
+    if(robot_model->worldFrame() != ref_frame){
+        rot_mat = robot_model->pose(ref_frame).orientation.toRotationMatrix();
+        y_ref_world.segment(0,3) = rot_mat * y_ref.segment(0,3);
+        y_ref_world.segment(3,3) = rot_mat * y_ref.segment(3,3);
+    }
+    else
+        y_ref_world = y_ref;
 
     // Also convert the weight vector from ref frame to the root frame. Take the absolute values after rotation, since weights can only
     // assume positive values
-    weights_root.segment(0,3) = ref_frame.pose.orientation.toRotationMatrix() * weights.segment(0,3);
-    weights_root.segment(3,3) = ref_frame.pose.orientation.toRotationMatrix() * weights.segment(3,3);
-    weights_root = weights_root.cwiseAbs();
+    if(robot_model->worldFrame() != ref_frame){
+        weights_world.segment(0,3) = rot_mat * weights.segment(0,3);
+        weights_world.segment(3,3) = rot_mat * weights.segment(3,3);
+        weights_world = weights_world.cwiseAbs();
+    }
+    else
+        weights_world = weights;
 }
 
-void CartesianAccelerationTask::setReference(const base::samples::RigidBodyStateSE3& ref){
-
-    if(!ref.hasValidAcceleration()){
-        LOG_ERROR("Constraint %s has invalid linear and/or angular acceleration", config.name.c_str())
-        throw std::invalid_argument("Invalid constraint reference value");
-    }
-
-    if(ref.time.isNull())
-        this->time = base::Time::now();
-    else
-        this->time = ref.time;
-    this->y_ref.segment(0,3) = ref.acceleration.linear;
-    this->y_ref.segment(3,3) = ref.acceleration.angular;
+void CartesianAccelerationTask::setReference(const types::SpatialAcceleration& ref){
+    this->y_ref.segment(0,3) = ref.linear;
+    this->y_ref.segment(3,3) = ref.angular;
 }
 
 } // namespace wbc

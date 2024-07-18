@@ -6,12 +6,12 @@ void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
 
     const bool use_torques = false;
 
-    const auto& contacts = robot_model->getActiveContacts();
+    const auto& contacts = robot_model->getContacts();
 
-    uint nj = robot_model->noOfJoints();
-    uint na = robot_model->noOfActuatedJoints();
+    uint nj = robot_model->nj();
+    uint na = robot_model->na();
     uint nc = contacts.size();
-    uint nac = contacts.getNumberOfActiveContacts();
+    uint nac = robot_model->nac();
 
     uint nv = reduced ? nj + 3*nc : nj + na + 3*nc;
 

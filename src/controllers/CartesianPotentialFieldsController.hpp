@@ -2,7 +2,7 @@
 #define CARTESIAN_POTENTIAL_FIELDS_CONTROLLER_HPP
 
 #include "PotentialFieldsController.hpp"
-#include <base/samples/RigidBodyStateSE3.hpp>
+#include "../types/RigidBodyState.hpp"
 
 namespace wbc{
 
@@ -11,7 +11,7 @@ namespace wbc{
  */
 class CartesianPotentialFieldsController : public PotentialFieldsController{
 protected:
-    base::samples::RigidBodyStateSE3 cartesian_control_output;
+    types::RigidBodyState cartesian_control_output;
 
 public:
     CartesianPotentialFieldsController();
@@ -20,7 +20,7 @@ public:
      * @brief update Compute control output. Saturation will be applied if its has been set
      * @return control_output Control output
      */
-    const base::samples::RigidBodyStateSE3& update(const base::samples::RigidBodyStateSE3& feedback);
+    const types::RigidBodyState& update(const types::RigidBodyState& feedback);
 };
 
 }

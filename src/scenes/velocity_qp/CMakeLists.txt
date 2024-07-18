@@ -12,8 +12,7 @@ add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME} PUBLIC
                       wbc-core
                       wbc-tasks
-                      wbc-constraints
-                      wbc-scenes-velocity)
+                      wbc-constraints)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
