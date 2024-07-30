@@ -4,6 +4,7 @@ namespace wbc{
 
 JointPosPDController::JointPosPDController(uint dim) :
     dim_controller(dim){
+    u_max.setConstant(dim,std::numeric_limits<double>::infinity());
 }
 
 

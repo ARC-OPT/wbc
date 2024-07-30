@@ -8,6 +8,7 @@ CartesianPosPDController::CartesianPosPDController() :
     ra.setConstant(6,0.0);
     x.setConstant(6,0.0);
     v.setConstant(6,0.0);
+    u_max.setConstant(6,std::numeric_limits<double>::infinity());
 }
 
 
