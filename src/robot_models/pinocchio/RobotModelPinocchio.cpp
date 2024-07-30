@@ -40,7 +40,8 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
         return false;
     }
     base_frame =  robot_urdf->getRoot()->name;
-    if(URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
+    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
+        return false;
 
     try{
         if(cfg.floating_base){
@@ -86,10 +87,6 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     qd.resize(model.nv);
     qdd.resize(model.nv);
 
-    space_jac.resize(6,model.nv);
-    body_jac.resize(6,model.nv);
-    com_jac.resize(3,model.nv);
-
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits, joint_names);
 
     selection_matrix.resize(na(),nj());
@@ -100,6 +97,7 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     contacts = cfg.contact_points;
 
     configured = true;
+    compute_com = compute_com_jac = compute_bias_forces = compute_inertia_mat = false;
 
 
     // 3. Verify consistency of URDF and config
@@ -111,7 +109,6 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
             return false;
         }
     }
-
 
     return true;
 }
@@ -174,149 +171,204 @@ void RobotModelPinocchio::update(const Eigen::VectorXd& joint_positions,
             qdd[model.getJointId(actuated_joint_names[i])-1] = joint_state.acceleration[i];
         }
     }
-
     updated = true;
-}
-
-const types::Pose &RobotModelPinocchio::pose(const std::string &frame_id){
-
-    assert(updated);
-    assert(frame_id != "world");
-
-    uint idx = model.getFrameId(frame_id);
-    assert(idx != model.frames.size());
 
     pinocchio::forwardKinematics(model,*data,q,qd,qdd);
-    pinocchio::updateFramePlacement(model,*data,idx);
 
-    rbs.pose.position = data->oMf[idx].translation();
-    rbs.pose.orientation = Eigen::Quaterniond(data->oMf[idx].rotation());
-    return rbs.pose;
+    if(compute_inertia_mat)
+        jointSpaceInertiaMatrix(true);
+    if(compute_bias_forces)
+        biasForces(true);
+    for(auto it : pose_map)
+        pose(it.first,true);
+    for(auto it : twist_map)
+        twist(it.first,true);
+    for(auto it : acc_map)
+        acceleration(it.first,true);
+    for(auto it : space_jac_map)
+        spaceJacobian(it.first,true);
+    for(auto it : body_jac_map)
+        bodyJacobian(it.first,true);
+    if(compute_com)
+        centerOfMass(true);
+    if(compute_com_jac)
+        comJacobian(true);
+    pinocchio::forwardKinematics(model,*data,q,qd,Eigen::VectorXd::Zero(model.nv));
+    for(auto it : spatial_acc_bias_map)
+        spatialAccelerationBias(it.first,true);
+
 }
 
-const types::Twist &RobotModelPinocchio::twist(const std::string &frame_id){
+const types::Pose &RobotModelPinocchio::pose(const std::string &frame_id, const bool recompute){
 
     assert(updated);
     assert(frame_id != "world");
 
-    uint idx = model.getFrameId(frame_id);
-    assert(idx != model.frames.size());
+    if(recompute || pose_map.count(frame_id) == 0){
 
-    pinocchio::forwardKinematics(model,*data,q,qd,qdd);
-    pinocchio::updateFramePlacement(model,*data,idx);
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
 
-    // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
-    // but with axes aligned with the world frame. This a MIXED representation betwenn the LOCAL and the WORLD.
-    rbs.twist.linear = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.twist.angular = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+        pinocchio::updateFramePlacement(model,*data,idx);
 
-    return rbs.twist;
+        pose_map[frame_id].position = data->oMf[idx].translation();
+        pose_map[frame_id].orientation = Eigen::Quaterniond(data->oMf[idx].rotation());
+    }
+
+    return pose_map[frame_id];
 }
 
-const types::SpatialAcceleration &RobotModelPinocchio::acceleration(const std::string &frame_id){
+const types::Twist &RobotModelPinocchio::twist(const std::string &frame_id, const bool recompute){
 
     assert(updated);
     assert(frame_id != "world");
 
-    uint idx = model.getFrameId(frame_id);
-    assert(idx != model.frames.size());
+    if(recompute || twist_map.count(frame_id) == 0){
 
-    pinocchio::forwardKinematics(model,*data,q,qd,qdd);
-    pinocchio::updateFramePlacement(model,*data,idx);
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
 
-    // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
-    // but with axes aligned with the world frame. This a MIXED representation betwenn the LOCAL and the WORLD.
-    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+        pinocchio::updateFramePlacement(model,*data,idx);
 
-    return rbs.acceleration;
+        // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
+        // but with axes aligned with the world frame. This a MIXED representation betwenn the LOCAL and the WORLD.
+        twist_map[frame_id].linear = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+        twist_map[frame_id].angular = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    }
+
+    return twist_map[frame_id];
 }
 
-const Eigen::MatrixXd &RobotModelPinocchio::spaceJacobian(const std::string &frame_id){
+const types::SpatialAcceleration &RobotModelPinocchio::acceleration(const std::string &frame_id, const bool recompute){
 
     assert(updated);
     assert(frame_id != "world");
 
-    uint idx = model.getFrameId(frame_id);
-    assert(idx != model.frames.size());
+    if(recompute || acc_map.count(frame_id) == 0){
 
-    space_jac.resize(6,model.nv);
-    space_jac.setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL_WORLD_ALIGNED, space_jac);
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
 
-    return space_jac;
+        pinocchio::updateFramePlacement(model,*data,idx);
+
+        // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
+        // but with axes aligned with the world frame. This a MIXED representation betwenn the LOCAL and the WORLD.
+        acc_map[frame_id].linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+        acc_map[frame_id].angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    }
+
+    return acc_map[frame_id];
 }
 
-const Eigen::MatrixXd &RobotModelPinocchio::bodyJacobian(const std::string &frame_id){
+const Eigen::MatrixXd &RobotModelPinocchio::spaceJacobian(const std::string &frame_id, const bool recompute){
 
     assert(updated);
     assert(frame_id != "world");
 
-    uint idx = model.getFrameId(frame_id);
-    assert(idx != model.frames.size());
+    if(recompute || space_jac_map.count(frame_id) == 0){
 
-    body_jac.resize(6,model.nv);
-    body_jac.setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL, body_jac);
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
 
-    return body_jac;
+        space_jac_map[frame_id].resize(6,model.nv);
+        space_jac_map[frame_id].setZero();
+        pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL_WORLD_ALIGNED, space_jac_map[frame_id]);
+    }
+
+    return space_jac_map[frame_id];
 }
 
-const Eigen::MatrixXd &RobotModelPinocchio::comJacobian(){
+const Eigen::MatrixXd &RobotModelPinocchio::bodyJacobian(const std::string &frame_id, const bool recompute){
+
     assert(updated);
-    pinocchio::jacobianCenterOfMass(model, *data, q);
-    com_jac.resize(3,model.nv);
-    com_jac = data->Jcom;
+    assert(frame_id != "world");
+
+    if(recompute || body_jac_map.count(frame_id) == 0){
+
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
+
+        body_jac_map[frame_id].resize(6,model.nv);
+        body_jac_map[frame_id].setZero();
+        pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL, body_jac_map[frame_id]);
+    }
+
+    return body_jac_map[frame_id];
+}
+
+const Eigen::MatrixXd &RobotModelPinocchio::comJacobian(const bool recompute){
+
+    assert(updated);
+    compute_com_jac = true;
+
+    if(recompute || com_jac.rows() == 0){
+
+        pinocchio::jacobianCenterOfMass(model, *data, q);
+        com_jac.resize(3,model.nv);
+        com_jac = data->Jcom;
+    }
     return com_jac;
 }
 
-const types::SpatialAcceleration &RobotModelPinocchio::spatialAccelerationBias(const std::string &frame_id){
+const types::SpatialAcceleration &RobotModelPinocchio::spatialAccelerationBias(const std::string &frame_id, const bool recompute){
 
     assert(updated);
     assert(frame_id != "world");
 
-    pinocchio::forwardKinematics(model,*data,q,qd,Eigen::VectorXd::Zero(model.nv));
+    if(recompute || spatial_acc_bias_map.count(frame_id) == 0){
 
-    uint idx = model.getFrameId(frame_id);
-    assert(idx != model.frames.size());
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
 
-    spatial_acc_bias.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    spatial_acc_bias.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+        spatial_acc_bias_map[frame_id].linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+        spatial_acc_bias_map[frame_id].angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+    }
 
-    return spatial_acc_bias;
+    return spatial_acc_bias_map[frame_id];
 }
 
-const Eigen::MatrixXd &RobotModelPinocchio::jointSpaceInertiaMatrix(){
+const Eigen::MatrixXd &RobotModelPinocchio::jointSpaceInertiaMatrix(const bool recompute){
 
-    assert(updated);
+    assert(updated);    
+    compute_inertia_mat = true;
 
-    pinocchio::crba(model, *data, q);
-    joint_space_inertia_mat = data->M;
-    // copy upper right triangular part to lower left triangular part (they are symmetric), as pinocchio only computes the former
-    joint_space_inertia_mat.triangularView<Eigen::StrictlyLower>() = joint_space_inertia_mat.transpose().triangularView<Eigen::StrictlyLower>();
+    if(recompute || joint_space_inertia_mat.rows() == 0){
+
+        pinocchio::crba(model, *data, q);
+        joint_space_inertia_mat = data->M;
+        // copy upper right triangular part to lower left triangular part (they are symmetric), as pinocchio only computes the former
+        joint_space_inertia_mat.triangularView<Eigen::StrictlyLower>() = joint_space_inertia_mat.transpose().triangularView<Eigen::StrictlyLower>();
+    }
     return joint_space_inertia_mat;
 }
 
-const Eigen::VectorXd &RobotModelPinocchio::biasForces(){
+const Eigen::VectorXd &RobotModelPinocchio::biasForces(const bool recompute){
 
     assert(updated);
+    compute_bias_forces = true;
 
-    pinocchio::nonLinearEffects(model, *data, q, qd);
-    bias_forces = data->nle;
+    if(recompute || bias_forces.rows() == 0){
+
+        pinocchio::nonLinearEffects(model, *data, q, qd);
+        bias_forces = data->nle;
+    }
     return bias_forces;
 }
 
-const types::RigidBodyState& RobotModelPinocchio::centerOfMass(){
+const types::RigidBodyState& RobotModelPinocchio::centerOfMass(const bool recompute){
 
     assert(updated);
+    compute_com = true;
 
-    pinocchio::centerOfMass(model, *data, q, qd, qdd);
-    com_rbs.pose.position       = data->com[0];
-    com_rbs.twist.linear        = data->vcom[0];
-    com_rbs.acceleration.linear = data->acom[0];
-    com_rbs.pose.orientation.setIdentity();
-    com_rbs.twist.angular.setZero();
-    com_rbs.acceleration.angular.setZero();
+    if(recompute){
+        pinocchio::centerOfMass(model, *data, q, qd, qdd);
+        com_rbs.pose.position       = data->com[0];
+        com_rbs.twist.linear        = data->vcom[0];
+        com_rbs.acceleration.linear = data->acom[0];
+        com_rbs.pose.orientation.setIdentity();
+        com_rbs.twist.angular.setZero();
+        com_rbs.acceleration.angular.setZero();
+    }
     return com_rbs;
 }
 

@@ -41,16 +41,22 @@ protected:
     types::JointState joint_state;
     Eigen::MatrixXd joint_space_inertia_mat;
     Eigen::MatrixXd com_jac;
-    Eigen::MatrixXd selection_matrix;
     Eigen::VectorXd bias_forces;
-    types::SpatialAcceleration spatial_acc_bias;
-    types::RigidBodyState com_rbs;
-    types::RigidBodyState rbs;
-    Eigen::VectorXd q, qd, qdd, tau, zero_jnt;
     types::SpatialAcceleration zero_acc;
-    Eigen::MatrixXd space_jac;
-    Eigen::MatrixXd body_jac;
+    Eigen::MatrixXd selection_matrix;
+    types::RigidBodyState com_rbs;
+    Eigen::VectorXd q, qd, qdd, tau, zero_jnt;
     bool configured,updated;
+    std::map<std::string,Eigen::MatrixXd> space_jac_map;
+    std::map<std::string,Eigen::MatrixXd> body_jac_map;
+    std::map<std::string,types::Pose> pose_map;
+    std::map<std::string,types::Twist> twist_map;
+    std::map<std::string,types::SpatialAcceleration> acc_map;
+    std::map<std::string,types::SpatialAcceleration> spatial_acc_bias_map;
+    bool compute_inertia_mat;
+    bool compute_com;
+    bool compute_com_jac;
+    bool compute_bias_forces;
 
 public:
     RobotModel();
@@ -113,15 +119,15 @@ public:
 
     /** Returns the pose of the body defined by frame_id. Pose will be computed with respect to world frame (floating base robot) or
      *  robot root link (fixed base)*/
-    virtual const types::Pose &pose(const std::string &frame_id) = 0;
+    virtual const types::Pose &pose(const std::string &frame_id, const bool recompute = false) = 0;
 
     /** Returns the twist of the body defined by frame_id. Twist will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame
       * attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base)*/
-    virtual const types::Twist &twist(const std::string &frame_id) = 0;
+    virtual const types::Twist &twist(const std::string &frame_id, const bool recompute = false) = 0;
 
     /** Returns the spatial acceleration of the body defined by frame_id. Twist will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame
       * attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base)*/
-    virtual const types::SpatialAcceleration &acceleration(const std::string &frame_id) = 0;
+    virtual const types::SpatialAcceleration &acceleration(const std::string &frame_id, const bool recompute = false) = 0;
 
 
     /** @brief Returns the Space Jacobian for the given frame. The order of the Jacobian's columns will be the same as in the model (alphabetic). Note that
@@ -130,32 +136,32 @@ public:
       * @param frame_id Tip frame of the Jacobian. Has to be a valid link in the robot model.
       * @return A 6 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.
       */
-    virtual const Eigen::MatrixXd &spaceJacobian(const std::string &frame_id) = 0;
+    virtual const Eigen::MatrixXd &spaceJacobian(const std::string &frame_id, const bool recompute = false) = 0;
 
     /** @brief Returns the Body Jacobian for the given frame. The order of the Jacobian's columns will be the same as in the model (alphabetic).
       * @param frame_id Reference frame of the Jacobian. Has to be a valid link in the robot model.
       * @return A 6 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.
       */
-    virtual const Eigen::MatrixXd &bodyJacobian(const std::string &frame_id) = 0;
+    virtual const Eigen::MatrixXd &bodyJacobian(const std::string &frame_id, const bool recompute = false) = 0;
 
     /** @brief Returns the CoM Jacobian for the robot, which maps the robot joint velocities to linear spatial velocities of the CoM expressed in
       * world frame (floating base robot) or robot root link (fixed base). The order of the columns will be the same as the configured joint order of the robot.
       * @return A 3 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.
       */
-    virtual const Eigen::MatrixXd &comJacobian() = 0;
+    virtual const Eigen::MatrixXd &comJacobian(const bool recompute = false) = 0;
 
     /** @brief Returns the spatial acceleration bias, i.e. the term Jdot*qdot. The linear part of the acceleration will be aligned to world frame (floating base robot) or
       *  robot root link (fixed base), and the angular part will be in body coordinates. This is refered to as "hybrid" representation.
       * @param frame_id Reference frame of the spatial acceleration. Has to be a valid link in the robot model.
       * @return A 6 dof spatial acceleration.
       */
-    virtual const types::SpatialAcceleration &spatialAccelerationBias(const std::string &frame_id) = 0;
+    virtual const types::SpatialAcceleration &spatialAccelerationBias(const std::string &frame_id, const bool recompute = false) = 0;
 
     /** @brief Returns the joint space mass-inertia matrix, which is nj x nj,  where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.*/
-    virtual const Eigen::MatrixXd &jointSpaceInertiaMatrix() = 0;
+    virtual const Eigen::MatrixXd &jointSpaceInertiaMatrix(const bool recompute = false) = 0;
 
     /** @brief Returns the bias force vector, which is nj x 1, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.*/
-    virtual const Eigen::VectorXd &biasForces() = 0;
+    virtual const Eigen::VectorXd &biasForces(const bool recompute = false) = 0;
 
     /** @brief Return all joint names excluding the floating base. This will be
      * - The entire spanning tree if there are parallel loops
@@ -194,7 +200,7 @@ public:
     bool hasActuatedJoint(const std::string& joint_name);
 
     /** @brief Return centers of mass expressed in world frame*/
-    virtual const types::RigidBodyState& centerOfMass() = 0;
+    virtual const types::RigidBodyState& centerOfMass(const bool recompute = false) = 0;
 
     /** @brief Set new contact points.*/
     void setContacts(const std::vector<Contact> &contacts);
@@ -208,7 +214,7 @@ public:
     /** @brief Return number of actuated joints*/
     uint na(){return actuatedJointNames().size();}
 
-    /** @brief Return dof of the floating base, will be either 0 (floating_base == false) or 6 (floating_base == true) */
+    /** @brief Return dof of the floating base, will be either 0 (floating_base == false) or 6 (floating_base = = false) */
     uint nfb(){return has_floating_base ? 6 : 0;}
 
     /** Return number of active contacts*/
