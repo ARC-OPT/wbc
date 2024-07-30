@@ -21,7 +21,7 @@ void WrenchForwardTask::update(RobotModelPtr robot_model){
         ref_frame_rotation = robot_model->pose(ref_frame).orientation.toRotationMatrix();
 
         // Transform reference to world frame
-        y_ref_world = ref_frame_rotation * y_ref_world;
+        y_ref_world = ref_frame_rotation * y_ref;
 
         // Also transform the weight vector from ref frame to the world frame. Take the absolute values after rotation, since weights can only
         // assume positive values

@@ -32,6 +32,8 @@ public:
     const std::string& refFrame(){return ref_frame;}
 };
 
+typedef std::shared_ptr<WrenchForwardTask> WrenchForwardTaskPtr;
+
 }
 
 #endif // CARTESIANWRENCHTASK_HPP
