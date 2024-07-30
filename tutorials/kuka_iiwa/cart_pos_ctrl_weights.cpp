@@ -38,7 +38,7 @@ int main(){
     // a single Cartesian task. The most important entries here are root/tip and reference frame, any of which has to be a valid
     // link in the URDF model. For all configuration options, check core/TaskConfig.hpp
     CartesianVelocityTaskPtr cart_task;
-    cart_task = make_shared<CartesianVelocityTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,1,1,1},1),
+    cart_task = make_shared<CartesianVelocityTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,0,0,0},1),
                                                    "kuka_lbr_l_tcp",
                                                    "kuka_lbr_l_link_0",
                                                    robot_model->nj());
@@ -49,7 +49,7 @@ int main(){
     // Set the joint weights. Set the weight to the elbow joint to zero! As a result the elbow joint
     // will not contribute to the task solution, i.e., its velocity will be zero!
     Eigen::VectorXd joint_weights(robot_model->nj());
-    joint_weights << 1,1,1,1,0,1,1;
+    joint_weights << 1,1,1,1,1,1,1;
     scene.setJointWeights(joint_weights);
 
     // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:
@@ -58,7 +58,9 @@ int main(){
     //
     // As we don't use feed forward velocity here, we can ignore the factor kd.
     CartesianPosPDController controller;
-    controller.setPGain(Eigen::VectorXd::Constant(6,1)); // Set kp
+    Eigen::VectorXd p_gain(6);
+    p_gain.setConstant(1.0);
+    controller.setPGain(p_gain);
 
     // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed
     types::JointState joint_state;
@@ -70,7 +72,7 @@ int main(){
     // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
     types::Pose ref_pose, pose;
     types::Twist ref_twist, ctrl_output;
-    ref_pose.position = Eigen::Vector3d(0.0, 0.0, 0.8);
+    ref_pose.position = Eigen::Vector3d(0.0, 0.0, 0.95);
     ref_pose.orientation.setIdentity();
     pose.position.setZero();
     pose.orientation.setIdentity();

@@ -138,7 +138,7 @@ int main(){
         cout<<"Solver output: "; cout<<endl;
         cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<robot_model->jointNames()[i]<<" "; cout<<endl;
         cout<<"Velocity:      "; cout<<solver_output.velocity.transpose()<<" "; cout<<endl;
-        cout<<"solve time:    " << solve_time << " (mu s)" << endl;
+        cout<<"solve time:    " << solve_time << " (us)" << endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 
         usleep(loop_time * 1e6);

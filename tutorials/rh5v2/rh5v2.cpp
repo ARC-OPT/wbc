@@ -1,6 +1,6 @@
 #include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
+#include <scenes/acceleration_reduced_tsid/AccelerationSceneReducedTSID.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <tasks/CartesianAccelerationTask.hpp>
@@ -42,7 +42,7 @@ using namespace wbc;
  */
 int main()
 {
-    double dt = 0.01;
+    double dt = 0.001;
 
     // Create robot model, use hyrodyn-based model in this case
     RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
@@ -63,7 +63,7 @@ int main()
 
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
-    AccelerationSceneTSID scene(robot_model, solver, dt);
+    AccelerationSceneReducedTSID scene(robot_model, solver, dt);
     CartesianAccelerationTaskPtr cart_task_left, cart_task_right;
     cart_task_left = make_shared<CartesianAccelerationTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
                                                             "ALWristFT_Link",
@@ -97,14 +97,14 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl_left, ctrl_right;
-    Eigen::VectorXd p_gain(6),d_gain(6),ff_gain(6);
-    p_gain.setConstant(10); // Stiffness
-    d_gain.setConstant(30); // Damping
-    ff_gain.setConstant(1); // Feed forward
+    Eigen::VectorXd p_gain(6),d_gain(6);
+    p_gain.setConstant(30); // Stiffness
+    d_gain.setConstant(0); // Damping
     ctrl_left.setPGain(p_gain);
     ctrl_left.setDGain(d_gain);
-    ctrl_left.setDGain(ff_gain);
     ctrl_right.setPGain(p_gain);
+    ctrl_right.setDGain(d_gain);
+
 
     // Target Pose left/right
     types::RigidBodyState setpoint_left, setpoint_right, feedback_left, feedback_right;
@@ -160,10 +160,10 @@ int main()
         solver_output = scene.solve(hqp);
 
         // Integrate once to get joint velocity from solver output
-        integrator.integrate(joint_state,solver_output,loop_time, types::CommandMode::ACCELERATION);
+        integrator.integrate(joint_state,solver_output,loop_time, types::CommandMode::ACCELERATION, RECTANGULAR, false);
 
         // Update joint state by integration again
-        joint_state.position += solver_output.velocity * loop_time;
+        joint_state.position = solver_output.position;
         joint_state.velocity = solver_output.velocity;
 
         cout<<"setpoint left: x: "<<setpoint_left.pose.position(0)<<" y: "<<setpoint_left.pose.position(1)<<" z: "<<setpoint_left.pose.position(2)<<endl;
