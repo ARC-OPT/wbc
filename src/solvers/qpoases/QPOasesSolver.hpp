@@ -22,6 +22,17 @@ class HierarchicalQP;
  *             & lb(\mathbf{x}) \leq \mathbf{x} \leq ub(\mathbf{x})& \\
  *        \end{array}
  *  \f]
+ *
+ * Reference:
+ * Ferreau, H.J., Kirches, C., Potschka, A. et al. qpOASES: a parametric active-set algorithm for quadratic programming.
+ * Math. Prog. Comp. 6, 327–363 (2014). https://doi.org/10.1007/s12532-014-0071-1
+ *
+ * Solver parameters:
+ *  - Check qpOASES::Options
+ *  - Different sets of default options can be selected:
+ *    - options.setToDefault( );
+ *    - options.setToReliable( ); // for maximum reliability
+ *    - options.setToMPC( );      // for maximum speed
  */
 class QPOASESSolver : public QPSolver{
 private:
@@ -50,8 +61,6 @@ public:
     qpOASES::Options getOptions(){return options;}
     /** Set new solver options*/
     void setOptions(const qpOASES::Options& opt);
-    /** Set new solver options using one of the following presets: qp_default, qp_reliable, qp_fast, qp_unset*/
-    void setOptionsPreset(const qpOASES::optionPresets& opt);
     /** Get Quadratic program*/
     const qpOASES::SQProblem& getSQProblem(){return sq_problem;}
 

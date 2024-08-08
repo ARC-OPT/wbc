@@ -12,8 +12,8 @@ QPSolverRegistry<ProxQPSolver> ProxQPSolver::reg("proxqp");
 
 ProxQPSolver::ProxQPSolver()
 {
-    _n_iter = 10000;
-    _eps_abs = 1e-9;
+    settings.max_iter = 10000;
+    settings.eps_abs = 1e-9;
 }
 
 /// solve problem:
@@ -54,13 +54,8 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::Vect
         _n_in_init = n_in;
 
         _solver_ptr = std::make_shared<pqp::dense::QP<double>>(n_var, n_eq, n_in);
-        _solver_ptr->settings.eps_abs = _eps_abs;
-        _solver_ptr->settings.max_iter = _n_iter;
-        // _solver_ptr->settings.eps_primal_inf = 1e-6;
-        // _solver_ptr->settings.preconditioner_max_iter = 100;
-        // _solver_ptr->settings.initial_guess = pqp::InitialGuessStatus::NO_INITIAL_GUESS;
-
         _solver_ptr->init(qp.H, qp.g, qp.A, qp.b, _C_mtx, _l_vec, _u_vec);
+        _solver_ptr->settings = settings;
 
         configured = true;
     }

@@ -19,6 +19,13 @@ class HierarchicalQP;
  *             & \mathbf{CI}x + ci0 \geq 0& \\
  *        \end{array}
  *  \f]
+ *
+ * The implements the algorithm of Goldfarb and Idnani for the solution of a (convex) Quadratic Programming problem:
+ * D. Goldfarb, A.  Idnani. A numerically stable dual method for solving strictly convex quadratic programs. Mathematical
+ * Programming 27 (1983) pp. 1-33.
+ *
+ * Solver parameters
+ *  - MaxNIter: Maximum number of working set recalculations to be performed during the initial homotopy
  */
 class EiquadprogSolver : public QPSolver{
 private:

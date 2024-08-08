@@ -8,16 +8,43 @@
 
 namespace wbc {
 
+/**
+ * @brief The OsqpSolver solves convex quadratic programs (QPs) of the form
+ *  \f[
+ *        \begin{array}{ccc}
+ *        min(\mathbf{x}) & \frac{1}{2} \mathbf{x}^T\mathbf{P}\mathbf{x}+\mathbf{q}^T\mathbf{x}& \\
+ *             & & \\
+ *        s.t. & \mathbf{l} \leq Ax \leq u& \\
+ *        \end{array}
+ *  \f]
+ *
+ * The solver runs the following ADMM algorithm, which is described in
+ * Stellato, B., Banjac, G., Goulart, P. et al. OSQP: an operator splitting solver for quadratic programs.
+ * Math. Prog. Comp. 12, 637–672 (2020). https://doi.org/10.1007/s12532-020-00179-2
+ *
+ * Solver Parameters:
+ *  - Check OSQPSettings Struct in file osqp_api_types.h to see all parameters
+ *  - Check osqp_api_constants.h for the default settings
+ *  - To change parameters you can access the public solver variable:
+ *       solver.settings()->setXY()
+ */
 class OsqpSolver : public QPSolver{
 public:
     OsqpSolver();
     ~OsqpSolver();
 
+    /**
+     * @brief solve Solve the given quadratic program
+     * @param hierarchical_qp Description of the (hierarchical) quadratic program to solve.
+     * @param solver_output solution of the quadratic program as vector
+     */
     virtual void solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output);
+
+    /** The osqp wrapper variable*/
+    OsqpEigen::Solver solver;
 
 protected:
     bool configured;
-    OsqpEigen::Solver solver;
 
     Eigen::MatrixXd hessian_dense;
     Eigen::SparseMatrix<double> hessian_sparse;
@@ -27,7 +54,7 @@ protected:
     Eigen::VectorXd lower_bound;
     Eigen::VectorXd upper_bound;
 
-    void resetData(uint nq, uint nc);
+    void resize(uint nq, uint nc);
     std::string exitFlagToString(OsqpEigen::ErrorExitFlag flag){
         switch(flag){
             case OsqpEigen::ErrorExitFlag::DataValidationError: return "DataValidationError";

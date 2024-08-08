@@ -17,7 +17,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
     const int NO_EQ_CONSTRAINTS = 0;
     const int NO_IN_CONSTRAINTS = 0;
     const bool WITH_BOUNDS = false;
-    const int NO_WSR = 20;
 
     // Solve the problem min(||Ax-b||) without constraints --> encode the task as part of the cost function
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = A^T*A and g = -(A^T*y)^T
@@ -45,9 +44,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
     hqp << qp;
 
     ProxQPSolver solver;
-    solver.setMaxNIter(NO_WSR);
-
-    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     Eigen::VectorXd solver_output;
 
@@ -73,7 +69,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
     const int NO_EQ_CONSTRAINTS = 6;
     const int NO_IN_CONSTRAINTS = 0;
     const bool WITH_BOUNDS = false;
-    const int NO_WSR = 20;
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = I  and g = 0
@@ -102,9 +97,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
     hqp << qp;
 
     ProxQPSolver solver;
-    solver.setMaxNIter(NO_WSR);
-
-    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     Eigen::VectorXd solver_output;
 
@@ -130,7 +122,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
     const int NO_EQ_CONSTRAINTS = 0;
     const int NO_IN_CONSTRAINTS = 6;
     const bool WITH_BOUNDS = false;
-    const int NO_WSR = 40;
 
     // Solve the problem min(||x||), subject Ax=b --> encode the task as constraint
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = I  and g = 0
@@ -160,9 +151,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
     hqp << qp;
 
     ProxQPSolver solver;
-    solver.setMaxNIter(NO_WSR);
-
-    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     Eigen::VectorXd solver_output;
 
@@ -186,7 +174,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     const int NO_EQ_CONSTRAINTS = 0;
     const int NO_IN_CONSTRAINTS = 0;
     const bool WITH_BOUNDS = true;
-    const int NO_WSR = 200;
 
     // Solve the problem min(||Ax-b||) with bound constraints --> encode the task as part of the cost function
     // Standard form of QP is x^T*H*x + x^T*g --> Choose H = A^T*A and g = -(A^T*y)^T
@@ -217,9 +204,6 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     hqp << qp;
 
     ProxQPSolver solver;
-    solver.setMaxNIter(NO_WSR);
-
-    BOOST_CHECK(solver.getMaxNIter() == NO_WSR);
 
     Eigen::VectorXd solver_output;
 

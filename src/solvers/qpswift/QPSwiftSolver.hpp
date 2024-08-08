@@ -7,6 +7,17 @@
 namespace wbc {
 class QuadraticProgram;
 
+/**
+ * The QPSwiftSolver solves a quadratic problem of type
+ *
+ * Reference:
+ * Pandala, Abhishek Goud and Ding, Yanran and Park, Hae-Won. QpSWIFT: A Real-Time Sparse Quadratic Program
+ * Solver for Robotic Applications, IEEE Robotics and Automation Letters, 2019
+ *
+ * Parameters:
+ *  - See Struct settings in Auxiliary.g
+ *  - default values are defined in GlobalOptions.h
+ */
 class QPSwiftSolver : public QPSolver{
 private:
     static QPSolverRegistry<QPSwiftSolver> reg;
@@ -23,13 +34,9 @@ protected:
     int n_eq;           /** Number equality constraints*/
     int n_bounds;       /** Number of lower/upper bounds on the decision variables*/
     QP *my_qp;
-    uint max_iter;      /** Maximum number of Iterations of QP */
-    double rel_tol;     /** Relative Tolerance */
-    double abs_tol;     /** Absolute Tolerance */
-    double sigma;       /** sigma desired */
-    uint verbose_level; /** Verbose Levels, 0 - Print,  >0 - Print Everything */
 
     void toQpSwift(const QuadraticProgram &qp);
+    void setOptions(settings opt){options=opt;}
 public:
     QPSwiftSolver();
     ~QPSwiftSolver();
@@ -41,11 +48,7 @@ public:
      */
     virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output);
 
-    void setMaxIter(uint val){max_iter=val;}
-    void setRelTol(double val){rel_tol=val;}
-    void setAbsTol(double val){abs_tol=val;}
-    void setSigma(double val){sigma=val;}
-    void setVerboseLevel(uint val){verbose_level=val;}
+    settings options;
 };
 }
 

@@ -12,7 +12,7 @@ QPSolverRegistry<QPOASESSolver> QPOASESSolver::reg("qpoases");
 
 QPOASESSolver::QPOASESSolver(){
     n_wsr = 1000;
-    options.setToFast();
+    options.setToMPC();
     options.printLevel = PL_NONE;
     nc = nv = 0;
 }
@@ -113,31 +113,6 @@ returnValue QPOASESSolver::getReturnValue(){
 void QPOASESSolver::setOptions(const qpOASES::Options& opt){
     options = opt;
     sq_problem.setOptions(opt);
-}
-
-void QPOASESSolver::setOptionsPreset(const qpOASES::optionPresets& opt){
-    switch(opt){
-    case qpOASES::qp_default:{
-        options.setToDefault();
-        break;
-    }
-    case qpOASES::qp_reliable:{
-        options.setToReliable();
-        break;
-    }
-    case qpOASES::qp_fast:{
-        options.setToFast();
-        break;
-    }
-    case qpOASES::qp_unset:{
-        break;
-    }
-    default:{
-        log(logERROR)<<"QPOASESSolver::setOptionsPreset: Invalid preset: " << opt;
-        assert(opt == qp_default || opt == qp_reliable || opt == qp_fast || opt == qp_unset);
-    }
-    }
-    sq_problem.setOptions(options);
 }
 
 }

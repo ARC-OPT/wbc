@@ -8,11 +8,11 @@ QPSolverRegistry<QPSwiftSolver> QPSwiftSolver::reg("qpswift");
 
 QPSwiftSolver::QPSwiftSolver(){
     my_qp = 0;
-    max_iter = 1000;
-    rel_tol = 1e-5;
-    abs_tol = 1e-5;
-    sigma = 100;
-    verbose_level = 0;
+    options.maxit = 1000000;
+    options.reltol = 1e-5;
+    options.abstol = 1e-5;
+    options.sigma = SIGMA;
+    options.verbose = VERBOSE;
 }
 
 QPSwiftSolver::~QPSwiftSolver(){
@@ -54,11 +54,11 @@ void QPSwiftSolver::toQpSwift(const wbc::QuadraticProgram &qp){
                            NULL,
                            COLUMN_MAJOR_ORDERING);
 
-    my_qp->options->maxit = max_iter;
-    my_qp->options->reltol = rel_tol;
-    my_qp->options->abstol = abs_tol;
-    my_qp->options->sigma = sigma;
-    my_qp->options->verbose = verbose_level;
+    my_qp->options->maxit = options.maxit;
+    my_qp->options->reltol = options.reltol;
+    my_qp->options->abstol = options.abstol;
+    my_qp->options->sigma = options.sigma;
+    my_qp->options->verbose = options.verbose;
 }
 
 void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
@@ -67,7 +67,7 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::Vec
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
     assert(qp.isValid());
 
-    if(n_dec != qp.nq || n_eq != qp.neq || n_ineq != qp.nin)
+    if(n_dec != qp.nq || n_eq != qp.neq || n_ineq != 2 * (qp.nin + qp.upper_x.size()))
         configured = false;
 
     if(!configured){
@@ -84,6 +84,7 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::Vec
         c.resize(n_dec);
         solver_output.resize(n_dec);
         configured = true;
+        std::cout<<"Reconfiguring"<<std::endl;
     }
 
     toQpSwift(qp);
