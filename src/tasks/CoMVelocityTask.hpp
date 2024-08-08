@@ -11,10 +11,10 @@ namespace wbc{
 class CoMVelocityTask : public Task{
 public:
     CoMVelocityTask(TaskConfig config,
-                    uint nj);
+                    RobotModelPtr robot_model);
     virtual ~CoMVelocityTask() = default;
 
-    virtual void update(RobotModelPtr robot_model) override;
+    virtual void update() override;
 
     /**
      * @brief Update the CoM reference input for this task.

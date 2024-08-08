@@ -12,6 +12,9 @@ namespace wbc{
  * @brief Abstract class to represent a generic task for a WBC optimization problem.
  */
 class Task {
+protected:
+    RobotModelPtr robot_model;
+
 public:
 
     /** @brief Default constructor */
@@ -21,7 +24,7 @@ public:
       * @param nc Number of task variables
       * @param nj Number of robot joints
       */
-    Task(TaskConfig config, uint nv, uint nj, TaskType type);
+    Task(TaskConfig config, RobotModelPtr robot_model, uint nv, TaskType type);
     ~Task();
 
     /**
@@ -32,7 +35,7 @@ public:
     /**
      * @brief Update Task matrices and vectors
      */
-    virtual void update(RobotModelPtr robot_model) = 0;
+    virtual void update() = 0;
 
     /**
      * @brief Set task weights.

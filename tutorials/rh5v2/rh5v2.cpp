@@ -66,13 +66,13 @@ int main()
     AccelerationSceneReducedTSID scene(robot_model, solver, dt);
     CartesianAccelerationTaskPtr cart_task_left, cart_task_right;
     cart_task_left = make_shared<CartesianAccelerationTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
+                                                            robot_model,
                                                             "ALWristFT_Link",
-                                                            "RH5v2_Root_Link",
-                                                            robot_model->nj());
+                                                            "RH5v2_Root_Link");
     cart_task_right = make_shared<CartesianAccelerationTask>(TaskConfig("cart_ctrl_right",0,{1,1,1,1,1,1},1),
+                                                             robot_model,
                                                             "ARWristFT_Link",
-                                                            "RH5v2_Root_Link",
-                                                            robot_model->nj());
+                                                            "RH5v2_Root_Link");
     if(!scene.configure({cart_task_left, cart_task_right}))
         return -1;
 

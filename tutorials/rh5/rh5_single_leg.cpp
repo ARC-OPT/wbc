@@ -66,9 +66,9 @@ int main(){
     // Configure Scene, use VelocitySceneQuadraticCost in this case
     CartesianVelocityTaskPtr cart_task;
     cart_task = make_shared<CartesianVelocityTask>(TaskConfig("left_leg_posture",0,{1,1,1,1,1,1},1),
+                                                   robot_model,
                                                    "LLAnkle_FT",
-                                                   "RH5_Root_Link",
-                                                   robot_model->nj());
+                                                   "RH5_Root_Link");
     VelocitySceneQP scene(robot_model, solver, dt);
     if(!scene.configure({cart_task}))
         return -1;

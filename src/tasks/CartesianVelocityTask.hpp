@@ -15,16 +15,16 @@ protected:
     std::string ref_frame;
 public:
     CartesianVelocityTask(TaskConfig config,
+                          RobotModelPtr robot_model,
                           const std::string &tip_frame,
-                          const std::string &ref_frame,
-                          uint nj);
+                          const std::string &ref_frame);
     virtual ~CartesianVelocityTask() = default;
 
     /**
      * @brief Compute the cartesian task matrix A
      * @param robot_model Pointer to the robot model from which get the state and compute the cartesian task matrix A
      */
-    virtual void update(RobotModelPtr robot_model) override;
+    virtual void update() override;
 
     /**
      * @brief Update the Cartesian reference input for this task.

@@ -6,13 +6,15 @@ Task::Task(){
 
 }
 
-Task::Task(TaskConfig config, uint nv, uint nj, TaskType type) :
-    config(config), nv(nv), nj(nj), type(type){
+Task::Task(TaskConfig config, RobotModelPtr robot_model, uint nv, TaskType type) :
+    robot_model(robot_model), config(config), nv(nv), type(type){
 
     y_ref.resize(nv);
     y_ref_world.resize(nv);
     weights.resize(nv);
     weights_world.resize(nv);
+
+    nj = robot_model->nj();
 
     A.resize(nv, nj);
     Aw.resize(nv, nj);

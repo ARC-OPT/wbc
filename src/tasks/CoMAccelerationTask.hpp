@@ -12,10 +12,10 @@ namespace wbc{
 class CoMAccelerationTask : public Task{
 public:
     CoMAccelerationTask(TaskConfig config,
-                        uint nj);
+                        RobotModelPtr robot_model);
     virtual ~CoMAccelerationTask() = default;
 
-    virtual void update(RobotModelPtr robot_model) override;
+    virtual void update() override;
 
     /**
      * @brief Update the CoM reference input for this task.

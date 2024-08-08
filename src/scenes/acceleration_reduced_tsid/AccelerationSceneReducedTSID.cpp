@@ -105,7 +105,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
                task->type == TaskType::joint_acceleration ||
                task->type == TaskType::wrench_forward);
 
-        task->update(robot_model);
+        task->update();
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the task again
@@ -168,9 +168,12 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
         tau_out += -robot_model->spaceJacobian(contacts[c].frame_id).topRows<3>().transpose().bottomRows(na) * fext_out.segment<3>(c*3);
     tau_out += robot_model->biasForces().bottomRows(na);
 
+
+
     for(uint i = 0; i < solver_output.size(); i++){
-        if(std::isnan(solver_output[i]))
+        if(std::isnan(solver_output[i])){
             throw std::runtime_error("Solver output is NaN");
+        }
     }
     solver_output_joints.acceleration = qdd_out.tail(na);
     solver_output_joints.effort = tau_out; // tau_out does not include fb dofs.

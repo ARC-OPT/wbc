@@ -12,15 +12,15 @@ protected:
     std::vector<std::string> joint_names;
 public:
     JointVelocityTask(TaskConfig config,
-                      const std::vector<std::string>& joint_names,
-                      uint nj);
+                      RobotModelPtr robot_model,
+                      const std::vector<std::string>& joint_names);
     virtual ~JointVelocityTask() = default;
 
     /**
      * @brief Compute the joint task matrix A
      * @param robot_model Pointer to the robot model from which get the state and compute the joint task matrix A
      */
-    virtual void update(RobotModelPtr robot_model) override;
+    virtual void update() override;
 
     /**
      * @brief Update the Joint reference input for this task.

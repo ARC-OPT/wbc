@@ -3,11 +3,11 @@
 namespace wbc {
 
 CoMAccelerationTask::CoMAccelerationTask(TaskConfig config,
-                                         uint nj)
-    : Task(config, 3, nj, TaskType::com_acceleration){
+                                         RobotModelPtr robot_model)
+    : Task(config, robot_model, 3, TaskType::com_acceleration){
 }
 
-void CoMAccelerationTask::update(RobotModelPtr robot_model){
+void CoMAccelerationTask::update(){
     A = robot_model->comJacobian();
     // Desired task space acceleration: y_r = y_d - Jdot*qdot
     y_ref = y_ref - robot_model->spatialAccelerationBias(robot_model->baseFrame()).linear;

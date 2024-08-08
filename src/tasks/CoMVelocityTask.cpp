@@ -4,11 +4,11 @@
 namespace wbc {
 
 CoMVelocityTask::CoMVelocityTask(TaskConfig config,
-                                 uint nj)
-    : Task(config, 3, nj, TaskType::com_velocity){
+                                 RobotModelPtr robot_model)
+    : Task(config, robot_model, 3, TaskType::com_velocity){
 }
 
-void CoMVelocityTask::update(RobotModelPtr robot_model){
+void CoMVelocityTask::update(){
     A = robot_model->comJacobian();
     // CoM tasks are always in world/base frame, no need to transform.
     y_ref_world = y_ref;

@@ -39,9 +39,9 @@ int main(){
     // link in the URDF model. For all configuration options, check core/TaskConfig.hpp
     CartesianVelocityTaskPtr cart_task;
     cart_task = make_shared<CartesianVelocityTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,0,0,0},1),
+                                                   robot_model,
                                                    "kuka_lbr_l_tcp",
-                                                   "kuka_lbr_l_link_0",
-                                                   robot_model->nj());
+                                                   "kuka_lbr_l_link_0");
     VelocitySceneQP scene(robot_model, solver, 1e-3);
     if(!scene.configure({cart_task}))
         return -1;

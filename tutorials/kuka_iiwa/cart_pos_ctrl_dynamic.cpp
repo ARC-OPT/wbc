@@ -65,9 +65,9 @@ int main()
     AccelerationSceneTSID scene(robot_model, solver, dt);
     CartesianAccelerationTaskPtr cart_task;
     cart_task = make_shared<CartesianAccelerationTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,1,1,1},1),
+                                                       robot_model,
                                                        "kuka_lbr_l_tcp",
-                                                       "kuka_lbr_l_link_0",
-                                                       robot_model->nj());
+                                                       "kuka_lbr_l_link_0");
     if(!scene.configure({cart_task}))
         return -1;
 

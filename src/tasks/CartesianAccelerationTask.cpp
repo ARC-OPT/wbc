@@ -4,13 +4,13 @@
 namespace wbc{
 
 CartesianAccelerationTask::CartesianAccelerationTask(TaskConfig config,
+                                                     RobotModelPtr robot_model,
                                                      const std::string &tip_frame,
-                                                     const std::string &ref_frame,
-                                                     uint nj)
-    : Task(config, 6, nj, TaskType::spatial_acceleration), tip_frame(tip_frame), ref_frame(ref_frame){
+                                                     const std::string &ref_frame)
+    : Task(config, robot_model, 6, TaskType::spatial_acceleration), tip_frame(tip_frame), ref_frame(ref_frame){
 }
 
-void CartesianAccelerationTask::update(RobotModelPtr robot_model){
+void CartesianAccelerationTask::update(){
     // Task Jacobian
     A = robot_model->spaceJacobian(tip_frame);
 

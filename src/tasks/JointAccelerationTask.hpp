@@ -11,15 +11,15 @@ class JointAccelerationTask : public Task{
     std::vector<std::string> joint_names;
 public:
     JointAccelerationTask(TaskConfig config,
-                          const std::vector<std::string>& joint_names,
-                          uint nj);
+                          RobotModelPtr robot_model,
+                          const std::vector<std::string>& joint_names);
     virtual ~JointAccelerationTask() = default;
 
     /**
      * @brief Compute the joint task matrix A
      * @param robot_model Pointer to the robot model from which get the state and compute the joint task matrix A
      */
-    virtual void update(RobotModelPtr robot_model) override;
+    virtual void update() override;
 
 
     /**

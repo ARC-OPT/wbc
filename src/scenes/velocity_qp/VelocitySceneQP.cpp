@@ -90,7 +90,7 @@ const HierarchicalQP& VelocitySceneQP::update(){
                task->type == TaskType::com_velocity ||
                task->type == TaskType::joint_velocity);
 
-        task->update(robot_model);
+        task->update();
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the task again

@@ -11,15 +11,15 @@ protected:
     const std::string ref_frame;
 public:
     WrenchForwardTask(TaskConfig config,
-                      const std::string &ref_frame,
-                      uint nj);
+                      RobotModelPtr robot_model,
+                      const std::string &ref_frame);
     virtual ~WrenchForwardTask() = default;
 
     /**
      * @brief Compute the cartesian task matrix A
      * @param robot_model Pointer to the robot model from which get the state and compute the cartesian task matrix A
      */
-    virtual void update(RobotModelPtr robot_model) override;
+    virtual void update() override;
 
     /**
      * @brief Update the Cartesian reference input for this task.

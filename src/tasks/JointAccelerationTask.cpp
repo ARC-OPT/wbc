@@ -3,13 +3,13 @@
 namespace wbc{
 
 JointAccelerationTask::JointAccelerationTask(TaskConfig config,
-                                             const std::vector<std::string>& joint_names,
-                                             uint nj)
-    : Task(config, joint_names.size(), nj, TaskType::joint_acceleration), joint_names(joint_names){
+                                             RobotModelPtr robot_model,
+                                             const std::vector<std::string>& joint_names)
+    : Task(config, robot_model, joint_names.size(), TaskType::joint_acceleration), joint_names(joint_names){
 
 }
 
-void JointAccelerationTask::update(RobotModelPtr robot_model){
+void JointAccelerationTask::update(){
 
     // Joint space tasks: task matrix has only ones and Zeros. The joint order in the tasks might be different than in the robot model.
     // Thus, for joint space tasks, the joint indices have to be mapped correctly.

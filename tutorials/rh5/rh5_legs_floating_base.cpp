@@ -81,9 +81,9 @@ int main(){
 
     CartesianVelocityTaskPtr cart_task;
     cart_task = make_shared<CartesianVelocityTask>(TaskConfig("com_position",0,vector<double>(6,1),1),
+                                                   robot_model,
                                                    "RH5_Root_Link",
-                                                   "world",
-                                                   robot_model->nj());
+                                                   "world");
     VelocitySceneQP scene(robot_model, solver, dt);
     if(!scene.configure({cart_task}))
         return -1;
@@ -137,6 +137,7 @@ int main(){
                             floating_base_state.acceleration);
 
         // Update controller. The feedback is the pose of the tip link described in ref_frame link
+        robot_model->pose("LLAnkle_FT");
         pose = robot_model->pose(cart_task->tipFrame());
         ctrl_output = controller.update(ref_pose, ref_twist, pose);
 

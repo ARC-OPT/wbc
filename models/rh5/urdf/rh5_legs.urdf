@@ -212,7 +212,7 @@
       </material>
     </visual>
   </link>
-  <joint name="LLAnkle_FT" type="fixed">
+  <joint name="LLAnkle_FT_joint" type="fixed">
     <origin xyz="0.0 0.0 -0.058972" rpy="-3.1416 0.0 -1.2151e-16"/>
     <axis xyz="0.0 0.0 0.0"/>
     <parent link="LLAnklePitch_Link"/>
@@ -492,7 +492,7 @@
       </material>
     </visual>
   </link>
-  <joint name="LRAnkle_FT" type="fixed">
+  <joint name="LRAnkle_FT_joint" type="fixed">
     <origin xyz="0.0 0.0 -0.058972" rpy="-3.1416 0.0 -1.2151e-16"/>
     <axis xyz="0.0 0.0 0.0"/>
     <parent link="LRAnklePitch_Link"/>
