@@ -44,6 +44,9 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_without_constraints)
     hqp << qp;
 
     ProxQPSolver solver;
+    proxsuite::proxqp::Settings<double> options;
+    options.eps_abs = 1e-9;
+    solver.setOptions(options);
 
     Eigen::VectorXd solver_output;
 
@@ -97,6 +100,9 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_equality_constraints)
     hqp << qp;
 
     ProxQPSolver solver;
+    proxsuite::proxqp::Settings<double> options;
+    options.eps_abs = 1e-9;
+    solver.setOptions(options);
 
     Eigen::VectorXd solver_output;
 
@@ -151,6 +157,9 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_with_inequality_constraints)
     hqp << qp;
 
     ProxQPSolver solver;
+    proxsuite::proxqp::Settings<double> options;
+    options.eps_abs = 1e-9;
+    solver.setOptions(options);
 
     Eigen::VectorXd solver_output;
 
@@ -204,6 +213,9 @@ BOOST_AUTO_TEST_CASE(solver_proxqp_bounded)
     hqp << qp;
 
     ProxQPSolver solver;
+    proxsuite::proxqp::Settings<double> options;
+    options.eps_abs = 1e-9;
+    solver.setOptions(options);
 
     Eigen::VectorXd solver_output;
 

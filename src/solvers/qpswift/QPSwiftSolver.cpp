@@ -8,12 +8,6 @@ QPSolverRegistry<QPSwiftSolver> QPSwiftSolver::reg("qpswift");
 
 QPSwiftSolver::QPSwiftSolver(){
     my_qp = 0;
-    options.maxit = 1000000;
-    options.reltol = 1e-5;
-    options.abstol = 1e-5;
-    options.sigma = SIGMA;
-    options.verbose = VERBOSE;
-}
 
 QPSwiftSolver::~QPSwiftSolver(){
     if(my_qp)

@@ -12,8 +12,6 @@ QPSolverRegistry<ProxQPSolver> ProxQPSolver::reg("proxqp");
 
 ProxQPSolver::ProxQPSolver()
 {
-    settings.max_iter = 10000;
-    settings.eps_abs = 1e-9;
 }
 
 /// solve problem:
