@@ -8,6 +8,7 @@ QPSolverRegistry<QPSwiftSolver> QPSwiftSolver::reg("qpswift");
 
 QPSwiftSolver::QPSwiftSolver(){
     my_qp = 0;
+}
 
 QPSwiftSolver::~QPSwiftSolver(){
     if(my_qp)
@@ -78,7 +79,6 @@ void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::Vec
         c.resize(n_dec);
         solver_output.resize(n_dec);
         configured = true;
-        std::cout<<"Reconfiguring"<<std::endl;
     }
 
     toQpSwift(qp);
