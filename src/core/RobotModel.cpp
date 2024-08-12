@@ -11,7 +11,6 @@ RobotModel::RobotModel() :
 void RobotModel::update(const Eigen::VectorXd& joint_positions,
                         const Eigen::VectorXd& joint_velocities){
     assert(!hasFloatingBase()); // This method is for fixed base robots only!
-    zero_jnt.setZero(na());
     update(joint_positions, joint_velocities, zero_jnt);
 }
 
@@ -28,8 +27,6 @@ void RobotModel::update(const Eigen::VectorXd& joint_positions,
                         const types::Pose& fb_pose,
                         const types::Twist& fb_twist){
     assert(hasFloatingBase()); // This method is for floating base robots only!
-    zero_jnt.setZero(na());
-    zero_acc.setZero();
     update(joint_positions, joint_velocities, zero_jnt, fb_pose, fb_twist, zero_acc);
 }
 
@@ -46,6 +43,63 @@ void RobotModel::clear(){
     joint_state.clear();
     configured = false;
     updated = false;
+    space_jac_map.clear();
+    body_jac_map.clear();
+    pose_map.clear();
+    twist_map.clear();
+    acc_map.clear();
+    spatial_acc_bias_map.clear();
+    joint_space_inertia_mat.clear();
+    bias_forces.clear();
+    com_jac.clear();
+    com_rbs.clear();
+}
+
+void RobotModel::resetData(){
+    for(auto &it : joint_space_inertia_mat)
+        it.needs_recompute = true;
+    for(auto &it : com_jac)
+        it.needs_recompute = true;
+    for(auto &it : bias_forces)
+        it.needs_recompute = true;
+    for(auto &it : com_rbs)
+        it.needs_recompute = true;
+    for(auto &it : space_jac_map)
+        it.second.needs_recompute = true;
+    for(auto &it : body_jac_map)
+        it.second.needs_recompute = true;
+    for(auto &it : pose_map)
+        it.second.needs_recompute = true;
+    for(auto &it : twist_map)
+        it.second.needs_recompute = true;
+    for(auto &it : acc_map)
+        it.second.needs_recompute = true;
+    for(auto &it : spatial_acc_bias_map)
+        it.second.needs_recompute = true;
+    fk_needs_recompute = fk_with_zero_acc_needs_recompute = true;
+}
+
+void RobotModel::updateData(){
+    for(auto it : joint_space_inertia_mat)
+        it.data = jointSpaceInertiaMatrix();
+    for(auto it : com_jac)
+        it.data = comJacobian();
+    for(auto it : bias_forces)
+        it.data = biasForces();
+    for(auto it : com_rbs)
+        it.data = centerOfMass();
+    for(auto it : space_jac_map)
+        it.second.data = spaceJacobian(it.first);
+    for(auto it : body_jac_map)
+        it.second.data = bodyJacobian(it.first);
+    for(auto it : pose_map)
+        it.second.data = pose(it.first);
+    for(auto it : twist_map)
+        it.second.data = twist(it.first);
+    for(auto it : acc_map)
+        it.second.data = acceleration(it.first);
+    for(auto it : spatial_acc_bias_map)
+        it.second.data = spatialAccelerationBias(it.first);
 }
 
 void RobotModel::setContacts(const std::vector<Contact> &_contacts){

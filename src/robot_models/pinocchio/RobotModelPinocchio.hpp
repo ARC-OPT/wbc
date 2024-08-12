@@ -17,6 +17,11 @@ protected:
 
     /** Free all data*/
     void clear();
+    /** Update forward kinematics*/
+    void updateFK(Eigen::VectorXd &_q,Eigen::VectorXd &_qd,Eigen::VectorXd &_qdd);
+    /** Update forward kinematics with zero acceleration*/
+    void updateFK(Eigen::VectorXd &_q,Eigen::VectorXd &_qd);
+
 public:
     RobotModelPinocchio();
     ~RobotModelPinocchio();
@@ -47,15 +52,15 @@ public:
 
     /** Returns the pose of the body defined by frame_id. Pose will be computed with respect to world frame (floating base robot) or
      *  robot root link (fixed base)*/
-    virtual const types::Pose &pose(const std::string &frame_id, const bool recompute = false);
+    virtual const types::Pose &pose(const std::string &frame_id);
 
     /** Returns the twist of the body defined by frame_id. Twist will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame
       * attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base)*/
-    virtual const types::Twist &twist(const std::string &frame_id, const bool recompute = false);
+    virtual const types::Twist &twist(const std::string &frame_id);
 
     /** Returns the spatial acceleration of the body defined by frame_id. Twist will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame
       * attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base)*/
-    virtual const types::SpatialAcceleration &acceleration(const std::string &frame_id, const bool recompute = false);
+    virtual const types::SpatialAcceleration &acceleration(const std::string &frame_id);
 
     /** @brief Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the configured joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
@@ -63,7 +68,7 @@ public:
       * @param frame_id Tip frame of the chain. Has to be a valid link in the robot model.
       * @return A 6xN matrix, where N is the number of robot joints
       */
-    virtual const Eigen::MatrixXd &spaceJacobian(const std::string &frame_id, const bool recompute = false);
+    virtual const Eigen::MatrixXd &spaceJacobian(const std::string &frame_id);
 
     /** @brief Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the configured joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
@@ -71,30 +76,30 @@ public:
       * @param frame_id Tip frame of the chain. Has to be a valid link in the robot model.
       * @return A 6xN matrix, where N is the number of robot joints
       */
-    virtual const Eigen::MatrixXd &bodyJacobian(const std::string &frame_id, const bool recompute = false);
+    virtual const Eigen::MatrixXd &bodyJacobian(const std::string &frame_id);
 
     /** @brief Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates.
       * Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
       * columns will be the same as the configured joint order of the robot.
       * @return A 3xN matrix, where N is the number of robot joints
       */
-    virtual const Eigen::MatrixXd &comJacobian(const bool recompute = false);
+    virtual const Eigen::MatrixXd &comJacobian();
 
     /** @brief Returns the spatial acceleration bias, i.e. the term Jdot*qdot
       * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
       * @param frame_id Tip frame of the chain. Has to be a valid link in the robot model.
       * @return A Nx1 vector, where N is the number of robot joints
       */
-    virtual const types::SpatialAcceleration &spatialAccelerationBias(const std::string &frame_id, const bool recompute = false);
+    virtual const types::SpatialAcceleration &spatialAccelerationBias(const std::string &frame_id);
 
     /** @brief Compute and return the joint space mass-inertia matrix, which is nj x nj, where nj is the number of joints of the system*/
-    virtual const Eigen::MatrixXd &jointSpaceInertiaMatrix(const bool recompute = false);
+    virtual const Eigen::MatrixXd &jointSpaceInertiaMatrix();
 
     /** @brief Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system*/
-    virtual const Eigen::VectorXd &biasForces(const bool recompute = false);
+    virtual const Eigen::VectorXd &biasForces();
 
     /** @brief Compute and return center of mass expressed in base frame*/
-    virtual const types::RigidBodyState& centerOfMass(const bool recompute = false);
+    virtual const types::RigidBodyState& centerOfMass();
 
     /** @brief Compute tau from internal state
       * @param qdd_ref (Optional) Desired reference joint acceleration (without floating base), if empty actual acceleration will be used
