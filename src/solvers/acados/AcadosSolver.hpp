@@ -16,6 +16,7 @@ private:
     void *opts;
     dense_qp_out *qp_out;
     dense_qp_solver *qp_solver;
+    qp_solver_config *config;
 
 public:
     AcadosSolver();

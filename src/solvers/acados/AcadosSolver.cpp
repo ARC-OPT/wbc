@@ -9,10 +9,24 @@ QPSolverRegistry<AcadosSolver> AcadosSolver::reg("acados");
 
 AcadosSolver::AcadosSolver(){
     plan.qp_solver = DENSE_QP_HPIPM;
+    qp_in = 0;
+    opts = 0;
+    qp_out = 0;
+    qp_solver = 0;
+    config = 0;
 }
 
 AcadosSolver::~AcadosSolver(){
-
+    if(qp_in)
+        free(qp_in);
+    if(opts)
+        free(opts);
+    if(qp_out)
+        free(qp_out);
+    if(qp_solver)
+        free(qp_solver);
+    if(config)
+        free(config );
 }
 
 void AcadosSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
@@ -21,7 +35,7 @@ void AcadosSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd 
     const QuadraticProgram &qp = hierarchical_qp[0];
     assert(qp.isValid());
 
-    qp_solver_config *config = dense_qp_config_create(&plan);
+    config = dense_qp_config_create(&plan);
 
     if(!configured || dims.ne != qp.neq || dims.ng != qp.nin){
 
