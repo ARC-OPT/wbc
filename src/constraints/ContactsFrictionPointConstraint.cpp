@@ -40,8 +40,8 @@ void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
                  1,0, mu,
                  0,1, mu;
             Eigen::VectorXd lb(row_skip), ub(row_skip);
-            lb << -1e10,-1e10,0,0;
-            ub << 0,0,1e10,1e10;
+            lb << -1e5,-1e5,0,0;
+            ub << 0,0,1e5,1e5;
 
             lb_vec.segment(idx*row_skip,row_skip) = lb;
             ub_vec.segment(idx*row_skip,row_skip) = ub;
