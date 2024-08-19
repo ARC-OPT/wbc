@@ -4,6 +4,8 @@
 
 namespace wbc {
 
+QPSolverRegistry<OsqpSolver> OsqpSolver::reg("osqp");
+
 OsqpSolver::OsqpSolver() : configured(false){
 }
 

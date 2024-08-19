@@ -29,6 +29,8 @@ namespace wbc {
  *       solver.settings()->setXY()
  */
 class OsqpSolver : public QPSolver{
+private:
+    static QPSolverRegistry<OsqpSolver> reg;
 public:
     OsqpSolver();
     ~OsqpSolver();
