@@ -1,5 +1,5 @@
-#ifndef WBC_SOLVERS_ACADOS_SOLVER_HPP
-#define WBC_SOLVERS_ACADOS_SOLVER_HPP
+#ifndef WBC_SOLVERS_HPIPM_SOLVER_HPP
+#define WBC_SOLVERS_HPIPM_SOLVER_HPP
 
 #include "../../core/QPSolver.hpp"
 #include "../../core/QuadraticProgram.hpp"
@@ -7,9 +7,9 @@
 
 namespace wbc {
 
-class AcadosSolver : public QPSolver{
+class HPIPMSolver : public QPSolver{
 private:
-    static QPSolverRegistry<AcadosSolver> reg;
+    static QPSolverRegistry<HPIPMSolver> reg;
     std::vector<int> idxb;
     dense_qp_in *qp_in;
     dense_qp_dims dims;
@@ -19,8 +19,8 @@ private:
     qp_solver_config *config;
 
 public:
-    AcadosSolver();
-    virtual ~AcadosSolver();
+    HPIPMSolver();
+    virtual ~HPIPMSolver();
 
     /**
      * @brief solve Solve the given quadratic program

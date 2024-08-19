@@ -1,9 +1,9 @@
-SET(TARGET_NAME wbc-solvers-acados)
+SET(TARGET_NAME wbc-solvers-hpipm)
 
 find_package(acados REQUIRED)
 
-set(SOURCES AcadosSolver.cpp)
-set(HEADERS AcadosSolver.hpp)
+set(SOURCES HPIPMSolver.cpp)
+set(HEADERS HPIPMSolver.hpp)
 
 list(APPEND PKGCONFIG_REQUIRES qpOASES)
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
@@ -23,6 +23,6 @@ install(TARGETS ${TARGET_NAME}
 
 CONFIGURE_FILE(${CMAKE_CURRENT_SOURCE_DIR}/${TARGET_NAME}.pc.in ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${TARGET_NAME}.pc DESTINATION lib/pkgconfig)
-INSTALL(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME}/solvers/acados)
+INSTALL(FILES ${HEADERS} DESTINATION include/${PROJECT_NAME}/solvers/hpipm)
 
 add_subdirectory(test)

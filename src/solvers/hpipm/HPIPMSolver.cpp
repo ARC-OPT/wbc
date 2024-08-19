@@ -1,13 +1,12 @@
-#include "AcadosSolver.hpp"
-#include "acados/utils/print.h"
+#include "HPIPMSolver.hpp"
 #include "acados/dense_qp/dense_qp_hpipm.h"
 #include <iostream>
 
 namespace wbc{
 
-QPSolverRegistry<AcadosSolver> AcadosSolver::reg("acados");
+QPSolverRegistry<HPIPMSolver> HPIPMSolver::reg("hpipm");
 
-AcadosSolver::AcadosSolver(){
+HPIPMSolver::HPIPMSolver(){
     plan.qp_solver = DENSE_QP_HPIPM;
     qp_in = 0;
     opts = 0;
@@ -16,7 +15,7 @@ AcadosSolver::AcadosSolver(){
     config = 0;
 }
 
-AcadosSolver::~AcadosSolver(){
+HPIPMSolver::~HPIPMSolver(){
     if(qp_in)
         free(qp_in);
     if(opts)
@@ -29,7 +28,7 @@ AcadosSolver::~AcadosSolver(){
         free(config );
 }
 
-void AcadosSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
+void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
 
     assert(hierarchical_qp.size() == 1);
     const QuadraticProgram &qp = hierarchical_qp[0];
@@ -52,6 +51,7 @@ void AcadosSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd 
 
         dense_qp_hpipm_opts *hpipm_opts = (dense_qp_hpipm_opts *)opts;
         hpipm_opts->hpipm_opts->warm_start = 2;
+        hpipm_opts->hpipm_opts->mode = SPEED;
 
         qp_out = dense_qp_out_create(config, &dims);
         qp_solver = dense_qp_create(config, &dims, opts);

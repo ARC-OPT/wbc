@@ -4,12 +4,12 @@
 #include <iostream>
 #include <sys/time.h>
 #include "core/QuadraticProgram.hpp"
-#include "solvers/acados/AcadosSolver.hpp"
+#include "solvers/hpipm/HPIPMSolver.hpp"
 
 using namespace wbc;
 using namespace std;
 
-BOOST_AUTO_TEST_CASE(solver_acados_without_constraints)
+BOOST_AUTO_TEST_CASE(solver_hpipm_without_constraints)
 {
     srand (time(NULL));
 
@@ -46,7 +46,7 @@ BOOST_AUTO_TEST_CASE(solver_acados_without_constraints)
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    AcadosSolver solver;
+    HPIPMSolver solver;
 
     Eigen::VectorXd solver_output;
 
@@ -75,7 +75,7 @@ BOOST_AUTO_TEST_CASE(solver_acados_without_constraints)
     //cout<<"\n............................."<<endl;
 }
 
-BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
+BOOST_AUTO_TEST_CASE(solver_hpipm_with_equality_constraints)
 {
     srand (time(NULL));
 
@@ -111,7 +111,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    AcadosSolver solver;
+    HPIPMSolver solver;
 
     Eigen::VectorXd solver_output;
 
@@ -139,7 +139,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_equality_constraints)
     //cout<<"\n............................."<<endl;*/
 }
 
-BOOST_AUTO_TEST_CASE(solver_qp_oases_with_inequalities_constraints)
+BOOST_AUTO_TEST_CASE(solver_hpipm_with_inequalities_constraints)
 {
     srand (time(NULL));
 
@@ -176,7 +176,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_inequalities_constraints)
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    AcadosSolver solver;
+    HPIPMSolver solver;
 
     Eigen::VectorXd solver_output;
 
@@ -204,7 +204,7 @@ BOOST_AUTO_TEST_CASE(solver_qp_oases_with_inequalities_constraints)
     //cout<<"\n............................."<<endl;*/
 }
 
-BOOST_AUTO_TEST_CASE(solver_acados_bounded)
+BOOST_AUTO_TEST_CASE(solver_hpipm_bounded)
 {
     srand (time(NULL));
 
@@ -243,7 +243,7 @@ BOOST_AUTO_TEST_CASE(solver_acados_bounded)
     wbc::HierarchicalQP hqp;
     hqp << qp;
 
-    AcadosSolver solver;
+    HPIPMSolver solver;
 
     Eigen::VectorXd solver_output;
 

@@ -17,7 +17,7 @@ option(SOLVER_PROXQP "Build the ProxQP-based solver, by default qpoases is built
 option(SOLVER_EIQUADPROG "Build the Eiquadprog-based solver, by default only qpoases is built" OFF)
 option(SOLVER_QPSWIFT "Build the QPSwift-based solver, by default only qpoases is built" OFF)
 option(SOLVER_OSQP "Build the OSQP-based solver, by default only qpoases is built" OFF)
-option(SOLVER_ACADOS "Build the Acados-interface to have even more solver available, by default only qpoases is built" OFF)
+option(SOLVER_HPIPM "Build the HPIPM solver, by default only qpoases is built" OFF)
 
 add_subdirectory(src)
 add_subdirectory(tutorials)
