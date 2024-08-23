@@ -34,8 +34,6 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
     const QuadraticProgram &qp = hierarchical_qp[0];
     assert(qp.isValid());
 
-    config = dense_qp_config_create(&plan);
-
     if(!configured || dims.ne != qp.neq || dims.ng != qp.nin){
 
         dims.nv = qp.nq;
@@ -46,12 +44,25 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
         dims.nsb = 0;
         dims.nsg = 0;
 
+        if(config)
+            free(config);
+        if(qp_in)
+            free(qp_in);
+        if(opts)
+            free(opts);
+
+        config = dense_qp_config_create(&plan);
         qp_in = dense_qp_in_create(config, &dims);
         opts = dense_qp_opts_create(config, &dims);
 
         dense_qp_hpipm_opts *hpipm_opts = (dense_qp_hpipm_opts *)opts;
-        hpipm_opts->hpipm_opts->warm_start = 2;
+        hpipm_opts->hpipm_opts->warm_start = 0;
         hpipm_opts->hpipm_opts->mode = SPEED;
+
+        if(qp_out)
+            free(qp_out);
+        if(qp_solver)
+            free(qp_solver);
 
         qp_out = dense_qp_out_create(config, &dims);
         qp_solver = dense_qp_create(config, &dims, opts);
@@ -61,6 +72,10 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
             idxb[i] = i;
 
         configured = true;
+    }
+    else{
+        dense_qp_hpipm_opts *hpipm_opts = (dense_qp_hpipm_opts *)opts;
+        hpipm_opts->hpipm_opts->warm_start = 2;
     }
 
     d_dense_qp_set_all((double* )qp.H.data(),
@@ -82,13 +97,24 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
                        NULL,
                        qp_in);
 
-    int acados_return = dense_qp_solve(qp_solver, qp_in, qp_out);
-    if(acados_return != ACADOS_SUCCESS)
-        std::cout<<"Acados returned "<<acados_return<<std::endl;
+    int ret = dense_qp_solve(qp_solver, qp_in, qp_out);
+    if(ret != ACADOS_SUCCESS)
+        throw std::runtime_error("HPIPM returned: " + returnCodeToString(ret));
 
     solver_output.resize(qp.nq);
     solver_output.setZero();
     d_dense_qp_sol_get_v(qp_out,solver_output.data());
+}
+
+std::string HPIPMSolver::returnCodeToString(int code){
+    switch(code){
+    case SUCCESS: return "Found solution satisfying accuracy tolerance";
+    case MAX_ITER: return "Maximum iteration number reached";
+    case MIN_STEP: return "Minimum step length reached";
+    case NAN_SOL: return "NaN in solution detected";
+    case INCONS_EQ: return "unconsistent equality constraints";
+    default: return "Unknown error code";
+    }
 }
 
 }

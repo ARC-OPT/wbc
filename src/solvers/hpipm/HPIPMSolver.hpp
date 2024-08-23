@@ -18,6 +18,8 @@ private:
     dense_qp_solver *qp_solver;
     qp_solver_config *config;
 
+    std::string returnCodeToString(int code);
+
 public:
     HPIPMSolver();
     virtual ~HPIPMSolver();
