@@ -150,9 +150,11 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
 
     // solve
     solver_output.resize(hqp[0].nq);
-    solver->solve(hqp, solver_output);
+    bool allow_warm_start = !contactsHaveChanged(contacts, robot_model->getContacts());
+    contacts = robot_model->getContacts();
+    solver->solve(hqp, solver_output, allow_warm_start);
 
-    const auto& contacts = robot_model->getContacts();
+
 
     // Convert solver output: Acceleration and torque
     uint nj = robot_model->nj();

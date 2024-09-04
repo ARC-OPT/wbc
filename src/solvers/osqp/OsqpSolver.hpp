@@ -40,7 +40,7 @@ public:
      * @param hierarchical_qp Description of the (hierarchical) quadratic program to solve.
      * @param solver_output solution of the quadratic program as vector
      */
-    virtual void solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output);
+    virtual void solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output, bool allow_warm_start = true);
 
     /** The osqp wrapper variable*/
     OsqpEigen::Solver solver;
