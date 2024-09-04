@@ -46,7 +46,7 @@ public:
      * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output);
+    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output, bool allow_warm_start = true);
 
     settings options;
 };

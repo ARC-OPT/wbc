@@ -24,8 +24,8 @@ namespace wbc{
         ub_vec.setConstant(+10000);
 
         bool check_accelerations = true;
-        bool check_velocities = true;
-        bool check_positions = true;
+        bool check_velocities = false;
+        bool check_positions = false;
         
         auto state = robot_model->jointState();
 

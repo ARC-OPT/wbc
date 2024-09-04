@@ -28,13 +28,16 @@ HPIPMSolver::~HPIPMSolver(){
         free(config );
 }
 
-void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
+void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output, bool allow_warm_start){
 
     assert(hierarchical_qp.size() == 1);
     const QuadraticProgram &qp = hierarchical_qp[0];
     assert(qp.isValid());
 
-    if(!configured || dims.ne != qp.neq || dims.ng != qp.nin){
+    if(!allow_warm_start)
+        configured = false;
+
+    if(!configured){
 
         dims.nv = qp.nq;
         dims.ne = qp.neq;

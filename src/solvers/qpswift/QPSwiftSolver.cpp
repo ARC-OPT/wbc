@@ -56,13 +56,13 @@ void QPSwiftSolver::toQpSwift(const wbc::QuadraticProgram &qp){
     my_qp->options->verbose = options.verbose;
 }
 
-void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output){
+void QPSwiftSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output, bool allow_warm_start){
 
     assert(hierarchical_qp.size() == 1);
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
     assert(qp.isValid());
 
-    if(n_dec != qp.nq || n_eq != qp.neq || n_ineq != 2 * (qp.nin + qp.upper_x.size()))
+    if(!allow_warm_start)
         configured = false;
 
     if(!configured){

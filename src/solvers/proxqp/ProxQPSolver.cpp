@@ -18,7 +18,7 @@ ProxQPSolver::ProxQPSolver()
 /// min  0.5 * x'Hx + g'x
 /// s.t. Ax = b
 ///      l < Cx < u 
-void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output)
+void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output, bool allow_warm_start)
 {
     namespace pqp = proxsuite::proxqp;
 
@@ -42,15 +42,11 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::Vect
     _l_vec << qp.lower_y, qp.lower_x;
     _u_vec << qp.upper_y, qp.upper_x;
 
-    if(n_var != _n_var_init || n_in != _n_in_init || _n_eq_init != n_eq)
+    if(!allow_warm_start)
         configured = false;
 
     if(!configured) 
     {
-        _n_var_init = n_var;
-        _n_eq_init = n_eq;
-        _n_in_init = n_in;
-
         _solver_ptr = std::make_shared<pqp::dense::QP<double>>(n_var, n_eq, n_in);
         _solver_ptr->init(qp.H, qp.g, qp.A, qp.b, _C_mtx, _l_vec, _u_vec);
         _solver_ptr->settings = settings;
@@ -78,6 +74,7 @@ void ProxQPSolver::solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::Vect
         throw std::runtime_error("ProxQP returned error status: problem is dual infeasible.");
 
     _actual_n_iter = _solver_ptr->results.info.iter;
+
 }
 
 } // namespace wbc

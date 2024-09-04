@@ -24,7 +24,7 @@ public:
      * @param hierarchical_qp Description of the (hierarchical) quadratic program to solve.
      * @param solver_output solution of the quadratic program as vector
      */
-    virtual void solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd &solver_output) = 0;
+    virtual void solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd &solver_output, bool allow_warm_start = true) = 0;
 
     /** @brief reset Enforces reconfiguration at next call to solve() */
     void reset(){configured=false;}

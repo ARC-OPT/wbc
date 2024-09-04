@@ -38,9 +38,10 @@ void OsqpSolver::resize(uint nq, uint nc){
     solver.data()->setLinearConstraintsMatrix(constraint_mat_sparse);
     solver.data()->setLowerBound(lower_bound);
     solver.data()->setUpperBound(upper_bound);
+    solver.settings()->setVerbosity(false);
 }
 
-void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output){
+void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output, bool allow_warm_start){
 
     assert(hierarchical_qp.size() == 1);
 
@@ -48,6 +49,9 @@ void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& s
     assert(qp.isValid());
 
     uint nc = qp.bounded ? qp.neq + qp.nin + qp.nq : qp.neq + qp.nin;
+
+    if(!allow_warm_start)
+        configured = false;
 
     if(!configured){
         resize(qp.nq, nc);
