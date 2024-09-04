@@ -141,8 +141,8 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_world;
         }
     }
-    qp.H.block(0,0, nj, nj).diagonal().array() += hessian_regularizer;
-    qp.H.block(nj,nj, ncp*3, ncp*3).diagonal().array() += 1e-12;
+    qp.H.diagonal().array() += hessian_regularizer;
+    //qp.H.block(nj,nj, ncp*3, ncp*3).diagonal().array() += 1e-12;
     return hqp;
 }
 
