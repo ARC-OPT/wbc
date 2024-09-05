@@ -78,7 +78,7 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
     }
     else{
         dense_qp_hpipm_opts *hpipm_opts = (dense_qp_hpipm_opts *)opts;
-        hpipm_opts->hpipm_opts->warm_start = 2;
+        hpipm_opts->hpipm_opts->warm_start = 1;
     }
 
     d_dense_qp_set_all((double* )qp.H.data(),
