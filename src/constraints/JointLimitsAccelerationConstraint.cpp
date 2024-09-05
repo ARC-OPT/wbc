@@ -71,8 +71,8 @@ namespace wbc{
             return;
 
         for(size_t i = 0; i < na; i++){
-            lb_vec(i+nj+start_idx) = joint_limits.min.effort[i];
-            ub_vec(i+nj+start_idx) = joint_limits.max.effort[i];
+            lb_vec(i+nj) = joint_limits.min.effort[i];
+            ub_vec(i+nj) = joint_limits.max.effort[i];
         }
     }
 

@@ -55,6 +55,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             has_bounds = true;;
     }
 
+    // QP Size: (nc x nj+na+nc*3)
+    //Variable order: (qdd,tau,f_ext)
     QuadraticProgram& qp = hqp[prio];
     qp.resize(nj+na+ncp*3, total_eqs, total_ineqs, has_bounds);
     total_eqs = total_ineqs = 0;
@@ -119,8 +121,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
                 throw std::runtime_error("Invalid task configuration");
             }*/
 
-            qp.H.block(nj+wrench_idx*3,nj+wrench_idx*3,3,3) += task->Aw.transpose()*task->Aw;
-            qp.g.segment(nj+wrench_idx*3,3) -= task->Aw.transpose()*task->y_ref_world;
+            qp.H.block(nj+na+wrench_idx*3,nj+na+wrench_idx*3,3,3) += task->Aw.transpose()*task->Aw;
+            qp.g.segment(nj+na+wrench_idx*3,3) -= task->Aw.transpose()*task->y_ref_world;
             wrench_idx++;
         }
         else{ // qdd

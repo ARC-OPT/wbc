@@ -59,7 +59,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             has_bounds = true;
     }
 
-    // QP Size: (nc x nj+nc*6)
+    // QP Size: (nc x nj+nc*3)
     // Variable order: (qdd,f_ext)
     QuadraticProgram& qp = hqp[prio];
     qp.resize(nj+ncp*3, total_eqs, total_ineqs, has_bounds);
@@ -154,8 +154,6 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
     contacts = robot_model->getContacts();
     solver->solve(hqp, solver_output, allow_warm_start);
 
-
-
     // Convert solver output: Acceleration and torque
     uint nj = robot_model->nj();
     uint na = robot_model->na();
@@ -169,8 +167,6 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
     for(uint c = 0; c < nc; c++)
         tau_out += -robot_model->spaceJacobian(contacts[c].frame_id).topRows<3>().transpose().bottomRows(na) * fext_out.segment<3>(c*3);
     tau_out += robot_model->biasForces().bottomRows(na);
-
-
 
     for(uint i = 0; i < solver_output.size(); i++){
         if(std::isnan(solver_output[i])){
