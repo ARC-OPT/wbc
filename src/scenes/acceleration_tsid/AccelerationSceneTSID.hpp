@@ -41,9 +41,20 @@ protected:
     static SceneRegistry<AccelerationSceneTSID> reg;
 
     // Helper variables
+    std::vector<Contact> contacts;
     Eigen::VectorXd robot_acc, solver_output_acc;
     std::vector<types::Wrench> contact_wrenches;
     double hessian_regularizer;
+
+    bool contactsHaveChanged(const std::vector<Contact>& old_contacts, const std::vector<Contact>& new_contacts){
+        if(old_contacts.size() != new_contacts.size())
+            return true;
+        for(uint i = 0; i < old_contacts.size(); i++){
+            if(old_contacts[i].active != new_contacts[i].active)
+                return true;
+        }
+        return false;
+    }
 
 public:
     AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
