@@ -64,7 +64,7 @@ $$
 \dot{\mathbf{v}}_d = \dot{\mathbf{v}}_r + \mathbf{K}_d(\mathbf{v}_r-\mathbf{v}) + \mathbf{K}_p(\mathbf{x}_r-\mathbf{x})
 $$
 
-where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the end effector position and velocity, $\dot{\mathbf{v}}_r,\mathbf{v}_r,\mathbf{x}_r$ the reference acceleration, velocity, and position. Figure \ref{fig:snippet} shows a C++ code snippet from ARC-OPT, which implements a simplified version of the above QP on a KUKA iiwa robot arm. The full example can be found in the ARC-OPT tutorials\footnote{\url{https://github.com/ARC-OPT/wbc/blob/master/tutorials/kuka_iiwa/cart_pos_ctrl_dynamic.cpp}}. 
+where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the end effector position and velocity, $\dot{\mathbf{v}}_r,\mathbf{v}_r,\mathbf{x}_r$ the reference acceleration, velocity, and position. Figure \ref{fig:snippet} shows a C++ code snippet from ARC-OPT, which implements the above QP on a KUKA iiwa robot arm (no contacts, fixed based robot). In the code example, first the robot model is set up using the robot URDF, and solver (QPOases), scene and a Cartesian controller are configured. Then, in the control loop, a sinusoidal trajectory is tracked in Cartesian space. The full example can be found in the ARC-OPT tutorials\footnote{\url{https://github.com/ARC-OPT/wbc/blob/master/tutorials/kuka_iiwa/cart_pos_ctrl_dynamic.cpp}}. 
 
 ![Minimal code example for dynamic Cartesian position control on a KUKA iiwa robot\label{fig:snippet}](snippet.png)
 
