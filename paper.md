@@ -30,7 +30,9 @@ WBC aims to describe a robot control problem in terms of costs and constraints o
 
 # Statement of need
 
-ARC-OPT supports the software developer in designing robot controllers by providing configuration options for different pre-defined WBC problems. WBC is a well understood control method today, and multiple mature frameworks exits. The TSID framework [@delprete2016] implements a control algorithm for legged robots on acceleration level. Similarly, the algorithm in [@Posa2016] operates on torque level. In [@Smits2009] a generalized velocity-IK framework is implemented, which is, however, tightly coupled to the Orocos project. The IHCM Whole-Body Controller has been developed for the ATLAS robot [@Feng2015], providing control algorithms for walking and manipulation based on QPs. Drake [@drake2021] is a collection of libraries for model-based design and control of complex robots. It provides interfaces to several open-source and commercial solvers, including linear least-squares, quadratic programming, and non-linear programming. Finally, ControlIt! [@controlit2021] is a middleware built around the whole-body operational space control algorithm first introduced by Sentis and Khatib [@Sentis2006]. In contrast to the existing libraries, ARC-OPT provides unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and rigid body dynamics libraries on these problems. Finally, it provides a WBC approach for robots with parallel kinematic loops, as described in [@Mronga2022].
+ARC-OPT supports the software developer in designing robot controllers by providing configuration options for different pre-defined WBC problems. WBC is a well understood control method today, and multiple mature frameworks exits. The TSID framework [@delprete2016] implements a control algorithm for legged robots on acceleration level. Similarly, the algorithm in [@Posa2016] operates on torque level. In [@Smits2009] a generalized velocity-IK framework is implemented, which is, however, tightly coupled to the Orocos project. Similarly, Pink [@pink2024] is a weighted task-based framework for differential inverse kinematics implement in Python. The IHCM Whole-Body Controller has been developed for the ATLAS robot [@Feng2015], providing control algorithms for walking and manipulation based on QPs. Drake [@drake2021] is a collection of libraries for model-based design and control of complex robots. It provides interfaces to several open-source and commercial solvers, including linear least-squares, quadratic programming, and non-linear programming. Finally, ControlIt! [@controlit2021] is a middleware built around the whole-body operational space control algorithm first introduced by Sentis and Khatib [@Sentis2006]. 
+
+In contrast to the existing libraries, ARC-OPT provides unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and rigid body dynamics libraries on these problems. Finally, it provides a WBC approach for robots with parallel kinematic loops, as described in [@Mronga2022].
 
 # Description
 
@@ -71,6 +73,6 @@ The ARC-OPT library for Whole-Body Control has been used in various scientific w
 
 # Acknowledgements
 
-ARC-OPT is supported through grants from the German Federal Ministry of Education and Research (BMBF), grant numbers 01IW21002 (M-Rock project) and  01IW20004 (VeryHuman project).
+ARC-OPT is supported through grants from the German Federal Ministry of Education and Research (BMBF), grant numbers 01IW21002 (M-Rock project),  01IW20004 (VeryHuman project) and 01IW24008 (CoEx project).
 
 # References
