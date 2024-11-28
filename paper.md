@@ -67,6 +67,7 @@ $$
 where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the end effector position and velocity, $\dot{\mathbf{v}}_r,\mathbf{v}_r,\mathbf{x}_r$ the reference acceleration, velocity, and position. Figure \ref{fig:snippet} shows a C++ code snippet from ARC-OPT, which implements the above QP on a KUKA iiwa robot arm (no contacts, fixed base robot). In the code example, first the robot model is set up using the robot URDF, then the QP-solver (qpOASES), scene and a Cartesian controller are configured. In the subsequent control loop, a circular trajectory is tracked in Cartesian space. The full example can be found in the ARC-OPT tutorials\footnote{\url{https://github.com/ARC-OPT/wbc/blob/master/tutorials/kuka_iiwa/cart_pos_ctrl_dynamic.cpp}}. Figure \ref{fig:screenshots} shows a visualization of the resulting robot motion. While the example implements a simple Cartesian controller, much more complex control problems can be composed using multiple controllers to track different targets, e.g., leg positions and center of mass for a walking robot.
 
 ![Minimal code example for Cartesian position control on a KUKA iiwa robot\label{fig:snippet}](snippet.png)
+
 ![Screenshots of the resulting robot motion in the example\label{fig:screenshots}](screenshots.png)
 
 # ROS 2 integration and Python Bindings
