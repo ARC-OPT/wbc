@@ -58,7 +58,7 @@ $$\begin{array}{cc}
        & \boldsymbol{\tau}_m \leq \boldsymbol{\tau} \leq \boldsymbol{\tau}_M \\
 \end{array}$$
 
-where \mathbf{w}^i are task weights for the i-th task, $\mathbf{J}^i$ is the respective robot Jacobian, $\dot{\mathbf{v}}^i_d$ the desired task space acceleration,  $\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}}$ the joint positions, velocities, and accelerations $\mathbf{H}$ the mass-inertia matrix, $\mathbf{h}$ the vector of gravity and Coriolis forces, $\boldsymbol{\tau}$ the robot joint torques, $\mathbf{f}$ the contact wrenches,  $\mathbf{J}_c$ the contact Jacobian,  and $\boldsymbol{\tau}_m,\boldsymbol{\tau}_M$ the joint torque limits. To implement a simple Cartesian position controller for, e.g., controlling the end effector of a robot manipulator, the following PD-controller can be used to generate $\dot{\mathbf{v}}_d$:
+where $\mathbf{w}^i$ are task weights for the i-th task, $\mathbf{J}^i$ is the respective robot Jacobian, $\dot{\mathbf{v}}^i_d$ the desired task space acceleration,  $\mathbf{q},\dot{\mathbf{q}},\ddot{\mathbf{q}}$ the joint positions, velocities, and accelerations $\mathbf{H}$ the mass-inertia matrix, $\mathbf{h}$ the vector of gravity and Coriolis forces, $\boldsymbol{\tau}$ the robot joint torques, $\mathbf{f}$ the contact wrenches,  $\mathbf{J}_c$ the contact Jacobian,  and $\boldsymbol{\tau}_m,\boldsymbol{\tau}_M$ the joint torque limits. To implement a simple Cartesian position controller for, e.g., controlling the end effector of a robot manipulator, the following PD-controller can be used to generate $\dot{\mathbf{v}}_d$:
 
 $$
 \dot{\mathbf{v}}_d = \dot{\mathbf{v}}_r + \mathbf{K}_d(\mathbf{v}_r-\mathbf{v}) + \mathbf{K}_p(\mathbf{x}_r-\mathbf{x})
