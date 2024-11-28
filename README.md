@@ -26,6 +26,10 @@ Currently supported OS: Ubuntu20.04, Ubuntu22.04
 
 See the [manifest.xml](https://github.com/ARC-OPT/wbc/blob/master/manifest.xml) for required and optional dependencies. 
 
+## ROS 2 Interface
+
+ROS 2 support for the WBC library can be found [here](https://github.com/ARC-OPT/wbc_ros)
+
 ## Installation
 
 ### Basic Install
