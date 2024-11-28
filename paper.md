@@ -70,7 +70,9 @@ where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the
 
 # ROS 2 integration and Python Bindings
 
-The WBC library is integrated with ros2\_control\footnote{https://control.ros.org/humble/}. Every controller, which is represented as a separate ros 2 controller here, connects its output to the central Whole-Body controller, which sets up and solves and the QP. Typical control rates for the WBC are 500Hz - 1Khz. Most configuration options are exposed to ROS 2, and the WBC problem can be configured using .yaml configuration files.
+The WBC library is integrated with ros2\_control\footnote{\url{https://control.ros.org/humble}}. Every controller, which is represented as a separate ros 2 controller here, connects its output to the central Whole-Body controller, which sets up and solves and the QP. Typical control rates for the WBC are 500Hz - 1Khz. Most configuration options are exposed to ROS 2, and the WBC problem can be configured using .yaml configuration files. 
+
+Additionally, Python bindings for most of the library functions are available~\footnote{\url{https://github.com/ARC-OPT/wbc_py}}. 
 
 The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022],[@Mronga2021],[@Mronga2020],[@Popescu2022], and evaluated on different robots, like, e.g., the RH5 humanoid [@Eer2021DesignAA] shown in Figure \ref{fig:rh5}.
 
