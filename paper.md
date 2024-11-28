@@ -64,20 +64,20 @@ $$
 \dot{\mathbf{v}}_d = \dot{\mathbf{v}}_r + \mathbf{K}_d(\mathbf{v}_r-\mathbf{v}) + \mathbf{K}_p(\mathbf{x}_r-\mathbf{x})
 $$
 
-where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the end effector position and velocity, $\dot{\mathbf{v}}_r,\mathbf{v}_r,\mathbf{x}_r$ the reference acceleration, velocity, and position. Figure \ref{fig:snippet} shows a C++ code snippet from ARC-OPT, which implements the above QP on a KUKA iiwa robot arm (no contacts, fixed based robot). In the code example, first the robot model is set up using the robot URDF, and solver (QPOases), scene and a Cartesian controller are configured. Then, in the control loop, a sinusoidal trajectory is tracked in Cartesian space. The full example can be found in the ARC-OPT tutorials\footnote{\url{https://github.com/ARC-OPT/wbc/blob/master/tutorials/kuka_iiwa/cart_pos_ctrl_dynamic.cpp}}. 
+where $\mathbf{K}_p,\mathbf{K}_d$ are gain matrices, $\mathbf{x},\mathbf{v}$ the end effector position and velocity, $\dot{\mathbf{v}}_r,\mathbf{v}_r,\mathbf{x}_r$ the reference acceleration, velocity, and position. Figure \ref{fig:snippet} shows a C++ code snippet from ARC-OPT, which implements the above QP on a KUKA iiwa robot arm (no contacts, fixed based robot). In the code example, first the robot model is set up using the robot URDF, and solver (QPOases), scene and a Cartesian controller are configured. Then, in the control loop, a sinusoidal trajectory is tracked in Cartesian space. The full example can be found in the ARC-OPT tutorials\footnote{\url{https://github.com/ARC-OPT/wbc/blob/master/tutorials/kuka_iiwa/cart_pos_ctrl_dynamic.cpp}}. The example implements a single controller, however, multiple controllers can be designed around the solver to track multiple objectives, e.g., leg positions and center of mass for a walking robot.
 
 ![Minimal code example for dynamic Cartesian position control on a KUKA iiwa robot\label{fig:snippet}](snippet.png)
 
-The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022],[@Mronga2021],[@Mronga2020],[@Popescu2022], and evaluated on different robots, like, e.g., the RH5 humanoid [@Eer2021DesignAA] shown in Figure \ref{fig:rh5}.
-
-![RH5 Humanoid robot standing on one leg using the ARC-OPT library\label{fig:rh5}](rh5_one_leg.png)
-
 # ROS 2 integration and Python Bindings
 
+The WBC library is integrated with ros2\_control\footnote{https://control.ros.org/humble/}. Every controller, which is represented as a separate ros 2 controller here, connects its output to the central Whole-Body controller, which sets up and solves and the QP. Typical control rates for the WBC are 500Hz - 1Khz. Most configuration options are exposed to ROS 2, and the WBC problem can be configured using .yaml configuration files.
 
+The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022],[@Mronga2021],[@Mronga2020],[@Popescu2022], and evaluated on different robots, like, e.g., the RH5 humanoid [@Eer2021DesignAA] shown in Figure \ref{fig:rh5}.
 
 # Acknowledgements
 
 ARC-OPT is supported through grants from the German Federal Ministry of Education and Research (BMBF), grant numbers 01IW21002 (M-Rock project),  01IW20004 (VeryHuman project) and 01IW24008 (CoEx project).
+
+![RH5 Humanoid robot standing on one leg using the ARC-OPT library\label{fig:rh5}](rh5_one_leg.png)
 
 # References
