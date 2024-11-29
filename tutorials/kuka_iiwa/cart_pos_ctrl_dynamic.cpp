@@ -7,7 +7,7 @@
 
 using namespace std;
 using namespace wbc;
-using namespace wbc;
+using namespace base;
 
 /**
  * Acceleration-based example, Cartesian position control of the KUKA iiwa robot (fixed base, no contacts).
@@ -41,7 +41,8 @@ using namespace wbc;
  */
 int main()
 {
-    double dt = 0.01;
+    // Control rate
+    double dt = 1e-3;
 
     // Create robot model, use hyrodyn-based model in this case
     RobotModelPtr robot_model = make_shared<RobotModelPinocchio>();
@@ -68,13 +69,13 @@ int main()
         return -1;
 
     // Choose an initial joint state. Since we use acceleration-based WBC here, we have to pass the velocities as well
-    base::samples::Joints joint_state;
+    samples::Joints joint_state;
     uint nj = robot_model->noOfJoints();
     joint_state.resize(nj);
     joint_state.names = robot_model->jointNames();
     for(uint i = 0; i < nj; i++)
         joint_state[i].position = joint_state[i].speed = 0.1;
-    joint_state.time = base::Time::now();
+    joint_state.time = Time::now();
 
     // Configure Cartesian controller. The controller implements the following control law:
     //
@@ -82,39 +83,32 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl;
-    base::VectorXd p_gain(6),d_gain(6),ff_gain(6);
-    p_gain.setConstant(10); // Stiffness
-    d_gain.setConstant(30); // Damping
-    ff_gain.setConstant(1); // Feed forward
-    ctrl.setPGain(p_gain);
-    ctrl.setDGain(d_gain);
-    ctrl.setDGain(ff_gain);
+    ctrl.setPGain(base::Vector6d::Constant(10));
+    ctrl.setDGain(base::Vector6d::Constant(30));
+    ctrl.setFFGain(base::Vector6d::Constant(1));
 
     // Choose a valid reference pose x_r
-    base::samples::RigidBodyStateSE3 setpoint, ctrl_output, feedback;
-    setpoint.pose.position = base::Vector3d(0.0, 0.0, 1.0);
+    samples::RigidBodyStateSE3 setpoint;
     setpoint.pose.orientation.setIdentity();
-    setpoint.twist.linear.setZero();
     setpoint.twist.angular.setZero();
-    setpoint.frame_id = wbc_config[0].ref_frame;
 
     // Run control loop
     JointIntegrator integrator;
-    double loop_time = dt; // seconds
-    base::commands::Joints solver_output;
-    for(double t = 0; t < 10; t+=loop_time){
+    for(double t = 0; t < 10; t+=dt){
 
         // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
         robot_model->update(joint_state);
+
+        // Generate circular end effector trajectory in xy plane
+        setpoint.pose.position = base::Vector3d(0.1*sin(0.3*2*M_PI*t), 0.1*cos(0.3*2*M_PI*t),  1.138);
+        setpoint.twist.linear  = base::Vector3d(0.1*cos(0.3*2*M_PI*t), -0.1*sin(0.3*2*M_PI*t), 0.0);
 
         // Update controllers, left arm: Follow sinusoidal trajectory
         // setpoint_left.pose.position[0] = 0.522827 + 0.1*sin(t);
         // setpoint_left.twist.linear[0] = 0.1*cos(t);
         // setpoint_left.acceleration.linear[0] = -0.1*sin(t);
-        feedback = robot_model->rigidBodyState(wbc_config[0].root, wbc_config[0].tip);
-        ctrl_output = ctrl.update(setpoint, feedback);
-        setpoint.pose.position[2] = 1.0 + 0.1*sin(t);
-        setpoint.twist.linear[2] = 0.1*cos(t);
+        samples::RigidBodyStateSE3 feedback = robot_model->rigidBodyState(wbc_config[0].root, wbc_config[0].tip);
+        samples::RigidBodyStateSE3 ctrl_output = ctrl.update(setpoint, feedback);
 
         // Update constraints. Pass the control output of the controller to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
@@ -124,10 +118,10 @@ int main()
         HierarchicalQP hqp = scene.update();
 
         // Solve the QP. The output is the joint acceleration/torque that achieves the task space acceleration demanded by the controllers
-        solver_output = scene.solve(hqp);
+        commands::Joints solver_output = scene.solve(hqp);
 
         // Integrate once to get joint velocity from solver output
-        integrator.integrate(joint_state,solver_output,loop_time);
+        integrator.integrate(joint_state,solver_output,dt);
 
         // Update joint state by integration again
         for(size_t i = 0; i < joint_state.size(); i++){
@@ -140,12 +134,12 @@ int main()
         printf("feedback: qx: %2.4f qy: %2.4f qz: %2.4f qw: %2.4f\n\n", feedback.pose.orientation.x(), feedback.pose.orientation.y(), feedback.pose.orientation.z(), feedback.pose.orientation.w());
 
         printf("Solver output: "); printf("\n");
-        printf("Joint Names:   "); for(int i = 0; i < nj; i++) printf("%s ", solver_output.names[i].c_str()); printf("\n");
-        printf("Velocity:      "); for(int i = 0; i < nj; i++) printf("%2.4f ", solver_output[i].speed); printf("\n");
-        printf("Acceleration:  "); for(int i = 0; i < nj; i++) printf("%2.4f ", solver_output[i].acceleration); printf("\n");
-        printf("Torque:        "); for(int i = 0; i < nj; i++) printf("%2.4f ", solver_output[i].effort); printf("\n");
+        printf("Joint Names:   "); for(uint i = 0; i < nj; i++) printf("%s ", solver_output.names[i].c_str()); printf("\n");
+        printf("Velocity:      "); for(uint i = 0; i < nj; i++) printf("%2.4f ", solver_output[i].speed); printf("\n");
+        printf("Acceleration:  "); for(uint i = 0; i < nj; i++) printf("%2.4f ", solver_output[i].acceleration); printf("\n");
+        printf("Torque:        "); for(uint i = 0; i < nj; i++) printf("%2.4f ", solver_output[i].effort); printf("\n");
         printf("---------------------------------------------------------------------------------------------\n\n");
-        usleep(loop_time * 1e6);
+        usleep(dt * 1e6);
     }
 
     return 0;
