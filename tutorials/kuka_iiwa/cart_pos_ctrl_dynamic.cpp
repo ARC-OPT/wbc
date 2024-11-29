@@ -83,7 +83,7 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl;
-    ctrl.setPGain(base::Vector6d::Constant(10));
+    ctrl.setPGain(base::Vector6d::Constant(100));
     ctrl.setDGain(base::Vector6d::Constant(30));
     ctrl.setFFGain(base::Vector6d::Constant(1));
 
