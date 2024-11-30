@@ -1,6 +1,6 @@
 #include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
+#include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
@@ -63,7 +63,7 @@ int main()
 
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
-    AccelerationSceneTSID scene(robot_model, solver, dt);
+    VelocitySceneQP scene(robot_model, solver, dt);
     vector<TaskConfig> wbc_config;
     wbc_config.push_back(TaskConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
     wbc_config.push_back(TaskConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
@@ -116,7 +116,7 @@ int main()
     JointIntegrator integrator;
     double loop_time = dt; // seconds
     base::commands::Joints solver_output;
-    for(double t = 0; t < 5; t+=loop_time){
+    for(double t = 0; t < 10; t+=loop_time){
 
         // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
         robot_model->update(joint_state);
@@ -160,10 +160,8 @@ int main()
         cout<<"feedback right qx: "<<feedback_right.pose.orientation.x()<<" qy: "<<feedback_right.pose.orientation.y()<<" qz: "<<feedback_right.pose.orientation.z()<<" qw: "<<feedback_right.pose.orientation.w()<<endl<<endl;
 
         cout<<"Solver output: "; cout<<endl;
-        cout<<"Joint Names:   "; for(int i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
-        cout<<"Velocity:      "; for(int i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
-        cout<<"Acceleration:  "; for(int i = 0; i < nj; i++) cout<<solver_output[i].acceleration<<" "; cout<<endl;
-        cout<<"Torque:        "; for(int i = 0; i < nj; i++) cout<<solver_output[i].effort<<" "; cout<<endl;
+        cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
+        cout<<"Velocity:      "; for(uint i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
         usleep(loop_time * 1e6);
     }

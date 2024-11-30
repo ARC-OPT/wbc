@@ -1,6 +1,6 @@
 #include <robot_models/hyrodyn/RobotModelHyrodyn.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
+#include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 
@@ -40,7 +40,7 @@ int main()
 
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
-    AccelerationSceneTSID scene(robot_model, solver, dt);
+    VelocitySceneQP scene(robot_model, solver, dt);
     vector<TaskConfig> wbc_config;
     wbc_config.push_back(TaskConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
     wbc_config.push_back(TaskConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
@@ -141,8 +141,6 @@ int main()
         cout<<"Solver output: "; cout<<endl;
         cout<<"Joint Names:   "; for(int i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
         cout<<"Velocity:      "; for(int i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
-        cout<<"Acceleration:  "; for(int i = 0; i < nj; i++) cout<<solver_output[i].acceleration<<" "; cout<<endl;
-        cout<<"Torque:        "; for(int i = 0; i < nj; i++) cout<<solver_output[i].effort<<" "; cout<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
         usleep(loop_time * 1e6);
     }
