@@ -1,0 +1,26 @@
+name: Ubuntu 24.04
+
+on:
+  push:
+    branches: [ master, ubuntu24.04 ]
+  pull_request:
+    branches: [ master, ubuntu24.04 ]
+
+jobs:
+  build_and_test_24_04:
+    runs-on: ubuntu-24.04
+
+    steps:
+    # Check out repository under $GITHUB_WORKSPACE
+    - uses: actions/checkout@v2
+      ref: ubuntu24.04
+    # Build and install
+    - name: install
+      run: sh scripts/full_install.sh
+    # Run all tests
+    - name: test
+      run: |
+        export LD_LIBRARY_PATH=/usr/local/lib
+        export PYTHONPATH=/usr/local/lib/python3.10/site-packages
+        cd wbc/build
+        make test
