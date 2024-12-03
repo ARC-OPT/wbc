@@ -21,7 +21,7 @@ make -j8 && sudo make install && cd ../..
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
 # Clone WBC repo to have the patches 
-git clone https://github.com/ARC-OPT/wbc.git
+git clone https://github.com/ARC-OPT/wbc.git --branch ubuntu24.04
 
 # RBDL
 git clone --branch v3.2.1 --recurse-submodules https://github.com/rbdl/rbdl.git

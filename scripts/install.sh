@@ -21,7 +21,7 @@ make -j8 && sudo make install && cd ../..
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
 
 # Clone WBC repo here to have the patches
-git clone https://github.com/ARC-OPT/wbc.git
+git clone https://github.com/ARC-OPT/wbc.git --branch ubuntu24.04
 
 # Pinocchio
 git clone --branch v2.6.8 --recurse-submodules https://github.com/stack-of-tasks/pinocchio.git
