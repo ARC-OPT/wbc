@@ -13,7 +13,8 @@ jobs:
     steps:
     # Check out repository under $GITHUB_WORKSPACE
     - uses: actions/checkout@v2
-      ref: ubuntu24.04
+      with:
+         ref: ubuntu24.04
     # Build and install
     - name: install
       run: sh scripts/full_install.sh
