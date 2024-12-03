@@ -2,9 +2,9 @@ name: Ubuntu 24.04
 
 on:
   push:
-    branches: [ master, ubuntu24.04 ]
+    branches: [ master]
   pull_request:
-    branches: [ master, ubuntu24.04 ]
+    branches: [ master]
 
 jobs:
   build_and_test_24_04:
@@ -13,8 +13,6 @@ jobs:
     steps:
     # Check out repository under $GITHUB_WORKSPACE
     - uses: actions/checkout@v2
-      with:
-         ref: ubuntu24.04
     # Build and install
     - name: install
       run: sh scripts/full_install.sh

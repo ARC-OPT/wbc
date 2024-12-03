@@ -15,7 +15,6 @@ protected:
     RigidBodyDynamics::Math::MatrixNd J, H_q;
 
     std::vector<std::string> jointNamesInRBDLOrder(const std::string &urdf_file);
-    void updateFloatingBase(const base::samples::RigidBodyStateSE3& floating_base_state_in);
     void clear();
 
 public:
