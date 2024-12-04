@@ -1,9 +1,10 @@
 #include "URDFTools.hpp"
 #include <base/JointLimits.hpp>
 #include <base-logging/Logging.hpp>
-#include <urdf_model/link.h>
 #include <stack>
 #include <fstream>
+#include <iostream>
+#include <tinyxml2.h>
 
 namespace wbc {
 

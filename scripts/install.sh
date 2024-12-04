@@ -18,7 +18,9 @@ cmake .. -DUSE_SISL=OFF -DBINDINGS_RUBY=OFF -DROCK_VIZ_ENABLED=OFF
 make -j8 && sudo make install && cd ../..
 
 # URDF
-sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
+sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev
+# compatability with urdfdom >= 4.0.0
+sudo apt-get -y install libtinyxml2-dev
 
 # Clone WBC repo here to have the patches
 git clone https://github.com/ARC-OPT/wbc.git
