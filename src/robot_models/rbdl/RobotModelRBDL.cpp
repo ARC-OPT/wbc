@@ -3,6 +3,7 @@
 #include <rbdl/rbdl_utils.h>
 #include <rbdl/addons/urdfreader/urdfreader.h>
 #include <base-logging/Logging.hpp>
+#include <tinyxml2.h>
 
 using namespace RigidBodyDynamics;
 
