@@ -23,7 +23,7 @@ There are multiple other libraries for Whole-Body Control, e.g., [TSID](https://
 
 ## Requirements / Dependencies
 
-Currently supported OS: Ubuntu20.04, Ubuntu22.04
+Currently supported OS: Ubuntu20.04, Ubuntu22.04, Ubuntu24.04
 
 See the [manifest.xml](https://github.com/ARC-OPT/wbc/blob/master/manifest.xml) for required and optional dependencies. 
 
