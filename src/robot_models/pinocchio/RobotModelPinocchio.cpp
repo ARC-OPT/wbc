@@ -434,4 +434,8 @@ const Eigen::VectorXd& RobotModelPinocchio::inverseDynamics(const Eigen::VectorX
     return tau;
 }
 
+pinocchio::Model *RobotModelPinocchio::getInternalModel(){
+    return &model;
+}
+
 }

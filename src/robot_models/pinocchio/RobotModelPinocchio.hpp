@@ -107,6 +107,8 @@ public:
     virtual const Eigen::VectorXd& inverseDynamics(const Eigen::VectorXd& qdd_ref = Eigen::VectorXd(),
                                                    const std::vector<types::Wrench>& f_ext = std::vector<types::Wrench>());
 
+    /** Return reference to pinocchio model*/
+    pinocchio::Model *getInternalModel();
 };
 
 }
