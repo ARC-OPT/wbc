@@ -4,11 +4,9 @@ file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/types "*.hpp")
 file(GLOB SOURCES RELATIVE ${PROJECT_SOURCE_DIR}/src/types "*.cpp")
 
 pkg_search_module(urdfdom REQUIRED IMPORTED_TARGET urdfdom)
-pkg_search_module(tinyxml REQUIRED IMPORTED_TARGET tinyxml)
 pkg_search_module(eigen3 REQUIRED IMPORTED_TARGET eigen3)
 
 list(APPEND PKGCONFIG_REQUIRES urdfdom)
-list(APPEND PKGCONFIG_REQUIRES tinyxml)
 list(APPEND PKGCONFIG_REQUIRES eigen3)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
@@ -20,7 +18,6 @@ target_include_directories(${TARGET_NAME} PUBLIC
 
 target_link_libraries(${TARGET_NAME} PUBLIC
                       PkgConfig::urdfdom
-                      PkgConfig::tinyxml
                       PkgConfig::eigen3)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
