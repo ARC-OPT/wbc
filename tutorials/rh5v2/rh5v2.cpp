@@ -1,9 +1,9 @@
 #include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
-#include <scenes/acceleration_reduced_tsid/AccelerationSceneReducedTSID.hpp>
+#include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
-#include <tasks/CartesianAccelerationTask.hpp>
+#include <tasks/CartesianVelocityTask.hpp>
 #include <unistd.h>
 
 using namespace std;
@@ -63,13 +63,13 @@ int main()
 
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
-    AccelerationSceneReducedTSID scene(robot_model, solver, dt);
-    CartesianAccelerationTaskPtr cart_task_left, cart_task_right;
-    cart_task_left = make_shared<CartesianAccelerationTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
-                                                            robot_model,
-                                                            "ALWristFT_Link",
-                                                            "RH5v2_Root_Link");
-    cart_task_right = make_shared<CartesianAccelerationTask>(TaskConfig("cart_ctrl_right",0,{1,1,1,1,1,1},1),
+    VelocitySceneQP scene(robot_model, solver, dt);
+    CartesianVelocityTaskPtr cart_task_left, cart_task_right;
+    cart_task_left = make_shared<CartesianVelocityTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
+                                                        robot_model,
+                                                        "ALWristFT_Link",
+                                                        "RH5v2_Root_Link");
+    cart_task_right = make_shared<CartesianVelocityTask>(TaskConfig("cart_ctrl_right",0,{1,1,1,1,1,1},1),
                                                              robot_model,
                                                             "ARWristFT_Link",
                                                             "RH5v2_Root_Link");
@@ -108,7 +108,7 @@ int main()
 
     // Target Pose left/right
     types::RigidBodyState setpoint_left, setpoint_right, feedback_left, feedback_right;
-    types::SpatialAcceleration ctrl_output_left, ctrl_output_right;
+    types::Twist ctrl_output_left, ctrl_output_right;
     setpoint_left.pose.position = Eigen::Vector3d(0.522827,0.453543,0.183343);
     setpoint_left.pose.orientation = Eigen::Quaterniond(0.371912,-0.485673,0.725747,-0.314793);
     setpoint_left.twist.setZero();
@@ -139,14 +139,10 @@ int main()
         feedback_right.twist = robot_model->twist(cart_task_right->tipFrame());
         ctrl_output_left = ctrl_left.update(setpoint_left.pose,
                                             setpoint_left.twist,
-                                            setpoint_left.acceleration,
-                                            feedback_left.pose,
-                                            feedback_left.twist);
+                                            feedback_left.pose);
         ctrl_output_right = ctrl_right.update(setpoint_right.pose,
                                               setpoint_right.twist,
-                                              setpoint_right.acceleration,
-                                              feedback_right.pose,
-                                              feedback_right.twist);
+                                              feedback_right.pose);
 
         // Update tasks. Pass the control output of the controller to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
@@ -160,7 +156,7 @@ int main()
         solver_output = scene.solve(hqp);
 
         // Integrate once to get joint velocity from solver output
-        integrator.integrate(joint_state,solver_output,loop_time, types::CommandMode::ACCELERATION, RECTANGULAR, false);
+        integrator.integrate(joint_state,solver_output,loop_time, types::CommandMode::VELOCITY, RECTANGULAR, false);
 
         // Update joint state by integration again
         joint_state.position = solver_output.position;
@@ -179,8 +175,6 @@ int main()
         cout<<"Solver output: "; cout<<endl;
         cout<<"Joint Names:   "; for(uint i = 0; i < robot_model->na(); i++) cout<<robot_model->jointNames()[i]<<" "; cout<<endl;
         cout<<"Velocity:      "; cout<<solver_output.velocity.transpose()<<" "; cout<<endl;
-        cout<<"Acceleration:  "; cout<<solver_output.acceleration.transpose()<<" "; cout<<endl;
-        cout<<"Torque:        "; cout<<solver_output.effort.transpose()<<" "; cout<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
         usleep(loop_time * 1e6);
     }

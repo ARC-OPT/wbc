@@ -98,6 +98,7 @@ int main(){
     ref_pose.orientation.setIdentity();
     pose.position.setZero();
     pose.orientation.setIdentity();
+    ref_twist.setZero();
 
     // Run control loop
     double loop_time = dt; // seconds

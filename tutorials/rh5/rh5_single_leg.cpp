@@ -97,6 +97,7 @@ int main(){
     ref_pose.orientation = Eigen::Quaterniond(0,-1,0,0);
     pose.position.setZero();
     pose.orientation.setIdentity();
+    ref_twist.setZero();
 
     double loop_time = dt; // seconds
     types::JointCommand solver_output;

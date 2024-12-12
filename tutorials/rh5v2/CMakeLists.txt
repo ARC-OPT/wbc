@@ -1,7 +1,7 @@
 add_executable(rh5v2 rh5v2.cpp)
 target_link_libraries(rh5v2
                       wbc-solvers-qpoases
-                      wbc-scenes-acceleration_reduced_tsid
+                      wbc-scenes-velocity_qp
                       wbc-controllers
                       wbc-robot_models-pinocchio)
 
