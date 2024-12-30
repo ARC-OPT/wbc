@@ -30,9 +30,9 @@ In general, WBC describes a robot control problem in terms of costs and constrai
 
 # Statement of need
 
-ARC-OPT supports the software developer in designing such Whole-Body Controllers by providing configuration options for different pre-defined WBC problems. Today, the methodology of WBC is well understood and several mature frameworks exist. Task Space Inverse Dynamics (TSID) [@delprete2016] implements a control algorithm for legged robots on acceleration level, while the approach presented in [@Posa2016] operates on torque level. In [@Smits2009] a generalized velocity-IK framework is implemented, which is, however, tightly coupled to the Orocos project. Similarly, Pink [@pink2024] is a weighted task-based framework for differential inverse kinematics implemented in Python. The IHMC Whole-Body Controller has been developed for the ATLAS robot [@Feng2015], providing control algorithms for walking and manipulation based on QPs. Drake [@drake2021] is a collection of libraries for model-based design and control of complex robots. It provides interfaces to several open-source and commercial solvers, including linear least-squares, quadratic programming, and non-linear programming. Finally, ControlIt! [@controlit2021] is a middleware built around the whole-body operational space control algorithm first introduced by Sentis and Khatib [@Sentis2006]. 
+ARC-OPT supports the software developer in designing such Whole-Body Controllers by providing configuration options for different pre-defined WBC problems. Today, the methodology of WBC is well understood and several mature frameworks exist. Task Space Inverse Dynamics (TSID) [@delprete2016] implements a control algorithm for legged robots on acceleration level, while the approach presented in @Posa2016 operates on torque level. In @Smits2009 a generalized velocity-IK framework is implemented, which is, however, tightly coupled to the Orocos project. Similarly, Pink [@pink2024] is a weighted task-based framework for differential inverse kinematics implemented in Python. The IHMC Whole-Body Controller has been developed for the ATLAS robot [@Feng2015], providing control algorithms for walking and manipulation based on QPs. Drake [@drake2021] is a collection of libraries for model-based design and control of complex robots. It provides interfaces to several open-source and commercial solvers, including linear least-squares, quadratic programming, and non-linear programming. Finally, ControlIt! [@controlit2021] is a middleware built around the whole-body operational space control algorithm first introduced by @Sentis2006. 
 
-In contrast to the existing libraries, ARC-OPT implements unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and rigid body dynamics libraries on these problems. Furthermore, it provides a novel WBC approach for robots with parallel kinematic loops, which is described [@Mronga2022]. 
+In contrast to the existing libraries, ARC-OPT implements unified interfaces for different WBC problems on velocity, acceleration and torque level, as well as options to benchmark different QP solvers and rigid body dynamics libraries on these problems. Furthermore, it provides a novel WBC approach for robots with parallel kinematic loops, which is described in @Mronga2022. 
 
 # Description
 
@@ -76,7 +76,7 @@ The WBC library is integrated into ROS 2 using the \textit{ros2\_control} framew
 
 Additionally, Python bindings for most of the library functions are available\footnote{\url{https://github.com/ARC-OPT/wbc_py}}. 
 
-The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022],[@Mronga2021],[@Mronga2020],[@Popescu2022], and evaluated on different robots, like, e.g., the RH5 humanoid [@Eer2021DesignAA] shown in Figure \ref{fig:rh5}.
+The ARC-OPT library for Whole-Body Control has been used in various scientific works [@Mronga2022; @Mronga2021; @Mronga2020; @Popescu2022], and evaluated on different robots, like, e.g., the RH5 humanoid [@Eer2021DesignAA] shown in Figure \ref{fig:rh5}.
 
 # Acknowledgements
 
