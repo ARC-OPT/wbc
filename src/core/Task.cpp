@@ -33,11 +33,8 @@ void Task::reset(){
     y_ref.setZero(nv);
     A.setZero();
     Aw.setZero();
-    activation = 0;
-    for(uint i = 0; i < nv; i++){
-        weights(i) = 1.0;
-        weights_world(i) = 1.0;
-    }
+    setWeights(Eigen::Map<Eigen::VectorXd>(config.weights.data(),config.weights.size()));
+    setActivation(config.activation);
 }
 
 void Task::setWeights(const Eigen::VectorXd& weights){
