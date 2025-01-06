@@ -2,6 +2,7 @@
 [![Ubuntu 22.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml)
 [![Ubuntu 24.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu24.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu24.04.yml)
 
+[![DOI](https://joss.theoj.org/papers/10.21105/joss.06696/status.svg)](https://doi.org/10.21105/joss.06696)   
 # WBC - Whole-Body Control
 
 [Code API](https://arc-opt.github.io/wbc/index.html)  | [Full Documentation](https://arc-opt.github.io/Documentation/) | [Scientific Paper](https://arc-opt.github.io/Documentation/publications/icra_2022/index.html) | [ROS 2 Interface](https://github.com/ARC-OPT/wbc_ros)
@@ -74,7 +75,17 @@ WBC is distributed under the [3-clause BSD license](https://opensource.org/licen
 
 ## Acknowledge WBC
 
-If you use WBC within your scientific work, please cite [this paper](https://arc-opt.github.io/Documentation/publications/icra_2022/index.html).
+If you want to use WBC within your scientific work, please cite [this paper](https://joss.theoj.org/papers/10.21105/joss.06696#) or direcly use the following BibTex entry:
+
+```
+@article{Mronga2024,
+   author = {Dennis Mronga and Frank Kirchner},
+   title = {The ARC-OPT Library for Whole-Body Control of Robotic Systems},
+   journal = {Journal of Open Source Software},
+   year = {2024},
+   doi = {10.21105/joss.06696}
+} 
+```
 
 ## Funding
 
