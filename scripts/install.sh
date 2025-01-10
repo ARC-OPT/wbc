@@ -1,21 +1,5 @@
 #!/bin/sh
-sudo apt-get -y install git cmake build-essential libboost-system-dev libboost-program-options-dev libboost-thread-dev libboost-test-dev pkg-config libeigen3-dev libboost-filesystem-dev
-
-# cmake makros
-git clone https://github.com/rock-core/base-cmake.git   
-mkdir base-cmake/build && cd base-cmake/build
-cmake .. && make -j8 && sudo make install && cd ../..
-
-# Logging 
-git clone https://github.com/rock-core/base-logging.git
-mkdir base-logging/build && cd base-logging/build
-cmake .. && make -j8 && sudo make install && cd ../..
-
-# Base Types
-git clone https://github.com/rock-core/base-types.git
-mkdir base-types/build && cd base-types/build
-cmake .. -DUSE_SISL=OFF -DBINDINGS_RUBY=OFF -DROCK_VIZ_ENABLED=OFF
-make -j8 && sudo make install && cd ../..
+sudo apt-get -y install git cmake build-essential pkg-config libeigen3-dev
 
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
