@@ -1,5 +1,6 @@
 #!/bin/sh
-sudo apt-get -y install git cmake build-essential pkg-config libeigen3-dev
+sudo apt-get -y install git cmake build-essential pkg-config libeigen3-dev libboost-system-dev libboost-test-dev pkg-config libeigen3-dev libboost-filesystem-dev
+
 
 # URDF
 sudo apt-get -y install liburdfdom-headers-dev liburdfdom-dev 
