@@ -14,9 +14,6 @@ mkdir build && cd build
 cmake .. -DBUILD_PYTHON_INTERFACE=OFF -DBUILD_UNIT_TESTS=OFF -DCMAKE_BUILD_TYPE=RELEASE
 make -j8 && sudo make install && cd ../..
 
-# If not done yet, setup a ssh key pair using the command `ssh-keygen` and add the 
-# key from `~/.ssh/id_rsa.pub `to the keys in your Gitlab account.
-
 # qpOASES
 git clone https://github.com/coin-or/qpOASES.git -b releases/3.2.0
 cd qpOASES
