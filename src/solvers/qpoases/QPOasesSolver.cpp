@@ -88,7 +88,8 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::Vec
         ret_val = sq_problem.init(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
         if(ret_val != SUCCESSFUL_RETURN){
             //options.print();
-            //qp.print();
+            
+            qp.print();
             throw std::runtime_error("SQ Problem initialization failed with error " + std::to_string(ret_val));
         }
     }
@@ -96,7 +97,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::Vec
         ret_val = sq_problem.hotstart(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
         if(ret_val != SUCCESSFUL_RETURN){
             //options.print();
-            //qp.print();
+            qp.print();
             throw std::runtime_error("SQ Problem hotstart failed with error " + std::to_string(ret_val));
         }
     }

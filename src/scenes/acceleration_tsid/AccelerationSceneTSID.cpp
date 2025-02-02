@@ -1,10 +1,6 @@
 #include "AccelerationSceneTSID.hpp"
 #include "core/RobotModel.hpp"
-
-#include "../../tasks/JointAccelerationTask.hpp"
-#include "../../tasks/CartesianAccelerationTask.hpp"
-#include "../../tasks/CoMAccelerationTask.hpp"
-#include "../../tasks/WrenchForwardTask.hpp"
+#include "../../tools/Logger.hpp"
 
 #include "../../constraints/RigidbodyDynamicsConstraint.hpp"
 #include "../../constraints/ContactsAccelerationConstraint.hpp"
@@ -17,26 +13,48 @@ SceneRegistry<AccelerationSceneTSID> AccelerationSceneTSID::reg("acceleration_ts
 
 AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
     Scene(robot_model, solver, dt),
-    hessian_regularizer(1e-8){
+    hessian_regularizer(1e-8),
+    configured(false){
 
     // whether or not torques are removed  from the qp problem
     // this formulation includes torques !!!
     bool reduced = false; // DO NOT CHANGE
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
-    constraints.resize(1);
-    constraints[0].push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
-    constraints[0].push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
-    constraints[0].push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
-    constraints[0].push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+    constraints.push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
+    constraints.push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
+    constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
+    constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+}
+
+bool AccelerationSceneTSID::configure(const std::vector<TaskPtr> &tasks_in){
+    if(tasks_in.empty()){
+        log(logERROR)<<"Empty WBC Task configuration";
+        return false;
+    }
+    for(const TaskPtr& task : tasks_in){
+        if(task->type != spatial_acceleration &&
+           task->type != joint_acceleration &&
+           task->type != com_acceleration &&
+           task->type != contact_force){
+            log(logERROR)<<"Invalid task type: "<<task->type;
+            return false;
+        }
+    }
+
+    solver->reset();
+    tasks.resize(1);
+    tasks = tasks_in;
+    hqp.resize(1);
+    configured = true;
+
+    return true;
 }
 
 const HierarchicalQP& AccelerationSceneTSID::update(){
 
     assert(configured);
-    assert(tasks.size() == 1);
 
-    int prio = 0; // Only one priority is implemented here!
     uint nj = robot_model->nj();
     uint na = robot_model->na();
     uint ncp = robot_model->nc();
@@ -45,7 +63,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     bool has_bounds = false;
     size_t total_eqs = 0, total_ineqs = 0;
-    for(auto contraint : constraints[prio]) {
+    for(auto contraint : constraints) {
         contraint->update(robot_model);
         if(contraint->type() == Constraint::equality)
             total_eqs += contraint->size();
@@ -57,26 +75,26 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     // QP Size: (nc x nj+na+nc*3)
     //Variable order: (qdd,tau,f_ext)
-    QuadraticProgram& qp = hqp[prio];
+    QuadraticProgram& qp = hqp[0];
     qp.resize(nj+na+ncp*3, total_eqs, total_ineqs, has_bounds);
     total_eqs = total_ineqs = 0;
-    for(uint i = 0; i < constraints[prio].size(); i++) {
-        Constraint::Type type = constraints[prio][i]->type();
-        size_t c_size = constraints[prio][i]->size();
+    for(uint i = 0; i < constraints.size(); i++) {
+        Constraint::Type type = constraints[i]->type();
+        size_t c_size = constraints[i]->size();
 
         if(type == Constraint::bounds) {
-            qp.lower_x = constraints[prio][i]->lb();
-            qp.upper_x = constraints[prio][i]->ub();
+            qp.lower_x = constraints[i]->lb();
+            qp.upper_x = constraints[i]->ub();
         }
         else if (type == Constraint::equality) {
-            qp.A.middleRows(total_eqs, c_size) = constraints[prio][i]->A();
-            qp.b.segment(total_eqs, c_size) = constraints[prio][i]->b();
+            qp.A.middleRows(total_eqs, c_size) = constraints[i]->A();
+            qp.b.segment(total_eqs, c_size) = constraints[i]->b();
             total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
-            qp.C.middleRows(total_ineqs, c_size) = constraints[prio][i]->A();
-            qp.lower_y.segment(total_ineqs, c_size) = constraints[prio][i]->lb();
-            qp.upper_y.segment(total_ineqs, c_size) = constraints[prio][i]->ub();
+            qp.C.middleRows(total_ineqs, c_size) = constraints[i]->A();
+            qp.lower_y.segment(total_ineqs, c_size) = constraints[i]->lb();
+            qp.upper_y.segment(total_ineqs, c_size) = constraints[i]->ub();
             total_ineqs += c_size;
         }
     }
@@ -86,15 +104,10 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     qp.H.setZero();
     qp.g.setZero();
     uint wrench_idx = 0;
-    for(uint i = 0; i < tasks[prio].size(); i++){
+    hqp.Wq = Eigen::VectorXd::Map(robot_model->getJointWeights().data(), robot_model->nj());
+    for(uint i = 0; i < tasks.size(); i++){
         
-        TaskPtr task = tasks[prio][i];
-
-        assert(task->type == spatial_acceleration ||
-               task->type == joint_acceleration ||
-               task->type == com_acceleration ||
-               task->type == wrench_forward);
-
+        TaskPtr task = tasks[i];
         task->update();
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
@@ -109,10 +122,10 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
             task->y_ref_world(i) = task->y_ref_world(i) * task->weights_world(i) * task->activation;
         }
         for(int i = 0; i < task->A.cols(); i++)
-            task->Aw.col(i) = joint_weights[i] * task->Aw.col(i);
+            task->Aw.col(i) = hqp.Wq[i] * task->Aw.col(i);
 
         // Decide on which output variables the tasks are to be mapped: qdd or f_ext
-        if(task->type == TaskType::wrench_forward){ // f_ext
+        if(task->type == TaskType::contact_force){ // f_ext
             /*const std::vector<ActiveContact> &cp = robot_model->getActiveContacts();
             const std::string contact_link = task->config.ref_frame;
             if(std::find(cp.names.begin(), cp.names.end(), contact_link) == cp.names.end()){
@@ -133,7 +146,6 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
 
     qp.H.diagonal().array() += hessian_regularizer;
 
-    hqp.Wq = Eigen::VectorXd::Map(joint_weights.data(), robot_model->nj());
     return hqp;
 }
 

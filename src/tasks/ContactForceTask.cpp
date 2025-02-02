@@ -1,17 +1,17 @@
-#include "WrenchForwardTask.hpp"
+#include "ContactForceTask.hpp"
 #include "../types/Wrench.hpp"
 #include <iostream>
 
 namespace wbc {
 
-WrenchForwardTask::WrenchForwardTask(TaskConfig config,
+ContactForceTask::ContactForceTask(TaskConfig config,
                                      RobotModelPtr robot_model,
                                      const std::string &ref_frame) :
-    Task(config, robot_model, 3, TaskType::wrench_forward), ref_frame(ref_frame){
+    Task(config, robot_model, 3, TaskType::contact_force), ref_frame(ref_frame){
 
 }
 
-void WrenchForwardTask::update(){
+void ContactForceTask::update(){
 
     // Task Jacobian is identity here: The external wrenches are explicit variables in the QP,
     // so the reference wrench is simply forwarded to these variables
@@ -35,7 +35,7 @@ void WrenchForwardTask::update(){
     }
 }
 
-void WrenchForwardTask::setReference(const types::Wrench& ref){
+void ContactForceTask::setReference(const types::Wrench& ref){
     this->y_ref = ref.force;
 }
 

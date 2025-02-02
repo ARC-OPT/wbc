@@ -17,19 +17,6 @@ class Scene{
 protected:
     RobotModelPtr robot_model;
     QPSolverPtr solver;
-    std::vector< std::vector<TaskPtr> > tasks;
-    std::vector< std::vector<ConstraintPtr> > constraints;
-    HierarchicalQP hqp;
-    std::vector<int> n_task_variables_per_prio;
-    bool configured;
-    types::JointCommand solver_output_joints;
-    Eigen::VectorXd joint_weights, actuated_joint_weights;
-    Eigen::VectorXd solver_output;
-
-    /**
-     * @brief Delete all tasks and free memory
-     */
-    void clearTasks();
 
 public:
     Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
@@ -39,7 +26,7 @@ public:
      * @brief Configure the WBC scene. Create tasks and sort them by priority given the task config
      * @param tasks Tasks used in optimization function. Size has to be > 0. All tasks have to be valid. See tasks and TaskConfig.hpp for more details.
      */
-    virtual bool configure(const std::vector<TaskPtr> &tasks);
+    virtual bool configure(const std::vector<TaskPtr> &tasks) = 0;
 
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
@@ -52,61 +39,6 @@ public:
      * @return Solver output as joint command
      */
     virtual const types::JointCommand& solve(const HierarchicalQP& hqp) = 0;
-
-    /**
-     * @brief Return a Particular task. Throw if the task does not exist
-     */
-    TaskPtr getTask(const std::string& name);
-
-    /**
-     * @brief True in case the given task exists
-     */
-    bool hasTask(const std::string& name);
-
-    /**
-     * @brief Sort task config by the priorities of the tasks
-     */
-    static void sortTasks(const std::vector<TaskPtr>& tasks, std::vector< std::vector<TaskPtr> >& sorted_tasks);
-
-    /**
-     * @brief Return number of tasks per priority, given the task config
-     */
-    static uint getNTaskVariables(const std::vector<TaskPtr>& config);
-
-    /**
-     * @brief Return number of tasks per priority, given the task config
-     */
-    static std::vector<int> getNTaskVariablesPerPrio(const std::vector<TaskPtr>& config);
-
-    /**
-     * @brief Return tasks sorted by priority for the solver
-     */
-    void getHierarchicalQP(HierarchicalQP& _hqp){_hqp = hqp;}
-
-    /**
-     * @brief Get current solver output
-     */
-    const types::JointCommand& getSolverOutput() const { return solver_output_joints; }
-
-    /**
-     * @brief Get current solver output in raw values
-     */
-    const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
-
-    /**
-     * @brief set Joint weights by given name
-     */
-    void setJointWeights(const Eigen::VectorXd& weights);
-
-    /**
-     * @brief Get Joint weights as Named vector
-     */
-    const Eigen::VectorXd& getJointWeights() const { return joint_weights; }
-
-    /**
-     * @brief Get Joint weights as Named vector
-     */
-    const Eigen::VectorXd& getActuatedJointWeights() const { return actuated_joint_weights; }
 
     /**
      * @brief Return the current robot model

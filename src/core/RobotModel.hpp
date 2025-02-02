@@ -86,6 +86,7 @@ protected:
     std::map<std::string,SpatialAcceleration> acc_map;
     std::map<std::string,SpatialAcceleration> spatial_acc_bias_map;
     bool fk_needs_recompute, fk_with_zero_acc_needs_recompute;
+    Eigen::VectorXd joint_weights;
 
     types::SpatialAcceleration zero_acc;
     bool configured,updated;
@@ -293,6 +294,16 @@ public:
 
     /** @brief Return current URDF model*/
     urdf::ModelInterfaceSharedPtr getURDFModel(){return robot_urdf;}
+
+    /**
+     * @brief set Joint weights by given name
+     */
+    void setJointWeights(const Eigen::VectorXd& weights);
+
+    /**
+     * @brief Get Joint weights as Named vector
+     */
+    const Eigen::VectorXd& getJointWeights() const { return joint_weights; }
 
     /** @brief Compute tau from internal state
       * @param qdd_ref (Optional) Desired reference joint acceleration (including floating base), if empty actual acceleration will be used.

@@ -9,17 +9,17 @@ namespace wbc{
 /**
  * @brief Implementation of a Cartesian acceleration task.
  */
-class CartesianAccelerationTask : public Task{
+class SpatialAccelerationTask : public Task{
 protected:
     Eigen::MatrixXd rot_mat;
     std::string tip_frame;
     std::string ref_frame;
 public:
-    CartesianAccelerationTask(TaskConfig config,
+    SpatialAccelerationTask(TaskConfig config,
                               RobotModelPtr robot_model,
                               const std::string &tip_frame,
                               const std::string &ref_frame);
-    virtual ~CartesianAccelerationTask() = default;
+    virtual ~SpatialAccelerationTask() = default;
 
     /**
      * @brief Compute the cartesian task matrix A
@@ -41,7 +41,7 @@ public:
     const std::string& refFrame(){return ref_frame;}
 };
 
-using CartesianAccelerationTaskPtr = std::shared_ptr<CartesianAccelerationTask>;
+using SpatialAccelerationTaskPtr = std::shared_ptr<SpatialAccelerationTask>;
 
 } // namespace wbc
 

@@ -1,15 +1,15 @@
-#include "CartesianVelocityTask.hpp"
+#include "SpatialVelocityTask.hpp"
 
 namespace wbc{
 
-CartesianVelocityTask::CartesianVelocityTask(TaskConfig config,
+SpatialVelocityTask::SpatialVelocityTask(TaskConfig config,
                                              RobotModelPtr robot_model,
                                              const std::string &tip_frame,
                                              const std::string &ref_frame)
     : Task(config, robot_model, 6, TaskType::spatial_velocity), tip_frame(tip_frame), ref_frame(ref_frame){
 }
 
-void CartesianVelocityTask::update(){
+void SpatialVelocityTask::update(){
     
     // Task Jacobian
     A = robot_model->spaceJacobian(tip_frame);
@@ -37,7 +37,7 @@ void CartesianVelocityTask::update(){
         weights_world = weights;
 }
 
-void CartesianVelocityTask::setReference(const types::Twist& ref){
+void SpatialVelocityTask::setReference(const types::Twist& ref){
     this->y_ref.segment(0,3) = ref.linear;
     this->y_ref.segment(3,3) = ref.angular;
 }

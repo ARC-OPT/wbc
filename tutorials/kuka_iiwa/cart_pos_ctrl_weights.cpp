@@ -4,7 +4,7 @@
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
 #include <unistd.h>
-#include <tasks/CartesianVelocityTask.hpp>
+#include <tasks/SpatialVelocityTask.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -37,8 +37,8 @@ int main(){
     // configured by passing multiple task configurations and assigning them a corresponding priority. Here, we consider only
     // a single Cartesian task. The most important entries here are root/tip and reference frame, any of which has to be a valid
     // link in the URDF model. For all configuration options, check core/TaskConfig.hpp
-    CartesianVelocityTaskPtr cart_task;
-    cart_task = make_shared<CartesianVelocityTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,0,0,0},1),
+    SpatialVelocityTaskPtr cart_task;
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,0,0,0},1),
                                                    robot_model,
                                                    "kuka_lbr_l_tcp",
                                                    "kuka_lbr_l_link_0");
@@ -50,7 +50,7 @@ int main(){
     // will not contribute to the task solution, i.e., its velocity will be zero!
     Eigen::VectorXd joint_weights(robot_model->nj());
     joint_weights << 1,1,1,1,1,1,1;
-    scene.setJointWeights(joint_weights);
+    robot_model->setJointWeights(joint_weights);
 
     // Configure the controller. In this case, we use a Cartesian position controller. The controller implements the following control law:
     //

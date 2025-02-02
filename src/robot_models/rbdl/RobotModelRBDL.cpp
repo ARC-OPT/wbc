@@ -83,6 +83,8 @@ bool RobotModelRBDL::configure(const RobotModelConfig& cfg){
     tau.resize(rbdl_model->qdot_size);
     zero_jnt.setZero(rbdl_model->qdot_size);
     zero_acc.setZero();
+    joint_weights.resize(nj());
+    joint_weights.setConstant(1.0);
 
     selection_matrix.resize(na(),nj());
     selection_matrix.setZero();

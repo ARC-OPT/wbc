@@ -3,7 +3,7 @@
 #include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
-#include <tasks/CartesianAccelerationTask.hpp>
+#include <tasks/SpatialAccelerationTask.hpp>
 #include <unistd.h>
 
 using namespace std;
@@ -63,8 +63,8 @@ int main()
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
     AccelerationSceneTSID scene(robot_model, solver, dt);
-    CartesianAccelerationTaskPtr cart_task;
-    cart_task = make_shared<CartesianAccelerationTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,1,1,1},1),
+    SpatialAccelerationTaskPtr cart_task;
+    cart_task = make_shared<SpatialAccelerationTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,1,1,1},1),
                                                        robot_model,
                                                        "kuka_lbr_l_tcp",
                                                        "kuka_lbr_l_link_0");
@@ -84,13 +84,11 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl;
-    Eigen::VectorXd p_gain(6),d_gain(6),ff_gain(6);
+    Eigen::VectorXd p_gain(6),d_gain(6);
     p_gain.setConstant(10); // Stiffness
-    d_gain.setConstant(30); // Damping
-    ff_gain.setConstant(1); // Feed forward
+    d_gain.setConstant(3); // Damping
     ctrl.setPGain(p_gain);
     ctrl.setDGain(d_gain);
-    ctrl.setDGain(ff_gain);
 
     // Choose a valid reference pose x_r
     types::Pose ref_pose, pose;

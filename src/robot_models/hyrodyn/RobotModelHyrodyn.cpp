@@ -84,6 +84,8 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     selection_matrix.setZero();
     for(int i = 0; i < hyrodyn.jointnames_active.size(); i++)
         selection_matrix(i, jointIndex(hyrodyn.jointnames_active[i])) = 1.0;
+    joint_weights.resize(nj());
+    joint_weights.setConstant(1.0);
 
     LOG_DEBUG("------------------- WBC RobotModelHyrodyn -----------------");
     LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;

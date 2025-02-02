@@ -1,16 +1,16 @@
-#include "CartesianAccelerationTask.hpp"
+#include "SpatialAccelerationTask.hpp"
 #include "../tools/Logger.hpp"
 
 namespace wbc{
 
-CartesianAccelerationTask::CartesianAccelerationTask(TaskConfig config,
+SpatialAccelerationTask::SpatialAccelerationTask(TaskConfig config,
                                                      RobotModelPtr robot_model,
                                                      const std::string &tip_frame,
                                                      const std::string &ref_frame)
     : Task(config, robot_model, 6, TaskType::spatial_acceleration), tip_frame(tip_frame), ref_frame(ref_frame){
 }
 
-void CartesianAccelerationTask::update(){
+void SpatialAccelerationTask::update(){
     // Task Jacobian
     A = robot_model->spaceJacobian(tip_frame);
 
@@ -40,7 +40,7 @@ void CartesianAccelerationTask::update(){
         weights_world = weights;
 }
 
-void CartesianAccelerationTask::setReference(const types::SpatialAcceleration& ref){
+void SpatialAccelerationTask::setReference(const types::SpatialAcceleration& ref){
     this->y_ref.segment(0,3) = ref.linear;
     this->y_ref.segment(3,3) = ref.angular;
 }

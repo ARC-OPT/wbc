@@ -3,7 +3,7 @@
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>
-#include <tasks/CartesianVelocityTask.hpp>
+#include <tasks/SpatialVelocityTask.hpp>
 #include <unistd.h>
 
 using namespace wbc;
@@ -64,8 +64,8 @@ int main(){
     dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
     // Configure Scene, use VelocitySceneQuadraticCost in this case
-    CartesianVelocityTaskPtr cart_task;
-    cart_task = make_shared<CartesianVelocityTask>(TaskConfig("left_leg_posture",0,{1,1,1,1,1,1},1),
+    SpatialVelocityTaskPtr cart_task;
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("left_leg_posture",0,{1,1,1,1,1,1},1),
                                                    robot_model,
                                                    "LLAnkle_FT",
                                                    "RH5_Root_Link");

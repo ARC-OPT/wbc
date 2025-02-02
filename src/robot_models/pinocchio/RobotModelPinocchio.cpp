@@ -87,6 +87,8 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     qdd.resize(model.nv);
     zero_jnt.setZero(model.nv);
     zero_acc.setZero();
+    joint_weights.resize(nj());
+    joint_weights.setConstant(1.0);
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits, joint_names);
 
@@ -159,14 +161,14 @@ void RobotModelPinocchio::update(const Eigen::VectorXd& joint_positions,
         q[6] = floating_base_state.pose.orientation.w();
 
         // Subtract 2 due to universe & root_joint
-        for(size_t i = 0; i < actuatedJointNames().size(); i++){
+        for(uint i = 0; i < actuatedJointNames().size(); i++){
             q[model.getJointId(actuated_joint_names[i])-2+7]   = joint_state.position[i];     // first 7 elements in q are floating base pose
             qd[model.getJointId(actuated_joint_names[i])-2+6]  = joint_state.velocity[i];        // first 6 elements in q are floating base twist
             qdd[model.getJointId(actuated_joint_names[i])-2+6] = joint_state.acceleration[i]; // first 6 elements in q are floating base acceleration
         }
     }
     else{
-        for(size_t i = 0; i < actuatedJointNames().size(); i++){
+        for(uint i = 0; i < actuatedJointNames().size(); i++){
             q[model.getJointId(actuated_joint_names[i])-1]   = joint_state.position[i];
             qd[model.getJointId(actuated_joint_names[i])-1]  = joint_state.velocity[i];
             qdd[model.getJointId(actuated_joint_names[i])-1] = joint_state.acceleration[i];
@@ -427,7 +429,7 @@ const Eigen::VectorXd& RobotModelPinocchio::inverseDynamics(const Eigen::VectorX
 
     if(f_ext.size() != 0){
         assert(f_ext.size() == contacts.size());
-        for(size_t i = 0; i < contacts.size(); i++)
+        for(uint i = 0; i < contacts.size(); i++)
             tau += spaceJacobian(contacts[i].frame_id)*f_ext[i].vector6d();
     }
 

@@ -4,7 +4,7 @@
 #include "robot_models/pinocchio/RobotModelPinocchio.hpp"
 #include "scenes/velocity_qp/VelocitySceneQP.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
-#include "tasks/CartesianVelocityTask.hpp"
+#include "tasks/SpatialVelocityTask.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -51,8 +51,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
     dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
 
     // Configure scene
-    CartesianVelocityTaskPtr cart_task;
-    cart_task = make_shared<CartesianVelocityTask>(TaskConfig("cart_pos_ctrl", 0, {1,1,1,1,1,1},1),
+    SpatialVelocityTaskPtr cart_task;
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl", 0, {1,1,1,1,1,1},1),
                                                    robot_model,
                                                    "RH5_Root_Link",
                                                    "world");
@@ -68,9 +68,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
     cart_task->setReference(ref.twist);
 
     // Solve
-    BOOST_CHECK_NO_THROW(wbc_scene.update());
     HierarchicalQP qp;
-    wbc_scene.getHierarchicalQP(qp);
+    BOOST_CHECK_NO_THROW(qp=wbc_scene.update());
     wbc_scene.solve(qp);
 
     // Check

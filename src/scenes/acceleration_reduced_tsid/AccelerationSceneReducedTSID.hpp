@@ -40,11 +40,16 @@ class AccelerationSceneReducedTSID : public Scene{
 protected:
     static SceneRegistry<AccelerationSceneReducedTSID> reg;
 
-    // Helper variables
     Eigen::VectorXd robot_acc, solver_output_acc;
     std::vector<types::Wrench> contact_wrenches;
     double hessian_regularizer;
     std::vector<Contact> contacts;
+    std::vector< TaskPtr > tasks;
+    std::vector< ConstraintPtr > constraints;
+    HierarchicalQP hqp;
+    bool configured;
+    types::JointCommand solver_output_joints;
+    Eigen::VectorXd solver_output;
 
     bool contactsHaveChanged(const std::vector<Contact>& old_contacts, const std::vector<Contact>& new_contacts){
         if(old_contacts.size() != new_contacts.size())
@@ -59,6 +64,12 @@ protected:
 public:
     AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
     virtual ~AccelerationSceneReducedTSID(){}
+
+    /**
+     * @brief Configure the WBC scene. Create tasks and sort them by priority given the task config
+     * @param tasks Tasks used in optimization function. Size has to be > 0. All tasks have to be valid. See tasks and TaskConfig.hpp for more details.
+     */
+    virtual bool configure(const std::vector<TaskPtr> &tasks);
 
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
@@ -88,6 +99,9 @@ public:
      */
     double getHessianRegularizer(){return hessian_regularizer;}
 
+    /**
+     * @brief Get current solver output in raw values
+     */
     const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
 };
 

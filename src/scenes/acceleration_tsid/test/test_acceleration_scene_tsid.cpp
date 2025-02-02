@@ -4,7 +4,7 @@
 #include "robot_models/pinocchio/RobotModelPinocchio.hpp"
 #include "scenes/acceleration_tsid/AccelerationSceneTSID.hpp"
 #include "solvers/qpoases/QPOasesSolver.hpp"
-#include "tasks/CartesianAccelerationTask.hpp"
+#include "tasks/SpatialAccelerationTask.hpp"
 
 using namespace std;
 using namespace wbc;
@@ -50,8 +50,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
     dynamic_pointer_cast<QPOASESSolver>(solver)->setOptions(options);
 
     // Configure scene
-    CartesianAccelerationTaskPtr cart_task;
-    cart_task = make_shared<CartesianAccelerationTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,1,1,1},1),
+    SpatialAccelerationTaskPtr cart_task;
+    cart_task = make_shared<SpatialAccelerationTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,1,1,1},1),
                                                        robot_model,
                                                        "RH5_Root_Link",
                                                        "world");
@@ -66,9 +66,8 @@ BOOST_AUTO_TEST_CASE(simple_test){
     BOOST_CHECK_NO_THROW(cart_task->setReference(ref.acceleration));
 
     // Solve
-    BOOST_CHECK_NO_THROW(wbc_scene.update());
     HierarchicalQP qp;
-    wbc_scene.getHierarchicalQP(qp);
+    BOOST_CHECK_NO_THROW(qp=wbc_scene.update());
     types::JointCommand solver_output = wbc_scene.solve(qp);
     Eigen::VectorXd solver_output_raw = wbc_scene.getSolverOutputRaw();
 

@@ -155,6 +155,11 @@ uint RobotModel::nac(){
     return n;
 }
 
+void RobotModel::setJointWeights(const Eigen::VectorXd &weights){
+    assert(weights.size() == joint_weights.size());
+    joint_weights = weights;
+}
+
 RobotModelFactory::RobotModelMap* RobotModelFactory::robot_model_map = 0;
 
 } // namespace wbc

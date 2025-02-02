@@ -3,7 +3,7 @@
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>
-#include <tasks/CartesianVelocityTask.hpp>
+#include <tasks/SpatialVelocityTask.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <unistd.h>
 #include <chrono>
@@ -79,8 +79,8 @@ int main(){
     // rigid contact constraints for the feet contacts. Create a task for controlling the root link in
     // world coordinates
 
-    CartesianVelocityTaskPtr cart_task;
-    cart_task = make_shared<CartesianVelocityTask>(TaskConfig("com_position",0,vector<double>(6,1),1),
+    SpatialVelocityTaskPtr cart_task;
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("com_position",0,vector<double>(6,1),1),
                                                    robot_model,
                                                    "RH5_Root_Link",
                                                    "world");

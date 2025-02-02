@@ -3,7 +3,7 @@
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
-#include <tasks/CartesianVelocityTask.hpp>
+#include <tasks/SpatialVelocityTask.hpp>
 #include <unistd.h>
 
 using namespace std;
@@ -64,12 +64,12 @@ int main()
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
     VelocitySceneQP scene(robot_model, solver, dt);
-    CartesianVelocityTaskPtr cart_task_left, cart_task_right;
-    cart_task_left = make_shared<CartesianVelocityTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
+    SpatialVelocityTaskPtr cart_task_left, cart_task_right;
+    cart_task_left = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
                                                         robot_model,
                                                         "ALWristFT_Link",
                                                         "RH5v2_Root_Link");
-    cart_task_right = make_shared<CartesianVelocityTask>(TaskConfig("cart_ctrl_right",0,{1,1,1,1,1,1},1),
+    cart_task_right = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_right",0,{1,1,1,1,1,1},1),
                                                              robot_model,
                                                             "ARWristFT_Link",
                                                             "RH5v2_Root_Link");

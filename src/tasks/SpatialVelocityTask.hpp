@@ -1,5 +1,5 @@
-#ifndef WBC_TASKS_CARTESIANVELOCITYTASK_HPP
-#define WBC_TASKS_CARTESIANVELOCITYTASK_HPP
+#ifndef WBC_TASKS_SPATIALVELOCITYTASK_HPP
+#define WBC_TASKS_SPATIALVELOCITYTASK_HPP
 
 #include "../core/Task.hpp"
 
@@ -8,17 +8,17 @@ namespace wbc{
 /**
  * @brief Implementation of a Cartesian velocity task.
  */
-class CartesianVelocityTask : public Task{
+class SpatialVelocityTask : public Task{
 protected:
     Eigen::MatrixXd rot_mat;
     std::string tip_frame;
     std::string ref_frame;
 public:
-    CartesianVelocityTask(TaskConfig config,
+    SpatialVelocityTask(TaskConfig config,
                           RobotModelPtr robot_model,
                           const std::string &tip_frame,
                           const std::string &ref_frame);
-    virtual ~CartesianVelocityTask() = default;
+    virtual ~SpatialVelocityTask() = default;
 
     /**
      * @brief Compute the cartesian task matrix A
@@ -40,7 +40,7 @@ public:
     const std::string& refFrame(){return ref_frame;}
 };
 
-typedef std::shared_ptr<CartesianVelocityTask> CartesianVelocityTaskPtr;
+typedef std::shared_ptr<SpatialVelocityTask> SpatialVelocityTaskPtr;
 
 } // namespace wbc
 

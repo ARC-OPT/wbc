@@ -3,7 +3,7 @@
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <solvers/qpoases/QPOasesSolver.hpp>
 #include <controllers/CartesianPosPDController.hpp>
-#include <tasks/CartesianVelocityTask.hpp>
+#include <tasks/SpatialVelocityTask.hpp>
 #include <unistd.h>
 #include <chrono>
 
@@ -65,8 +65,8 @@ int main(){
     // of the QP and defines the maximum joint velocities (taken from the URDF) as hard inequality constraints. The solution will
     // behave similarly in task space. However, as you wil see, the joint velocities will not exceed the joint limits defined in the URDF file.
 
-    CartesianVelocityTaskPtr cart_task;
-    cart_task = make_shared<CartesianVelocityTask>(TaskConfig("cart_pos_ctrl",0,vector<double>(6,1),1),
+    SpatialVelocityTaskPtr cart_task;
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl",0,vector<double>(6,1),1),
                                                    robot_model,
                                                    "kuka_lbr_l_tcp",
                                                    "kuka_lbr_l_link_0");
