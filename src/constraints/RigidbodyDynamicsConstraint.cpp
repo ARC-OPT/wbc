@@ -13,6 +13,7 @@ namespace wbc{
 
         uint nv = reduced ? (nj + nc*3) : (nj + na + nc*3);
 
+        // TODO: Fix for non-floating base robots!!!
         if(reduced) // no torques in qp, consider only floating base dynamics
         {
             A_mtx.resize(6, nv);
@@ -24,8 +25,9 @@ namespace wbc{
             for(uint i = 0; i < contacts.size(); i++){
                 if(contacts[i].active)
                     A_mtx.block(0, nj+i*3, 6, 3) = -robot_model->spaceJacobian(contacts[i].frame_id).topRows<3>().transpose().topRows<6>();
-                b_vec = -robot_model->biasForces().topRows<6>();
             }
+            b_vec = -robot_model->biasForces().topRows<6>();
+
         }
         else
         {
@@ -39,8 +41,8 @@ namespace wbc{
             for(uint i = 0; i < contacts.size(); i++){
                 if(contacts[i].active)
                     A_mtx.block(0, nj+na+i*3, nj, 3) = -robot_model->spaceJacobian(contacts[i].frame_id).topRows(3).transpose();
-                b_vec = -robot_model->biasForces();
             }
+            b_vec = -robot_model->biasForces();
         }
 
     }
