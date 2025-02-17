@@ -102,7 +102,7 @@ void RobotModel::updateData(){
         it.second.data = spatialAccelerationBias(it.first);
 }
 
-void RobotModel::setContacts(const std::vector<Contact> &_contacts){
+void RobotModel::setContacts(const std::vector<types::Contact> &_contacts){
     contacts = _contacts;
 }
 

@@ -60,7 +60,7 @@ int main(){
     RobotModelConfig config;
     config.file_or_string = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
-    config.contact_points = {wbc::Contact("LLAnkle_FT",1,0.6),wbc::Contact("LRAnkle_FT",1,0.6)};
+    config.contact_points = {types::Contact("LLAnkle_FT",1,0.6),types::Contact("LRAnkle_FT",1,0.6)};
     if(!robot_model->configure(config))
         return -1;
 

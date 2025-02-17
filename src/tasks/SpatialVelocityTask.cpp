@@ -15,7 +15,7 @@ void SpatialVelocityTask::update(){
     A = robot_model->spaceJacobian(tip_frame);
 
     // Convert reference twist to world frame. We transform only the orientation of the
-    // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for a Cartesian constraint will
+    // reference frame to which the twist is expressed, NOT the position. This means that the center of rotation for this task will
     // be the origin of ref frame, not the root frame.
     if(robot_model->worldFrame() != ref_frame){
         rot_mat = robot_model->pose(ref_frame).orientation.toRotationMatrix();

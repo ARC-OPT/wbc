@@ -41,7 +41,7 @@ protected:
     static SceneRegistry<AccelerationSceneTSID> reg;
 
     // Helper variables
-    std::vector<Contact> contacts;
+    std::vector<types::Contact> contacts;
     Eigen::VectorXd robot_acc, solver_output_acc;
     std::vector<types::Wrench> contact_wrenches;
     double hessian_regularizer;
@@ -52,7 +52,7 @@ protected:
     types::JointCommand solver_output_joints;
     Eigen::VectorXd solver_output;
 
-    bool contactsHaveChanged(const std::vector<Contact>& old_contacts, const std::vector<Contact>& new_contacts){
+    bool contactsHaveChanged(const std::vector<types::Contact>& old_contacts, const std::vector<types::Contact>& new_contacts){
         if(old_contacts.size() != new_contacts.size())
             return true;
         for(uint i = 0; i < old_contacts.size(); i++){

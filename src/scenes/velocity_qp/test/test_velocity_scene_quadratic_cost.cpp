@@ -20,7 +20,7 @@ BOOST_AUTO_TEST_CASE(simple_test){
     RobotModelConfig config;
     config.file_or_string = "../../../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
-    config.contact_points = {Contact("FL_SupportCenter",1,0.6),Contact("FR_SupportCenter",1,0.6)};
+    config.contact_points = {types::Contact("FL_SupportCenter",1,0.6),types::Contact("FR_SupportCenter",1,0.6)};
     BOOST_CHECK_EQUAL(robot_model->configure(config), true);
 
     types::JointState joint_state;

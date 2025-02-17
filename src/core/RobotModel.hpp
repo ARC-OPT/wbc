@@ -60,7 +60,7 @@ protected:
         types::RigidBodyState data;
     };
 
-    std::vector<Contact> contacts;
+    std::vector<types::Contact> contacts;
     Eigen::Vector3d gravity;
     types::RigidBodyState floating_base_state;
     RobotModelConfig robot_model_config;
@@ -236,10 +236,10 @@ public:
     virtual const types::RigidBodyState& centerOfMass() = 0;
 
     /** @brief Set new contact points.*/
-    void setContacts(const std::vector<Contact> &contacts);
+    void setContacts(const std::vector<types::Contact> &contacts);
 
     /** @brief get current contact points*/
-    const std::vector<Contact>& getContacts(){return contacts;}
+    const std::vector<types::Contact>& getContacts(){return contacts;}
 
     /** @brief Return number of joints*/
     uint nj(){return jointNames().size() + (has_floating_base ? 6 : 0);}

@@ -4,7 +4,7 @@ namespace wbc{
 
     void ContactsAccelerationConstraint::update(RobotModelPtr robot_model) {
         
-        const std::vector<Contact>& contacts = robot_model->getContacts();
+        const std::vector<types::Contact>& contacts = robot_model->getContacts();
 
         uint nj = robot_model->nj();
         uint na = robot_model->na();
