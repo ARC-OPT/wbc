@@ -2,6 +2,7 @@
 #define WBC_CONTROLLERS_JOINTPOSPDCONTROLLER_HPP
 
 #include <Eigen/Core>
+#include <memory>
 
 namespace wbc {
 
@@ -68,6 +69,7 @@ public:
      */
     void applySaturation(const Eigen::VectorXd& in, const Eigen::VectorXd& max, Eigen::VectorXd &out);
 };
+using JointPosPDControllerPtr = std::shared_ptr<JointPosPDController>;
 
 }
 #endif // WBC_CONTROLLERS_JOINTPOSPDCONTROLLER_HPP

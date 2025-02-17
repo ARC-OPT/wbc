@@ -4,6 +4,7 @@
 #include "../types/Pose.hpp"
 #include "../types/Twist.hpp"
 #include "../types/SpatialAcceleration.hpp"
+#include <memory>
 
 namespace wbc {
 
@@ -88,6 +89,7 @@ public:
      */
     void applySaturation(const Eigen::VectorXd& in, const Eigen::VectorXd& max, Eigen::VectorXd &out);
 };
+using CartesianPosPDControllerPtr = std::shared_ptr<CartesianPosPDController>;
 
 }
 #endif
