@@ -33,6 +33,8 @@ public:
 
     dense_qp_solver_plan plan;
 
+    void setOptions(std::string &field, void* value);
+
 };
 }
 

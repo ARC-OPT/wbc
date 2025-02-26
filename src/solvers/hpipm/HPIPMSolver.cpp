@@ -109,6 +109,11 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
     d_dense_qp_sol_get_v(qp_out,solver_output.data());
 }
 
+void HPIPMSolver::setOptions(std::string &field,  void *value){
+    dense_qp_hpipm_opts *hpipm_opts = (dense_qp_hpipm_opts *)opts;
+    d_dense_qp_ipm_arg_set((char*)field.c_str(), value, hpipm_opts->hpipm_opts);
+}
+
 std::string HPIPMSolver::returnCodeToString(int code){
     switch(code){
     case SUCCESS: return "Found solution satisfying accuracy tolerance";
