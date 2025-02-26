@@ -13,8 +13,9 @@ private:
     std::vector<int> idxb;
     dense_qp_in *qp_in;
     dense_qp_dims dims;
-    void *opts;
     dense_qp_out *qp_out;
+    void *opts;
+    dense_qp_solver_plan plan;
     dense_qp_solver *qp_solver;
     qp_solver_config *config;
 
@@ -31,8 +32,7 @@ public:
      */
     virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output, bool allow_warm_start = true);
 
-    dense_qp_solver_plan plan;
-
+    void setOptions(std::string &field, void* value);   
 };
 }
 
