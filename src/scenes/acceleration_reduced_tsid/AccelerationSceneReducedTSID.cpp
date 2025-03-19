@@ -22,7 +22,8 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
     bool reduced = true; // DO NOT CHANGE
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
-    constraints.push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
+    if(robot_model->hasFloatingBase())
+        constraints.push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
     constraints.push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
     constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
     constraints.push_back(std::make_shared<EffortLimitsAccelerationConstraint>());
