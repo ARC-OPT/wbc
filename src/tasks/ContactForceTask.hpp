@@ -32,7 +32,7 @@ public:
     const std::string& refFrame(){return ref_frame;}
 };
 
-typedef std::shared_ptr<ContactForceTask> ContacForceTaskPtr;
+typedef std::shared_ptr<ContactForceTask> ContactForceTaskPtr;
 
 }
 
