@@ -10,7 +10,11 @@ CoMAccelerationTask::CoMAccelerationTask(TaskConfig config,
 void CoMAccelerationTask::update(){
     A = robot_model->comJacobian();
     // Desired task space acceleration: y_r = y_d - Jdot*qdot
-    y_ref = y_ref - robot_model->spatialAccelerationBias(robot_model->baseFrame()).linear;
+    if(robot_model->baseFrame() != robot_model->worldFrame())
+        y_ref = y_ref - robot_model->spatialAccelerationBias(robot_model->baseFrame()).linear;
+    else
+        y_ref = y_ref;
+
     // CoM tasks are always in world frame, no need to transform.
     y_ref_world = y_ref;
     weights_world = weights;
