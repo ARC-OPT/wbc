@@ -107,7 +107,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::Vec
         throw std::runtime_error("SQ Problem getPrimalSolution() returned " + std::to_string(RET_QP_NOT_SOLVED));
 }
 
-returnValue QPOASESSolver::getReturnValue(){
+int QPOASESSolver::getReturnValue(){
     return ret_val;
 }
 

@@ -54,7 +54,7 @@ public:
     /** Get the maximum number of working set recalculations to be performed during the initial homotopy*/
     uint getMaxNoWSR(){return n_wsr;}
     /** Retrieve the return value from the last QP calculation*/
-    qpOASES::returnValue getReturnValue();
+    int getReturnValue();
     /** Get number of working set recalculations actually performed*/
     int getNoWSR(){return actual_n_wsr;}
     /** Return current solver options*/

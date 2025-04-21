@@ -187,7 +187,7 @@ void RobotModelRBDL::updateFK(Eigen::VectorXd &_q,Eigen::VectorXd &_qd){
 const types::Pose &RobotModelRBDL::pose(const std::string &frame_id){
 
     assert(updated);
-    assert(frame_id != "world");
+    assert(frame_id != world_frame);
 
     if(pose_map.count(frame_id) == 0)
         pose_map[frame_id] = Pose();
@@ -211,7 +211,7 @@ const types::Pose &RobotModelRBDL::pose(const std::string &frame_id){
 const types::Twist &RobotModelRBDL::twist(const std::string &frame_id){
 
     assert(updated);
-    assert(frame_id != "world");
+    assert(frame_id != world_frame);
 
     if(twist_map.count(frame_id) == 0)
         twist_map[frame_id] = Twist();
@@ -235,7 +235,7 @@ const types::Twist &RobotModelRBDL::twist(const std::string &frame_id){
 const types::SpatialAcceleration &RobotModelRBDL::acceleration(const std::string &frame_id){
 
     assert(updated);
-    assert(frame_id != "world");
+    assert(frame_id != world_frame);
 
     if(acc_map.count(frame_id) == 0)
         acc_map[frame_id] = SpatialAcceleration();
@@ -259,7 +259,7 @@ const types::SpatialAcceleration &RobotModelRBDL::acceleration(const std::string
 const Eigen::MatrixXd &RobotModelRBDL::spaceJacobian(const std::string &frame_id){
 
     assert(updated);
-    assert(frame_id != "world");
+    assert(frame_id != world_frame);
 
     if(space_jac_map.count(frame_id) == 0)
         space_jac_map[frame_id] = Matrix();
@@ -289,7 +289,7 @@ const Eigen::MatrixXd &RobotModelRBDL::spaceJacobian(const std::string &frame_id
 const Eigen::MatrixXd &RobotModelRBDL::bodyJacobian(const std::string &frame_id){
 
     assert(updated);
-    assert(frame_id != "world");
+    assert(frame_id != world_frame);
 
     if(body_jac_map.count(frame_id) == 0)
         body_jac_map[frame_id] = Matrix();
@@ -350,7 +350,7 @@ const Eigen::MatrixXd &RobotModelRBDL::comJacobian(){
 const types::SpatialAcceleration &RobotModelRBDL::spatialAccelerationBias(const std::string &frame_id){
 
     assert(updated);
-    assert(frame_id != "world");
+    assert(frame_id != world_frame);
 
     if(spatial_acc_bias_map.count(frame_id) == 0)
         spatial_acc_bias_map[frame_id] = SpatialAcceleration();
