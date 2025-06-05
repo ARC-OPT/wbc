@@ -4,7 +4,7 @@
 #include "../../core/RobotModel.hpp"
 
 #include <hyrodyn/robot_model_hyrodyn.hpp>
-#include <base/commands/Joints.hpp>
+#include <wbc/types/JointCommand.hpp>
 
 namespace wbc{
 

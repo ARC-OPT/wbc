@@ -4,12 +4,12 @@ namespace wbc {
 
 void ContactsFrictionSurfaceConstraint::update(RobotModelPtr robot_model){
 
-    const auto& contacts = robot_model->getActiveContacts();
+    const auto& contacts = robot_model->getContacts();
 
-    uint nj = robot_model->noOfJoints();
-    uint na = robot_model->noOfActuatedJoints();
+    uint nj = robot_model->nj();
+    uint na = robot_model->na();
     uint nc = contacts.size();
-    uint nac = contacts.getNumberOfActiveContacts();
+    uint nac = robot_model->nac();
 
     uint nv = reduced ? nj + 6*nc : nj + na + 6*nc;
 

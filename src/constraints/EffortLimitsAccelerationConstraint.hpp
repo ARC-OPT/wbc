@@ -1,11 +1,8 @@
-#ifndef EFFORT_LIMIT_ACCELERATION_CONSTRAINT_HPP
-#define EFFORT_LIMIT_ACCELERATION_CONSTRAINT_HPP
+#ifndef WBC_CORE_EFFORT_LIMIT_ACCELERATION_CONSTRAINT_HPP
+#define WBC_CORE_EFFORT_LIMIT_ACCELERATION_CONSTRAINT_HPP
 
 #include "../core/Constraint.hpp"
-
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/NamedVector.hpp>
+#include "../types/JointLimits.hpp"
 #include <memory>
 
 namespace wbc{
@@ -17,6 +14,8 @@ namespace wbc{
  * using the linear dependecy given by the dynamic model
  */
 class EffortLimitsAccelerationConstraint : public Constraint {
+protected:
+    types::JointLimits joint_limits;
 public:
 
     /** @brief Default constructor */
@@ -31,4 +30,4 @@ public:
 typedef std::shared_ptr<EffortLimitsAccelerationConstraint> EffortLimitsAccelerationConstraintPtr;
 
 } // namespace wbc
-#endif
+#endif // WBC_CORE_EFFORT_LIMIT_ACCELERATION_CONSTRAINT_HPP

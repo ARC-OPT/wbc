@@ -1,6 +1,6 @@
 #include "RobotModelPinocchio.hpp"
-#include <base-logging/Logging.hpp>
 #include "../../tools/URDFTools.hpp"
+#include "../../tools/Logger.hpp"
 #include <pinocchio/algorithm/frames.hpp>
 #include <pinocchio/algorithm/kinematics.hpp>
 #include <pinocchio/algorithm/jacobian.hpp>
@@ -21,7 +21,6 @@ RobotModelPinocchio::~RobotModelPinocchio(){
 }
 
 void RobotModelPinocchio::clear(){
-
     RobotModel::clear();
     data.reset();
     model = pinocchio::Model();
@@ -36,11 +35,12 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     robot_model_config = cfg;
     robot_urdf = loadRobotURDF(cfg.file_or_string);
     if(!robot_urdf){
-        LOG_ERROR("Unable to parse urdf model");
+        log(logERROR)<<"Unable to parse urdf model";
         return false;
     }
     base_frame =  robot_urdf->getRoot()->name;
-    URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist);
+    if(!URDFTools::applyJointBlacklist(robot_urdf, cfg.joint_blacklist))
+        return false;
 
     try{
         if(cfg.floating_base){
@@ -51,42 +51,30 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
         }
     }
     catch(std::invalid_argument e){
-        LOG_ERROR_S << "RobotModelPinocchio: Failed to load urdf model"<<std::endl;
+        log(logERROR) << "RobotModelPinocchio: Failed to load urdf model";
         return false;
     }
     data = std::make_shared<pinocchio::Data>(model);
 
-    // Add floating base
+    // Add floating base if available, world frame will be root of floating base instead of robot base frame
     has_floating_base = cfg.floating_base;
     world_frame = base_frame;
-    if(has_floating_base){
-        joint_names_floating_base = URDFTools::addFloatingBaseToURDF(robot_urdf);
-        world_frame = robot_urdf->getRoot()->name;
-    }
+    if(has_floating_base)
+        world_frame = "world";
 
     joint_names = model.names;
     joint_names.erase(joint_names.begin()); // Erase global joint 'universe' which is added by Pinocchio
     if(has_floating_base)
         joint_names.erase(joint_names.begin()); // Erase 'floating_base' root joint
     actuated_joint_names = joint_names;
-    joint_names = independent_joint_names = joint_names_floating_base + joint_names;
+    independent_joint_names = joint_names;
 
-    // 2. Verify consistency of URDF and config
-
-    // All contact point have to be a valid link in the robot URDF
-    for(auto c : cfg.contact_points.names){
-        if(!hasLink(c)){
-            LOG_ERROR("Contact point %s is not a valid link in the robot model", c.c_str());
-            return false;
-        }
-    }
-
-    // 3. Create data structures
+    // 2. Create data structures
 
     // Joint order in q,qd,qdd:
     //
     // Floating base:
-    // q:   x,y,z,qw,qx,qy,qz,joints_q,         Size: 7 + joint_names.size()
+    // q:   x,y,z,qx,qy,qz,qw,joints_q,         Size: 7 + joint_names.size()
     // qd:  vx,vy,vz,wx,wx,wy,wz,joints_dq,     Size: 6 + joint_names.size()
     // qdd: dvx,dvy,dvz,dwx,dwy,dwz,joints_ddq, Size: 6 + joint_names.size()
     //
@@ -97,86 +85,75 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     q.resize(model.nq);
     qd.resize(model.nv);
     qdd.resize(model.nv);
+    zero_jnt.setZero(model.nv);
+    zero_acc.setZero();
+    joint_weights.resize(nj());
+    joint_weights.setConstant(1.0);
 
-    joint_state.resize(joint_names.size());
-    joint_state.names = joint_names;
+    URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits, joint_names);
 
-    URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits);
-
-    selection_matrix.resize(noOfActuatedJoints(),noOfJoints());
+    selection_matrix.resize(na(),nj());
     selection_matrix.setZero();
     for(uint i = 0; i < actuated_joint_names.size(); i++)
-        selection_matrix(i, jointIndex(actuated_joint_names[i])) = 1.0;
+        selection_matrix(i, nfb() + i) = 1.0;
 
-    active_contacts = cfg.contact_points;
+    contacts = cfg.contact_points;
 
-    LOG_DEBUG("------------------- WBC RobotModelPinocchio -----------------");
-    LOG_DEBUG_S << "Robot Name " << robot_urdf->getName() << std::endl;
-    LOG_DEBUG_S << "Floating base robot: " << has_floating_base << std::endl;
-    LOG_DEBUG("Joint Names");
-    for(auto n : jointNames())
-        LOG_DEBUG_S << n << std::endl;
-    LOG_DEBUG("Actuated Joint Names");
-    for(auto n : actuatedJointNames())
-        LOG_DEBUG_S << n << std::endl;
-    LOG_DEBUG("Joint Limits");
-    for(auto n : joint_limits.names)
-        LOG_DEBUG_S << n << ": Max. Pos: " << joint_limits[n].max.position << ", "
-                         << "  Min. Pos: " << joint_limits[n].min.position << ", "
-                         << "  Max. Vel: " << joint_limits[n].max.speed    << ", "
-                         << "  Max. Eff: " << joint_limits[n].max.effort   << std::endl;
-    LOG_DEBUG("------------------------------------------------------------");
+    configured = true;
+
+    // 3. Verify consistency of URDF and config
+
+    // All contact points have to be a valid link in the robot URDF
+    for(auto c : contacts){
+        if(!hasLink(c.frame_id)){
+            log(logERROR)<<"Contact point "<<c.frame_id<<" is not a valid link in the robot model";
+            return false;
+        }
+    }
 
     return true;
 }
 
-void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
-                                 const base::samples::RigidBodyStateSE3& floating_base_state_in){
-    if(joint_state_in.elements.size() != joint_state_in.names.size()){
-        LOG_ERROR_S << "Size of names and size of elements in joint state do not match"<<std::endl;
-        throw std::runtime_error("Invalid joint state");
-    }
+void RobotModelPinocchio::update(const Eigen::VectorXd& joint_positions,
+                                 const Eigen::VectorXd& joint_velocities,
+                                 const Eigen::VectorXd& joint_accelerations,
+                                 const types::Pose& fb_pose,
+                                 const types::Twist& fb_twist,
+                                 const types::SpatialAcceleration& fb_acc){
 
-    if(joint_state_in.time.isNull()){
-        LOG_ERROR_S << "Joint State does not have a valid timestamp. Or do we have 1970?"<<std::endl;
-        throw std::runtime_error("Invalid joint state");
-    }
+    assert(configured);
+    assert(joint_positions.size() == na());
+    assert(joint_velocities.size() == na());
+    assert(joint_accelerations.size() == na());
 
-    for(auto n : actuated_joint_names)
-        joint_state[n] = joint_state_in[n];
-    joint_state.time = joint_state_in.time;
+    resetData();
 
-    if(has_floating_base){
-        if(!floating_base_state_in.hasValidPose() ||
-           !floating_base_state_in.hasValidTwist() ||
-           !floating_base_state_in.hasValidAcceleration()){
-           LOG_ERROR("Invalid status of floating base given! One (or all) of pose, twist or acceleration members is invalid (Either NaN or non-unit quaternion)");
-           throw std::runtime_error("Invalid floating base status");
-        }
-        if(floating_base_state_in.time.isNull()){
-            LOG_ERROR("Floating base state does not have a valid timestamp. Or do we have 1970?");
-            throw std::runtime_error("Invalid call to update()");
-        }
+    joint_state.position = joint_positions;
+    joint_state.velocity = joint_velocities;
+    joint_state.acceleration = joint_accelerations;
 
+    if(has_floating_base){      
         // Pinocchio expects the floating base twist/acceleration in local coordinates. However, we
-        // want to give the linear part in world coordinates and the angular part in local coordinates
-        floating_base_state = floating_base_state_in;
-        base::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
+        // want to give the linear part in world coordinates and the angular part in local coordinates, aligned wrt. world
+        floating_base_state.pose = fb_pose;
+        floating_base_state.twist = fb_twist;
+        floating_base_state.acceleration = fb_acc;
+        Eigen::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
 
-        base::Twist fb_twist = floating_base_state.twist;
-        fb_twist.linear = fb_rot.transpose() * floating_base_state.twist.linear;
+        types::Twist fb_twist_tmp = floating_base_state.twist;
+        fb_twist_tmp.linear = fb_rot.transpose() * floating_base_state.twist.linear;
+        fb_twist_tmp.angular = fb_rot.transpose() * floating_base_state.twist.angular;
 
-        base::Acceleration fb_acc = floating_base_state.acceleration;
-        fb_acc.linear = fb_rot.transpose() * floating_base_state.acceleration.linear;
+        types::SpatialAcceleration fb_acc_tmp = floating_base_state.acceleration;
+        fb_acc_tmp.linear = fb_rot.transpose() * floating_base_state.acceleration.linear;
+        fb_acc_tmp.angular = fb_rot.transpose() * floating_base_state.acceleration.angular;
 
-        base::Vector3d euler = floating_base_state.pose.orientation.toRotationMatrix().eulerAngles(0, 1, 2);
         for(int i = 0; i < 3; i++){
-            q[i]     = joint_state[joint_names_floating_base[i]].position       = floating_base_state.pose.position[i];
-            joint_state[joint_names_floating_base[i+3]].position = euler(i);
-            qd[i]    = joint_state[joint_names_floating_base[i]].speed          = fb_twist.linear[i];
-            qd[i+3]  = joint_state[joint_names_floating_base[i+3]].speed        = fb_twist.angular[i];
-            qdd[i]   = joint_state[joint_names_floating_base[i]].acceleration   = fb_acc.linear[i];
-            qdd[i+3] = joint_state[joint_names_floating_base[i+3]].acceleration = fb_acc.angular[i];
+            q[i]     = floating_base_state.pose.position[i];
+            qd[i]    = fb_twist_tmp.linear[i];
+            qd[i+3]  = fb_twist_tmp.angular[i];
+            qdd[i]   = fb_acc_tmp.linear[i];
+            qdd[i+3] = fb_acc_tmp.angular[i];
         }
         q[3] = floating_base_state.pose.orientation.x();
         q[4] = floating_base_state.pose.orientation.y();
@@ -184,247 +161,283 @@ void RobotModelPinocchio::update(const base::samples::Joints& joint_state_in,
         q[6] = floating_base_state.pose.orientation.w();
 
         // Subtract 2 due to universe & root_joint
-        for(auto name : actuated_joint_names){
-            if(!hasJoint(name)){
-                LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the robot model, but it is not in the joint state vector."
-                            << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
-                throw std::runtime_error("Incomplete Joint State");
-            }
-            base::JointState state = joint_state[name];
-            q[model.getJointId(name)-2+7]   = state.position;     // first 7 elements in q are floating base pose
-            qd[model.getJointId(name)-2+6]  = state.speed;        // first 6 elements in q are floating base twist
-            qdd[model.getJointId(name)-2+6] = state.acceleration; // first 6 elements in q are floating base acceleration
+        for(uint i = 0; i < actuatedJointNames().size(); i++){
+            q[model.getJointId(actuated_joint_names[i])-2+7]   = joint_state.position[i];     // first 7 elements in q are floating base pose
+            qd[model.getJointId(actuated_joint_names[i])-2+6]  = joint_state.velocity[i];        // first 6 elements in q are floating base twist
+            qdd[model.getJointId(actuated_joint_names[i])-2+6] = joint_state.acceleration[i]; // first 6 elements in q are floating base acceleration
         }
-        if(floating_base_state.time > joint_state.time)
-            joint_state.time = floating_base_state.time;
     }
     else{
-        for(auto name : actuated_joint_names){
-            if(!hasJoint(name)){
-                LOG_ERROR_S << "Joint " << name << " is a non-fixed joint in the robot model, but it is not in the joint state vector."
-                            << "You should either set the joint to 'fixed' in your URDF file or provide a valid joint state for it" << std::endl;
-                throw std::runtime_error("Incomplete Joint State");
-            }
-            base::JointState state = joint_state[name];
-            q[model.getJointId(name)-1]   = state.position;
-            qd[model.getJointId(name)-1]  = state.speed;
-            qdd[model.getJointId(name)-1] = state.acceleration;
+        for(uint i = 0; i < actuatedJointNames().size(); i++){
+            q[model.getJointId(actuated_joint_names[i])-1]   = joint_state.position[i];
+            qd[model.getJointId(actuated_joint_names[i])-1]  = joint_state.velocity[i];
+            qdd[model.getJointId(actuated_joint_names[i])-1] = joint_state.acceleration[i];
         }
     }
 
+    updateData();
+    updated = true;
 }
 
-void RobotModelPinocchio::systemState(base::VectorXd &_q, base::VectorXd &_qd, base::VectorXd &_qdd){
-    _q = q;
-    _qd = qd;
-    _qdd = qdd;
+
+void RobotModelPinocchio::updateFK(Eigen::VectorXd &_q,Eigen::VectorXd &_qd,Eigen::VectorXd &_qdd){
+    pinocchio::forwardKinematics(model,*data,_q,_qd,_qdd);
+    fk_needs_recompute = false;
+    fk_with_zero_acc_needs_recompute = true;
 }
 
-const base::samples::RigidBodyStateSE3 &RobotModelPinocchio::rigidBodyState(const std::string &root_frame, const std::string &tip_frame){
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
-    }
-    if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested Forward kinematics computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but the pinocchio robot model always requires the root frame to be the root of the full model"<<std::endl;
-        throw std::runtime_error("Invalid root frame");
-    }
-
-    std::string use_tip_frame = tip_frame;
-    if(use_tip_frame == "world")
-        use_tip_frame = "universe";
-
-    uint idx = model.getFrameId(use_tip_frame);
-    if(idx == model.frames.size()){
-        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
-        throw std::runtime_error("Invalid tip frame");
-    }
-
-    pinocchio::forwardKinematics(model,*data,q,qd,qdd);
-    pinocchio::updateFramePlacement(model,*data,idx);
-
-    rbs.time = joint_state.time;
-    rbs.frame_id = root_frame;
-    rbs.pose.position = data->oMf[idx].translation();
-    rbs.pose.orientation = base::Quaterniond(data->oMf[idx].rotation());
-    // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
-    // but with axes aligned with the frame of the Universe. This a MIXED representation betwenn the LOCAL and the WORLD conventions.
-    rbs.twist.linear = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.twist.angular = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
-    rbs.acceleration.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    rbs.acceleration.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
-
-    return rbs;
+void RobotModelPinocchio::updateFK(Eigen::VectorXd &_q,Eigen::VectorXd &_qd){
+    pinocchio::forwardKinematics(model,*data,_q,_qd,zero_jnt);
+    fk_needs_recompute = true;
+    fk_with_zero_acc_needs_recompute = false;
 }
 
-const base::MatrixXd &RobotModelPinocchio::spaceJacobian(const std::string &root_frame, const std::string &tip_frame){
+const types::Pose &RobotModelPinocchio::pose(const std::string &frame_id){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    assert(updated);
+    assert(frame_id != world_frame);
+
+    if(pose_map.count(frame_id) == 0)
+        pose_map[frame_id] = Pose();
+
+    if(pose_map[frame_id].needs_recompute){
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
+
+        if(fk_needs_recompute)
+            updateFK(q,qd,qdd);
+
+        pinocchio::updateFramePlacement(model,*data,idx);
+
+        pose_map[frame_id].data.position = data->oMf[idx].translation();
+        pose_map[frame_id].data.orientation = Eigen::Quaterniond(data->oMf[idx].rotation());
+        pose_map[frame_id].needs_recompute = false;
     }
 
-    if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested space Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but the pinocchio robot model always requires the root frame to be the root of the full model"<<std::endl;
-        throw std::runtime_error("Invalid root frame");
-    }
-
-    std::string use_tip_frame = tip_frame;
-    if(use_tip_frame == "world")
-        use_tip_frame = "universe";
-
-    uint idx = model.getFrameId(use_tip_frame);
-    if(idx == model.frames.size()){
-        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
-        throw std::runtime_error("Invalid tip frame");
-    }
-
-    std::string chain_id = chainID(root_frame, tip_frame);
-    space_jac_map[chain_id].resize(6,model.nv);
-    space_jac_map[chain_id].setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL_WORLD_ALIGNED, space_jac_map[chain_id]);
-
-    return space_jac_map[chain_id];
+    return pose_map[frame_id].data;
 }
 
-const base::MatrixXd &RobotModelPinocchio::bodyJacobian(const std::string &root_frame, const std::string &tip_frame){
+const types::Twist &RobotModelPinocchio::twist(const std::string &frame_id){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    assert(updated);
+    assert(frame_id != world_frame);
+
+    if(twist_map.count(frame_id) == 0)
+        twist_map[frame_id] = Twist();
+
+    if(twist_map[frame_id].needs_recompute){
+
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
+
+        if(fk_needs_recompute)
+            updateFK(q,qd,qdd);
+
+        pinocchio::updateFramePlacement(model,*data,idx);
+
+        // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
+        // but with axes aligned with the world frame. This a MIXED representation betwenn the LOCAL and the WORLD.
+        twist_map[frame_id].data.linear = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+        twist_map[frame_id].data.angular = pinocchio::getFrameVelocity(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+        twist_map[frame_id].needs_recompute = false;
     }
 
-    if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested space Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but the pinocchio robot model always requires the root frame to be the root of the full model"<<std::endl;
-        throw std::runtime_error("Invalid root frame");
-    }
-
-    std::string use_tip_frame = tip_frame;
-    if(use_tip_frame == "world")
-        use_tip_frame = "universe";
-
-    uint idx = model.getFrameId(use_tip_frame);
-    if(idx == model.frames.size()){
-        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
-        throw std::runtime_error("Invalid tip frame");
-    }
-
-    std::string chain_id = chainID(root_frame, tip_frame);
-    body_jac_map[chain_id].resize(6,model.nv);
-    body_jac_map[chain_id].setZero();
-    pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL, body_jac_map[chain_id]);
-
-    return body_jac_map[chain_id];
+    return twist_map[frame_id].data;
 }
 
-const base::MatrixXd &RobotModelPinocchio::comJacobian(){
+const types::SpatialAcceleration &RobotModelPinocchio::acceleration(const std::string &frame_id){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error("Invalid call to comJacobian()");
+    assert(updated);
+    assert(frame_id != world_frame);
+
+    if(acc_map.count(frame_id) == 0)
+        acc_map[frame_id] = SpatialAcceleration();
+
+    if(acc_map[frame_id].needs_recompute){
+
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
+
+        if(fk_needs_recompute)
+            updateFK(q,qd,qdd);
+
+        pinocchio::updateFramePlacement(model,*data,idx);
+
+        // The LOCAL_WORLD_ALIGNED frame convention corresponds to the frame centered on the moving part (Joint, Frame, etc.)
+        // but with axes aligned with the world frame. This a MIXED representation betwenn the LOCAL and the WORLD.
+        acc_map[frame_id].data.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+        acc_map[frame_id].data.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+        acc_map[frame_id].needs_recompute = false;
     }
 
-    pinocchio::jacobianCenterOfMass(model, *data, q);
-    com_jac.resize(3,noOfJoints());
-    com_jac = data->Jcom;
-    return com_jac;
+    return acc_map[frame_id].data;
 }
 
-const base::Acceleration &RobotModelPinocchio::spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame){
+const Eigen::MatrixXd &RobotModelPinocchio::spaceJacobian(const std::string &frame_id){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to rigidBodyState()");
+    assert(updated);
+    assert(frame_id != world_frame);
+
+    if(space_jac_map.count(frame_id) == 0)
+        space_jac_map[frame_id] = Matrix();
+
+    if(space_jac_map[frame_id].needs_recompute){
+
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
+
+        space_jac_map[frame_id].data.resize(6,model.nv);
+        space_jac_map[frame_id].data.setZero();
+        pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL_WORLD_ALIGNED, space_jac_map[frame_id].data);
+        space_jac_map[frame_id].needs_recompute = false;
     }
 
-    if(root_frame != world_frame){
-        LOG_ERROR_S<<"Requested space Jacobian computation for kinematic chain "<<root_frame<<"->"<<tip_frame<<" but the pinocchio robot model always requires the root frame to be the root of the full model"<<std::endl;
-        throw std::runtime_error("Invalid root frame");
-    }
-
-    std::string use_tip_frame = tip_frame;
-    if(use_tip_frame == "world")
-        use_tip_frame = "universe";
-
-    uint idx = model.getFrameId(use_tip_frame);
-    if(idx == model.frames.size()){
-        LOG_ERROR_S<<"Requested Forward kinematics for tip frame "<<use_tip_frame<<" but this frame does not exist in Pinocchio"<<std::endl;
-        throw std::runtime_error("Invalid tip frame");
-    }
-    pinocchio::forwardKinematics(model,*data,q,qd,base::VectorXd::Zero(model.nv));
-    spatial_acc_bias.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
-    spatial_acc_bias.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
-    return spatial_acc_bias;
+    return space_jac_map[frame_id].data;
 }
 
-const base::MatrixXd &RobotModelPinocchio::jacobianDot(const std::string &root_frame, const std::string &tip_frame){
+const Eigen::MatrixXd &RobotModelPinocchio::bodyJacobian(const std::string &frame_id){
 
-    throw std::runtime_error("Not implemented: jacobianDot has not been implemented for RobotModelPinocchio");
+    assert(updated);
+    assert(frame_id != world_frame);
+
+    if(body_jac_map.count(frame_id) == 0)
+        body_jac_map[frame_id] = Matrix();
+
+    if(body_jac_map[frame_id].needs_recompute){
+
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
+
+        body_jac_map[frame_id].data.resize(6,model.nv);
+        body_jac_map[frame_id].data.setZero();
+        pinocchio::computeFrameJacobian(model, *data, q, idx, pinocchio::LOCAL, body_jac_map[frame_id].data);
+        body_jac_map[frame_id].needs_recompute = false;
+    }
+
+    return body_jac_map[frame_id].data;
 }
 
-const base::MatrixXd &RobotModelPinocchio::jointSpaceInertiaMatrix(){
+const Eigen::MatrixXd &RobotModelPinocchio::comJacobian(){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to jointSpaceInertiaMatrix()");
+    assert(updated);
+
+    if(com_jac.empty())
+        com_jac.push_back(Matrix());
+
+    if(com_jac[0].needs_recompute){
+
+        pinocchio::jacobianCenterOfMass(model, *data, q);
+        com_jac[0].data.resize(3,model.nv);
+        com_jac[0].data = data->Jcom;
+        com_jac[0].needs_recompute = false;
     }
 
-    pinocchio::crba(model, *data, q);
-    joint_space_inertia_mat = data->M;
-    // copy upper right triangular part to lower left triangular part (they are symmetric), as pinocchio only computes the former
-    joint_space_inertia_mat.triangularView<Eigen::StrictlyLower>() = joint_space_inertia_mat.transpose().triangularView<Eigen::StrictlyLower>();
-    return joint_space_inertia_mat;
+    return com_jac[0].data;
 }
 
-const base::VectorXd &RobotModelPinocchio::biasForces(){
+const types::SpatialAcceleration &RobotModelPinocchio::spatialAccelerationBias(const std::string &frame_id){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to biasForces()");
+    assert(updated);
+    //assert(frame_id != world_frame);
+
+    if(spatial_acc_bias_map.count(frame_id) == 0)
+        spatial_acc_bias_map[frame_id] = SpatialAcceleration();
+
+    if(spatial_acc_bias_map[frame_id].needs_recompute){
+
+        uint idx = model.getFrameId(frame_id);
+        assert(idx != model.frames.size());
+
+        if(fk_with_zero_acc_needs_recompute)
+            updateFK(q,qd);
+
+        pinocchio::updateFramePlacement(model,*data,idx);
+
+        spatial_acc_bias_map[frame_id].data.linear = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).linear();
+        spatial_acc_bias_map[frame_id].data.angular = pinocchio::getFrameClassicalAcceleration(model, *data, idx, pinocchio::LOCAL_WORLD_ALIGNED).angular();
+        spatial_acc_bias_map[frame_id].needs_recompute = false;
     }
 
-    pinocchio::nonLinearEffects(model, *data, q, qd);
-    bias_forces = data->nle;
-    return bias_forces;
+    return spatial_acc_bias_map[frame_id].data;
 }
 
-const base::samples::RigidBodyStateSE3& RobotModelPinocchio::centerOfMass(){
+const Eigen::MatrixXd &RobotModelPinocchio::jointSpaceInertiaMatrix(){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to centerOfMass()");
+    assert(updated);
+
+    if(joint_space_inertia_mat.empty())
+        joint_space_inertia_mat.push_back(Matrix());
+
+    if(joint_space_inertia_mat[0].needs_recompute){
+        pinocchio::crba(model, *data, q);
+        joint_space_inertia_mat[0].data = data->M;
+
+        // copy upper right triangular part to lower left triangular part (they are symmetric), as pinocchio only computes the former
+        joint_space_inertia_mat[0].data.triangularView<Eigen::StrictlyLower>() = joint_space_inertia_mat[0].data.transpose().triangularView<Eigen::StrictlyLower>();
+        joint_space_inertia_mat[0].needs_recompute = false;
     }
 
-    pinocchio::centerOfMass(model, *data, q, qd, qdd);
-    com_rbs.pose.position       = data->com[0];
-    com_rbs.twist.linear        = data->vcom[0];
-    com_rbs.acceleration.linear = data->acom[0];
-    com_rbs.pose.orientation.setIdentity();
-    com_rbs.twist.angular.setZero();
-    com_rbs.acceleration.angular.setZero();
-    com_rbs.time = joint_state.time;
-    com_rbs.frame_id = world_frame;
-    return com_rbs;
+    return joint_space_inertia_mat[0].data;
 }
 
-void RobotModelPinocchio::computeInverseDynamics(base::commands::Joints &solver_output){
+const Eigen::VectorXd &RobotModelPinocchio::biasForces(){
 
-    if(joint_state.time.isNull()){
-        LOG_ERROR("RobotModelPinocchio: You have to call update() with appropriately timestamped joint data at least once before requesting kinematic information!");
-        throw std::runtime_error(" Invalid call to centerOfMass()");
+    assert(updated);
+
+    if(bias_forces.empty())
+        bias_forces.push_back(Vector());
+
+    if(bias_forces[0].needs_recompute){
+        pinocchio::nonLinearEffects(model, *data, q, qd);
+        bias_forces[0].data = data->nle;
+        bias_forces[0].needs_recompute = false;
     }
 
-    // TODO: Add external wrenches here
-    pinocchio::rnea(model, *data, q, qd, qdd);
+    return bias_forces[0].data;
+}
 
-    uint start_idx = 0;
-    if(has_floating_base)
-        start_idx = 6;
+const types::RigidBodyState& RobotModelPinocchio::centerOfMass(){
 
-    for(uint i = 0; i < noOfJoints(); i++){
-        const std::string &name = actuatedJointNames()[i];
-        solver_output[name].effort = data->tau[i+start_idx];
+    assert(updated);
+
+    if(com_rbs.empty())
+        com_rbs.push_back(RigidBodyState());
+
+    if(com_rbs[0].needs_recompute){
+
+        pinocchio::centerOfMass(model, *data, q, qd, qdd);
+        com_rbs[0].data.pose.position       = data->com[0];
+        com_rbs[0].data.twist.linear        = data->vcom[0];
+        com_rbs[0].data.acceleration.linear = data->acom[0];
+        com_rbs[0].data.pose.orientation.setIdentity();
+        com_rbs[0].data.twist.angular.setZero();
+        com_rbs[0].data.acceleration.angular.setZero();
+        com_rbs[0].needs_recompute = false;
     }
+
+    return com_rbs[0].data;
+}
+
+const Eigen::VectorXd& RobotModelPinocchio::inverseDynamics(const Eigen::VectorXd& qdd_ref, const std::vector<types::Wrench>& f_ext){
+
+    assert(updated);
+
+    if(qdd_ref.size() == 0)
+        tau = pinocchio::rnea(model, *data, q, qd, qdd);
+    else
+        tau = pinocchio::rnea(model, *data, q, qd, qdd_ref);
+
+    if(f_ext.size() != 0){
+        assert(f_ext.size() == contacts.size());
+        for(uint i = 0; i < contacts.size(); i++)
+            tau += spaceJacobian(contacts[i].frame_id)*f_ext[i].vector6d();
+    }
+
+    return tau;
+}
+
+pinocchio::Model *RobotModelPinocchio::getInternalModel(){
+    return &model;
 }
 
 }

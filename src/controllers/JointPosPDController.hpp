@@ -1,8 +1,8 @@
-#ifndef WBC_JOINT_POS_PD_CONTROLLER_HPP
-#define WBC_JOINT_POS_PD_CONTROLLER_HPP
+#ifndef WBC_CONTROLLERS_JOINTPOSPDCONTROLLER_HPP
+#define WBC_CONTROLLERS_JOINTPOSPDCONTROLLER_HPP
 
-#include "PosPDController.hpp"
-#include <base/commands/Joints.hpp>
+#include <Eigen/Core>
+#include <memory>
 
 namespace wbc {
 
@@ -24,20 +24,52 @@ namespace wbc {
  *
  * Note: If an input is NaN, it might be ignored by the controller. E.g. if the reference or actual velocity is none, the velocity error will be set to zero in the controller
  */
-class JointPosPDController : public PosPDController{
+class JointPosPDController{
 protected:
-    base::commands::Joints control_output;
-    std::vector<std::string> joint_names;
-
-    void extractFeedback(const base::samples::Joints& feedback);
-    void extractSetpoint(const base::commands::Joints& setpoint);
+    uint dim_controller;
+    Eigen::VectorXd p_gain;
+    Eigen::VectorXd d_gain;
+    Eigen::VectorXd u_max;
+    Eigen::VectorXd u;
 
 public:
-    JointPosPDController(const std::vector<std::string>& joint_names);
+    JointPosPDController(uint dim);
 
-    /** Convert typed to raw input data and call PosPDController::update()*/
-    const base::commands::Joints& update(const base::commands::Joints& setpoint, const base::samples::Joints& feedback);
+    /** @brief Compute velocity level control output*/
+    const Eigen::VectorXd& update(const Eigen::VectorXd& ref_pos,
+                                  const Eigen::VectorXd& ref_vel,
+                                  const Eigen::VectorXd& pos);
+
+    /** @brief Compute acceleration level control output*/
+    const Eigen::VectorXd& update(const Eigen::VectorXd& ref_pos,
+                                  const Eigen::VectorXd& ref_vel,
+                                  const Eigen::VectorXd& ref_acc,
+                                  const Eigen::VectorXd& pos,
+                                  const Eigen::VectorXd& vel);
+
+    /** Set proportional/position gain. Size has to be the same dimension of the controller*/
+    void setPGain(const Eigen::VectorXd &gain);
+    /** Get proportional/position gain*/
+    const Eigen::VectorXd& pGain(){return p_gain;}
+    /** Set derivative/velocity gain. Size has to be the same dimension of the controller*/
+    void setDGain(const Eigen::VectorXd &gain);
+    /** Get derivative/velocity gain*/
+    const Eigen::VectorXd& dGain(){return d_gain;}
+    /** Set controller saturation. Size has to be the same dimension of the controller*/
+    void setMaxCtrlOutput(const Eigen::VectorXd &max_ctrl_out);
+    /** Get controller saturation*/
+    const Eigen::VectorXd& maxCtrlOutput(){return u_max;}
+    /**
+     * @brief Apply Saturation on the control output. If one or more values of <in> are bigger than the
+     *        Corrresponding entry of <max>, all values will be scaled down according to the biggest
+     *        ratio eta = in_i / max,i
+     * @param in Input vector. Size has to be same as max.
+     * @param max Maximum allowed value for input vector. Size has to be same as in.
+     * @param out Output vector. Will be resized if out.size() != in.size()
+     */
+    void applySaturation(const Eigen::VectorXd& in, const Eigen::VectorXd& max, Eigen::VectorXd &out);
 };
+using JointPosPDControllerPtr = std::shared_ptr<JointPosPDController>;
 
 }
-#endif
+#endif // WBC_CONTROLLERS_JOINTPOSPDCONTROLLER_HPP

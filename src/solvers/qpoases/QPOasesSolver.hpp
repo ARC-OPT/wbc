@@ -3,7 +3,6 @@
 
 #include "../../core/QPSolver.hpp"
 #include <qpOASES.hpp>
-#include <base/Time.hpp>
 
 namespace qpOASES {
 enum optionPresets{qp_default, qp_reliable, qp_fast, qp_unset};
@@ -23,6 +22,17 @@ class HierarchicalQP;
  *             & lb(\mathbf{x}) \leq \mathbf{x} \leq ub(\mathbf{x})& \\
  *        \end{array}
  *  \f]
+ *
+ * Reference:
+ * Ferreau, H.J., Kirches, C., Potschka, A. et al. qpOASES: a parametric active-set algorithm for quadratic programming.
+ * Math. Prog. Comp. 6, 327–363 (2014). https://doi.org/10.1007/s12532-014-0071-1
+ *
+ * Solver parameters:
+ *  - Check qpOASES::Options
+ *  - Different sets of default options can be selected:
+ *    - options.setToDefault( );
+ *    - options.setToReliable( ); // for maximum reliability
+ *    - options.setToMPC( );      // for maximum speed
  */
 class QPOASESSolver : public QPSolver{
 private:
@@ -37,22 +47,20 @@ public:
      * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);
+    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output, bool allow_warm_start = true);
 
     /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
     void setMaxNoWSR(const uint& n){n_wsr = n;}
     /** Get the maximum number of working set recalculations to be performed during the initial homotopy*/
     uint getMaxNoWSR(){return n_wsr;}
     /** Retrieve the return value from the last QP calculation*/
-    qpOASES::returnValue getReturnValue();
+    int getReturnValue();
     /** Get number of working set recalculations actually performed*/
     int getNoWSR(){return actual_n_wsr;}
     /** Return current solver options*/
     qpOASES::Options getOptions(){return options;}
     /** Set new solver options*/
     void setOptions(const qpOASES::Options& opt);
-    /** Set new solver options using one of the following presets: qp_default, qp_reliable, qp_fast, qp_unset*/
-    void setOptionsPreset(const qpOASES::optionPresets& opt);
     /** Get Quadratic program*/
     const qpOASES::SQProblem& getSQProblem(){return sq_problem;}
 
@@ -63,7 +71,8 @@ protected:
     qpOASES::returnValue ret_val;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> H;
     Eigen::Matrix<double, Eigen::Dynamic, Eigen::Dynamic, Eigen::RowMajor> A;
-    base::Time stamp;
+    size_t nc;
+    size_t nv;
 };
 
 }

@@ -1,7 +1,10 @@
 #include "OsqpSolver.hpp"
 #include "../../core/QuadraticProgram.hpp"
+#include <chrono>
 
 namespace wbc {
+
+QPSolverRegistry<OsqpSolver> OsqpSolver::reg("osqp");
 
 OsqpSolver::OsqpSolver() : configured(false){
 }
@@ -9,67 +12,55 @@ OsqpSolver::OsqpSolver() : configured(false){
 OsqpSolver::~OsqpSolver(){
 }
 
-void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output){
+void OsqpSolver::resize(uint nq, uint nc){
+    solver.data()->setNumberOfConstraints(nc);
+    solver.data()->clearLinearConstraintsMatrix();
+    solver.data()->clearHessianMatrix();
 
-    if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("OsqpSolver::solve: Constraints vector size must be 1 for the current implementation");
+    hessian_sparse.resize(nq,nq);
+    gradient.resize(nq);
+    constraint_mat_dense.resize(nc,nq);
+    constraint_mat_sparse.resize(nc,nq);
+    lower_bound.resize(nc);
+    upper_bound.resize(nc);
+
+    constraint_mat_dense.setZero();
+    lower_bound.setZero();
+    upper_bound.setZero();
+    hessian_sparse.setZero();
+    gradient.setZero();
+    constraint_mat_sparse.setZero();
+
+    solver.data()->setNumberOfVariables(nq);
+    solver.data()->setNumberOfConstraints(nc);
+    solver.data()->setHessianMatrix(hessian_sparse);
+    solver.data()->setGradient(gradient);
+    solver.data()->setLinearConstraintsMatrix(constraint_mat_sparse);
+    solver.data()->setLowerBound(lower_bound);
+    solver.data()->setUpperBound(upper_bound);
+    solver.settings()->setVerbosity(false);
+}
+
+void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output, bool allow_warm_start){
+
+    assert(hierarchical_qp.size() == 1);
 
     const QuadraticProgram& qp = hierarchical_qp[0];
+    assert(qp.isValid());
+
     uint nc = qp.bounded ? qp.neq + qp.nin + qp.nq : qp.neq + qp.nin;
 
+    if(!allow_warm_start)
+        configured = false;
+
     if(!configured){
-        hessian_sparse.resize(qp.nq,qp.nq);
-        gradient.resize(qp.nq);
-        constraint_mat_dense.resize(nc,qp.nq);
-        constraint_mat_dense.setZero();
-        constraint_mat_sparse.resize(nc,qp.nq);
-        lower_bound.resize(nc);
-        upper_bound.resize(nc);
-        lower_bound.setZero();
-        upper_bound.setZero();
-        hessian_sparse.setZero();
-        gradient.setZero();
-        constraint_mat_sparse.setZero();
-        solver.settings()->setVerbosity(false);
-        solver.settings()->setWarmStart(true);
-        solver.data()->setNumberOfVariables(qp.nq);
+        resize(qp.nq, nc);
         configured = true;
-        solver.data()->setNumberOfConstraints(nc);
-        solver.data()->setHessianMatrix(hessian_sparse);
-        solver.data()->setGradient(gradient);
-        solver.data()->setLinearConstraintsMatrix(constraint_mat_sparse);
-        solver.data()->setLowerBound(lower_bound);
-        solver.data()->setUpperBound(upper_bound);
         solver.initSolver();
     }
 
-
-    if(solver.data()->getData()->m != nc){
-        solver.data()->setNumberOfConstraints(nc);
-        solver.data()->clearLinearConstraintsMatrix();
-        solver.data()->clearHessianMatrix();
-        hessian_sparse.resize(qp.nq,qp.nq);
-        gradient.resize(qp.nq);
-        constraint_mat_dense.resize(nc,qp.nq);
-        constraint_mat_dense.setZero();
-        constraint_mat_sparse.resize(nc,qp.nq);
-        lower_bound.resize(nc);
-        upper_bound.resize(nc);
-        lower_bound.setZero();
-        upper_bound.setZero();
-        hessian_sparse.setZero();
-        gradient.setZero();
-        constraint_mat_sparse.setZero();
-        solver.settings()->setVerbosity(false);
-        solver.settings()->setWarmStart(true);
-        solver.data()->setNumberOfVariables(qp.nq);
-        solver.data()->setNumberOfConstraints(nc);
-        solver.data()->setHessianMatrix(hessian_sparse);
-        solver.data()->setGradient(gradient);
-        solver.data()->setLinearConstraintsMatrix(constraint_mat_sparse);
-        solver.data()->setLowerBound(lower_bound);
-        solver.data()->setUpperBound(upper_bound);
-    }
+    if(solver.data()->getData()->m != nc)
+        resize(qp.nq, nc);
 
     // OSQP treats bounds, eq. and ineq. constraints in one constraint matrix / vector, so we have to merge:
     if(qp.neq != 0){      // Has equality constraints
@@ -92,10 +83,12 @@ void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, base::VectorXd& so
     hessian_dense = qp.H;
     hessian_sparse = hessian_dense.sparseView();
     gradient = qp.g;
+
     solver.updateHessianMatrix(hessian_sparse);
     solver.updateLinearConstraintsMatrix(constraint_mat_sparse);
     solver.updateGradient(gradient);
     solver.updateBounds(lower_bound,upper_bound);
+
 
     OsqpEigen::ErrorExitFlag flag = solver.solveProblem();
     if(flag != OsqpEigen::ErrorExitFlag::NoError){
@@ -103,6 +96,7 @@ void OsqpSolver::solve(const HierarchicalQP& hierarchical_qp, base::VectorXd& so
         throw std::runtime_error("Error solving QP: " + exitFlagToString(flag));
     }
     solver_output = solver.getSolution();
+
 }
 
 }

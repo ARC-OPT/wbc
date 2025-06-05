@@ -18,13 +18,11 @@ void PotentialFieldsController::setFields(const vector<PotentialFieldPtr>& _fiel
         if(f->dimension != dimension)
             throw runtime_error("PotentialFieldsController::setFields: Dimension of controller is " + to_string(dimension) +
                                 " but dimension of field with name '" + f->name + "' is " + to_string(f->dimension));
-        if(!base::isnotnan(f->pot_field_center))
-            throw runtime_error("PotentialFieldsController::setFields: Field with name '" + f->name + "' does not have a valid pot. field center");
     }
     fields = _fields;
 }
 
-void PotentialFieldsController::applySaturation(const base::VectorXd& in, base::VectorXd &out){
+void PotentialFieldsController::applySaturation(const Eigen::VectorXd& in, Eigen::VectorXd &out){
     if(in.size() != max_ctrl_output.size())
         throw invalid_argument("Controller::applySaturation: Input vector size must be same as controller dimension");
     out.resize(max_ctrl_output.size());
@@ -36,13 +34,13 @@ void PotentialFieldsController::applySaturation(const base::VectorXd& in, base::
     out = eta * in;
 }
 
-void PotentialFieldsController::setPGain(const base::VectorXd& gain){
+void PotentialFieldsController::setPGain(const Eigen::VectorXd& gain){
     if(gain.size() != dimension)
         throw runtime_error("Size of PGain vector is " + to_string(gain.size()) + " but should be " + to_string(dimension));
     p_gain = gain;
 }
 
-void PotentialFieldsController::setMaxControlOutput(const base::VectorXd& max){
+void PotentialFieldsController::setMaxControlOutput(const Eigen::VectorXd& max){
     if(max.size() != dimension)
         throw runtime_error("Size of Max. Ctrl Output vector is " + to_string(max.size()) + " but should be " + to_string(dimension));
     max_ctrl_output = max;

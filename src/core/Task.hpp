@@ -1,11 +1,9 @@
-#ifndef TASK_HPP
-#define TASK_HPP
+#ifndef WBC_CORE_TASK_HPP
+#define WBC_CORE_TASK_HPP
 
 #include "TaskConfig.hpp"
 #include "RobotModel.hpp"
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/NamedVector.hpp>
+#include <Eigen/Core>
 #include <memory>
 
 namespace wbc{
@@ -14,13 +12,19 @@ namespace wbc{
  * @brief Abstract class to represent a generic task for a WBC optimization problem.
  */
 class Task {
+protected:
+    RobotModelPtr robot_model;
+
 public:
 
     /** @brief Default constructor */
     Task();
 
-    /** @brief Resizes all members */
-    Task(const TaskConfig& _config, uint n_robot_joints);
+    /** @brief Resizes all members
+      * @param nc Number of task variables
+      * @param nj Number of robot joints
+      */
+    Task(TaskConfig config, RobotModelPtr robot_model, uint nv, TaskType type);
     ~Task();
 
     /**
@@ -31,20 +35,13 @@ public:
     /**
      * @brief Update Task matrices and vectors
      */
-    virtual void update(RobotModelPtr robot_model) = 0;
-
-    /**
-     * @brief Check if the task is in timeout and set the timeout flag accordingly. A task is in timeout if
-     *    - No reference value has been set yet
-     *    - A timeout value is configured (config.timeout > 0) and no reference value arrived during the timeout period
-     */
-    void checkTimeout();
+    virtual void update() = 0;
 
     /**
      * @brief Set task weights.
      * @param weights Weight vector. Size has to be same as number of task variables and all entries have to be >= 0
      */
-    void setWeights(const base::VectorXd& weights);
+    void setWeights(const Eigen::VectorXd& weights);
 
     /**
      * @brief Set task activation.
@@ -52,41 +49,42 @@ public:
      */
     void setActivation(const double activation);
 
-    /** Last time the task reference values was updated.*/
-    base::Time time;
-
     /** Configuration of this task. See TaskConfig.hpp for more details*/
     TaskConfig config;
 
-    /** Reference input for this task. Can be either joint or a Cartesian space variables. If the latter is the case
-     *  they have to be expressed in in ref_frame coordinates! See TaskConfig.hpp for more details.*/
-    base::VectorXd y_ref;
+    /** Reference input for this task. Can be either joint or a Cartesian space variables. */
+    Eigen::VectorXd y_ref;
 
     /** Reference value for this task. Can be either joint or a Cartesian space variables. In the former case, y_ref_root will be
-     *  equal to y_ref, in the latter case, y_ref_root will be y_ref transformed into the robot root/base frame.*/
-    base::VectorXd y_ref_root;
+     *  equal to y_ref, in the latter case, y_ref_root will be y_ref transformed into the world frame.*/
+    Eigen::VectorXd y_ref_world;
 
     /** Task weights. Size has to be same as number of task variables and all entries have to be >= 0.
      *  A zero entry means that the reference of the corresponding task variable will be ignored while computing the solution, for example
      *  when controlling the Cartesian pose, the last 3 entries can be set to zero in order to ignore the orientarion and only control the position*/
-    base::VectorXd weights;
+    Eigen::VectorXd weights;
 
-    /** Task weights. In case of joint tasks, weights_root will be equal to weights. In case of Cartesian tasks, weights_root will be equal to
-      * weights, transformed into the robot's base/root frame*/
-    base::VectorXd weights_root;
+    /** Task weights. In case of joint tasks, weights_root will be equal to weights. In case of Cartesian tasks, weights_world will be equal to
+      * weights, transformed into the robot's world frame*/
+    Eigen::VectorXd weights_world;
 
     /** Task activation. Has to be between 0 and 1. Will be multiplied with the task weights. Can be used to (smoothly) switch on/off the tasks */
     double activation;
 
-    /** Can be 0 or 1. Will be multiplied with the task weights. If no new reference values arrives for more than
-     *  config.timeout time, this value will be set to zero*/
-    int timeout;
-
     /** Task matrix */
-    base::MatrixXd A;
+    Eigen::MatrixXd A;
 
     /** Weighted task matrix */
-    base::MatrixXd Aw;
+    Eigen::MatrixXd Aw;
+
+    /** Number of task variables*/
+    uint nv;
+
+    /** number of robot joints*/
+    uint nj;
+
+    /** Type of task, see TaskConfig.hpp for details*/
+    TaskType type;
 };
 
 
@@ -94,4 +92,4 @@ using TaskPtr = std::shared_ptr<Task> ;
 
 } // namespace wbc
 
-#endif
+#endif // WBC_CORE_TASK_HPP

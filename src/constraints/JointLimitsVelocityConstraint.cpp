@@ -11,7 +11,8 @@ namespace wbc{
 
     void JointLimitsVelocityConstraint::update(RobotModelPtr robot_model) {
 
-        uint nj = robot_model->noOfJoints();
+        uint nj = robot_model->nj();
+        uint nfb = robot_model->nfb();
 
         // vars are velocities
         lb_vec.resize(nj);
@@ -20,17 +21,16 @@ namespace wbc{
         lb_vec.setConstant(-999999);
         ub_vec.setConstant(+999999);
         
-        auto state = robot_model->jointState(robot_model->actuatedJointNames());
+        auto state = robot_model->jointState();
+        joint_limits = robot_model->jointLimits();
+        uint start_idx = nfb;
 
-        for(auto n : robot_model->actuatedJointNames()){
-            size_t idx = robot_model->jointIndex(n);
-            const base::JointLimitRange &range = robot_model->jointLimits().getElementByName(n);
-
+        for(size_t i = 0; i < nj-nfb; i++){
             // enforce joint velocity and position limits
-            lb_vec(idx) = std::max(static_cast<double>(range.min.speed), (range.min.position - state[n].position) / dt);
-            ub_vec(idx) = std::min(static_cast<double>(range.max.speed), (range.max.position - state[n].position) / dt);
-            lb_vec(idx) = std::min(lb_vec(idx), 0.0); // Why is this required?
-            ub_vec(idx) = std::max(ub_vec(idx), 0.0);
+            lb_vec(i+start_idx) = std::max(static_cast<double>(joint_limits.min.velocity[i]), (joint_limits.min.position[i] - state.position[i]) / dt);
+            ub_vec(i+start_idx) = std::min(static_cast<double>(joint_limits.max.velocity[i]), (joint_limits.max.position[i] - state.position[i]) / dt);
+            lb_vec(i+start_idx) = std::min(lb_vec(i+start_idx), 0.0); // Why is this required?
+            ub_vec(i+start_idx) = std::max(ub_vec(i+start_idx), 0.0);
         }
     }
 

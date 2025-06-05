@@ -6,14 +6,14 @@ void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
 
     const bool use_torques = false;
 
-    const auto& contacts = robot_model->getActiveContacts();
+    const auto& contacts = robot_model->getContacts();
 
-    uint nj = robot_model->noOfJoints();
-    uint na = robot_model->noOfActuatedJoints();
+    uint nj = robot_model->nj();
+    uint na = robot_model->na();
     uint nc = contacts.size();
-    uint nac = contacts.getNumberOfActiveContacts();
+    uint nac = robot_model->nac();
 
-    uint nv = reduced ? nj + 6*nc : nj + na + 6*nc;
+    uint nv = reduced ? nj + 3*nc : nj + na + 3*nc;
 
     const uint row_skip = use_torques ? 8 : 4;
     const uint col_skip = use_torques ? 6 : 3;
@@ -40,12 +40,12 @@ void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
                  1,0, mu,
                  0,1, mu;
             Eigen::VectorXd lb(row_skip), ub(row_skip);
-            lb << -1e10,-1e10,0,0;
-            ub << 0,0,1e10,1e10;
+            lb << -1e5,-1e5,0,0;
+            ub << 0,0,1e5,1e5;
 
             lb_vec.segment(idx*row_skip,row_skip) = lb;
             ub_vec.segment(idx*row_skip,row_skip) = ub;
-            A_mtx.block<row_skip,col_skip>(idx*row_skip,start_idx+i*6) = a;
+            A_mtx.block<row_skip,col_skip>(idx*row_skip,start_idx+i*3) = a;
             idx++;
         }
     }

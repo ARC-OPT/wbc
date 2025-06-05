@@ -3,8 +3,6 @@
 
 #include "../../core/QPSolver.hpp"
 
-#include <base/Time.hpp>
-
 #include <eiquadprog/eiquadprog-fast.hpp>
 
 namespace wbc {
@@ -21,6 +19,13 @@ class HierarchicalQP;
  *             & \mathbf{CI}x + ci0 \geq 0& \\
  *        \end{array}
  *  \f]
+ *
+ * The implements the algorithm of Goldfarb and Idnani for the solution of a (convex) Quadratic Programming problem:
+ * D. Goldfarb, A.  Idnani. A numerically stable dual method for solving strictly convex quadratic programs. Mathematical
+ * Programming 27 (1983) pp. 1-33.
+ *
+ * Solver parameters
+ *  - MaxNIter: Maximum number of working set recalculations to be performed during the initial homotopy
  */
 class EiquadprogSolver : public QPSolver{
 private:
@@ -36,7 +41,7 @@ public:
      *                    the first entry has the highest priority. Currently only one priority level is implemented.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output);
+    virtual void solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output, bool allow_warm_start = true);
 
     /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
     void setMaxNIter(const uint& n){ _n_iter = n; }

@@ -1,8 +1,8 @@
 #include "QPOasesSolver.hpp"
 #include "../../core/QuadraticProgram.hpp"
-#include <base/Eigen.hpp>
 #include <Eigen/Core>
 #include <iostream>
+#include "../../tools/Logger.hpp"
 
 using namespace qpOASES;
 
@@ -12,26 +12,31 @@ QPSolverRegistry<QPOASESSolver> QPOASESSolver::reg("qpoases");
 
 QPOASESSolver::QPOASESSolver(){
     n_wsr = 1000;
-    options.setToFast();
+    options.setToMPC();
     options.printLevel = PL_NONE;
+    nc = nv = 0;
 }
 
 QPOASESSolver::~QPOASESSolver(){
 
 }
 
-void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output){
+void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output, bool /*allow_warm_start*/){
 
-    if(hierarchical_qp.size() != 1)
-        throw std::runtime_error("QPOASESSolver::solve: Number of task hierarchies must be 1 for the current implementation");
-
+    assert(hierarchical_qp.size() == 1);
     const wbc::QuadraticProgram &qp = hierarchical_qp[0];
-    qp.check();
+    assert(qp.isValid());
 
-    size_t nc = qp.C.rows() + qp.A.rows();
+    if(configured){
+        if(nc != (size_t)(qp.C.rows() + qp.A.rows()) || nv != (size_t)qp.A.cols())
+            configured = false;
+    }
+
+    nc = qp.C.rows() + qp.A.rows();
+    nv = qp.A.cols();
 
     if(!configured){
-        sq_problem = SQProblem(qp.A.cols(), nc);
+        sq_problem = SQProblem(nv, nc);
         sq_problem.setOptions(options);
         configured = true;
     }
@@ -82,7 +87,8 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     if(!sq_problem.isInitialised()){
         ret_val = sq_problem.init(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
         if(ret_val != SUCCESSFUL_RETURN){
-            options.print();
+            //options.print();
+            
             qp.print();
             throw std::runtime_error("SQ Problem initialization failed with error " + std::to_string(ret_val));
         }
@@ -90,7 +96,7 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
     else{
         ret_val = sq_problem.hotstart(H_ptr, g_ptr, A_ptr, lb_ptr, ub_ptr, lbA_ptr, ubA_ptr, actual_n_wsr, 0);
         if(ret_val != SUCCESSFUL_RETURN){
-            options.print();
+            //options.print();
             qp.print();
             throw std::runtime_error("SQ Problem hotstart failed with error " + std::to_string(ret_val));
         }
@@ -101,37 +107,13 @@ void QPOASESSolver::solve(const wbc::HierarchicalQP &hierarchical_qp, base::Vect
         throw std::runtime_error("SQ Problem getPrimalSolution() returned " + std::to_string(RET_QP_NOT_SOLVED));
 }
 
-returnValue QPOASESSolver::getReturnValue(){
+int QPOASESSolver::getReturnValue(){
     return ret_val;
 }
 
 void QPOASESSolver::setOptions(const qpOASES::Options& opt){
     options = opt;
     sq_problem.setOptions(opt);
-}
-
-void QPOASESSolver::setOptionsPreset(const qpOASES::optionPresets& opt){
-    switch(opt){
-    case qpOASES::qp_default:{
-        options.setToDefault();
-        break;
-    }
-    case qpOASES::qp_reliable:{
-        options.setToReliable();
-        break;
-    }
-    case qpOASES::qp_fast:{
-        options.setToFast();
-        break;
-    }
-    case qpOASES::qp_unset:{
-        break;
-    }
-    default:{
-        throw std::runtime_error("QPOASESSolver::setOptionsPreset: Invalid preset: " + std::to_string(opt));
-    }
-    }
-    sq_problem.setOptions(options);
 }
 
 }

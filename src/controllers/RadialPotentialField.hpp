@@ -25,6 +25,6 @@ public:
      * @brief Compute control update according to potential field equation
      * @return Computed gradient. Size will be same as dimension.
      */
-    virtual const base::VectorXd& update(const base::VectorXd& position);
+    virtual const Eigen::VectorXd& update(const Eigen::VectorXd& position);
 };
 }

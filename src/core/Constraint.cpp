@@ -1,6 +1,4 @@
 #include "Constraint.hpp"
-#include <base-logging/Logging.hpp>
-#include <base/Float.hpp>
 
 namespace wbc{
 
@@ -18,19 +16,19 @@ Constraint::Type Constraint::type() {
     return c_type;
 } 
 
-const base::MatrixXd& Constraint::A() {
+const Eigen::MatrixXd& Constraint::A() {
     return A_mtx;
 }
 
-const base::VectorXd& Constraint::b() {
+const Eigen::VectorXd& Constraint::b() {
     return b_vec;
 }
 
-const base::VectorXd& Constraint::lb() {
+const Eigen::VectorXd& Constraint::lb() {
     return lb_vec;
 }
 
-const base::VectorXd& Constraint::ub() {
+const Eigen::VectorXd& Constraint::ub() {
     return ub_vec;
 }
 

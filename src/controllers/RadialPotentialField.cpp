@@ -6,21 +6,16 @@ RadialPotentialField::RadialPotentialField(const uint _dimension, const std::str
     : PotentialField(_dimension, _name){
 }
 
- const base::VectorXd& RadialPotentialField::update(const base::VectorXd& position){
-    if(position.size() != dimension)
-        throw std::invalid_argument("RadialPotentialField::update: Size of actual position vector must be equal to controller dimension");
-    if(pot_field_center.size() != dimension)
-        throw std::invalid_argument("RadialPotentialField::update: Size of potential field center vector must be equal to controller dimension");
+ const Eigen::VectorXd& RadialPotentialField::update(const Eigen::VectorXd& position){
+    assert(position.size() == dimension);
+    assert(pot_field_center.size() == dimension);
+    assert(influence_distance > 0);
 
     gradient.resize(dimension);
 
     //Compute euclidean distance to field center
     distance = position - pot_field_center;
     double dist_sqrt = distance.norm();
-
-    if(influence_distance <= 0)
-        throw std::invalid_argument("RadialPotentialField::update: influence_distance has to be > 0!");
-
 
     if(dist_sqrt > influence_distance)
         gradient.setZero();

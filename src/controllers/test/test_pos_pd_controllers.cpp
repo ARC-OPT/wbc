@@ -6,79 +6,54 @@
 
 #include "../CartesianPosPDController.hpp"
 #include "../JointPosPDController.hpp"
-#include "../ControllerTools.hpp"
-#include <base/samples/RigidBodyStateSE3.hpp>
+#include "../../types/RigidBodyState.hpp"
 
 using namespace std;
 using namespace wbc;
 
 
-BOOST_AUTO_TEST_CASE(configuration_test){
-    PosPDController controller(2);
-
-    // Invalid P-Gain
-    BOOST_CHECK_THROW(controller.setPGain(base::VectorXd(1)), std::runtime_error);
-
-    // Invalid D-Gain
-    BOOST_CHECK_THROW(controller.setDGain(base::VectorXd(1)), std::runtime_error);
-
-    // Invalid FF-Gain
-    BOOST_CHECK_THROW(controller.setFFGain(base::VectorXd(1)), std::runtime_error);
-
-    // Invalid Dead zone
-    BOOST_CHECK_THROW(controller.setDeadZone(base::VectorXd(1)), std::runtime_error);
-
-    // Invalid Saturation
-    BOOST_CHECK_THROW(controller.setMaxCtrlOutput(base::VectorXd(1)), std::runtime_error);
-}
-
 BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
     srand(time(NULL));
     CartesianPosPDController ctrl;
-    base::Vector6d p_gain, d_gain, max_ctrl_out, dead_zone;
+    Eigen::VectorXd p_gain(6), max_ctrl_out(6), dead_zone(6);
     p_gain.setConstant(10);
-    d_gain.setConstant(0);
     max_ctrl_out.setConstant(5);
     dead_zone.setConstant(0.01);
 
-    BOOST_CHECK_NO_THROW(ctrl.setPGain(p_gain));
-    BOOST_CHECK_NO_THROW(ctrl.setDGain(d_gain));
-    BOOST_CHECK_NO_THROW(ctrl.setMaxCtrlOutput(max_ctrl_out));
-    BOOST_CHECK_NO_THROW(ctrl.setDeadZone(dead_zone));
+    ctrl.setPGain(p_gain);
+    ctrl.setMaxCtrlOutput(max_ctrl_out);
 
     BOOST_CHECK(p_gain == ctrl.pGain());
-    BOOST_CHECK(d_gain == ctrl.dGain());
     BOOST_CHECK(max_ctrl_out == ctrl.maxCtrlOutput());
-    BOOST_CHECK(dead_zone == ctrl.deadZone());
 
-    base::samples::RigidBodyStateSE3 setpoint;
-    setpoint.pose.position = base::Vector3d((double)rand() / RAND_MAX,
-                                            (double)rand() / RAND_MAX,
-                                            (double)rand() / RAND_MAX);
-    setpoint.pose.orientation = Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(0)) *
-                                Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(1)) *
-                                Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(2));
+    types::Pose ref_pose;
+    ref_pose.position = Eigen::Vector3d((double)rand() / RAND_MAX,
+                                        (double)rand() / RAND_MAX,
+                                         (double)rand() / RAND_MAX);
+    ref_pose.orientation = Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(0)) *
+                           Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(1)) *
+                           Eigen::AngleAxisd((double)rand() / RAND_MAX, Eigen::Vector3d::Unit(2));
+    types::Twist ref_twist;
+    ref_twist.setZero();
 
-    base::samples::RigidBodyStateSE3 feedback;
-    feedback.pose.position.setZero();
-    feedback.pose.orientation.setIdentity();
+    types::Pose pose;
+    pose.position.setZero();
+    pose.orientation.setIdentity();
 
     double diff = 1e10;
     double dt = 0.01;
 
-    base::Vector3d euler = base::getEuler(feedback.pose.orientation);
+    Eigen::Vector3d euler = pose.orientation.toRotationMatrix().eulerAngles(2, 1, 0);
     while(diff > dead_zone.norm() + 1e-3){
-        base::samples::RigidBodyStateSE3 control_out;
+        types::Twist control_out;
 
-        BOOST_CHECK_NO_THROW(control_out = ctrl.update(setpoint, feedback));
+        control_out = ctrl.update(ref_pose, ref_twist, pose);
 
-        feedback.pose.position += control_out.twist.linear * dt;
-        euler += control_out.twist.angular * dt;
-        feedback.pose.orientation = Eigen::AngleAxisd(euler(2), Eigen::Vector3d::Unit(2)) *
-                                    Eigen::AngleAxisd(euler(1), Eigen::Vector3d::Unit(1)) *
-                                    Eigen::AngleAxisd(euler(0), Eigen::Vector3d::Unit(0));
-
-        base::Vector3d euler_target = base::getEuler(setpoint.pose.orientation);
+        pose.position += control_out.linear * dt;
+        euler += control_out.angular * dt;
+        pose.orientation = Eigen::AngleAxisd(euler(2), Eigen::Vector3d::Unit(2)) *
+                           Eigen::AngleAxisd(euler(1), Eigen::Vector3d::Unit(1)) *
+                           Eigen::AngleAxisd(euler(0), Eigen::Vector3d::Unit(0));
 
         /*printf("..................................................................\n");
         printf("Time:                 %s\n", control_out.time.toString().c_str());
@@ -102,8 +77,8 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
                                                                         ctrl.dGain()(3), ctrl.dGain()(4), ctrl.dGain()(5));
         printf("..................................................................\n\n");*/
 
-        base::Vector6d tw;
-        tw << (setpoint.pose - feedback.pose).linear, (setpoint.pose - feedback.pose).angular;
+        Eigen::VectorXd tw(6);
+        tw << (ref_pose - pose).linear, (ref_pose - pose).angular;
         double new_diff = tw.norm();
 
         BOOST_CHECK(new_diff <= diff);
@@ -115,11 +90,8 @@ BOOST_AUTO_TEST_CASE(cart_pos_pd_controller){
 
 BOOST_AUTO_TEST_CASE(jnt_pos_pd_controller){
     srand(time(NULL));
-    std::vector<std::string> joint_names;
-    joint_names.push_back("joint_a");
-    joint_names.push_back("joint_b");
-    JointPosPDController ctrl(joint_names);
-    base::Vector2d p_gain, d_gain, max_ctrl_out, dead_zone;
+    JointPosPDController ctrl(2);
+    Eigen::Vector2d p_gain, d_gain, max_ctrl_out, dead_zone;
     p_gain.setConstant(10);
     d_gain.setConstant(0);
     max_ctrl_out.setConstant(5);
@@ -128,49 +100,41 @@ BOOST_AUTO_TEST_CASE(jnt_pos_pd_controller){
     BOOST_CHECK_NO_THROW(ctrl.setPGain(p_gain));
     BOOST_CHECK_NO_THROW(ctrl.setDGain(d_gain));
     BOOST_CHECK_NO_THROW(ctrl.setMaxCtrlOutput(max_ctrl_out));
-    BOOST_CHECK_NO_THROW(ctrl.setDeadZone(dead_zone));
 
     BOOST_CHECK(p_gain == ctrl.pGain());
     BOOST_CHECK(d_gain == ctrl.dGain());
     BOOST_CHECK(max_ctrl_out == ctrl.maxCtrlOutput());
-    BOOST_CHECK(dead_zone == ctrl.deadZone());
 
-    base::commands::Joints setpoint;
-    setpoint.resize(2);
-    setpoint.names = joint_names;
-    setpoint[0].position = (double)rand() / RAND_MAX;
-    setpoint[1].position = (double)rand() / RAND_MAX;
+    Eigen::VectorXd ref_pos(2), ref_vel(2), pos(2);
+    ref_pos[0] = (double)rand() / RAND_MAX;
+    ref_pos[1] = (double)rand() / RAND_MAX;
+    ref_vel[0] = 0;
+    ref_vel[1] = 0;
 
-    base::samples::Joints feedback;
-    feedback.resize(2);
-    feedback.names = joint_names;
-    feedback[0].position = (double)rand() / RAND_MAX;
-    feedback[1].position = (double)rand() / RAND_MAX;
+    pos[0] = (double)rand() / RAND_MAX;
+    pos[1] = (double)rand() / RAND_MAX;
 
     double diff = 1e10;
     double dt = 0.01;
 
     while(diff > dead_zone.norm() + 1e-3){
-        base::commands::Joints control_out;
+        Eigen::VectorXd control_out;
 
-        BOOST_CHECK_NO_THROW(control_out = ctrl.update(setpoint, feedback));
+        BOOST_CHECK_NO_THROW(control_out = ctrl.update(ref_pos, ref_vel, pos));
 
         /*printf("..................................................................\n");
-        printf("Time:              %s\n", control_out.time.toString().c_str());
+        printf("Setpoint:          %.6f %.6f\n", setpoint.position[0], setpoint.position[1]);
+        printf("Feedback:          %.6f %.6f\n", feedback.position[0], feedback.position[1]);
         printf("\n");
-        printf("Setpoint:          %.6f %.6f\n", setpoint[0].position, setpoint[1].position);
-        printf("Feedback:          %.6f %.6f\n", feedback[0].position, feedback[1].position);
-        printf("\n");
-        printf("Control output:    %.6f %.6f\n", control_out[0].speed, control_out[1].speed);
+        printf("Control output:    %.6f %.6f\n", control_out.velocity[0], control_out.velocity[1]);
         printf("Max Ctrl. Output:  %.6f %.6f\n", ctrl.maxCtrlOutput()(0), ctrl.maxCtrlOutput()(1));
         printf("Dead Zone:         %.6f %.6f\n", ctrl.deadZone()(0), ctrl.deadZone()(1));
         printf("P-Gain:            %.6f %.6f\n", ctrl.pGain()(0), ctrl.pGain()(1));
         printf("D-Gain:            %.6f %.6f\n", ctrl.dGain()(0), ctrl.dGain()(1));
         printf("..................................................................\n\n");*/
-        for(int i = 0; i < control_out.size(); i++)
-            feedback[i].position += control_out[i].speed * dt;
+        pos += control_out * dt;
 
-        double new_diff  = ctrl.getControlError().norm();
+        double new_diff  = (ref_pos-pos).norm();
 
         BOOST_CHECK(new_diff <= diff);
 

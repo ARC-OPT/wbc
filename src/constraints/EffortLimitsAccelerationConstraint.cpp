@@ -4,10 +4,10 @@ namespace wbc{
 
     void EffortLimitsAccelerationConstraint::update(RobotModelPtr robot_model) {
         
-        const auto& contacts = robot_model->getActiveContacts();
+        const auto& contacts = robot_model->getContacts();
 
-        uint nj = robot_model->noOfJoints();
-        uint na = robot_model->noOfActuatedJoints();
+        uint nj = robot_model->nj();
+        uint na = robot_model->na();
         uint nc = contacts.size();
 
         lb_vec.resize(na);
@@ -16,7 +16,7 @@ namespace wbc{
         lb_vec.setConstant(-10000);
         ub_vec.setConstant(+10000);
         
-        A_mtx.resize(na, nj+6*nc);
+        A_mtx.resize(na, nj+3*nc);
         A_mtx.setZero();
 
         //! NOTE! -> not considering selection matrix
@@ -24,17 +24,18 @@ namespace wbc{
         A_mtx.block(0,0,na,nj) = robot_model->jointSpaceInertiaMatrix().bottomRows(na);
         for(uint i=0; i < nc; ++i){
             if(contacts[i].active){
-                A_mtx.block(0,nj+i*6,na,6) = -robot_model->bodyJacobian(robot_model->worldFrame(), contacts.names[i]).transpose().bottomRows(na);
+                A_mtx.block(0,nj+i*3,na,3) = -robot_model->spaceJacobian(contacts[i].frame_id).topRows(3).transpose().bottomRows(na);
             }
         }
 
         // enforce joint effort limits (only if torques are part of the optimization problem)
         Eigen::VectorXd b = robot_model->biasForces().tail(na);
 
-        for(uint i = 0; i < robot_model->noOfActuatedJoints(); i++){
-            const std::string& name = robot_model->actuatedJointNames()[i];
-            lb_vec(i) = robot_model->jointLimits()[name].min.effort - b(i);
-            ub_vec(i) = robot_model->jointLimits()[name].max.effort - b(i);
+        joint_limits = robot_model->jointLimits();
+
+        for(uint i = 0; i < na; i++){
+            lb_vec(i) = joint_limits.min.effort[i] - b(i);
+            ub_vec(i) = joint_limits.max.effort[i] - b(i);
         }
     }
 

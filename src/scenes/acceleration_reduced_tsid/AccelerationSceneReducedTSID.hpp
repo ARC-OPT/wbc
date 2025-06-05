@@ -2,7 +2,7 @@
 #define WBCACCELERATIONSCENEREDUCEDTSID_HPP
 
 #include "../../core/Scene.hpp"
-#include <base/samples/Wrenches.hpp>
+#include "../../types/Wrench.hpp"
 
 namespace wbc{
 
@@ -40,21 +40,36 @@ class AccelerationSceneReducedTSID : public Scene{
 protected:
     static SceneRegistry<AccelerationSceneReducedTSID> reg;
 
-    // Helper variables
-    base::VectorXd robot_acc, solver_output_acc;
-    base::samples::Wrenches contact_wrenches;
+    Eigen::VectorXd robot_acc, solver_output_acc;
+    std::vector<types::Wrench> contact_wrenches;
     double hessian_regularizer;
+    std::vector<types::Contact> contacts;
+    std::vector< TaskPtr > tasks;
+    std::vector< ConstraintPtr > constraints;
+    HierarchicalQP hqp;
+    bool configured;
+    types::JointCommand solver_output_joints;
+    Eigen::VectorXd solver_output;
 
-    /**
-     * brief Create a task and add it to the WBC scene
-     */
-    virtual TaskPtr createTask(const TaskConfig &config);
-
-    base::Time stamp;
+    bool contactsHaveChanged(const std::vector<types::Contact>& old_contacts, const std::vector<types::Contact>& new_contacts){
+        if(old_contacts.size() != new_contacts.size())
+            return true;
+        for(uint i = 0; i < old_contacts.size(); i++){
+            if(old_contacts[i].active != new_contacts[i].active)
+                return true;
+        }
+        return false;
+    }
 
 public:
     AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
     virtual ~AccelerationSceneReducedTSID(){}
+
+    /**
+     * @brief Configure the WBC scene. Create tasks and sort them by priority given the task config
+     * @param tasks Tasks used in optimization function. Size has to be > 0. All tasks have to be valid. See tasks and TaskConfig.hpp for more details.
+     */
+    virtual bool configure(const std::vector<TaskPtr> &tasks);
 
     /**
      * @brief Update the wbc scene and return the (updated) optimization problem
@@ -66,17 +81,12 @@ public:
      * @brief Solve the given optimization problem
      * @return Solver output as joint acceleration command
      */
-    virtual const base::commands::Joints& solve(const HierarchicalQP& hqp);
-
-    /**
-     * @brief evaluateTasks Evaluate the fulfillment of the tasks given the current robot state and the solver output
-     */
-    virtual const TasksStatus &updateTasksStatus();
+    virtual const types::JointCommand& solve(const HierarchicalQP& hqp);
 
     /**
      * @brief Get estimated contact wrenches
      */
-    const base::samples::Wrenches& getContactWrenches(){return contact_wrenches;}
+    const std::vector<types::Wrench>& getContactWrenches(){return contact_wrenches;}
 
     /**
      * @brief setHessianRegularizer
@@ -89,7 +99,10 @@ public:
      */
     double getHessianRegularizer(){return hessian_regularizer;}
 
-    const base::VectorXd& getSolverOutputRaw() const { return solver_output; }
+    /**
+     * @brief Get current solver output in raw values
+     */
+    const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
 };
 
 } // namespace wbc

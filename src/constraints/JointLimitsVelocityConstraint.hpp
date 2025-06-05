@@ -1,11 +1,8 @@
-#ifndef JOINT_LIMIT_VELOCITY_CONSTRAINT_HPP
-#define JOINT_LIMIT_VELOCITY_CONSTRAINT_HPP
+#ifndef WBC_CORE_JOINT_LIMIT_VELOCITY_CONSTRAINT_HPP
+#define WBC_CORE_JOINT_LIMIT_VELOCITY_CONSTRAINT_HPP
 
 #include "../core/Constraint.hpp"
-
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
-#include <base/NamedVector.hpp>
+#include "../types/JointLimits.hpp"
 #include <memory>
 
 namespace wbc{
@@ -29,9 +26,10 @@ protected:
 
     /** Control timestep: used to integrate and differentiate velocities */
     double dt;
+    types::JointLimits joint_limits;
 
 };
 typedef std::shared_ptr<JointLimitsVelocityConstraint> JointLimitsVelocityConstraintPtr;
 
 } // namespace wbc
-#endif
+#endif // WBC_CORE_JOINT_LIMIT_VELOCITY_CONSTRAINT_HPP

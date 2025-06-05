@@ -1,29 +1,31 @@
-#ifndef COM_ACCELERATION_TASK_HPP
-#define COM_ACCELERATION_TASK_HPP
+#ifndef WBC_TASKS_COMACCELERATIONTASK_HPP
+#define WBC_TASKS_COMACCELERATIONTASK_HPP
 
-#include "CartesianTask.hpp"
+#include "../core/Task.hpp"
+#include "../types/SpatialAcceleration.hpp"
 
 namespace wbc{
 
 /**
  * @brief Implementation of a CoM velocity task.
  */
-class CoMAccelerationTask : public CartesianTask{
+class CoMAccelerationTask : public Task{
 public:
-    CoMAccelerationTask(TaskConfig config, uint n_robot_joints);
+    CoMAccelerationTask(TaskConfig config,
+                        RobotModelPtr robot_model);
     virtual ~CoMAccelerationTask() = default;
 
-    virtual void update(RobotModelPtr robot_model) override;
+    virtual void update() override;
 
     /**
      * @brief Update the CoM reference input for this task.
      * @param ref Reference input for this task. Only the velocity part is relevant (Must have a valid linear and angular velocity!)
      */
-    virtual void setReference(const base::samples::RigidBodyStateSE3& ref);
+    void setReference(const Eigen::Vector3d& ref);
 };
 
 typedef std::shared_ptr<CoMAccelerationTask> CoMAccelerationTaskPtr;
 
 } // namespace wbc
 
-#endif
+#endif // WBC_TASKS_COM_ACCELERATION_TASK_HPP

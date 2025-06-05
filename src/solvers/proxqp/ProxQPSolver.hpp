@@ -5,7 +5,6 @@
 
 #include <memory>
 #include <iostream>
-#include <base/Time.hpp>
 
 #include <proxsuite/proxqp/dense/wrapper.hpp>
 
@@ -23,6 +22,13 @@ class HierarchicalQP;
  *             & \mathbf{l} \leq \mathbf{Cx} \leq \mathbf{u}& \\
  *        \end{array}
  *  \f]
+ *
+ * Reference:
+ * Antoine Bambade, Sarah El-Kazdadi, Adrien Taylor, Justin Carpentier. PROX-QP: Yet another Quadratic Programming Solver for
+ * Robotics and beyond. RSS 2022 - Robotics: Science and Systems, Jun 2022, New York, United States. ⟨hal-03683733⟩
+ *
+ * Parameters:
+ *  - See proxsuite::proxqp::Setting in settings.h for all possible options and default values.
  */
 class ProxQPSolver : public QPSolver{
 private:
@@ -38,32 +44,24 @@ public:
      *                    the first entry has the highest priority. Currently only one priority level is implemented.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP& hierarchical_qp, base::VectorXd& solver_output);
-
-    /** Set the maximum number of working set recalculations to be performed during the initial homotopy*/
-    void setMaxNIter(const uint& n){ _n_iter = n; }
-
-    /** Get the maximum number of working set recalculations to be performed during the initial homotopy*/
-    uint getMaxNIter(){ return _n_iter; }
+    virtual void solve(const wbc::HierarchicalQP& hierarchical_qp, Eigen::VectorXd& solver_output, bool allow_warm_start = true);
 
     /** Get number of working set recalculations actually performed*/
     int getNter(){ return _actual_n_iter; }
 
+    /** Set Solver options. Has to be called before first call to solve()!*/
+    void setOptions(proxsuite::proxqp::Settings<double> opt){settings = opt;}
+
 protected:
 
     std::shared_ptr<proxsuite::proxqp::dense::QP<double>> _solver_ptr;
-
-    double _eps_abs = 1e-9;
-    int _n_iter;
     int _actual_n_iter;
-
-    size_t _n_var_init; // number of variables in the configured solver instance
-    size_t _n_eq_init;  // number of equalities in the configured solver instance
-    size_t _n_in_init;  // number of inequalities in the configured solver instance (inclusing bounds)
 
     Eigen::MatrixXd _C_mtx; // inequalities matrix (including bounds)
     Eigen::VectorXd _l_vec; // inequalities lower bounds
     Eigen::VectorXd _u_vec; // inequalities upper bounds
+
+    proxsuite::proxqp::Settings<double> settings;
 };
 
 }

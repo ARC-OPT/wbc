@@ -3,6 +3,7 @@
 #include <core/RobotModelConfig.hpp>
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <controllers/CartesianPosPDController.hpp>
+#include <tasks/SpatialVelocityTask.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <unistd.h>
 #include <chrono>
@@ -51,17 +52,15 @@ int main(){
     // Note that the joint names have to contain {"floating_base_trans_x", "floating_base_trans_y", "floating_base_trans_z",
     // "floating_base_rot_x", "floating_base_rot_y", "floating_base_rot_z"} in addition to the actuated joints.
     // Also a valid initial state (pose/twist/acceleration) of the floating base should be passed
-    base::samples::RigidBodyStateSE3 floating_base_state;
-    floating_base_state.pose.position = base::Vector3d(-0.0, 0.0, 0.87);
-    floating_base_state.pose.orientation = base::Orientation(1,0,0,0);
+    types::RigidBodyState floating_base_state;
+    floating_base_state.pose.position = Eigen::Vector3d(-0.0, 0.0, 0.87);
+    floating_base_state.pose.orientation = Eigen::Quaterniond(1,0,0,0);
     floating_base_state.twist.setZero();
     floating_base_state.acceleration.setZero();
-    floating_base_state.time = base::Time::now();
     RobotModelConfig config;
     config.file_or_string = "../../../models/rh5/urdf/rh5_legs.urdf";
     config.floating_base = true;
-    config.contact_points.names = {"LLAnkle_FT", "LRAnkle_FT"};
-    config.contact_points.elements = {wbc::ActiveContact(1,0.6),wbc::ActiveContact(1,0.6)};
+    config.contact_points = {types::Contact("LLAnkle_FT",1,0.6),types::Contact("LRAnkle_FT",1,0.6)};
     if(!robot_model->configure(config))
         return -1;
 
@@ -79,15 +78,12 @@ int main(){
     // Configure Scene, we have to use VelocitySceneQuadraticCost here, since it implements
     // rigid contact constraints for the feet contacts. Create a task for controlling the root link in
     // world coordinates
-    TaskConfig cart_task;
-    cart_task.name = "com_position";
-    cart_task.type = cart;
-    cart_task.priority = 0;
-    cart_task.root = "world";
-    cart_task.tip = "RH5_Root_Link";
-    cart_task.ref_frame = "world";
-    cart_task.activation = 1;
-    cart_task.weights = vector<double>(6,1);
+
+    SpatialVelocityTaskPtr cart_task;
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("com_position",0,vector<double>(6,1),1),
+                                                   robot_model,
+                                                   "RH5_Root_Link",
+                                                   "world");
     VelocitySceneQP scene(robot_model, solver, dt);
     if(!scene.configure({cart_task}))
         return -1;
@@ -98,49 +94,56 @@ int main(){
     //
     // As we don't use feed forward velocity here, we can ignore the factor kd.
     CartesianPosPDController controller;
-    controller.setPGain(base::Vector6d::Constant(3));
+    Eigen::VectorXd p_gain(6);
+    p_gain.segment(0,3).setConstant(3.0);
+    p_gain.segment(3,3).setZero();
+    controller.setPGain(p_gain);
 
     // Choose an initial joint state. For velocity-based WBC only the current position of all joint has to be passed.
     // Note that you don't have to pass the floating base pose here.
-    uint nj = robot_model->noOfActuatedJoints();
-    base::VectorXd q(nj);
-    q << 0,0,-0.35,0.64,0,-0.27, 0,0,-0.35,0.64,0,-0.27;
-    base::samples::Joints joint_state;
-    joint_state.names = robot_model->actuatedJointNames();
+    uint nj = robot_model->na();
+    Eigen::VectorXd q(nj);
+    types::JointState joint_state;
     joint_state.resize(nj);
-    for(size_t i = 0; i < nj; i++){
-        joint_state[i].position = q[i];
-        joint_state[i].speed = joint_state[i].acceleration = 0;
-    }
-    joint_state.time = base::Time::now();
+    joint_state.position << 0,0,-0.35,0.64,0,-0.27, 0,0,-0.35,0.64,0,-0.27;
+    joint_state.velocity.setZero();
+    joint_state.acceleration.setZero();
 
     // Choose a valid reference pose x_r, which is defined in cart_task.ref_frame and defines the desired pose of
     // the cart_task.ref_tip frame. The pose will be passed as setpoint to the controller.
-    base::samples::RigidBodyStateSE3 setpoint, feedback, ctrl_output;
-    setpoint.pose.position = base::Vector3d(-0.0,0,0.7);
-    setpoint.pose.orientation = base::Quaterniond(1,0,0,0);
-    feedback.pose.position.setZero();
-    feedback.pose.orientation.setIdentity();
+    types::Pose ref_pose, pose;
+    types::Twist ref_twist, ctrl_output;
+    ref_pose.position = Eigen::Vector3d(-0.0,0,0.7);
+    ref_pose.orientation = Eigen::Quaterniond(1,0,0,0);
+    ref_twist.setZero();
+    pose.position.setZero();
+    pose.orientation.setIdentity();
 
     // Run control loop
     double loop_time = dt; // seconds
-    base::commands::Joints solver_output;
-    while((setpoint.pose.position - feedback.pose.position).norm() > 1e-4){
+    types::JointCommand solver_output;
+    while((ref_pose.position - pose.position).norm() > 1e-4){
 
 
         auto s = std::chrono::high_resolution_clock::now();
 
         // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
         // Note that you have to pass the floating base state as well now!
-        robot_model->update(joint_state, floating_base_state);
+        robot_model->update(joint_state.position,
+                            joint_state.velocity,
+                            joint_state.acceleration,
+                            floating_base_state.pose,
+                            floating_base_state.twist,
+                            floating_base_state.acceleration);
 
         // Update controller. The feedback is the pose of the tip link described in ref_frame link
-        feedback = robot_model->rigidBodyState(cart_task.root, cart_task.tip);
-        ctrl_output = controller.update(setpoint, feedback);
+        robot_model->pose("LLAnkle_FT");
+        pose = robot_model->pose(cart_task->tipFrame());
+        ctrl_output = controller.update(ref_pose, ref_twist, pose);
 
         // Update constraints. Pass the control output of the controller to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
-        scene.setReference(cart_task.name, ctrl_output);
+        cart_task->setReference(ctrl_output);
 
         // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();
@@ -150,30 +153,32 @@ int main(){
         solver_output = scene.solve(hqp);
 
         // Update joint state by simple integration using the solver output
-        for(size_t i = 0; i < joint_state.size(); i++){
-            joint_state[i].position += solver_output[i].speed * loop_time;
-            joint_state[i].speed = solver_output[i].speed;
-        }
-
+        joint_state.position += solver_output.velocity * loop_time;
+        joint_state.velocity = solver_output.velocity;
 
         auto e = std::chrono::high_resolution_clock::now();
         double solve_time = std::chrono::duration_cast<std::chrono::microseconds>(e-s).count();
 
         // Update floating base pose, use an over-simplistic estimation
-        base::Pose t1 = robot_model->rigidBodyState("world", "RH5_Root_Link").pose;
-        base::Pose t2 = robot_model->rigidBodyState("world", "LLAnkle_FT").pose;
-        base::Pose t3;
-        t3.fromTransform(t2.toTransform().inverse()*t1.toTransform());
-        floating_base_state.pose.position = -t3.position;
+        types::Pose pose_1 = robot_model->pose("RH5_Root_Link");
+        types::Pose pose_2 = robot_model->pose("LLAnkle_FT");
+        types::Pose pose_3;
+        Eigen::Affine3d t1,t2,t3;
+        t1 = pose_1.orientation;
+        t1.pretranslate(pose_1.position);
+        t2 = pose_2.orientation;
+        t2.pretranslate(pose_2.position);
+        t3 = t2.inverse()*t1;
+        floating_base_state.pose.position = -t3.translation();
         floating_base_state.pose.position[0]=floating_base_state.pose.position[1]=0;
 
-        cout<<"setpoint: x: "<<setpoint.pose.position(0)<<" y: "<<setpoint.pose.position(1)<<" z: "<<setpoint.pose.position(2)<<endl;
-        cout<<"setpoint: qx: "<<setpoint.pose.orientation.x()<<" qy: "<<setpoint.pose.orientation.y()<<" qz: "<<setpoint.pose.orientation.z()<<" qw: "<<setpoint.pose.orientation.w()<<endl<<endl;
-        cout<<"feedback x: "<<feedback.pose.position(0)<<" y: "<<feedback.pose.position(1)<<" z: "<<feedback.pose.position(2)<<endl;
-        cout<<"feedback qx: "<<feedback.pose.orientation.x()<<" qy: "<<feedback.pose.orientation.y()<<" qz: "<<feedback.pose.orientation.z()<<" qw: "<<feedback.pose.orientation.w()<<endl<<endl;
+        cout<<"setpoint: x: "<<ref_pose.position(0)<<" y: "<<ref_pose.position(1)<<" z: "<<ref_pose.position(2)<<endl;
+        cout<<"setpoint: qx: "<<ref_pose.orientation.x()<<" qy: "<<ref_pose.orientation.y()<<" qz: "<<ref_pose.orientation.z()<<" qw: "<<ref_pose.orientation.w()<<endl<<endl;
+        cout<<"feedback x: "<<pose.position(0)<<" y: "<<pose.position(1)<<" z: "<<pose.position(2)<<endl;
+        cout<<"feedback qx: "<<pose.orientation.x()<<" qy: "<<pose.orientation.y()<<" qz: "<<pose.orientation.z()<<" qw: "<<pose.orientation.w()<<endl<<endl;
         cout<<"Solver output: "; cout<<endl;
-        cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
-        cout<<"Velocity:      "; for(uint i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
+        cout<<"Joint Names:   "; for(uint i = 0; i < nj; i++) cout<<robot_model->jointNames()[i]<<" "; cout<<endl;
+        cout<<"Velocity:      "; cout<<solver_output.velocity.transpose()<<" "; cout<<endl;
         cout<<"solve time:    " << solve_time << " (mu s)" << endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 

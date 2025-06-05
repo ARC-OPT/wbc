@@ -1,7 +1,6 @@
 #pragma once
 
-#include <base/Eigen.hpp>
-#include <base/Time.hpp>
+#include <Eigen/Core>
 #include <stdexcept>
 #include <memory>
 
@@ -16,9 +15,7 @@ public:
     PotentialField(const uint _dimension, const std::string& _name = "unset")
         : dimension(_dimension),
           name(_name){
-        if(dimension == 0)
-            throw std::invalid_argument("PotentialField:PotentialField: Dimension of Potential Field has to be > 0");
-
+        assert(dimension > 0);
         influence_distance = std::numeric_limits<double>::infinity(); //Initialize with inifinite maximum influence distance
         distance.setConstant(dimension, std::numeric_limits<double>::quiet_NaN());
         gradient.setConstant(dimension, std::numeric_limits<double>::quiet_NaN());
@@ -31,9 +28,7 @@ public:
      * @brief Implement in derived class. Compute control update according to potential field equation.
      * @return Computed gradient. Size will be same as dimension
      */
-    virtual const base::VectorXd& update(const base::VectorXd &position) = 0;
-
-    base::Time time;
+    virtual const Eigen::VectorXd& update(const Eigen::VectorXd &position) = 0;
 
     /** Dimension of the potential field, e.g. a potential field in 3d space would have size 3.*/
     uint dimension;
@@ -42,13 +37,13 @@ public:
     double influence_distance;
 
     /** Distance vector to the potential field. */
-    base::VectorXd distance;
+    Eigen::VectorXd distance;
 
     /** Potential field center position*/
-    base::VectorXd pot_field_center;
+    Eigen::VectorXd pot_field_center;
 
     /** Gradient for this field*/
-    base::VectorXd gradient;
+    Eigen::VectorXd gradient;
 
     /** ID of the potential field*/
     const std::string name;

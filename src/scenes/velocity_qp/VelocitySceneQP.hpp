@@ -1,7 +1,7 @@
-#ifndef VelocitySceneQP_HPP
-#define VelocitySceneQP_HPP
+#ifndef WBC_VELOCITY_SCENE_QP_HPP
+#define WBC_VELOCITY_SCENE_QP_HPP
 
-#include "../velocity/VelocityScene.hpp"
+#include "../../core/Scene.hpp"
 
 namespace wbc{
 
@@ -30,13 +30,17 @@ namespace wbc{
  *
  *
  */
-class VelocitySceneQP : public VelocityScene{
+class VelocitySceneQP : public Scene{
 protected:
     static SceneRegistry<VelocitySceneQP> reg;
 
-    base::VectorXd s_vals, tmp;
-    base::MatrixXd sing_vect_r, U;
     double hessian_regularizer;
+    std::vector< TaskPtr > tasks;
+    std::vector< ConstraintPtr > constraints;
+    HierarchicalQP hqp;
+    bool configured;
+    types::JointCommand solver_output_joints;
+    Eigen::VectorXd solver_output;
 
 public:
     /**
@@ -48,9 +52,21 @@ public:
     virtual ~VelocitySceneQP(){}
 
     /**
+     * @brief Configure the WBC scene. Create tasks and sort them by priority given the task config
+     * @param tasks Tasks used in optimization function. Size has to be > 0. All tasks have to be valid. See tasks and TaskConfig.hpp for more details.
+     */
+    virtual bool configure(const std::vector<TaskPtr> &tasks);
+
+    /**
      * @brief Update the wbc scene
      */
     virtual const HierarchicalQP& update();
+
+    /**
+     * @brief Solve the given optimization problem
+     * @return Solver output as joint velocity command
+     */
+    virtual const types::JointCommand& solve(const HierarchicalQP& hqp);
 
     /**
      * @brief setHessianRegularizer
@@ -62,8 +78,13 @@ public:
      * @brief Return the current value of hessian regularizer
      */
     double getHessianRegularizer(){return hessian_regularizer;}
+
+    /**
+     * @brief Get current solver output in raw values
+     */
+    const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
 };
 
 } // namespace wbc
 
-#endif
+#endif // WBC_VELOCITY_SCENE_QP_HPP

@@ -7,29 +7,36 @@
 namespace wbc {
 class QuadraticProgram;
 
+/**
+ * The QPSwiftSolver solves a quadratic problem of type
+ *
+ * Reference:
+ * Pandala, Abhishek Goud and Ding, Yanran and Park, Hae-Won. QpSWIFT: A Real-Time Sparse Quadratic Program
+ * Solver for Robotic Applications, IEEE Robotics and Automation Letters, 2019
+ *
+ * Parameters:
+ *  - See Struct settings in Auxiliary.g
+ *  - default values are defined in GlobalOptions.h
+ */
 class QPSwiftSolver : public QPSolver{
 private:
     static QPSolverRegistry<QPSwiftSolver> reg;
 
 protected:
-    base::MatrixXd P;   /** Cost function Hessian matrix*/
-    base::VectorXd c;   /** Cost function gradient*/
-    base::MatrixXd A;   /** Equality constraint matrix*/
-    base::MatrixXd G;   /** Inequality constraint matrix*/
-    base::VectorXd b;   /** Equality constraint vector*/
-    base::VectorXd h;   /** Inequality constraint vector*/
+    Eigen::MatrixXd P;   /** Cost function Hessian matrix*/
+    Eigen::VectorXd c;   /** Cost function gradient*/
+    Eigen::MatrixXd A;   /** Equality constraint matrix*/
+    Eigen::MatrixXd G;   /** Inequality constraint matrix*/
+    Eigen::VectorXd b;   /** Equality constraint vector*/
+    Eigen::VectorXd h;   /** Inequality constraint vector*/
     int n_dec;          /** Number decision variables*/
     int n_ineq;         /** Number inequality constraints*/
     int n_eq;           /** Number equality constraints*/
     int n_bounds;       /** Number of lower/upper bounds on the decision variables*/
     QP *my_qp;
-    uint max_iter;      /** Maximum number of Iterations of QP */
-    double rel_tol;     /** Relative Tolerance */
-    double abs_tol;     /** Absolute Tolerance */
-    double sigma;       /** sigma desired */
-    uint verbose_level; /** Verbose Levels, 0 - Print,  >0 - Print Everything */
 
     void toQpSwift(const QuadraticProgram &qp);
+    void setOptions(settings opt){options=opt;}
 public:
     QPSwiftSolver();
     ~QPSwiftSolver();
@@ -39,13 +46,9 @@ public:
      * @param hierarchical_qp Description of the hierarchical quadratic program to solve.
      * @param solver_output solution of the quadratic program
      */
-    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, base::VectorXd &solver_output);
+    virtual void solve(const wbc::HierarchicalQP &hierarchical_qp, Eigen::VectorXd &solver_output, bool allow_warm_start = true);
 
-    void setMaxIter(uint val){max_iter=val;}
-    void setRelTol(double val){rel_tol=val;}
-    void setAbsTol(double val){abs_tol=val;}
-    void setSigma(double val){sigma=val;}
-    void setVerboseLevel(uint val){verbose_level=val;}
+    settings options;
 };
 }
 
