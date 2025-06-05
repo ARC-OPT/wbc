@@ -82,7 +82,7 @@ Inheritance diagram for wbc::EiquadprogSolver:</div>
  <div class="center">
   <img src="classwbc_1_1EiquadprogSolver.png" usemap="#wbc::EiquadprogSolver_map" alt=""/>
   <map id="wbc::EiquadprogSolver_map" name="wbc::EiquadprogSolver_map">
-<area href="classwbc_1_1QPSolver.html" alt="wbc::QPSolver" shape="rect" coords="0,0,142,24"/>
+<area href="classwbc_1_1QPSolver.html" title="Base class for all QP solvers." alt="wbc::QPSolver" shape="rect" coords="0,0,142,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -92,9 +92,9 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9892929af7e0814dd9cff81cb668dfda"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1cbf5856c94ed5b492cee20cc5dc2acc" id="r_a1cbf5856c94ed5b492cee20cc5dc2acc"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1cbf5856c94ed5b492cee20cc5dc2acc">~EiquadprogSolver</a> ()</td></tr>
 <tr class="separator:a1cbf5856c94ed5b492cee20cc5dc2acc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acc34c44225e1c4578a00729ce585c9e6" id="r_acc34c44225e1c4578a00729ce585c9e6"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc34c44225e1c4578a00729ce585c9e6">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">wbc::HierarchicalQP</a> &amp;hierarchical_qp, base::VectorXd &amp;solver_output)</td></tr>
-<tr class="memdesc:acc34c44225e1c4578a00729ce585c9e6"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
-<tr class="separator:acc34c44225e1c4578a00729ce585c9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae530008a277817111bc0702cce7df986" id="r_ae530008a277817111bc0702cce7df986"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae530008a277817111bc0702cce7df986">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">wbc::HierarchicalQP</a> &amp;hierarchical_qp, Eigen::VectorXd &amp;solver_output, bool allow_warm_start=true)</td></tr>
+<tr class="memdesc:ae530008a277817111bc0702cce7df986"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
+<tr class="separator:ae530008a277817111bc0702cce7df986"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4e6886e77502bb6ee5b64cfdbac2e155" id="r_a4e6886e77502bb6ee5b64cfdbac2e155"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4e6886e77502bb6ee5b64cfdbac2e155">setMaxNIter</a> (const uint &amp;n)</td></tr>
 <tr class="separator:a4e6886e77502bb6ee5b64cfdbac2e155"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a06f4b5af103cf4b2cbf4aacbb659da81" id="r_a06f4b5af103cf4b2cbf4aacbb659da81"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a06f4b5af103cf4b2cbf4aacbb659da81">getMaxNIter</a> ()</td></tr>
@@ -107,7 +107,7 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a30edabb36c25298f81aaf405fc164c3d inherit pub_methods_classwbc_1_1QPSolver" id="r_a30edabb36c25298f81aaf405fc164c3d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a30edabb36c25298f81aaf405fc164c3d">~QPSolver</a> ()</td></tr>
 <tr class="separator:a30edabb36c25298f81aaf405fc164c3d inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver" id="r_a63c08815ce01f2d3c253724f301aa4b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a63c08815ce01f2d3c253724f301aa4b4">reset</a> ()</td></tr>
-<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="classwbc_1_1QPSolver.html#a5ae8941c04159e538dac4c60c9008ef4" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
+<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="classwbc_1_1QPSolver.html#a37c8dae7248389b449905fc177afa06a" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
 <tr class="separator:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
@@ -137,7 +137,11 @@ Protected Attributes</h2></td></tr>
        \end{array}
 \]
 </p>
- </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<p>The implements the algorithm of Goldfarb and Idnani for the solution of a (convex) Quadratic Programming problem: D. Goldfarb, A. Idnani. A numerically stable dual method for solving strictly convex quadratic programs. Mathematical Programming 27 (1983) pp. 1-33.</p>
+<p>Solver parameters</p><ul>
+<li>MaxNIter: Maximum number of working set recalculations to be performed during the initial homotopy </li>
+</ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a9892929af7e0814dd9cff81cb668dfda" name="a9892929af7e0814dd9cff81cb668dfda"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9892929af7e0814dd9cff81cb668dfda">&#9670;&#160;</a></span>EiquadprogSolver()</h2>
 
@@ -259,8 +263,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="acc34c44225e1c4578a00729ce585c9e6" name="acc34c44225e1c4578a00729ce585c9e6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc34c44225e1c4578a00729ce585c9e6">&#9670;&#160;</a></span>solve()</h2>
+<a id="ae530008a277817111bc0702cce7df986" name="ae530008a277817111bc0702cce7df986"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae530008a277817111bc0702cce7df986">&#9670;&#160;</a></span>solve()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -276,7 +280,12 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>&#160;)</td>
+          <td class="paramtype">Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>allow_warm_start</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -295,7 +304,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classwbc_1_1QPSolver.html#a5ae8941c04159e538dac4c60c9008ef4">wbc::QPSolver</a>.</p>
+<p>Implements <a class="el" href="classwbc_1_1QPSolver.html#a37c8dae7248389b449905fc177afa06a">wbc::QPSolver</a>.</p>
 
 </div>
 </div>

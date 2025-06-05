@@ -72,6 +72,9 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
+<p>Helper class to load the robot model, solver and scene plugins.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="PluginLoader_8hpp_source.html">PluginLoader.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-types" name="pub-types"></a>
@@ -81,14 +84,16 @@ Public Types</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
 Static Public Member Functions</h2></td></tr>
-<tr class="memitem:acaba321313481608eedb81533e5bfa02" id="r_acaba321313481608eedb81533e5bfa02"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acaba321313481608eedb81533e5bfa02">loadPlugin</a> (const std::string &amp;name)</td></tr>
-<tr class="separator:acaba321313481608eedb81533e5bfa02"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad6571e3f809c3935ab4461bf41c230d7" id="r_ad6571e3f809c3935ab4461bf41c230d7"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad6571e3f809c3935ab4461bf41c230d7">unloadPlugin</a> (const std::string &amp;name)</td></tr>
-<tr class="separator:ad6571e3f809c3935ab4461bf41c230d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a722d8d1ea2ec736b46f9f430ffc6158d" id="r_a722d8d1ea2ec736b46f9f430ffc6158d"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a722d8d1ea2ec736b46f9f430ffc6158d">loadPlugin</a> (const std::string &amp;name)</td></tr>
+<tr class="separator:a722d8d1ea2ec736b46f9f430ffc6158d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa1f164fb0ca03d1cebd508ca538368fd" id="r_aa1f164fb0ca03d1cebd508ca538368fd"><td class="memItemLeft" align="right" valign="top">static bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1f164fb0ca03d1cebd508ca538368fd">unloadPlugin</a> (const std::string &amp;name)</td></tr>
+<tr class="separator:aa1f164fb0ca03d1cebd508ca538368fd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeae442b9757f3ea9d3f5378d538277be" id="r_aeae442b9757f3ea9d3f5378d538277be"><td class="memItemLeft" align="right" valign="top">static <a class="el" href="#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a> *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a> ()</td></tr>
 <tr class="separator:aeae442b9757f3ea9d3f5378d538277be"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Member Typedef Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Helper class to load the robot model, solver and scene plugins. </p>
+</div><h2 class="groupheader">Member Typedef Documentation</h2>
 <a id="ae9cd388151ac15e4aba3a42a6cf0a966" name="ae9cd388151ac15e4aba3a42a6cf0a966"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae9cd388151ac15e4aba3a42a6cf0a966">&#9670;&#160;</a></span>PluginMap</h2>
 
@@ -129,8 +134,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="acaba321313481608eedb81533e5bfa02" name="acaba321313481608eedb81533e5bfa02"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acaba321313481608eedb81533e5bfa02">&#9670;&#160;</a></span>loadPlugin()</h2>
+<a id="a722d8d1ea2ec736b46f9f430ffc6158d" name="a722d8d1ea2ec736b46f9f430ffc6158d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a722d8d1ea2ec736b46f9f430ffc6158d">&#9670;&#160;</a></span>loadPlugin()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -139,7 +144,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void wbc::PluginLoader::loadPlugin </td>
+          <td class="memname">static bool wbc::PluginLoader::loadPlugin </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
           <td></td>
@@ -154,8 +159,8 @@ Static Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="ad6571e3f809c3935ab4461bf41c230d7" name="ad6571e3f809c3935ab4461bf41c230d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad6571e3f809c3935ab4461bf41c230d7">&#9670;&#160;</a></span>unloadPlugin()</h2>
+<a id="aa1f164fb0ca03d1cebd508ca538368fd" name="aa1f164fb0ca03d1cebd508ca538368fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa1f164fb0ca03d1cebd508ca538368fd">&#9670;&#160;</a></span>unloadPlugin()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -164,7 +169,7 @@ Static Public Member Functions</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">static void wbc::PluginLoader::unloadPlugin </td>
+          <td class="memname">static bool wbc::PluginLoader::unloadPlugin </td>
           <td>(</td>
           <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
           <td></td>

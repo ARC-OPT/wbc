@@ -73,13 +73,11 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &lt;memory&gt;</code><br />
-<code>#include &lt;base/Eigen.hpp&gt;</code><br />
-<code>#include &lt;base/samples/RigidBodyStateSE3.hpp&gt;</code><br />
-<code>#include &lt;base/samples/Joints.hpp&gt;</code><br />
-<code>#include &lt;base/Acceleration.hpp&gt;</code><br />
-<code>#include &lt;base/JointLimits.hpp&gt;</code><br />
-<code>#include &lt;base/samples/Wrenches.hpp&gt;</code><br />
-<code>#include &lt;base/commands/Joints.hpp&gt;</code><br />
+<code>#include &lt;map&gt;</code><br />
+<code>#include &quot;<a class="el" href="JointLimits_8hpp_source.html">../types/JointLimits.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="RigidBodyState_8hpp_source.html">../types/RigidBodyState.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="JointState_8hpp_source.html">../types/JointState.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="Wrench_8hpp_source.html">../types/Wrench.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="RobotModelConfig_8hpp_source.html">RobotModelConfig.hpp</a>&quot;</code><br />
 <code>#include &lt;urdf_world/world.h&gt;</code><br />
 </div>
@@ -88,7 +86,19 @@ $(function(){ initResizable(false); });
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="nested-classes" name="nested-classes"></a>
 Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1RobotModel.html">wbc::RobotModel</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC.  <a href="classwbc_1_1RobotModel.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC. Conventions and usage:  <a href="classwbc_1_1RobotModel.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModel_1_1Pose.html">wbc::RobotModel::Pose</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModel_1_1Twist.html">wbc::RobotModel::Twist</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModel_1_1SpatialAcceleration.html">wbc::RobotModel::SpatialAcceleration</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModel_1_1Matrix.html">wbc::RobotModel::Matrix</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModel_1_1Vector.html">wbc::RobotModel::Vector</a></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModel_1_1RigidBodyState.html">wbc::RobotModel::RigidBodyState</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structwbc_1_1RobotModelFactory.html">wbc::RobotModelFactory</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -107,8 +117,6 @@ Typedefs</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a818e18d57ecdd549d2d6e2e5ab6e78cb" id="r_a818e18d57ecdd549d2d6e2e5ab6e78cb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a818e18d57ecdd549d2d6e2e5ab6e78cb">wbc::operator+</a> (std::vector&lt; std::string &gt; a, std::vector&lt; std::string &gt; b)</td></tr>
-<tr class="separator:a818e18d57ecdd549d2d6e2e5ab6e78cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae2e7010e3544ac17130a80ecb6b1b067" id="r_ae2e7010e3544ac17130a80ecb6b1b067"><td class="memTemplParams" colspan="2">template&lt;typename T&gt; </td></tr>
 <tr class="memitem:ae2e7010e3544ac17130a80ecb6b1b067"><td class="memTemplItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1RobotModel.html">RobotModel</a> *&#160;</td><td class="memTemplItemRight" valign="bottom"><a class="el" href="namespacewbc.html#ae2e7010e3544ac17130a80ecb6b1b067">wbc::createT</a> ()</td></tr>
 <tr class="separator:ae2e7010e3544ac17130a80ecb6b1b067"><td class="memSeparator" colspan="2">&#160;</td></tr>

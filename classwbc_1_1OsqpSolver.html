@@ -66,12 +66,16 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1OsqpSolver-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">wbc::OsqpSolver Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p>The <a class="el" href="classwbc_1_1OsqpSolver.html" title="The OsqpSolver solves convex quadratic programs (QPs) of the form.">OsqpSolver</a> solves convex quadratic programs (QPs) of the form.  
+ <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="OsqpSolver_8hpp_source.html">OsqpSolver.hpp</a>&gt;</code></p>
 <div class="dynheader">
@@ -80,7 +84,7 @@ Inheritance diagram for wbc::OsqpSolver:</div>
  <div class="center">
   <img src="classwbc_1_1OsqpSolver.png" usemap="#wbc::OsqpSolver_map" alt=""/>
   <map id="wbc::OsqpSolver_map" name="wbc::OsqpSolver_map">
-<area href="classwbc_1_1QPSolver.html" alt="wbc::QPSolver" shape="rect" coords="0,0,107,24"/>
+<area href="classwbc_1_1QPSolver.html" title="Base class for all QP solvers." alt="wbc::QPSolver" shape="rect" coords="0,0,107,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -90,22 +94,27 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a00b0b9f0ae63827dc99a95505708fcee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac6b0dc4d742658d3687ab279e3576308" id="r_ac6b0dc4d742658d3687ab279e3576308"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac6b0dc4d742658d3687ab279e3576308">~OsqpSolver</a> ()</td></tr>
 <tr class="separator:ac6b0dc4d742658d3687ab279e3576308"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0526b7b484abaeeab1e8bd2a1587945c" id="r_a0526b7b484abaeeab1e8bd2a1587945c"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0526b7b484abaeeab1e8bd2a1587945c">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;hierarchical_qp, base::VectorXd &amp;solver_output)</td></tr>
-<tr class="memdesc:a0526b7b484abaeeab1e8bd2a1587945c"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
-<tr class="separator:a0526b7b484abaeeab1e8bd2a1587945c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acaa55bedc735bb210ccbd5910b0b319b" id="r_acaa55bedc735bb210ccbd5910b0b319b"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acaa55bedc735bb210ccbd5910b0b319b">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;hierarchical_qp, Eigen::VectorXd &amp;solver_output, bool allow_warm_start=true)</td></tr>
+<tr class="memdesc:acaa55bedc735bb210ccbd5910b0b319b"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
+<tr class="separator:acaa55bedc735bb210ccbd5910b0b319b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1QPSolver"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classwbc_1_1QPSolver')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1QPSolver.html">wbc::QPSolver</a></td></tr>
 <tr class="memitem:ae0c526c58ef026242136d0873fcb23c6 inherit pub_methods_classwbc_1_1QPSolver" id="r_ae0c526c58ef026242136d0873fcb23c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#ae0c526c58ef026242136d0873fcb23c6">QPSolver</a> ()</td></tr>
 <tr class="separator:ae0c526c58ef026242136d0873fcb23c6 inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30edabb36c25298f81aaf405fc164c3d inherit pub_methods_classwbc_1_1QPSolver" id="r_a30edabb36c25298f81aaf405fc164c3d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a30edabb36c25298f81aaf405fc164c3d">~QPSolver</a> ()</td></tr>
 <tr class="separator:a30edabb36c25298f81aaf405fc164c3d inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver" id="r_a63c08815ce01f2d3c253724f301aa4b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a63c08815ce01f2d3c253724f301aa4b4">reset</a> ()</td></tr>
-<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="classwbc_1_1QPSolver.html#a5ae8941c04159e538dac4c60c9008ef4" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
+<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="classwbc_1_1QPSolver.html#a37c8dae7248389b449905fc177afa06a" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
 <tr class="separator:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:ac041926abf710f78a314a4bfc83ae7f0" id="r_ac041926abf710f78a314a4bfc83ae7f0"><td class="memItemLeft" align="right" valign="top">OsqpEigen::Solver&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac041926abf710f78a314a4bfc83ae7f0">solver</a></td></tr>
+<tr class="separator:ac041926abf710f78a314a4bfc83ae7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
-<tr class="memitem:a11737e82e40e514a20850bdbc5305177" id="r_a11737e82e40e514a20850bdbc5305177"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a11737e82e40e514a20850bdbc5305177">resetData</a> (uint nq, uint nc)</td></tr>
-<tr class="separator:a11737e82e40e514a20850bdbc5305177"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a62430ba7825ca94c73390531c4220154" id="r_a62430ba7825ca94c73390531c4220154"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a62430ba7825ca94c73390531c4220154">resize</a> (uint nq, uint nc)</td></tr>
+<tr class="separator:a62430ba7825ca94c73390531c4220154"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a57b7d34f5cb8b990a1bb08e5c5787c33" id="r_a57b7d34f5cb8b990a1bb08e5c5787c33"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57b7d34f5cb8b990a1bb08e5c5787c33">exitFlagToString</a> (OsqpEigen::ErrorExitFlag flag)</td></tr>
 <tr class="separator:a57b7d34f5cb8b990a1bb08e5c5787c33"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
@@ -113,8 +122,6 @@ Protected Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:ad105468854aa5fec5ca30c167df715ac" id="r_ad105468854aa5fec5ca30c167df715ac"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad105468854aa5fec5ca30c167df715ac">configured</a></td></tr>
 <tr class="separator:ad105468854aa5fec5ca30c167df715ac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac041926abf710f78a314a4bfc83ae7f0" id="r_ac041926abf710f78a314a4bfc83ae7f0"><td class="memItemLeft" align="right" valign="top">OsqpEigen::Solver&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac041926abf710f78a314a4bfc83ae7f0">solver</a></td></tr>
-<tr class="separator:ac041926abf710f78a314a4bfc83ae7f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab3f428e8f4a9d53850387af82df725ab" id="r_ab3f428e8f4a9d53850387af82df725ab"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab3f428e8f4a9d53850387af82df725ab">hessian_dense</a></td></tr>
 <tr class="separator:ab3f428e8f4a9d53850387af82df725ab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:acc2ba9684b7971f9fe2ff97a5a85fd96" id="r_acc2ba9684b7971f9fe2ff97a5a85fd96"><td class="memItemLeft" align="right" valign="top">Eigen::SparseMatrix&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc2ba9684b7971f9fe2ff97a5a85fd96">hessian_sparse</a></td></tr>
@@ -133,7 +140,23 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a37459355745290b4509a9b6ea0c949ce inherit pro_attribs_classwbc_1_1QPSolver" id="r_a37459355745290b4509a9b6ea0c949ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a37459355745290b4509a9b6ea0c949ce">configured</a></td></tr>
 <tr class="separator:a37459355745290b4509a9b6ea0c949ce inherit pro_attribs_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="classwbc_1_1OsqpSolver.html" title="The OsqpSolver solves convex quadratic programs (QPs) of the form.">OsqpSolver</a> solves convex quadratic programs (QPs) of the form. </p>
+<p class="formulaDsp">
+\[       \begin{array}{ccc}
+       min(\mathbf{x}) &amp; \frac{1}{2} \mathbf{x}^T\mathbf{P}\mathbf{x}+\mathbf{q}^T\mathbf{x}&amp; \\
+            &amp; &amp; \\
+       s.t. &amp; \mathbf{l} \leq Ax \leq u&amp; \\
+       \end{array}
+\]
+</p>
+<p>The solver runs the following ADMM algorithm, which is described in Stellato, B., Banjac, G., Goulart, P. et al. OSQP: an operator splitting solver for quadratic programs. Math. Prog. Comp. 12, 637–672 (2020). <a href="https://doi.org/10.1007/s12532-020-00179-2">https://doi.org/10.1007/s12532-020-00179-2</a></p>
+<p>Solver Parameters:</p><ul>
+<li>Check OSQPSettings Struct in file osqp_api_types.h to see all parameters</li>
+<li>Check osqp_api_constants.h for the default settings</li>
+<li>To change parameters you can access the public solver variable: solver.settings()-&gt;setXY() </li>
+</ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a00b0b9f0ae63827dc99a95505708fcee" name="a00b0b9f0ae63827dc99a95505708fcee"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a00b0b9f0ae63827dc99a95505708fcee">&#9670;&#160;</a></span>OsqpSolver()</h2>
 
@@ -194,8 +217,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a11737e82e40e514a20850bdbc5305177" name="a11737e82e40e514a20850bdbc5305177"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a11737e82e40e514a20850bdbc5305177">&#9670;&#160;</a></span>resetData()</h2>
+<a id="a62430ba7825ca94c73390531c4220154" name="a62430ba7825ca94c73390531c4220154"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a62430ba7825ca94c73390531c4220154">&#9670;&#160;</a></span>resize()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -204,7 +227,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void wbc::OsqpSolver::resetData </td>
+          <td class="memname">void wbc::OsqpSolver::resize </td>
           <td>(</td>
           <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>nq</em></span>, </td>
         </tr>
@@ -223,8 +246,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a0526b7b484abaeeab1e8bd2a1587945c" name="a0526b7b484abaeeab1e8bd2a1587945c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0526b7b484abaeeab1e8bd2a1587945c">&#9670;&#160;</a></span>solve()</h2>
+<a id="acaa55bedc735bb210ccbd5910b0b319b" name="acaa55bedc735bb210ccbd5910b0b319b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acaa55bedc735bb210ccbd5910b0b319b">&#9670;&#160;</a></span>solve()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -240,7 +263,12 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>&#160;)</td>
+          <td class="paramtype">Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>allow_warm_start</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -253,13 +281,13 @@ Protected Attributes</h2></td></tr>
 <p>solve Solve the given quadratic program </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hierarchical_qp</td><td>Description of the hierarchical quadratic program to solve. </td></tr>
-    <tr><td class="paramname">solver_output</td><td>solution of the quadratic program </td></tr>
+    <tr><td class="paramname">hierarchical_qp</td><td>Description of the (hierarchical) quadratic program to solve. </td></tr>
+    <tr><td class="paramname">solver_output</td><td>solution of the quadratic program as vector </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classwbc_1_1QPSolver.html#a5ae8941c04159e538dac4c60c9008ef4">wbc::QPSolver</a>.</p>
+<p>Implements <a class="el" href="classwbc_1_1QPSolver.html#a37c8dae7248389b449905fc177afa06a">wbc::QPSolver</a>.</p>
 
 </div>
 </div>
@@ -423,20 +451,13 @@ Protected Attributes</h2></td></tr>
 
 <div class="memitem">
 <div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
       <table class="memname">
         <tr>
           <td class="memname">OsqpEigen::Solver wbc::OsqpSolver::solver</td>
         </tr>
       </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
 </div><div class="memdoc">
+<p>The osqp wrapper variable </p>
 
 </div>
 </div>

@@ -66,8 +66,6 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pub-static-methods">Static Public Member Functions</a> &#124;
-<a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1Scene-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">wbc::Scene Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
@@ -84,11 +82,9 @@ Inheritance diagram for wbc::Scene:</div>
  <div class="center">
   <img src="classwbc_1_1Scene.png" usemap="#wbc::Scene_map" alt=""/>
   <map id="wbc::Scene_map" name="wbc::Scene_map">
-<area href="classwbc_1_1AccelerationScene.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following optimization ..." alt="wbc::AccelerationScene" shape="rect" coords="0,56,226,80"/>
-<area href="classwbc_1_1AccelerationSceneReducedTSID.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::AccelerationSceneReducedTSID" shape="rect" coords="236,56,462,80"/>
-<area href="classwbc_1_1AccelerationSceneTSID.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::AccelerationSceneTSID" shape="rect" coords="472,56,698,80"/>
-<area href="classwbc_1_1VelocityScene.html" title="Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::VelocityScene" shape="rect" coords="708,56,934,80"/>
-<area href="classwbc_1_1VelocitySceneQP.html" title="Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::VelocitySceneQP" shape="rect" coords="708,112,934,136"/>
+<area href="classwbc_1_1AccelerationSceneReducedTSID.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::AccelerationSceneReducedTSID" shape="rect" coords="0,56,226,80"/>
+<area href="classwbc_1_1AccelerationSceneTSID.html" title="Acceleration-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::AccelerationSceneTSID" shape="rect" coords="236,56,462,80"/>
+<area href="classwbc_1_1VelocitySceneQP.html" title="Velocity-based implementation of the WBC Scene. It sets up and solves the following problem:" alt="wbc::VelocitySceneQP" shape="rect" coords="472,56,698,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -98,86 +94,21 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a9b4b944de7c8ab39e24283c3b782fc50"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aeaa623d8231661da3231205aeb380a31" id="r_aeaa623d8231661da3231205aeb380a31"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeaa623d8231661da3231205aeb380a31">~Scene</a> ()</td></tr>
 <tr class="separator:aeaa623d8231661da3231205aeb380a31"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a163ee6ddb8eabeb532c49a888806142c" id="r_a163ee6ddb8eabeb532c49a888806142c"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a163ee6ddb8eabeb532c49a888806142c">configure</a> (const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;config)</td></tr>
-<tr class="memdesc:a163ee6ddb8eabeb532c49a888806142c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the WBC scene. Create tasks and sort them by priority.  <br /></td></tr>
-<tr class="separator:a163ee6ddb8eabeb532c49a888806142c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aabd7a8664b4a34bbf9c1aec9e38b1c8f" id="r_aabd7a8664b4a34bbf9c1aec9e38b1c8f"><td class="memItemLeft" align="right" valign="top">virtual bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabd7a8664b4a34bbf9c1aec9e38b1c8f">configure</a> (const std::vector&lt; <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> &gt; &amp;tasks)=0</td></tr>
+<tr class="memdesc:aabd7a8664b4a34bbf9c1aec9e38b1c8f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure the WBC scene. Create tasks and sort them by priority given the task config.  <br /></td></tr>
+<tr class="separator:aabd7a8664b4a34bbf9c1aec9e38b1c8f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0417cdf448a43c9cbc65fc1b30318aca" id="r_a0417cdf448a43c9cbc65fc1b30318aca"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0417cdf448a43c9cbc65fc1b30318aca">update</a> ()=0</td></tr>
 <tr class="memdesc:a0417cdf448a43c9cbc65fc1b30318aca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the wbc scene and return the (updated) optimization problem.  <br /></td></tr>
 <tr class="separator:a0417cdf448a43c9cbc65fc1b30318aca"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1fd8ea678794db4a39147678de348a86" id="r_a1fd8ea678794db4a39147678de348a86"><td class="memItemLeft" align="right" valign="top">virtual const base::commands::Joints &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1fd8ea678794db4a39147678de348a86">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;<a class="el" href="#a12684ad82c6d6155dd5d9e2431d37f94">hqp</a>)=0</td></tr>
-<tr class="memdesc:a1fd8ea678794db4a39147678de348a86"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the given optimization problem.  <br /></td></tr>
-<tr class="separator:a1fd8ea678794db4a39147678de348a86"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a00cb40f198e31145b0321f115963da7b" id="r_a00cb40f198e31145b0321f115963da7b"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a00cb40f198e31145b0321f115963da7b">setReference</a> (const std::string &amp;task_name, const base::samples::Joints &amp;ref)</td></tr>
-<tr class="memdesc:a00cb40f198e31145b0321f115963da7b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set reference input for a joint space task.  <br /></td></tr>
-<tr class="separator:a00cb40f198e31145b0321f115963da7b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3569cff9ba4818b434a14753f5fbcaf8" id="r_a3569cff9ba4818b434a14753f5fbcaf8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3569cff9ba4818b434a14753f5fbcaf8">setReference</a> (const std::string &amp;task_name, const base::samples::RigidBodyStateSE3 &amp;ref)</td></tr>
-<tr class="memdesc:a3569cff9ba4818b434a14753f5fbcaf8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set reference input for a cartesian space task.  <br /></td></tr>
-<tr class="separator:a3569cff9ba4818b434a14753f5fbcaf8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af58b65e6eca1f7c80809832a694a30a8" id="r_af58b65e6eca1f7c80809832a694a30a8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af58b65e6eca1f7c80809832a694a30a8">setTaskWeights</a> (const std::string &amp;task_name, const base::VectorXd &amp;weights)</td></tr>
-<tr class="memdesc:af58b65e6eca1f7c80809832a694a30a8"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set <a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> weights input for a task.  <br /></td></tr>
-<tr class="separator:af58b65e6eca1f7c80809832a694a30a8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac713f4ec63679f0d634cc345f114fe30" id="r_ac713f4ec63679f0d634cc345f114fe30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac713f4ec63679f0d634cc345f114fe30">setTaskActivation</a> (const std::string &amp;task_name, double activation)</td></tr>
-<tr class="memdesc:ac713f4ec63679f0d634cc345f114fe30"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set <a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> activation for a task.  <br /></td></tr>
-<tr class="separator:ac713f4ec63679f0d634cc345f114fe30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab4d24a211097cafe9521552c6448e32c" id="r_ab4d24a211097cafe9521552c6448e32c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4d24a211097cafe9521552c6448e32c">getTask</a> (const std::string &amp;name)</td></tr>
-<tr class="memdesc:ab4d24a211097cafe9521552c6448e32c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return a Particular task. Throw if the task does not exist.  <br /></td></tr>
-<tr class="separator:ab4d24a211097cafe9521552c6448e32c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1491faedb36e874befda493c635d3ea6" id="r_a1491faedb36e874befda493c635d3ea6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1491faedb36e874befda493c635d3ea6">hasTask</a> (const std::string &amp;name)</td></tr>
-<tr class="memdesc:a1491faedb36e874befda493c635d3ea6"><td class="mdescLeft">&#160;</td><td class="mdescRight">True in case the given task exists.  <br /></td></tr>
-<tr class="separator:a1491faedb36e874befda493c635d3ea6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a936099ae5df408e37cc8f32f5d4e68e0" id="r_a936099ae5df408e37cc8f32f5d4e68e0"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classwbc_1_1TasksStatus.html">TasksStatus</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a936099ae5df408e37cc8f32f5d4e68e0">getTasksStatus</a> () const</td></tr>
-<tr class="memdesc:a936099ae5df408e37cc8f32f5d4e68e0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns all tasks as vector.  <br /></td></tr>
-<tr class="separator:a936099ae5df408e37cc8f32f5d4e68e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a87c04b8493237325215468fee5c932b3" id="r_a87c04b8493237325215468fee5c932b3"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classwbc_1_1TasksStatus.html">TasksStatus</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a87c04b8493237325215468fee5c932b3">updateTasksStatus</a> ()=0</td></tr>
-<tr class="memdesc:a87c04b8493237325215468fee5c932b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">updateTasksStatus Evaluate the fulfillment of the tasks given the current robot state and the solver output  <br /></td></tr>
-<tr class="separator:a87c04b8493237325215468fee5c932b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a92781a433def5d24880d7a48e0fc48a9" id="r_a92781a433def5d24880d7a48e0fc48a9"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a92781a433def5d24880d7a48e0fc48a9">getHierarchicalQP</a> (<a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;_hqp)</td></tr>
-<tr class="memdesc:a92781a433def5d24880d7a48e0fc48a9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return tasks sorted by priority for the solver.  <br /></td></tr>
-<tr class="separator:a92781a433def5d24880d7a48e0fc48a9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3897cfed439c5da9659c233a6fadf75a" id="r_a3897cfed439c5da9659c233a6fadf75a"><td class="memItemLeft" align="right" valign="top">const base::commands::Joints &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3897cfed439c5da9659c233a6fadf75a">getSolverOutput</a> () const</td></tr>
-<tr class="memdesc:a3897cfed439c5da9659c233a6fadf75a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current solver output.  <br /></td></tr>
-<tr class="separator:a3897cfed439c5da9659c233a6fadf75a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a304b569bcb5e87f37d7dab87e1b2d9d6" id="r_a304b569bcb5e87f37d7dab87e1b2d9d6"><td class="memItemLeft" align="right" valign="top">const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a304b569bcb5e87f37d7dab87e1b2d9d6">getSolverOutputRaw</a> () const</td></tr>
-<tr class="memdesc:a304b569bcb5e87f37d7dab87e1b2d9d6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current solver output in raw values.  <br /></td></tr>
-<tr class="separator:a304b569bcb5e87f37d7dab87e1b2d9d6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aaeb4b901b44dce77a651f42c7105a0a7" id="r_aaeb4b901b44dce77a651f42c7105a0a7"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaeb4b901b44dce77a651f42c7105a0a7">setJointWeights</a> (const <a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> &amp;weights)</td></tr>
-<tr class="memdesc:aaeb4b901b44dce77a651f42c7105a0a7"><td class="mdescLeft">&#160;</td><td class="mdescRight">set Joint weights by given name  <br /></td></tr>
-<tr class="separator:aaeb4b901b44dce77a651f42c7105a0a7"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af616501018d7e79ef40654fb69695be2" id="r_af616501018d7e79ef40654fb69695be2"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af616501018d7e79ef40654fb69695be2">getJointWeights</a> () const</td></tr>
-<tr class="memdesc:af616501018d7e79ef40654fb69695be2"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Joint weights as Named vector.  <br /></td></tr>
-<tr class="separator:af616501018d7e79ef40654fb69695be2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae406dce25a12ea154424fd4d98ceb5d7" id="r_ae406dce25a12ea154424fd4d98ceb5d7"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae406dce25a12ea154424fd4d98ceb5d7">getActuatedJointWeights</a> () const</td></tr>
-<tr class="memdesc:ae406dce25a12ea154424fd4d98ceb5d7"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Joint weights as Named vector.  <br /></td></tr>
-<tr class="separator:ae406dce25a12ea154424fd4d98ceb5d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab4f214ab467ed469750afb152cf36830" id="r_ab4f214ab467ed469750afb152cf36830"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab4f214ab467ed469750afb152cf36830">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;hqp)=0</td></tr>
+<tr class="memdesc:ab4f214ab467ed469750afb152cf36830"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the given optimization problem.  <br /></td></tr>
+<tr class="separator:ab4f214ab467ed469750afb152cf36830"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af22d1931036ecda5918fa31142fbe9b3" id="r_af22d1931036ecda5918fa31142fbe9b3"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af22d1931036ecda5918fa31142fbe9b3">getRobotModel</a> ()</td></tr>
 <tr class="memdesc:af22d1931036ecda5918fa31142fbe9b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current robot model.  <br /></td></tr>
 <tr class="separator:af22d1931036ecda5918fa31142fbe9b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa1b3592bb4fc3e5a3010de89405e72b4" id="r_aa1b3592bb4fc3e5a3010de89405e72b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa1b3592bb4fc3e5a3010de89405e72b4">getSolver</a> ()</td></tr>
 <tr class="memdesc:aa1b3592bb4fc3e5a3010de89405e72b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current solver.  <br /></td></tr>
 <tr class="separator:aa1b3592bb4fc3e5a3010de89405e72b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a723a83759a23fe5300da245f9164b05b" id="r_a723a83759a23fe5300da245f9164b05b"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a723a83759a23fe5300da245f9164b05b">getWbcConfig</a> ()</td></tr>
-<tr class="memdesc:a723a83759a23fe5300da245f9164b05b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return task configuration.  <br /></td></tr>
-<tr class="separator:a723a83759a23fe5300da245f9164b05b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-static-methods" name="pub-static-methods"></a>
-Static Public Member Functions</h2></td></tr>
-<tr class="memitem:a373240ad62e602c7dd88ca435d350bd9" id="r_a373240ad62e602c7dd88ca435d350bd9"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a373240ad62e602c7dd88ca435d350bd9">sortTaskConfig</a> (const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;config, std::vector&lt; std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &gt; &amp;sorted_config)</td></tr>
-<tr class="memdesc:a373240ad62e602c7dd88ca435d350bd9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Sort task config by the priorities of the tasks.  <br /></td></tr>
-<tr class="separator:a373240ad62e602c7dd88ca435d350bd9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a07f0e263475dcdb0bed5d7747a97c48c" id="r_a07f0e263475dcdb0bed5d7747a97c48c"><td class="memItemLeft" align="right" valign="top">static uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a07f0e263475dcdb0bed5d7747a97c48c">getNTaskVariables</a> (const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;config)</td></tr>
-<tr class="memdesc:a07f0e263475dcdb0bed5d7747a97c48c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return number of tasks per priority, given the task config.  <br /></td></tr>
-<tr class="separator:a07f0e263475dcdb0bed5d7747a97c48c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aeade320f19eb1e3d92caf306789e9ad9" id="r_aeade320f19eb1e3d92caf306789e9ad9"><td class="memItemLeft" align="right" valign="top">static std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeade320f19eb1e3d92caf306789e9ad9">getNTaskVariablesPerPrio</a> (const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;config)</td></tr>
-<tr class="memdesc:aeade320f19eb1e3d92caf306789e9ad9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return number of tasks per priority, given the task config.  <br /></td></tr>
-<tr class="separator:aeade320f19eb1e3d92caf306789e9ad9"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
-Protected Member Functions</h2></td></tr>
-<tr class="memitem:abbc1982b770afd2e234f2b9440d20bbb" id="r_abbc1982b770afd2e234f2b9440d20bbb"><td class="memItemLeft" align="right" valign="top">virtual <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbc1982b770afd2e234f2b9440d20bbb">createTask</a> (const <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &amp;config)=0</td></tr>
-<tr class="separator:abbc1982b770afd2e234f2b9440d20bbb"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2aef1df2cce9fa412609f922b2415d3d" id="r_a2aef1df2cce9fa412609f922b2415d3d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2aef1df2cce9fa412609f922b2415d3d">clearTasks</a> ()</td></tr>
-<tr class="memdesc:a2aef1df2cce9fa412609f922b2415d3d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Delete all tasks and free memory.  <br /></td></tr>
-<tr class="separator:a2aef1df2cce9fa412609f922b2415d3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -185,28 +116,6 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a1ee33fc1fee5a7c1f72d7f40199f6b31"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff2c19220d73cf5c9d27255c660d04ba" id="r_aff2c19220d73cf5c9d27255c660d04ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aff2c19220d73cf5c9d27255c660d04ba">solver</a></td></tr>
 <tr class="separator:aff2c19220d73cf5c9d27255c660d04ba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1b2c126c7101a321c4dd8ef07de4582f" id="r_a1b2c126c7101a321c4dd8ef07de4582f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b2c126c7101a321c4dd8ef07de4582f">tasks</a></td></tr>
-<tr class="separator:a1b2c126c7101a321c4dd8ef07de4582f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a19fc37fdf5ea4ba2b6d38e45b8d61a42" id="r_a19fc37fdf5ea4ba2b6d38e45b8d61a42"><td class="memItemLeft" align="right" valign="top">std::vector&lt; std::vector&lt; <a class="el" href="namespacewbc.html#a53839f05e12ade46c466bf51039d1167">ConstraintPtr</a> &gt; &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a19fc37fdf5ea4ba2b6d38e45b8d61a42">constraints</a></td></tr>
-<tr class="separator:a19fc37fdf5ea4ba2b6d38e45b8d61a42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a54c79a524841ec6ef8543c547664fed5" id="r_a54c79a524841ec6ef8543c547664fed5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1TasksStatus.html">TasksStatus</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a54c79a524841ec6ef8543c547664fed5">tasks_status</a></td></tr>
-<tr class="separator:a54c79a524841ec6ef8543c547664fed5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a12684ad82c6d6155dd5d9e2431d37f94" id="r_a12684ad82c6d6155dd5d9e2431d37f94"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a12684ad82c6d6155dd5d9e2431d37f94">hqp</a></td></tr>
-<tr class="separator:a12684ad82c6d6155dd5d9e2431d37f94"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a60d249ad3dfe1641a60bdb727501d507" id="r_a60d249ad3dfe1641a60bdb727501d507"><td class="memItemLeft" align="right" valign="top">std::vector&lt; int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a60d249ad3dfe1641a60bdb727501d507">n_task_variables_per_prio</a></td></tr>
-<tr class="separator:a60d249ad3dfe1641a60bdb727501d507"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a76e9f842141d7efcff34cbe173a2c071" id="r_a76e9f842141d7efcff34cbe173a2c071"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a76e9f842141d7efcff34cbe173a2c071">configured</a></td></tr>
-<tr class="separator:a76e9f842141d7efcff34cbe173a2c071"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:affa8da5147041e6a4db6678ea49a3dc1" id="r_affa8da5147041e6a4db6678ea49a3dc1"><td class="memItemLeft" align="right" valign="top">base::commands::Joints&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affa8da5147041e6a4db6678ea49a3dc1">solver_output_joints</a></td></tr>
-<tr class="separator:affa8da5147041e6a4db6678ea49a3dc1"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac505a264d23f80ff72bf168a22925682" id="r_ac505a264d23f80ff72bf168a22925682"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac505a264d23f80ff72bf168a22925682">joint_weights</a></td></tr>
-<tr class="separator:ac505a264d23f80ff72bf168a22925682"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af2773dec9fc108d1d7b1b879cf444882" id="r_af2773dec9fc108d1d7b1b879cf444882"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af2773dec9fc108d1d7b1b879cf444882">actuated_joint_weights</a></td></tr>
-<tr class="separator:af2773dec9fc108d1d7b1b879cf444882"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5cfea135f6c4bb1e632e1da292c4d7d8" id="r_a5cfea135f6c4bb1e632e1da292c4d7d8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5cfea135f6c4bb1e632e1da292c4d7d8">wbc_config</a></td></tr>
-<tr class="separator:a5cfea135f6c4bb1e632e1da292c4d7d8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7e09dc78692517adee6d35affbe5999f" id="r_a7e09dc78692517adee6d35affbe5999f"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7e09dc78692517adee6d35affbe5999f">solver_output</a></td></tr>
-<tr class="separator:a7e09dc78692517adee6d35affbe5999f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for all wbc scenes. </p>
@@ -255,8 +164,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a2aef1df2cce9fa412609f922b2415d3d" name="a2aef1df2cce9fa412609f922b2415d3d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2aef1df2cce9fa412609f922b2415d3d">&#9670;&#160;</a></span>clearTasks()</h2>
+<a id="aabd7a8664b4a34bbf9c1aec9e38b1c8f" name="aabd7a8664b4a34bbf9c1aec9e38b1c8f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aabd7a8664b4a34bbf9c1aec9e38b1c8f">&#9670;&#160;</a></span>configure()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -265,217 +174,28 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void wbc::Scene::clearTasks </td>
+          <td class="memname">virtual bool wbc::Scene::configure </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">const std::vector&lt; <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>tasks</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
-<p>Delete all tasks and free memory. </p>
-
-</div>
-</div>
-<a id="a163ee6ddb8eabeb532c49a888806142c" name="a163ee6ddb8eabeb532c49a888806142c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a163ee6ddb8eabeb532c49a888806142c">&#9670;&#160;</a></span>configure()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool wbc::Scene::configure </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel virtual">virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Configure the WBC scene. Create tasks and sort them by priority. </p>
+<p>Configure the WBC scene. Create tasks and sort them by priority given the task config. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">config</td><td>configuration. Size has to be &gt; 0. All tasks have to be valid. See <a class="el" href="TaskConfig_8hpp.html">TaskConfig.hpp</a> for more details. </td></tr>
+    <tr><td class="paramname">tasks</td><td>Tasks used in optimization function. Size has to be &gt; 0. All tasks have to be valid. See tasks and <a class="el" href="TaskConfig_8hpp.html">TaskConfig.hpp</a> for more details. </td></tr>
   </table>
   </dd>
 </dl>
-<p>Create tasks. Store the number of task variables per priority</p>
 
-</div>
-</div>
-<a id="abbc1982b770afd2e234f2b9440d20bbb" name="abbc1982b770afd2e234f2b9440d20bbb"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abbc1982b770afd2e234f2b9440d20bbb">&#9670;&#160;</a></span>createTask()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> wbc::Scene::createTask </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>brief Create a task and add it to the WBC scene </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a573807cb84609db5d491de0c2cc01a48">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#abd5559ea88852e6bdccc46f6c4eb5032">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#aabf73628a2d3f72e25dc634133c061ed">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a0f16c950808da67ca8e9913a22a97495">wbc::VelocityScene</a>.</p>
-
-</div>
-</div>
-<a id="ae406dce25a12ea154424fd4d98ceb5d7" name="ae406dce25a12ea154424fd4d98ceb5d7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae406dce25a12ea154424fd4d98ceb5d7">&#9670;&#160;</a></span>getActuatedJointWeights()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> &amp; wbc::Scene::getActuatedJointWeights </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get Joint weights as Named vector. </p>
-
-</div>
-</div>
-<a id="a92781a433def5d24880d7a48e0fc48a9" name="a92781a433def5d24880d7a48e0fc48a9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a92781a433def5d24880d7a48e0fc48a9">&#9670;&#160;</a></span>getHierarchicalQP()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Scene::getHierarchicalQP </td>
-          <td>(</td>
-          <td class="paramtype"><a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>_hqp</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return tasks sorted by priority for the solver. </p>
-
-</div>
-</div>
-<a id="af616501018d7e79ef40654fb69695be2" name="af616501018d7e79ef40654fb69695be2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af616501018d7e79ef40654fb69695be2">&#9670;&#160;</a></span>getJointWeights()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> &amp; wbc::Scene::getJointWeights </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get Joint weights as Named vector. </p>
-
-</div>
-</div>
-<a id="a07f0e263475dcdb0bed5d7747a97c48c" name="a07f0e263475dcdb0bed5d7747a97c48c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a07f0e263475dcdb0bed5d7747a97c48c">&#9670;&#160;</a></span>getNTaskVariables()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint wbc::Scene::getNTaskVariables </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return number of tasks per priority, given the task config. </p>
-
-</div>
-</div>
-<a id="aeade320f19eb1e3d92caf306789e9ad9" name="aeade320f19eb1e3d92caf306789e9ad9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aeade320f19eb1e3d92caf306789e9ad9">&#9670;&#160;</a></span>getNTaskVariablesPerPrio()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; int &gt; wbc::Scene::getNTaskVariablesPerPrio </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return number of tasks per priority, given the task config. </p>
+<p>Implemented in <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a9fcf694689f64c0d4741465125952f30">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a6709298b7683e81f9bc67eb195be1982">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocitySceneQP.html#a9ad2b8283f79c783930be0777a3a0066">wbc::VelocitySceneQP</a>.</p>
 
 </div>
 </div>
@@ -533,8 +253,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a3897cfed439c5da9659c233a6fadf75a" name="a3897cfed439c5da9659c233a6fadf75a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3897cfed439c5da9659c233a6fadf75a">&#9670;&#160;</a></span>getSolverOutput()</h2>
+<a id="ab4f214ab467ed469750afb152cf36830" name="ab4f214ab467ed469750afb152cf36830"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab4f214ab467ed469750afb152cf36830">&#9670;&#160;</a></span>solve()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -543,292 +263,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const base::commands::Joints &amp; wbc::Scene::getSolverOutput </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get current solver output. </p>
-
-</div>
-</div>
-<a id="a304b569bcb5e87f37d7dab87e1b2d9d6" name="a304b569bcb5e87f37d7dab87e1b2d9d6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a304b569bcb5e87f37d7dab87e1b2d9d6">&#9670;&#160;</a></span>getSolverOutputRaw()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const base::VectorXd &amp; wbc::Scene::getSolverOutputRaw </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get current solver output in raw values. </p>
-
-</div>
-</div>
-<a id="ab4d24a211097cafe9521552c6448e32c" name="ab4d24a211097cafe9521552c6448e32c"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab4d24a211097cafe9521552c6448e32c">&#9670;&#160;</a></span>getTask()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> wbc::Scene::getTask </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Return a Particular task. Throw if the task does not exist. </p>
-
-</div>
-</div>
-<a id="a936099ae5df408e37cc8f32f5d4e68e0" name="a936099ae5df408e37cc8f32f5d4e68e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a936099ae5df408e37cc8f32f5d4e68e0">&#9670;&#160;</a></span>getTasksStatus()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const <a class="el" href="classwbc_1_1TasksStatus.html">TasksStatus</a> &amp; wbc::Scene::getTasksStatus </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Returns all tasks as vector. </p>
-
-</div>
-</div>
-<a id="a723a83759a23fe5300da245f9164b05b" name="a723a83759a23fe5300da245f9164b05b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a723a83759a23fe5300da245f9164b05b">&#9670;&#160;</a></span>getWbcConfig()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; wbc::Scene::getWbcConfig </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return task configuration. </p>
-
-</div>
-</div>
-<a id="a1491faedb36e874befda493c635d3ea6" name="a1491faedb36e874befda493c635d3ea6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1491faedb36e874befda493c635d3ea6">&#9670;&#160;</a></span>hasTask()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool wbc::Scene::hasTask </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>name</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>True in case the given task exists. </p>
-
-</div>
-</div>
-<a id="aaeb4b901b44dce77a651f42c7105a0a7" name="aaeb4b901b44dce77a651f42c7105a0a7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aaeb4b901b44dce77a651f42c7105a0a7">&#9670;&#160;</a></span>setJointWeights()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Scene::setJointWeights </td>
-          <td>(</td>
-          <td class="paramtype">const <a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>set Joint weights by given name </p>
-
-</div>
-</div>
-<a id="a00cb40f198e31145b0321f115963da7b" name="a00cb40f198e31145b0321f115963da7b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a00cb40f198e31145b0321f115963da7b">&#9670;&#160;</a></span>setReference() <span class="overload">[1/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Scene::setReference </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>task_name</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const base::samples::Joints &amp;</td>          <td class="paramname"><span class="paramname"><em>ref</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set reference input for a joint space task. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task_name</td><td>Name of the task </td></tr>
-    <tr><td class="paramname">task_name</td><td>Joint space reference values </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a3569cff9ba4818b434a14753f5fbcaf8" name="a3569cff9ba4818b434a14753f5fbcaf8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3569cff9ba4818b434a14753f5fbcaf8">&#9670;&#160;</a></span>setReference() <span class="overload">[2/2]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Scene::setReference </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>task_name</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const base::samples::RigidBodyStateSE3 &amp;</td>          <td class="paramname"><span class="paramname"><em>ref</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set reference input for a cartesian space task. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task_name</td><td>Name of the task </td></tr>
-    <tr><td class="paramname">task_name</td><td>Cartesian space reference values </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="ac713f4ec63679f0d634cc345f114fe30" name="ac713f4ec63679f0d634cc345f114fe30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac713f4ec63679f0d634cc345f114fe30">&#9670;&#160;</a></span>setTaskActivation()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Scene::setTaskActivation </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>task_name</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>activation</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set <a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> activation for a task. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task_name</td><td>Name of the task </td></tr>
-    <tr><td class="paramname">activation</td><td>Activation value. Has to be in interval [0.0Scene,1.0] </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="af58b65e6eca1f7c80809832a694a30a8" name="af58b65e6eca1f7c80809832a694a30a8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af58b65e6eca1f7c80809832a694a30a8">&#9670;&#160;</a></span>setTaskWeights()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Scene::setTaskWeights </td>
-          <td>(</td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>task_name</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span>&#160;)</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Set <a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> weights input for a task. </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">task_name</td><td>Name of the task </td></tr>
-    <tr><td class="paramname">weights</td><td>Weight vector. Size has to be same as number of task variables </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
-<a id="a1fd8ea678794db4a39147678de348a86" name="a1fd8ea678794db4a39147678de348a86"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1fd8ea678794db4a39147678de348a86">&#9670;&#160;</a></span>solve()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual const base::commands::Joints &amp; wbc::Scene::solve </td>
+          <td class="memname">virtual const <a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp; wbc::Scene::solve </td>
           <td>(</td>
           <td class="paramtype">const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>hqp</em></span></td><td>)</td>
           <td></td>
@@ -844,38 +279,7 @@ Protected Attributes</h2></td></tr>
 <p>Solve the given optimization problem. </p>
 <dl class="section return"><dt>Returns</dt><dd>Solver output as joint command </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a8371283b92c5750b7d540983ce88897a">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a327a2a8bbdb8bdc9bc3d0f78185609fe">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#ae1fd30bd2346e7a6a9903d3d2789a76d">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a1e76fc7da06bed8cc9cc9ee977deba46">wbc::VelocityScene</a>.</p>
-
-</div>
-</div>
-<a id="a373240ad62e602c7dd88ca435d350bd9" name="a373240ad62e602c7dd88ca435d350bd9"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a373240ad62e602c7dd88ca435d350bd9">&#9670;&#160;</a></span>sortTaskConfig()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Scene::sortTaskConfig </td>
-          <td>(</td>
-          <td class="paramtype">const std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>config</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">std::vector&lt; std::vector&lt; <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &gt; &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>sorted_config</em></span>&#160;)</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel static">static</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Sort task config by the priorities of the tasks. </p>
+<p>Implemented in <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#ac5265274903edcbd0c2491b20fd0a49c">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a6f976d6e81f10cfab375af47d8014f6c">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocitySceneQP.html#ae0eb43a14cae9018482b10c388772adb">wbc::VelocitySceneQP</a>.</p>
 
 </div>
 </div>
@@ -905,172 +309,11 @@ Protected Attributes</h2></td></tr>
 <p>Update the wbc scene and return the (updated) optimization problem. </p>
 <dl class="section return"><dt>Returns</dt><dd>Hierarchical quadratic program (solver input) </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#a62db0c502a12ae47680ad55faa987806">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a22dbfbc646bbd76ae5e83732fe69328a">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a2967aff01959adb999ea22a941ea8dbd">wbc::AccelerationSceneTSID</a>, <a class="el" href="classwbc_1_1VelocityScene.html#ae6039e6aa5845f6e6d87daf039155cca">wbc::VelocityScene</a>, and <a class="el" href="classwbc_1_1VelocitySceneQP.html#a2ce5fc60be407063f1971285f6eb0922">wbc::VelocitySceneQP</a>.</p>
-
-</div>
-</div>
-<a id="a87c04b8493237325215468fee5c932b3" name="a87c04b8493237325215468fee5c932b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a87c04b8493237325215468fee5c932b3">&#9670;&#160;</a></span>updateTasksStatus()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">virtual const <a class="el" href="classwbc_1_1TasksStatus.html">TasksStatus</a> &amp; wbc::Scene::updateTasksStatus </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel pure-virtual">pure virtual</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>updateTasksStatus Evaluate the fulfillment of the tasks given the current robot state and the solver output </p>
-
-<p>Implemented in <a class="el" href="classwbc_1_1AccelerationScene.html#ad36eb3621f4a6bd8eefc95205395f58a">wbc::AccelerationScene</a>, <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a51a8ced99fa58e70ac4b099c7b88578f">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a96934a437eb7b7188688ac174c9692f2">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocityScene.html#a8b102d6c1ad59ea979855001619f2621">wbc::VelocityScene</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a22dbfbc646bbd76ae5e83732fe69328a">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a2967aff01959adb999ea22a941ea8dbd">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocitySceneQP.html#a2ce5fc60be407063f1971285f6eb0922">wbc::VelocitySceneQP</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="af2773dec9fc108d1d7b1b879cf444882" name="af2773dec9fc108d1d7b1b879cf444882"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af2773dec9fc108d1d7b1b879cf444882">&#9670;&#160;</a></span>actuated_joint_weights</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> wbc::Scene::actuated_joint_weights</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a76e9f842141d7efcff34cbe173a2c071" name="a76e9f842141d7efcff34cbe173a2c071"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a76e9f842141d7efcff34cbe173a2c071">&#9670;&#160;</a></span>configured</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">bool wbc::Scene::configured</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a19fc37fdf5ea4ba2b6d38e45b8d61a42" name="a19fc37fdf5ea4ba2b6d38e45b8d61a42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a19fc37fdf5ea4ba2b6d38e45b8d61a42">&#9670;&#160;</a></span>constraints</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::vector&lt;<a class="el" href="namespacewbc.html#a53839f05e12ade46c466bf51039d1167">ConstraintPtr</a>&gt; &gt; wbc::Scene::constraints</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a12684ad82c6d6155dd5d9e2431d37f94" name="a12684ad82c6d6155dd5d9e2431d37f94"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a12684ad82c6d6155dd5d9e2431d37f94">&#9670;&#160;</a></span>hqp</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> wbc::Scene::hqp</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ac505a264d23f80ff72bf168a22925682" name="ac505a264d23f80ff72bf168a22925682"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac505a264d23f80ff72bf168a22925682">&#9670;&#160;</a></span>joint_weights</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classwbc_1_1JointWeights.html">JointWeights</a> wbc::Scene::joint_weights</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a60d249ad3dfe1641a60bdb727501d507" name="a60d249ad3dfe1641a60bdb727501d507"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a60d249ad3dfe1641a60bdb727501d507">&#9670;&#160;</a></span>n_task_variables_per_prio</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;int&gt; wbc::Scene::n_task_variables_per_prio</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="a1ee33fc1fee5a7c1f72d7f40199f6b31" name="a1ee33fc1fee5a7c1f72d7f40199f6b31"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a1ee33fc1fee5a7c1f72d7f40199f6b31">&#9670;&#160;</a></span>robot_model</h2>
 
@@ -1104,116 +347,6 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname"><a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a> wbc::Scene::solver</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a7e09dc78692517adee6d35affbe5999f" name="a7e09dc78692517adee6d35affbe5999f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7e09dc78692517adee6d35affbe5999f">&#9670;&#160;</a></span>solver_output</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::VectorXd wbc::Scene::solver_output</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="affa8da5147041e6a4db6678ea49a3dc1" name="affa8da5147041e6a4db6678ea49a3dc1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#affa8da5147041e6a4db6678ea49a3dc1">&#9670;&#160;</a></span>solver_output_joints</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::commands::Joints wbc::Scene::solver_output_joints</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a1b2c126c7101a321c4dd8ef07de4582f" name="a1b2c126c7101a321c4dd8ef07de4582f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1b2c126c7101a321c4dd8ef07de4582f">&#9670;&#160;</a></span>tasks</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt; std::vector&lt;<a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a>&gt; &gt; wbc::Scene::tasks</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a54c79a524841ec6ef8543c547664fed5" name="a54c79a524841ec6ef8543c547664fed5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a54c79a524841ec6ef8543c547664fed5">&#9670;&#160;</a></span>tasks_status</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname"><a class="el" href="classwbc_1_1TasksStatus.html">TasksStatus</a> wbc::Scene::tasks_status</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a5cfea135f6c4bb1e632e1da292c4d7d8" name="a5cfea135f6c4bb1e632e1da292c4d7d8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5cfea135f6c4bb1e632e1da292c4d7d8">&#9670;&#160;</a></span>wbc_config</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a>&gt; wbc::Scene::wbc_config</td>
         </tr>
       </table>
   </td>

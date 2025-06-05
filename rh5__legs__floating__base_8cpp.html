@@ -74,6 +74,7 @@ $(function(){ initResizable(false); });
 <code>#include &lt;<a class="el" href="RobotModelConfig_8hpp_source.html">core/RobotModelConfig.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="VelocitySceneQP_8hpp_source.html">scenes/velocity_qp/VelocitySceneQP.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="CartesianPosPDController_8hpp_source.html">controllers/CartesianPosPDController.hpp</a>&gt;</code><br />
+<code>#include &lt;<a class="el" href="SpatialVelocityTask_8hpp_source.html">tasks/SpatialVelocityTask.hpp</a>&gt;</code><br />
 <code>#include &lt;<a class="el" href="JointIntegrator_8hpp_source.html">tools/JointIntegrator.hpp</a>&gt;</code><br />
 <code>#include &lt;unistd.h&gt;</code><br />
 <code>#include &lt;chrono&gt;</code><br />
@@ -115,7 +116,7 @@ Functions</h2></td></tr>
  \(\dot{\mathbf{v}}_{d}\) - Desired spatial acceleration / controller output <br  />
  \(\mathbf{J}_w\) - Weighted task Jacobian <br  />
  \(\mathbf{W}\) - Diagonal weight matrix<br  />
- \(\mathbf{J}_{c,i}\) - Contact Jacobian of i-th contact point<br  />
+ \(\mathbf{J}_{c,i}\) - <a class="el" href="classwbc_1_1types_1_1Contact.html" title="Describes a rigid contact between a robot link and the environment. This can be either a point or sur...">Contact</a> Jacobian of i-th contact point<br  />
  \(\mathbf{x}_r, \mathbf{x}\) - Reference pose, actual pose<br  />
  \(\mathbf{K}_p\) - Derivative gain matrix<br  />
  \(\mathbf{\dot{q}}_m,\mathbf{\dot{q}}_M\) - Joint velocity limits<br  />

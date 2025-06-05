@@ -70,8 +70,8 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">test_robot_model.hpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &lt;base/samples/RigidBodyStateSE3.hpp&gt;</code><br />
-<code>#include &lt;base/samples/Joints.hpp&gt;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="RigidBodyState_8hpp_source.html">../../types/RigidBodyState.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="JointState_8hpp_source.html">../../types/JointState.hpp</a>&quot;</code><br />
 <code>#include &quot;<a class="el" href="RobotModel_8hpp_source.html">../../core/RobotModel.hpp</a>&quot;</code><br />
 </div>
 <p><a href="test__robot__model_8hpp_source.html">Go to the source code of this file.</a></p>
@@ -83,12 +83,12 @@ Namespaces</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:acee93350dd48b85ba997333268609bac" id="r_acee93350dd48b85ba997333268609bac"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#acee93350dd48b85ba997333268609bac">wbc::printRbs</a> (base::samples::RigidBodyStateSE3 rbs)</td></tr>
-<tr class="separator:acee93350dd48b85ba997333268609bac"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:af429df469331418b7ec8ad27da004461" id="r_af429df469331418b7ec8ad27da004461"><td class="memItemLeft" align="right" valign="top">base::samples::Joints&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#af429df469331418b7ec8ad27da004461">wbc::makeRandomJointState</a> (std::vector&lt; std::string &gt; joint_names)</td></tr>
-<tr class="separator:af429df469331418b7ec8ad27da004461"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a41adef2b3d834ea3a0d336fb5490b37b" id="r_a41adef2b3d834ea3a0d336fb5490b37b"><td class="memItemLeft" align="right" valign="top">base::samples::RigidBodyStateSE3&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a41adef2b3d834ea3a0d336fb5490b37b">wbc::makeRandomFloatingBaseState</a> ()</td></tr>
-<tr class="separator:a41adef2b3d834ea3a0d336fb5490b37b"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5c6a46de012e75e3400fcc0fa4bdf271" id="r_a5c6a46de012e75e3400fcc0fa4bdf271"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a5c6a46de012e75e3400fcc0fa4bdf271">wbc::printRbs</a> (<a class="el" href="classwbc_1_1types_1_1RigidBodyState.html">types::RigidBodyState</a> rbs)</td></tr>
+<tr class="separator:a5c6a46de012e75e3400fcc0fa4bdf271"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9c7e249167e75e130df611ecd3a5c29c" id="r_a9c7e249167e75e130df611ecd3a5c29c"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1types_1_1JointState.html">types::JointState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a9c7e249167e75e130df611ecd3a5c29c">wbc::makeRandomJointState</a> (uint n)</td></tr>
+<tr class="separator:a9c7e249167e75e130df611ecd3a5c29c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a846fd921e8ca946e11c75266afc9d8d7" id="r_a846fd921e8ca946e11c75266afc9d8d7"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1types_1_1RigidBodyState.html">types::RigidBodyState</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a846fd921e8ca946e11c75266afc9d8d7">wbc::makeRandomFloatingBaseState</a> ()</td></tr>
+<tr class="separator:a846fd921e8ca946e11c75266afc9d8d7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a65a6cc7cd63caa08befa6c7ab2968877" id="r_a65a6cc7cd63caa08befa6c7ab2968877"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a65a6cc7cd63caa08befa6c7ab2968877">wbc::testFK</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, const std::string &amp;tip_frame, bool verbose=false)</td></tr>
 <tr class="separator:a65a6cc7cd63caa08befa6c7ab2968877"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a59fb363e197f672ed5154c315754c287" id="r_a59fb363e197f672ed5154c315754c287"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#a59fb363e197f672ed5154c315754c287">wbc::testSpaceJacobian</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, const std::string &amp;tip_frame, bool verbose=false)</td></tr>
@@ -99,6 +99,8 @@ Functions</h2></td></tr>
 <tr class="separator:a867274c6e89737e7c2f70efedd47ecee"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad31bdc64c77b80c10188813d1a3bb8b3" id="r_ad31bdc64c77b80c10188813d1a3bb8b3"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#ad31bdc64c77b80c10188813d1a3bb8b3">wbc::testDynamics</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, bool verbose)</td></tr>
 <tr class="separator:ad31bdc64c77b80c10188813d1a3bb8b3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac06738743cf8c41e3c7d379d0cfa05bf" id="r_ac06738743cf8c41e3c7d379d0cfa05bf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespacewbc.html#ac06738743cf8c41e3c7d379d0cfa05bf">wbc::testInverseDynamics</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, bool verbose)</td></tr>
+<tr class="separator:ac06738743cf8c41e3c7d379d0cfa05bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 </div><!-- contents -->
 <!-- start footer part -->

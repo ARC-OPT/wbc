@@ -66,6 +66,7 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pub-attribs">Public Attributes</a> &#124;
 <a href="#pro-methods">Protected Member Functions</a> &#124;
 <a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1QPSwiftSolver-members.html">List of all members</a>  </div>
@@ -80,7 +81,7 @@ Inheritance diagram for wbc::QPSwiftSolver:</div>
  <div class="center">
   <img src="classwbc_1_1QPSwiftSolver.png" usemap="#wbc::QPSwiftSolver_map" alt=""/>
   <map id="wbc::QPSwiftSolver_map" name="wbc::QPSwiftSolver_map">
-<area href="classwbc_1_1QPSolver.html" alt="wbc::QPSolver" shape="rect" coords="0,0,123,24"/>
+<area href="classwbc_1_1QPSolver.html" title="Base class for all QP solvers." alt="wbc::QPSolver" shape="rect" coords="0,0,123,24"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -90,47 +91,44 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aca40e66124e65d8dbdea3df39bcad393"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a4fa23391087cceaccf82266183b18f1d" id="r_a4fa23391087cceaccf82266183b18f1d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4fa23391087cceaccf82266183b18f1d">~QPSwiftSolver</a> ()</td></tr>
 <tr class="separator:a4fa23391087cceaccf82266183b18f1d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ed082cadccc6f1440d350f3234af471" id="r_a6ed082cadccc6f1440d350f3234af471"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ed082cadccc6f1440d350f3234af471">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">wbc::HierarchicalQP</a> &amp;hierarchical_qp, base::VectorXd &amp;solver_output)</td></tr>
-<tr class="memdesc:a6ed082cadccc6f1440d350f3234af471"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
-<tr class="separator:a6ed082cadccc6f1440d350f3234af471"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a22f90d7e9cf3ad45e8603be19ad5a188" id="r_a22f90d7e9cf3ad45e8603be19ad5a188"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a22f90d7e9cf3ad45e8603be19ad5a188">setMaxIter</a> (uint val)</td></tr>
-<tr class="separator:a22f90d7e9cf3ad45e8603be19ad5a188"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ade09fc0d2a8f7b1e9d45cf807501be30" id="r_ade09fc0d2a8f7b1e9d45cf807501be30"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ade09fc0d2a8f7b1e9d45cf807501be30">setRelTol</a> (double val)</td></tr>
-<tr class="separator:ade09fc0d2a8f7b1e9d45cf807501be30"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbedbf9ead332a91759830eafa74bf50" id="r_afbedbf9ead332a91759830eafa74bf50"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbedbf9ead332a91759830eafa74bf50">setAbsTol</a> (double val)</td></tr>
-<tr class="separator:afbedbf9ead332a91759830eafa74bf50"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a534e01fc2edd8728d42b0796ed259ba8" id="r_a534e01fc2edd8728d42b0796ed259ba8"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a534e01fc2edd8728d42b0796ed259ba8">setSigma</a> (double val)</td></tr>
-<tr class="separator:a534e01fc2edd8728d42b0796ed259ba8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a83e02871593b08e5954aba9fb5b947de" id="r_a83e02871593b08e5954aba9fb5b947de"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83e02871593b08e5954aba9fb5b947de">setVerboseLevel</a> (uint val)</td></tr>
-<tr class="separator:a83e02871593b08e5954aba9fb5b947de"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a5b65a58c61550e9f5f1d2d03b494ecab" id="r_a5b65a58c61550e9f5f1d2d03b494ecab"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5b65a58c61550e9f5f1d2d03b494ecab">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">wbc::HierarchicalQP</a> &amp;hierarchical_qp, Eigen::VectorXd &amp;solver_output, bool allow_warm_start=true)</td></tr>
+<tr class="memdesc:a5b65a58c61550e9f5f1d2d03b494ecab"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
+<tr class="separator:a5b65a58c61550e9f5f1d2d03b494ecab"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1QPSolver"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classwbc_1_1QPSolver')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1QPSolver.html">wbc::QPSolver</a></td></tr>
 <tr class="memitem:ae0c526c58ef026242136d0873fcb23c6 inherit pub_methods_classwbc_1_1QPSolver" id="r_ae0c526c58ef026242136d0873fcb23c6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#ae0c526c58ef026242136d0873fcb23c6">QPSolver</a> ()</td></tr>
 <tr class="separator:ae0c526c58ef026242136d0873fcb23c6 inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30edabb36c25298f81aaf405fc164c3d inherit pub_methods_classwbc_1_1QPSolver" id="r_a30edabb36c25298f81aaf405fc164c3d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a30edabb36c25298f81aaf405fc164c3d">~QPSolver</a> ()</td></tr>
 <tr class="separator:a30edabb36c25298f81aaf405fc164c3d inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver" id="r_a63c08815ce01f2d3c253724f301aa4b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a63c08815ce01f2d3c253724f301aa4b4">reset</a> ()</td></tr>
-<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="classwbc_1_1QPSolver.html#a5ae8941c04159e538dac4c60c9008ef4" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
+<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="classwbc_1_1QPSolver.html#a37c8dae7248389b449905fc177afa06a" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
 <tr class="separator:a63c08815ce01f2d3c253724f301aa4b4 inherit pub_methods_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
+Public Attributes</h2></td></tr>
+<tr class="memitem:a52c1745dad233d0d9c9f000c95a35fb5" id="r_a52c1745dad233d0d9c9f000c95a35fb5"><td class="memItemLeft" align="right" valign="top">settings&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a52c1745dad233d0d9c9f000c95a35fb5">options</a></td></tr>
+<tr class="separator:a52c1745dad233d0d9c9f000c95a35fb5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
 <tr class="memitem:a1f231cd9dfbbb96c5b5fed6dc0e3e7df" id="r_a1f231cd9dfbbb96c5b5fed6dc0e3e7df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1f231cd9dfbbb96c5b5fed6dc0e3e7df">toQpSwift</a> (const <a class="el" href="structwbc_1_1QuadraticProgram.html">QuadraticProgram</a> &amp;qp)</td></tr>
 <tr class="separator:a1f231cd9dfbbb96c5b5fed6dc0e3e7df"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2c50ccfaca5904b3861a56beaa57f2d5" id="r_a2c50ccfaca5904b3861a56beaa57f2d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c50ccfaca5904b3861a56beaa57f2d5">setOptions</a> (settings opt)</td></tr>
+<tr class="separator:a2c50ccfaca5904b3861a56beaa57f2d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:aefb87fca6cccf0c51a49194667f428a2" id="r_aefb87fca6cccf0c51a49194667f428a2"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aefb87fca6cccf0c51a49194667f428a2">P</a></td></tr>
-<tr class="separator:aefb87fca6cccf0c51a49194667f428a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4205e71929171852c52d5f923f6473e0" id="r_a4205e71929171852c52d5f923f6473e0"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4205e71929171852c52d5f923f6473e0">c</a></td></tr>
-<tr class="separator:a4205e71929171852c52d5f923f6473e0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa3bb5c22532df2198df4f8613980e4c3" id="r_aa3bb5c22532df2198df4f8613980e4c3"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa3bb5c22532df2198df4f8613980e4c3">A</a></td></tr>
-<tr class="separator:aa3bb5c22532df2198df4f8613980e4c3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac3bc56ea409b7b76d3af9a5c0df2797b" id="r_ac3bc56ea409b7b76d3af9a5c0df2797b"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac3bc56ea409b7b76d3af9a5c0df2797b">G</a></td></tr>
-<tr class="separator:ac3bc56ea409b7b76d3af9a5c0df2797b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8ce0a069b6ee7d2dfbc10d182de2547b" id="r_a8ce0a069b6ee7d2dfbc10d182de2547b"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8ce0a069b6ee7d2dfbc10d182de2547b">b</a></td></tr>
-<tr class="separator:a8ce0a069b6ee7d2dfbc10d182de2547b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c04e24ff4008a3dad9bf90e113c5fc7" id="r_a4c04e24ff4008a3dad9bf90e113c5fc7"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c04e24ff4008a3dad9bf90e113c5fc7">h</a></td></tr>
-<tr class="separator:a4c04e24ff4008a3dad9bf90e113c5fc7"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab833743b1f8e0d0981ec48e7da9e3789" id="r_ab833743b1f8e0d0981ec48e7da9e3789"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab833743b1f8e0d0981ec48e7da9e3789">P</a></td></tr>
+<tr class="separator:ab833743b1f8e0d0981ec48e7da9e3789"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac8d60a57bcc878706b095dde651b7671" id="r_ac8d60a57bcc878706b095dde651b7671"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac8d60a57bcc878706b095dde651b7671">c</a></td></tr>
+<tr class="separator:ac8d60a57bcc878706b095dde651b7671"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d6438a50ec7b0efddd1843aeae05535" id="r_a2d6438a50ec7b0efddd1843aeae05535"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d6438a50ec7b0efddd1843aeae05535">A</a></td></tr>
+<tr class="separator:a2d6438a50ec7b0efddd1843aeae05535"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7703da7af87867e363402c2fa372d67c" id="r_a7703da7af87867e363402c2fa372d67c"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7703da7af87867e363402c2fa372d67c">G</a></td></tr>
+<tr class="separator:a7703da7af87867e363402c2fa372d67c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7d38094a699353f594c63a8fa860a151" id="r_a7d38094a699353f594c63a8fa860a151"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7d38094a699353f594c63a8fa860a151">b</a></td></tr>
+<tr class="separator:a7d38094a699353f594c63a8fa860a151"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7eec17dcaf59b77832b35900464ecead" id="r_a7eec17dcaf59b77832b35900464ecead"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7eec17dcaf59b77832b35900464ecead">h</a></td></tr>
+<tr class="separator:a7eec17dcaf59b77832b35900464ecead"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a86a3134812a2c942237f4e5940e27195" id="r_a86a3134812a2c942237f4e5940e27195"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a86a3134812a2c942237f4e5940e27195">n_dec</a></td></tr>
 <tr class="separator:a86a3134812a2c942237f4e5940e27195"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5718ce506a1a52412ee6957533ee989" id="r_af5718ce506a1a52412ee6957533ee989"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5718ce506a1a52412ee6957533ee989">n_ineq</a></td></tr>
@@ -141,21 +139,18 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a79159d286f5dbbc1c02e9d633fc6eca1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a366faf4ab22996622192d3580e0bfae8" id="r_a366faf4ab22996622192d3580e0bfae8"><td class="memItemLeft" align="right" valign="top">QP *&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a366faf4ab22996622192d3580e0bfae8">my_qp</a></td></tr>
 <tr class="separator:a366faf4ab22996622192d3580e0bfae8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a909e437c80c5007d31ca3c4b23d326f3" id="r_a909e437c80c5007d31ca3c4b23d326f3"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a909e437c80c5007d31ca3c4b23d326f3">max_iter</a></td></tr>
-<tr class="separator:a909e437c80c5007d31ca3c4b23d326f3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4f950b61b6958e12b894bf12ac4b00a3" id="r_a4f950b61b6958e12b894bf12ac4b00a3"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f950b61b6958e12b894bf12ac4b00a3">rel_tol</a></td></tr>
-<tr class="separator:a4f950b61b6958e12b894bf12ac4b00a3"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a1d1e2f0b8b555d4aec0f3bc306b2d060" id="r_a1d1e2f0b8b555d4aec0f3bc306b2d060"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1d1e2f0b8b555d4aec0f3bc306b2d060">abs_tol</a></td></tr>
-<tr class="separator:a1d1e2f0b8b555d4aec0f3bc306b2d060"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4c4636ae0e3401be197e4b80f248ce12" id="r_a4c4636ae0e3401be197e4b80f248ce12"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c4636ae0e3401be197e4b80f248ce12">sigma</a></td></tr>
-<tr class="separator:a4c4636ae0e3401be197e4b80f248ce12"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a8192b8c1896221e16ec0f081c7673e9b" id="r_a8192b8c1896221e16ec0f081c7673e9b"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8192b8c1896221e16ec0f081c7673e9b">verbose_level</a></td></tr>
-<tr class="separator:a8192b8c1896221e16ec0f081c7673e9b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classwbc_1_1QPSolver"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classwbc_1_1QPSolver')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classwbc_1_1QPSolver.html">wbc::QPSolver</a></td></tr>
 <tr class="memitem:a37459355745290b4509a9b6ea0c949ce inherit pro_attribs_classwbc_1_1QPSolver" id="r_a37459355745290b4509a9b6ea0c949ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1QPSolver.html#a37459355745290b4509a9b6ea0c949ce">configured</a></td></tr>
 <tr class="separator:a37459355745290b4509a9b6ea0c949ce inherit pro_attribs_classwbc_1_1QPSolver"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>The <a class="el" href="classwbc_1_1QPSwiftSolver.html">QPSwiftSolver</a> solves a quadratic problem of type</p>
+<p>Reference: Pandala, Abhishek Goud and Ding, Yanran and Park, Hae-Won. QpSWIFT: A Real-Time Sparse Quadratic Program Solver for Robotic Applications, IEEE Robotics and Automation Letters, 2019</p>
+<p>Parameters:</p><ul>
+<li>See Struct settings in Auxiliary.g</li>
+<li>default values are defined in GlobalOptions.h </li>
+</ul>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="aca40e66124e65d8dbdea3df39bcad393" name="aca40e66124e65d8dbdea3df39bcad393"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aca40e66124e65d8dbdea3df39bcad393">&#9670;&#160;</a></span>QPSwiftSolver()</h2>
 
@@ -191,8 +186,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="afbedbf9ead332a91759830eafa74bf50" name="afbedbf9ead332a91759830eafa74bf50"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbedbf9ead332a91759830eafa74bf50">&#9670;&#160;</a></span>setAbsTol()</h2>
+<a id="a2c50ccfaca5904b3861a56beaa57f2d5" name="a2c50ccfaca5904b3861a56beaa57f2d5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c50ccfaca5904b3861a56beaa57f2d5">&#9670;&#160;</a></span>setOptions()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -201,123 +196,23 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">void wbc::QPSwiftSolver::setAbsTol </td>
+          <td class="memname">void wbc::QPSwiftSolver::setOptions </td>
           <td>(</td>
-          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
+          <td class="paramtype">settings</td>          <td class="paramname"><span class="paramname"><em>opt</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
   </td>
   <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel protected">protected</span></span>  </td>
   </tr>
 </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a22f90d7e9cf3ad45e8603be19ad5a188" name="a22f90d7e9cf3ad45e8603be19ad5a188"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a22f90d7e9cf3ad45e8603be19ad5a188">&#9670;&#160;</a></span>setMaxIter()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::QPSwiftSolver::setMaxIter </td>
-          <td>(</td>
-          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ade09fc0d2a8f7b1e9d45cf807501be30" name="ade09fc0d2a8f7b1e9d45cf807501be30"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ade09fc0d2a8f7b1e9d45cf807501be30">&#9670;&#160;</a></span>setRelTol()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::QPSwiftSolver::setRelTol </td>
-          <td>(</td>
-          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a534e01fc2edd8728d42b0796ed259ba8" name="a534e01fc2edd8728d42b0796ed259ba8"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a534e01fc2edd8728d42b0796ed259ba8">&#9670;&#160;</a></span>setSigma()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::QPSwiftSolver::setSigma </td>
-          <td>(</td>
-          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a83e02871593b08e5954aba9fb5b947de" name="a83e02871593b08e5954aba9fb5b947de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a83e02871593b08e5954aba9fb5b947de">&#9670;&#160;</a></span>setVerboseLevel()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::QPSwiftSolver::setVerboseLevel </td>
-          <td>(</td>
-          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>val</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a6ed082cadccc6f1440d350f3234af471" name="a6ed082cadccc6f1440d350f3234af471"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ed082cadccc6f1440d350f3234af471">&#9670;&#160;</a></span>solve()</h2>
+<a id="a5b65a58c61550e9f5f1d2d03b494ecab" name="a5b65a58c61550e9f5f1d2d03b494ecab"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a5b65a58c61550e9f5f1d2d03b494ecab">&#9670;&#160;</a></span>solve()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -333,7 +228,12 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>&#160;)</td>
+          <td class="paramtype">Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>allow_warm_start</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -352,7 +252,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implements <a class="el" href="classwbc_1_1QPSolver.html#a5ae8941c04159e538dac4c60c9008ef4">wbc::QPSolver</a>.</p>
+<p>Implements <a class="el" href="classwbc_1_1QPSolver.html#a37c8dae7248389b449905fc177afa06a">wbc::QPSolver</a>.</p>
 
 </div>
 </div>
@@ -378,13 +278,12 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-<p>Verbose Levels, 0 - Print, &gt;0 - Print Everything </p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="aa3bb5c22532df2198df4f8613980e4c3" name="aa3bb5c22532df2198df4f8613980e4c3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa3bb5c22532df2198df4f8613980e4c3">&#9670;&#160;</a></span>A</h2>
+<a id="a2d6438a50ec7b0efddd1843aeae05535" name="a2d6438a50ec7b0efddd1843aeae05535"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d6438a50ec7b0efddd1843aeae05535">&#9670;&#160;</a></span>A</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -393,7 +292,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::MatrixXd wbc::QPSwiftSolver::A</td>
+          <td class="memname">Eigen::MatrixXd wbc::QPSwiftSolver::A</td>
         </tr>
       </table>
   </td>
@@ -406,8 +305,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a1d1e2f0b8b555d4aec0f3bc306b2d060" name="a1d1e2f0b8b555d4aec0f3bc306b2d060"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a1d1e2f0b8b555d4aec0f3bc306b2d060">&#9670;&#160;</a></span>abs_tol</h2>
+<a id="a7d38094a699353f594c63a8fa860a151" name="a7d38094a699353f594c63a8fa860a151"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7d38094a699353f594c63a8fa860a151">&#9670;&#160;</a></span>b</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -416,30 +315,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">double wbc::QPSwiftSolver::abs_tol</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Relative Tolerance </p>
-
-</div>
-</div>
-<a id="a8ce0a069b6ee7d2dfbc10d182de2547b" name="a8ce0a069b6ee7d2dfbc10d182de2547b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8ce0a069b6ee7d2dfbc10d182de2547b">&#9670;&#160;</a></span>b</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::VectorXd wbc::QPSwiftSolver::b</td>
+          <td class="memname">Eigen::VectorXd wbc::QPSwiftSolver::b</td>
         </tr>
       </table>
   </td>
@@ -452,8 +328,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4205e71929171852c52d5f923f6473e0" name="a4205e71929171852c52d5f923f6473e0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4205e71929171852c52d5f923f6473e0">&#9670;&#160;</a></span>c</h2>
+<a id="ac8d60a57bcc878706b095dde651b7671" name="ac8d60a57bcc878706b095dde651b7671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8d60a57bcc878706b095dde651b7671">&#9670;&#160;</a></span>c</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -462,7 +338,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::QPSwiftSolver::c</td>
+          <td class="memname">Eigen::VectorXd wbc::QPSwiftSolver::c</td>
         </tr>
       </table>
   </td>
@@ -475,8 +351,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ac3bc56ea409b7b76d3af9a5c0df2797b" name="ac3bc56ea409b7b76d3af9a5c0df2797b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac3bc56ea409b7b76d3af9a5c0df2797b">&#9670;&#160;</a></span>G</h2>
+<a id="a7703da7af87867e363402c2fa372d67c" name="a7703da7af87867e363402c2fa372d67c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7703da7af87867e363402c2fa372d67c">&#9670;&#160;</a></span>G</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -485,7 +361,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::MatrixXd wbc::QPSwiftSolver::G</td>
+          <td class="memname">Eigen::MatrixXd wbc::QPSwiftSolver::G</td>
         </tr>
       </table>
   </td>
@@ -498,8 +374,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4c04e24ff4008a3dad9bf90e113c5fc7" name="a4c04e24ff4008a3dad9bf90e113c5fc7"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c04e24ff4008a3dad9bf90e113c5fc7">&#9670;&#160;</a></span>h</h2>
+<a id="a7eec17dcaf59b77832b35900464ecead" name="a7eec17dcaf59b77832b35900464ecead"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7eec17dcaf59b77832b35900464ecead">&#9670;&#160;</a></span>h</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -508,7 +384,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::QPSwiftSolver::h</td>
+          <td class="memname">Eigen::VectorXd wbc::QPSwiftSolver::h</td>
         </tr>
       </table>
   </td>
@@ -518,28 +394,6 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 <p>Equality constraint vector </p>
-
-</div>
-</div>
-<a id="a909e437c80c5007d31ca3c4b23d326f3" name="a909e437c80c5007d31ca3c4b23d326f3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a909e437c80c5007d31ca3c4b23d326f3">&#9670;&#160;</a></span>max_iter</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint wbc::QPSwiftSolver::max_iter</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>
@@ -658,8 +512,22 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aefb87fca6cccf0c51a49194667f428a2" name="aefb87fca6cccf0c51a49194667f428a2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aefb87fca6cccf0c51a49194667f428a2">&#9670;&#160;</a></span>P</h2>
+<a id="a52c1745dad233d0d9c9f000c95a35fb5" name="a52c1745dad233d0d9c9f000c95a35fb5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a52c1745dad233d0d9c9f000c95a35fb5">&#9670;&#160;</a></span>options</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">settings wbc::QPSwiftSolver::options</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ab833743b1f8e0d0981ec48e7da9e3789" name="ab833743b1f8e0d0981ec48e7da9e3789"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab833743b1f8e0d0981ec48e7da9e3789">&#9670;&#160;</a></span>P</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -668,7 +536,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::MatrixXd wbc::QPSwiftSolver::P</td>
+          <td class="memname">Eigen::MatrixXd wbc::QPSwiftSolver::P</td>
         </tr>
       </table>
   </td>
@@ -677,75 +545,6 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
-
-</div>
-</div>
-<a id="a4f950b61b6958e12b894bf12ac4b00a3" name="a4f950b61b6958e12b894bf12ac4b00a3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4f950b61b6958e12b894bf12ac4b00a3">&#9670;&#160;</a></span>rel_tol</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double wbc::QPSwiftSolver::rel_tol</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Maximum number of Iterations of QP </p>
-
-</div>
-</div>
-<a id="a4c4636ae0e3401be197e4b80f248ce12" name="a4c4636ae0e3401be197e4b80f248ce12"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4c4636ae0e3401be197e4b80f248ce12">&#9670;&#160;</a></span>sigma</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double wbc::QPSwiftSolver::sigma</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>Absolute Tolerance </p>
-
-</div>
-</div>
-<a id="a8192b8c1896221e16ec0f081c7673e9b" name="a8192b8c1896221e16ec0f081c7673e9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8192b8c1896221e16ec0f081c7673e9b">&#9670;&#160;</a></span>verbose_level</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">uint wbc::QPSwiftSolver::verbose_level</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-<p>sigma desired </p>
 
 </div>
 </div>

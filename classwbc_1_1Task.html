@@ -67,6 +67,7 @@ $(function(){ initResizable(false); });
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1Task-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">wbc::Task Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
 </div><!--header-->
@@ -82,14 +83,13 @@ Inheritance diagram for wbc::Task:</div>
  <div class="center">
   <img src="classwbc_1_1Task.png" usemap="#wbc::Task_map" alt=""/>
   <map id="wbc::Task_map" name="wbc::Task_map">
-<area href="classwbc_1_1CartesianTask.html" title="Abstract interface for a task in Cartesian space." alt="wbc::CartesianTask" shape="rect" coords="304,56,497,80"/>
-<area href="classwbc_1_1JointTask.html" title="Abstract interface for a task in joint space." alt="wbc::JointTask" shape="rect" coords="913,56,1106,80"/>
-<area href="classwbc_1_1CartesianAccelerationTask.html" title="Implementation of a Cartesian acceleration task." alt="wbc::CartesianAccelerationTask" shape="rect" coords="0,112,193,136"/>
-<area href="classwbc_1_1CartesianVelocityTask.html" title="Implementation of a Cartesian velocity task." alt="wbc::CartesianVelocityTask" shape="rect" coords="203,112,396,136"/>
-<area href="classwbc_1_1CoMAccelerationTask.html" title="Implementation of a CoM velocity task." alt="wbc::CoMAccelerationTask" shape="rect" coords="406,112,599,136"/>
-<area href="classwbc_1_1CoMVelocityTask.html" title="Implementation of a CoM velocity task." alt="wbc::CoMVelocityTask" shape="rect" coords="609,112,802,136"/>
-<area href="classwbc_1_1JointAccelerationTask.html" title="Implementation of a Joint velocity task." alt="wbc::JointAccelerationTask" shape="rect" coords="812,112,1005,136"/>
-<area href="classwbc_1_1JointVelocityTask.html" title="Implementation of a Joint velocity task." alt="wbc::JointVelocityTask" shape="rect" coords="1015,112,1208,136"/>
+<area href="classwbc_1_1CoMAccelerationTask.html" title="Implementation of a CoM velocity task." alt="wbc::CoMAccelerationTask" shape="rect" coords="0,56,177,80"/>
+<area href="classwbc_1_1CoMVelocityTask.html" title="Implementation of a CoM velocity task." alt="wbc::CoMVelocityTask" shape="rect" coords="187,56,364,80"/>
+<area href="classwbc_1_1ContactForceTask.html" alt="wbc::ContactForceTask" shape="rect" coords="374,56,551,80"/>
+<area href="classwbc_1_1JointAccelerationTask.html" title="Implementation of a Joint velocity task." alt="wbc::JointAccelerationTask" shape="rect" coords="561,56,738,80"/>
+<area href="classwbc_1_1JointVelocityTask.html" title="Implementation of a Joint velocity task." alt="wbc::JointVelocityTask" shape="rect" coords="748,56,925,80"/>
+<area href="classwbc_1_1SpatialAccelerationTask.html" title="Implementation of a Cartesian acceleration task." alt="wbc::SpatialAccelerationTask" shape="rect" coords="935,56,1112,80"/>
+<area href="classwbc_1_1SpatialVelocityTask.html" title="Implementation of a Cartesian velocity task." alt="wbc::SpatialVelocityTask" shape="rect" coords="1122,56,1299,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -98,49 +98,53 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2375be1513469437a90bd4a38c94ad8e" id="r_a2375be1513469437a90bd4a38c94ad8e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2375be1513469437a90bd4a38c94ad8e">Task</a> ()</td></tr>
 <tr class="memdesc:a2375be1513469437a90bd4a38c94ad8e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
 <tr class="separator:a2375be1513469437a90bd4a38c94ad8e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a929fc4c1678702b8541b3e47098be553" id="r_a929fc4c1678702b8541b3e47098be553"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a929fc4c1678702b8541b3e47098be553">Task</a> (const <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &amp;_config, uint n_robot_joints)</td></tr>
-<tr class="memdesc:a929fc4c1678702b8541b3e47098be553"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes all members.  <br /></td></tr>
-<tr class="separator:a929fc4c1678702b8541b3e47098be553"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a08ff7c3fe308e2e8d17a19cd86d94afe" id="r_a08ff7c3fe308e2e8d17a19cd86d94afe"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a08ff7c3fe308e2e8d17a19cd86d94afe">Task</a> (<a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> <a class="el" href="#ad705422d73c0b0d8da9ff3a15dc180dc">config</a>, <a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> <a class="el" href="#aaf6ccdd12d2171ee96ac3fcff38252d1">robot_model</a>, uint <a class="el" href="#a4c231a0ec6dde93528aff312432af6dc">nv</a>, <a class="el" href="namespacewbc.html#a221811c8e68c3040908923a8bdded9e6">TaskType</a> <a class="el" href="#a258c2cf7ad8d8e68fa83f65122ea8f66">type</a>)</td></tr>
+<tr class="memdesc:a08ff7c3fe308e2e8d17a19cd86d94afe"><td class="mdescLeft">&#160;</td><td class="mdescRight">Resizes all members.  <br /></td></tr>
+<tr class="separator:a08ff7c3fe308e2e8d17a19cd86d94afe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a73321a47e5e8ad690e0bdf2047bee178" id="r_a73321a47e5e8ad690e0bdf2047bee178"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a73321a47e5e8ad690e0bdf2047bee178">~Task</a> ()</td></tr>
 <tr class="separator:a73321a47e5e8ad690e0bdf2047bee178"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a0d7d5c580883e24056f8838853923b10" id="r_a0d7d5c580883e24056f8838853923b10"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d7d5c580883e24056f8838853923b10">reset</a> ()</td></tr>
 <tr class="memdesc:a0d7d5c580883e24056f8838853923b10"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reset task variables to initial values.  <br /></td></tr>
 <tr class="separator:a0d7d5c580883e24056f8838853923b10"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0fa8672bc15fa5fdc4a6f58e9175ab53" id="r_a0fa8672bc15fa5fdc4a6f58e9175ab53"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0fa8672bc15fa5fdc4a6f58e9175ab53">update</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model)=0</td></tr>
-<tr class="memdesc:a0fa8672bc15fa5fdc4a6f58e9175ab53"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update <a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> matrices and vectors.  <br /></td></tr>
-<tr class="separator:a0fa8672bc15fa5fdc4a6f58e9175ab53"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afb63efe27e0f4111d76aa5226dffc975" id="r_afb63efe27e0f4111d76aa5226dffc975"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb63efe27e0f4111d76aa5226dffc975">checkTimeout</a> ()</td></tr>
-<tr class="memdesc:afb63efe27e0f4111d76aa5226dffc975"><td class="mdescLeft">&#160;</td><td class="mdescRight">Check if the task is in timeout and set the timeout flag accordingly. A task is in timeout if.  <br /></td></tr>
-<tr class="separator:afb63efe27e0f4111d76aa5226dffc975"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a27cd4cabb4220de11f33f5555aa1a8d1" id="r_a27cd4cabb4220de11f33f5555aa1a8d1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a27cd4cabb4220de11f33f5555aa1a8d1">setWeights</a> (const base::VectorXd &amp;<a class="el" href="#a5425d3dbe6785bae146ac1be73e7bbed">weights</a>)</td></tr>
-<tr class="memdesc:a27cd4cabb4220de11f33f5555aa1a8d1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set task weights.  <br /></td></tr>
-<tr class="separator:a27cd4cabb4220de11f33f5555aa1a8d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7859650c4810564b64ac2540943771ca" id="r_a7859650c4810564b64ac2540943771ca"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7859650c4810564b64ac2540943771ca">update</a> ()=0</td></tr>
+<tr class="memdesc:a7859650c4810564b64ac2540943771ca"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update <a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> matrices and vectors.  <br /></td></tr>
+<tr class="separator:a7859650c4810564b64ac2540943771ca"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ababe2f9b4a95e6f52829661fc5839c94" id="r_ababe2f9b4a95e6f52829661fc5839c94"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ababe2f9b4a95e6f52829661fc5839c94">setWeights</a> (const Eigen::VectorXd &amp;<a class="el" href="#a620cb5f7c062df5f81a85c130ae9531d">weights</a>)</td></tr>
+<tr class="memdesc:ababe2f9b4a95e6f52829661fc5839c94"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set task weights.  <br /></td></tr>
+<tr class="separator:ababe2f9b4a95e6f52829661fc5839c94"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a29155a7778d066a3c6723226d333662d" id="r_a29155a7778d066a3c6723226d333662d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a29155a7778d066a3c6723226d333662d">setActivation</a> (const double <a class="el" href="#a32e99c585ad4b277cf5772a2667dffa6">activation</a>)</td></tr>
 <tr class="memdesc:a29155a7778d066a3c6723226d333662d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set task activation.  <br /></td></tr>
 <tr class="separator:a29155a7778d066a3c6723226d333662d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:a6eaed5c69916fcef039a9c84a06dcc84" id="r_a6eaed5c69916fcef039a9c84a06dcc84"><td class="memItemLeft" align="right" valign="top">base::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6eaed5c69916fcef039a9c84a06dcc84">time</a></td></tr>
-<tr class="separator:a6eaed5c69916fcef039a9c84a06dcc84"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad705422d73c0b0d8da9ff3a15dc180dc" id="r_ad705422d73c0b0d8da9ff3a15dc180dc"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad705422d73c0b0d8da9ff3a15dc180dc">config</a></td></tr>
 <tr class="separator:ad705422d73c0b0d8da9ff3a15dc180dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a01fdf882b349c027ebe0700d9f67704b" id="r_a01fdf882b349c027ebe0700d9f67704b"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a01fdf882b349c027ebe0700d9f67704b">y_ref</a></td></tr>
-<tr class="separator:a01fdf882b349c027ebe0700d9f67704b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab9a7fe2a1a548d7cc9762c39783ba220" id="r_ab9a7fe2a1a548d7cc9762c39783ba220"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab9a7fe2a1a548d7cc9762c39783ba220">y_ref_root</a></td></tr>
-<tr class="separator:ab9a7fe2a1a548d7cc9762c39783ba220"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5425d3dbe6785bae146ac1be73e7bbed" id="r_a5425d3dbe6785bae146ac1be73e7bbed"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5425d3dbe6785bae146ac1be73e7bbed">weights</a></td></tr>
-<tr class="separator:a5425d3dbe6785bae146ac1be73e7bbed"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a620d8dc59523e841550eda95f397ee89" id="r_a620d8dc59523e841550eda95f397ee89"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a620d8dc59523e841550eda95f397ee89">weights_root</a></td></tr>
-<tr class="separator:a620d8dc59523e841550eda95f397ee89"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab1065e0f44d78deb7b81d5fbc6b3e6b8" id="r_ab1065e0f44d78deb7b81d5fbc6b3e6b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1065e0f44d78deb7b81d5fbc6b3e6b8">y_ref</a></td></tr>
+<tr class="separator:ab1065e0f44d78deb7b81d5fbc6b3e6b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a90e3d27dad58c55519b72852e1caeab2" id="r_a90e3d27dad58c55519b72852e1caeab2"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90e3d27dad58c55519b72852e1caeab2">y_ref_world</a></td></tr>
+<tr class="separator:a90e3d27dad58c55519b72852e1caeab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a620cb5f7c062df5f81a85c130ae9531d" id="r_a620cb5f7c062df5f81a85c130ae9531d"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a620cb5f7c062df5f81a85c130ae9531d">weights</a></td></tr>
+<tr class="separator:a620cb5f7c062df5f81a85c130ae9531d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4bd1af7e4c92bea99468d25d706d806f" id="r_a4bd1af7e4c92bea99468d25d706d806f"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bd1af7e4c92bea99468d25d706d806f">weights_world</a></td></tr>
+<tr class="separator:a4bd1af7e4c92bea99468d25d706d806f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32e99c585ad4b277cf5772a2667dffa6" id="r_a32e99c585ad4b277cf5772a2667dffa6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32e99c585ad4b277cf5772a2667dffa6">activation</a></td></tr>
 <tr class="separator:a32e99c585ad4b277cf5772a2667dffa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a32a19a1cb8959830e2f41c8a87b903e4" id="r_a32a19a1cb8959830e2f41c8a87b903e4"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32a19a1cb8959830e2f41c8a87b903e4">timeout</a></td></tr>
-<tr class="separator:a32a19a1cb8959830e2f41c8a87b903e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acf3ba1362d57ee34b51840a1f8bc2a5d" id="r_acf3ba1362d57ee34b51840a1f8bc2a5d"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acf3ba1362d57ee34b51840a1f8bc2a5d">A</a></td></tr>
-<tr class="separator:acf3ba1362d57ee34b51840a1f8bc2a5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a74d87def11de50097918e874f86ce368" id="r_a74d87def11de50097918e874f86ce368"><td class="memItemLeft" align="right" valign="top">base::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a74d87def11de50097918e874f86ce368">Aw</a></td></tr>
-<tr class="separator:a74d87def11de50097918e874f86ce368"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a681bcf3f317c159015ca9045a8b182a1" id="r_a681bcf3f317c159015ca9045a8b182a1"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a681bcf3f317c159015ca9045a8b182a1">A</a></td></tr>
+<tr class="separator:a681bcf3f317c159015ca9045a8b182a1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac23da33e06fa69d648f36f5272a293f2" id="r_ac23da33e06fa69d648f36f5272a293f2"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac23da33e06fa69d648f36f5272a293f2">Aw</a></td></tr>
+<tr class="separator:ac23da33e06fa69d648f36f5272a293f2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4c231a0ec6dde93528aff312432af6dc" id="r_a4c231a0ec6dde93528aff312432af6dc"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4c231a0ec6dde93528aff312432af6dc">nv</a></td></tr>
+<tr class="separator:a4c231a0ec6dde93528aff312432af6dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abf6e8056587015d4a48f0577e7b5d400" id="r_abf6e8056587015d4a48f0577e7b5d400"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abf6e8056587015d4a48f0577e7b5d400">nj</a></td></tr>
+<tr class="separator:abf6e8056587015d4a48f0577e7b5d400"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a258c2cf7ad8d8e68fa83f65122ea8f66" id="r_a258c2cf7ad8d8e68fa83f65122ea8f66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a221811c8e68c3040908923a8bdded9e6">TaskType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a258c2cf7ad8d8e68fa83f65122ea8f66">type</a></td></tr>
+<tr class="separator:a258c2cf7ad8d8e68fa83f65122ea8f66"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:aaf6ccdd12d2171ee96ac3fcff38252d1" id="r_aaf6ccdd12d2171ee96ac3fcff38252d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf6ccdd12d2171ee96ac3fcff38252d1">robot_model</a></td></tr>
+<tr class="separator:aaf6ccdd12d2171ee96ac3fcff38252d1"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract class to represent a generic task for a WBC optimization problem. </p>
@@ -164,8 +168,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a929fc4c1678702b8541b3e47098be553" name="a929fc4c1678702b8541b3e47098be553"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a929fc4c1678702b8541b3e47098be553">&#9670;&#160;</a></span>Task() <span class="overload">[2/2]</span></h2>
+<a id="a08ff7c3fe308e2e8d17a19cd86d94afe" name="a08ff7c3fe308e2e8d17a19cd86d94afe"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a08ff7c3fe308e2e8d17a19cd86d94afe">&#9670;&#160;</a></span>Task() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -173,17 +177,34 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">wbc::Task::Task </td>
           <td>(</td>
-          <td class="paramtype">const <a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>_config</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a></td>          <td class="paramname"><span class="paramname"><em>config</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>n_robot_joints</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a></td>          <td class="paramname"><span class="paramname"><em>robot_model</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>nv</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacewbc.html#a221811c8e68c3040908923a8bdded9e6">TaskType</a></td>          <td class="paramname"><span class="paramname"><em>type</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Resizes all members. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">nc</td><td>Number of task variables </td></tr>
+    <tr><td class="paramname">nj</td><td>Number of robot joints </td></tr>
+  </table>
+  </dd>
+</dl>
 
 </div>
 </div>
@@ -205,29 +226,6 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="afb63efe27e0f4111d76aa5226dffc975" name="afb63efe27e0f4111d76aa5226dffc975"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afb63efe27e0f4111d76aa5226dffc975">&#9670;&#160;</a></span>checkTimeout()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::Task::checkTimeout </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>Check if the task is in timeout and set the timeout flag accordingly. A task is in timeout if. </p>
-<ul>
-<li>No reference value has been set yet</li>
-<li>A timeout value is configured (config.timeout &gt; 0) and no reference value arrived during the timeout period </li>
-</ul>
-
-</div>
-</div>
 <a id="a0d7d5c580883e24056f8838853923b10" name="a0d7d5c580883e24056f8838853923b10"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a0d7d5c580883e24056f8838853923b10">&#9670;&#160;</a></span>reset()</h2>
 
@@ -272,8 +270,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a27cd4cabb4220de11f33f5555aa1a8d1" name="a27cd4cabb4220de11f33f5555aa1a8d1"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a27cd4cabb4220de11f33f5555aa1a8d1">&#9670;&#160;</a></span>setWeights()</h2>
+<a id="ababe2f9b4a95e6f52829661fc5839c94" name="ababe2f9b4a95e6f52829661fc5839c94"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ababe2f9b4a95e6f52829661fc5839c94">&#9670;&#160;</a></span>setWeights()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -281,7 +279,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">void wbc::Task::setWeights </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span></td><td>)</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -297,8 +295,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a0fa8672bc15fa5fdc4a6f58e9175ab53" name="a0fa8672bc15fa5fdc4a6f58e9175ab53"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0fa8672bc15fa5fdc4a6f58e9175ab53">&#9670;&#160;</a></span>update()</h2>
+<a id="a7859650c4810564b64ac2540943771ca" name="a7859650c4810564b64ac2540943771ca"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7859650c4810564b64ac2540943771ca">&#9670;&#160;</a></span>update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -309,7 +307,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="memname">virtual void wbc::Task::update </td>
           <td>(</td>
-          <td class="paramtype"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a></td>          <td class="paramname"><span class="paramname"><em>robot_model</em></span></td><td>)</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -322,19 +320,19 @@ Public Attributes</h2></td></tr>
 
 <p>Update <a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> matrices and vectors. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1CartesianAccelerationTask.html#a07e5cfe4c3b1054a7dc1bb0802efbba5">wbc::CartesianAccelerationTask</a>, <a class="el" href="classwbc_1_1CartesianVelocityTask.html#ae8d2dfca2e5198953fe75aa26c15fa1c">wbc::CartesianVelocityTask</a>, <a class="el" href="classwbc_1_1CoMAccelerationTask.html#a7d4e092c33d3e3aef3267f4b0c64193c">wbc::CoMAccelerationTask</a>, <a class="el" href="classwbc_1_1CoMVelocityTask.html#a4cc23f3df5f675b9253b0f15980e8998">wbc::CoMVelocityTask</a>, <a class="el" href="classwbc_1_1JointAccelerationTask.html#aa5f5bce723e8835a355a0ddc9ecc6281">wbc::JointAccelerationTask</a>, and <a class="el" href="classwbc_1_1JointVelocityTask.html#a977ce0e551b511a5368600bc04ab00fa">wbc::JointVelocityTask</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1CoMAccelerationTask.html#a9e5fabbbe16e4ff3523a54613432b9bb">wbc::CoMAccelerationTask</a>, <a class="el" href="classwbc_1_1CoMVelocityTask.html#a614ea193d11a6f3c4f81ef6a31f4a496">wbc::CoMVelocityTask</a>, <a class="el" href="classwbc_1_1ContactForceTask.html#a5579fdd04c5420f2c75c3d8a8377b299">wbc::ContactForceTask</a>, <a class="el" href="classwbc_1_1JointAccelerationTask.html#a3a67fe9854f7645fe2f091db9e6e7830">wbc::JointAccelerationTask</a>, <a class="el" href="classwbc_1_1JointVelocityTask.html#a847fd24aaac3f6784f9bf78db884d6fc">wbc::JointVelocityTask</a>, <a class="el" href="classwbc_1_1SpatialAccelerationTask.html#ad42ef4e705a324b34dff431acf66dc88">wbc::SpatialAccelerationTask</a>, and <a class="el" href="classwbc_1_1SpatialVelocityTask.html#ab105b9751c70738e36d8a10f57398be6">wbc::SpatialVelocityTask</a>.</p>
 
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="acf3ba1362d57ee34b51840a1f8bc2a5d" name="acf3ba1362d57ee34b51840a1f8bc2a5d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acf3ba1362d57ee34b51840a1f8bc2a5d">&#9670;&#160;</a></span>A</h2>
+<a id="a681bcf3f317c159015ca9045a8b182a1" name="a681bcf3f317c159015ca9045a8b182a1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a681bcf3f317c159015ca9045a8b182a1">&#9670;&#160;</a></span>A</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::MatrixXd wbc::Task::A</td>
+          <td class="memname">Eigen::MatrixXd wbc::Task::A</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -357,14 +355,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a74d87def11de50097918e874f86ce368" name="a74d87def11de50097918e874f86ce368"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a74d87def11de50097918e874f86ce368">&#9670;&#160;</a></span>Aw</h2>
+<a id="ac23da33e06fa69d648f36f5272a293f2" name="ac23da33e06fa69d648f36f5272a293f2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac23da33e06fa69d648f36f5272a293f2">&#9670;&#160;</a></span>Aw</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::MatrixXd wbc::Task::Aw</td>
+          <td class="memname">Eigen::MatrixXd wbc::Task::Aw</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -387,44 +385,81 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a6eaed5c69916fcef039a9c84a06dcc84" name="a6eaed5c69916fcef039a9c84a06dcc84"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6eaed5c69916fcef039a9c84a06dcc84">&#9670;&#160;</a></span>time</h2>
+<a id="abf6e8056587015d4a48f0577e7b5d400" name="abf6e8056587015d4a48f0577e7b5d400"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abf6e8056587015d4a48f0577e7b5d400">&#9670;&#160;</a></span>nj</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::Time wbc::Task::time</td>
+          <td class="memname">uint wbc::Task::nj</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Last time the task reference values was updated. </p>
+<p>number of robot joints </p>
 
 </div>
 </div>
-<a id="a32a19a1cb8959830e2f41c8a87b903e4" name="a32a19a1cb8959830e2f41c8a87b903e4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a32a19a1cb8959830e2f41c8a87b903e4">&#9670;&#160;</a></span>timeout</h2>
+<a id="a4c231a0ec6dde93528aff312432af6dc" name="a4c231a0ec6dde93528aff312432af6dc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4c231a0ec6dde93528aff312432af6dc">&#9670;&#160;</a></span>nv</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">int wbc::Task::timeout</td>
+          <td class="memname">uint wbc::Task::nv</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Can be 0 or 1. Will be multiplied with the task weights. If no new reference values arrives for more than config.timeout time, this value will be set to zero </p>
+<p>Number of task variables </p>
 
 </div>
 </div>
-<a id="a5425d3dbe6785bae146ac1be73e7bbed" name="a5425d3dbe6785bae146ac1be73e7bbed"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5425d3dbe6785bae146ac1be73e7bbed">&#9670;&#160;</a></span>weights</h2>
+<a id="aaf6ccdd12d2171ee96ac3fcff38252d1" name="aaf6ccdd12d2171ee96ac3fcff38252d1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aaf6ccdd12d2171ee96ac3fcff38252d1">&#9670;&#160;</a></span>robot_model</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> wbc::Task::robot_model</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a258c2cf7ad8d8e68fa83f65122ea8f66" name="a258c2cf7ad8d8e68fa83f65122ea8f66"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a258c2cf7ad8d8e68fa83f65122ea8f66">&#9670;&#160;</a></span>type</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::Task::weights</td>
+          <td class="memname"><a class="el" href="namespacewbc.html#a221811c8e68c3040908923a8bdded9e6">TaskType</a> wbc::Task::type</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Type of task, see <a class="el" href="TaskConfig_8hpp.html">TaskConfig.hpp</a> for details </p>
+
+</div>
+</div>
+<a id="a620cb5f7c062df5f81a85c130ae9531d" name="a620cb5f7c062df5f81a85c130ae9531d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a620cb5f7c062df5f81a85c130ae9531d">&#9670;&#160;</a></span>weights</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd wbc::Task::weights</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -432,48 +467,48 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a620d8dc59523e841550eda95f397ee89" name="a620d8dc59523e841550eda95f397ee89"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a620d8dc59523e841550eda95f397ee89">&#9670;&#160;</a></span>weights_root</h2>
+<a id="a4bd1af7e4c92bea99468d25d706d806f" name="a4bd1af7e4c92bea99468d25d706d806f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4bd1af7e4c92bea99468d25d706d806f">&#9670;&#160;</a></span>weights_world</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::Task::weights_root</td>
+          <td class="memname">Eigen::VectorXd wbc::Task::weights_world</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p><a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> weights. In case of joint tasks, weights_root will be equal to weights. In case of Cartesian tasks, weights_root will be equal to weights, transformed into the robot's base/root frame </p>
+<p><a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> weights. In case of joint tasks, weights_root will be equal to weights. In case of Cartesian tasks, weights_world will be equal to weights, transformed into the robot's world frame </p>
 
 </div>
 </div>
-<a id="a01fdf882b349c027ebe0700d9f67704b" name="a01fdf882b349c027ebe0700d9f67704b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a01fdf882b349c027ebe0700d9f67704b">&#9670;&#160;</a></span>y_ref</h2>
+<a id="ab1065e0f44d78deb7b81d5fbc6b3e6b8" name="ab1065e0f44d78deb7b81d5fbc6b3e6b8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab1065e0f44d78deb7b81d5fbc6b3e6b8">&#9670;&#160;</a></span>y_ref</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::Task::y_ref</td>
+          <td class="memname">Eigen::VectorXd wbc::Task::y_ref</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reference input for this task. Can be either joint or a Cartesian space variables. If the latter is the case they have to be expressed in in ref_frame coordinates! See <a class="el" href="TaskConfig_8hpp.html">TaskConfig.hpp</a> for more details. </p>
+<p>Reference input for this task. Can be either joint or a Cartesian space variables. </p>
 
 </div>
 </div>
-<a id="ab9a7fe2a1a548d7cc9762c39783ba220" name="ab9a7fe2a1a548d7cc9762c39783ba220"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab9a7fe2a1a548d7cc9762c39783ba220">&#9670;&#160;</a></span>y_ref_root</h2>
+<a id="a90e3d27dad58c55519b72852e1caeab2" name="a90e3d27dad58c55519b72852e1caeab2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a90e3d27dad58c55519b72852e1caeab2">&#9670;&#160;</a></span>y_ref_world</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::Task::y_ref_root</td>
+          <td class="memname">Eigen::VectorXd wbc::Task::y_ref_world</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reference value for this task. Can be either joint or a Cartesian space variables. In the former case, y_ref_root will be equal to y_ref, in the latter case, y_ref_root will be y_ref transformed into the robot root/base frame. </p>
+<p>Reference value for this task. Can be either joint or a Cartesian space variables. In the former case, y_ref_root will be equal to y_ref, in the latter case, y_ref_root will be y_ref transformed into the world frame. </p>
 
 </div>
 </div>

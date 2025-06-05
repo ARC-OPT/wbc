@@ -82,8 +82,7 @@ Inheritance diagram for wbc::PIDController:</div>
  <div class="center">
   <img src="classwbc_1_1PIDController.png" usemap="#wbc::PIDController_map" alt=""/>
   <map id="wbc::PIDController_map" name="wbc::PIDController_map">
-<area href="classwbc_1_1CartesianForcePIDController.html" title="CartesianForcePIDController implements a PID Controller on a Wrench data type." alt="wbc::CartesianForcePIDController" shape="rect" coords="0,56,205,80"/>
-<area href="classwbc_1_1JointTorquePIDController.html" alt="wbc::JointTorquePIDController" shape="rect" coords="215,56,420,80"/>
+<area href="classwbc_1_1WrenchPIDController.html" title="CartesianForcePIDController implements a PID Controller on a Wrench data type." alt="wbc::WrenchPIDController" shape="rect" coords="0,56,161,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -99,24 +98,24 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ab444fbc18d70c7f2c58ad27d8a50a059"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af5883caf940779a6a943d6025e197319" id="r_af5883caf940779a6a943d6025e197319"><td class="memItemLeft" align="right" valign="top">const <a class="el" href="classwbc_1_1PIDCtrlParams.html">PIDCtrlParams</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5883caf940779a6a943d6025e197319">getPID</a> ()</td></tr>
 <tr class="separator:af5883caf940779a6a943d6025e197319"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acde94b9c97de1974211ada9cd48ecf39" id="r_acde94b9c97de1974211ada9cd48ecf39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acde94b9c97de1974211ada9cd48ecf39">setMaxCtrlOutput</a> (const base::VectorXd &amp;max)</td></tr>
-<tr class="separator:acde94b9c97de1974211ada9cd48ecf39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2aee309777b2d095d73e2c85eec1db99" id="r_a2aee309777b2d095d73e2c85eec1db99"><td class="memItemLeft" align="right" valign="top">const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2aee309777b2d095d73e2c85eec1db99">maxCtrlOutput</a> ()</td></tr>
-<tr class="separator:a2aee309777b2d095d73e2c85eec1db99"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a7db98f8a875c8d88f68b6b1f1c4bd91e" id="r_a7db98f8a875c8d88f68b6b1f1c4bd91e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7db98f8a875c8d88f68b6b1f1c4bd91e">setDeadZone</a> (const base::VectorXd &amp;dz)</td></tr>
-<tr class="separator:a7db98f8a875c8d88f68b6b1f1c4bd91e"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0c7b9fe9b684f479fdb7111e89071ced" id="r_a0c7b9fe9b684f479fdb7111e89071ced"><td class="memItemLeft" align="right" valign="top">const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0c7b9fe9b684f479fdb7111e89071ced">deadZone</a> ()</td></tr>
-<tr class="separator:a0c7b9fe9b684f479fdb7111e89071ced"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0c8aaaf4ae5b128f600abec12bca38d" id="r_ae0c8aaaf4ae5b128f600abec12bca38d"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0c8aaaf4ae5b128f600abec12bca38d">applySaturation</a> (const base::VectorXd &amp;in, const base::VectorXd &amp;max, base::VectorXd &amp;out)</td></tr>
-<tr class="separator:ae0c8aaaf4ae5b128f600abec12bca38d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0d079132f1f3e771d2c08ff6304fee39" id="r_a0d079132f1f3e771d2c08ff6304fee39"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0d079132f1f3e771d2c08ff6304fee39">applyDeadZone</a> (const base::VectorXd &amp;in, const base::VectorXd &amp;min, base::VectorXd &amp;out)</td></tr>
-<tr class="separator:a0d079132f1f3e771d2c08ff6304fee39"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a300be24a9e9c11e6b15943434eb16508" id="r_a300be24a9e9c11e6b15943434eb16508"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a300be24a9e9c11e6b15943434eb16508">setMaxCtrlOutput</a> (const Eigen::VectorXd &amp;max)</td></tr>
+<tr class="separator:a300be24a9e9c11e6b15943434eb16508"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ad04b7c5e0aff17f9022d6c8677143791" id="r_ad04b7c5e0aff17f9022d6c8677143791"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad04b7c5e0aff17f9022d6c8677143791">maxCtrlOutput</a> ()</td></tr>
+<tr class="separator:ad04b7c5e0aff17f9022d6c8677143791"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a70c8e3e01de253757758f86b142d2e19" id="r_a70c8e3e01de253757758f86b142d2e19"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a70c8e3e01de253757758f86b142d2e19">setDeadZone</a> (const Eigen::VectorXd &amp;dz)</td></tr>
+<tr class="separator:a70c8e3e01de253757758f86b142d2e19"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa79b57629076fc8481e452068e8d9d4" id="r_afa79b57629076fc8481e452068e8d9d4"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa79b57629076fc8481e452068e8d9d4">deadZone</a> ()</td></tr>
+<tr class="separator:afa79b57629076fc8481e452068e8d9d4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a4f63e0269533e6638147ad45c1f34665" id="r_a4f63e0269533e6638147ad45c1f34665"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4f63e0269533e6638147ad45c1f34665">applySaturation</a> (const Eigen::VectorXd &amp;in, const Eigen::VectorXd &amp;max, Eigen::VectorXd &amp;out)</td></tr>
+<tr class="separator:a4f63e0269533e6638147ad45c1f34665"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a6190bc7bfc13705f9723079fe51ea352" id="r_a6190bc7bfc13705f9723079fe51ea352"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6190bc7bfc13705f9723079fe51ea352">applyDeadZone</a> (const Eigen::VectorXd &amp;in, const Eigen::VectorXd &amp;min, Eigen::VectorXd &amp;out)</td></tr>
+<tr class="separator:a6190bc7bfc13705f9723079fe51ea352"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac109a679a21119c0d945d921be25a98b" id="r_ac109a679a21119c0d945d921be25a98b"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac109a679a21119c0d945d921be25a98b">getDimension</a> ()</td></tr>
 <tr class="separator:ac109a679a21119c0d945d921be25a98b"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad9c08cef2f4e928269af47ac62c17c39" id="r_ad9c08cef2f4e928269af47ac62c17c39"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9c08cef2f4e928269af47ac62c17c39">getControlError</a> ()</td></tr>
-<tr class="separator:ad9c08cef2f4e928269af47ac62c17c39"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a57ace2920ebf16fe58a2a85faf987e25" id="r_a57ace2920ebf16fe58a2a85faf987e25"><td class="memItemLeft" align="right" valign="top">virtual const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a57ace2920ebf16fe58a2a85faf987e25">computeDerivative</a> (const double delta_t)</td></tr>
-<tr class="separator:a57ace2920ebf16fe58a2a85faf987e25"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1750b37137aa2e7f527550a0441934f8" id="r_a1750b37137aa2e7f527550a0441934f8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1750b37137aa2e7f527550a0441934f8">getControlError</a> ()</td></tr>
+<tr class="separator:a1750b37137aa2e7f527550a0441934f8"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7ab833221dabd2f1aeb927c031bf35b9" id="r_a7ab833221dabd2f1aeb927c031bf35b9"><td class="memItemLeft" align="right" valign="top">virtual const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7ab833221dabd2f1aeb927c031bf35b9">computeDerivative</a> (const double delta_t)</td></tr>
+<tr class="separator:a7ab833221dabd2f1aeb927c031bf35b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -124,24 +123,24 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a7bc1c8f8361ee67715b61a03fdf69328"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a6e975bb0807767b19b2d7fed09ed415d" id="r_a6e975bb0807767b19b2d7fed09ed415d"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6e975bb0807767b19b2d7fed09ed415d">dimension</a></td></tr>
 <tr class="separator:a6e975bb0807767b19b2d7fed09ed415d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2eefca7fb93260dcfd974d1581cdd24a" id="r_a2eefca7fb93260dcfd974d1581cdd24a"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2eefca7fb93260dcfd974d1581cdd24a">control_error</a></td></tr>
-<tr class="separator:a2eefca7fb93260dcfd974d1581cdd24a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:afbdb0cec9c1bda6b8a58cd135a005480" id="r_afbdb0cec9c1bda6b8a58cd135a005480"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afbdb0cec9c1bda6b8a58cd135a005480">prev_control_error</a></td></tr>
-<tr class="separator:afbdb0cec9c1bda6b8a58cd135a005480"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aadf25616d50afedbfb33690791f60ec2" id="r_aadf25616d50afedbfb33690791f60ec2"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aadf25616d50afedbfb33690791f60ec2">dead_zone</a></td></tr>
-<tr class="separator:aadf25616d50afedbfb33690791f60ec2"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac0433c5536fd64dca5c00d5054b6e571" id="r_ac0433c5536fd64dca5c00d5054b6e571"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac0433c5536fd64dca5c00d5054b6e571">max_ctrl_output</a></td></tr>
-<tr class="separator:ac0433c5536fd64dca5c00d5054b6e571"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a410e35649e556b9f5fe8e0b7898bc95a" id="r_a410e35649e556b9f5fe8e0b7898bc95a"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a410e35649e556b9f5fe8e0b7898bc95a">integral</a></td></tr>
-<tr class="separator:a410e35649e556b9f5fe8e0b7898bc95a"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3beef21634df446af608b2bdc2b0e70f" id="r_a3beef21634df446af608b2bdc2b0e70f"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3beef21634df446af608b2bdc2b0e70f">derivative</a></td></tr>
-<tr class="separator:a3beef21634df446af608b2bdc2b0e70f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae0846c8d93f91b1b83a00a20346cbb62" id="r_ae0846c8d93f91b1b83a00a20346cbb62"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0846c8d93f91b1b83a00a20346cbb62">control_output</a></td></tr>
-<tr class="separator:ae0846c8d93f91b1b83a00a20346cbb62"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a8eda73086d67e3f355deff681a2bba" id="r_a6a8eda73086d67e3f355deff681a2bba"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a8eda73086d67e3f355deff681a2bba">setpoint</a></td></tr>
-<tr class="separator:a6a8eda73086d67e3f355deff681a2bba"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad2a1769c76770ec6af9ed48948dacae4" id="r_ad2a1769c76770ec6af9ed48948dacae4"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad2a1769c76770ec6af9ed48948dacae4">feedback</a></td></tr>
-<tr class="separator:ad2a1769c76770ec6af9ed48948dacae4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2f35cb538bfb0a8e7d1dd678bfb4e85a" id="r_a2f35cb538bfb0a8e7d1dd678bfb4e85a"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f35cb538bfb0a8e7d1dd678bfb4e85a">control_error</a></td></tr>
+<tr class="separator:a2f35cb538bfb0a8e7d1dd678bfb4e85a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a1dcb1ebc9cabff2af9fd9c36b6e0d334" id="r_a1dcb1ebc9cabff2af9fd9c36b6e0d334"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1dcb1ebc9cabff2af9fd9c36b6e0d334">prev_control_error</a></td></tr>
+<tr class="separator:a1dcb1ebc9cabff2af9fd9c36b6e0d334"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3e40f7038b46f8edd9708f393c12575a" id="r_a3e40f7038b46f8edd9708f393c12575a"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3e40f7038b46f8edd9708f393c12575a">dead_zone</a></td></tr>
+<tr class="separator:a3e40f7038b46f8edd9708f393c12575a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acc65d485319bb79dab674fd992ae2c5e" id="r_acc65d485319bb79dab674fd992ae2c5e"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc65d485319bb79dab674fd992ae2c5e">max_ctrl_output</a></td></tr>
+<tr class="separator:acc65d485319bb79dab674fd992ae2c5e"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abb6dbbc2eec720c7a0080f888a9ba55d" id="r_abb6dbbc2eec720c7a0080f888a9ba55d"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abb6dbbc2eec720c7a0080f888a9ba55d">integral</a></td></tr>
+<tr class="separator:abb6dbbc2eec720c7a0080f888a9ba55d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94a6bd7c5418be29c07dedc5d37452e3" id="r_a94a6bd7c5418be29c07dedc5d37452e3"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94a6bd7c5418be29c07dedc5d37452e3">derivative</a></td></tr>
+<tr class="separator:a94a6bd7c5418be29c07dedc5d37452e3"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae160bf2a6e25b780885a8eca928183b9" id="r_ae160bf2a6e25b780885a8eca928183b9"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae160bf2a6e25b780885a8eca928183b9">control_output</a></td></tr>
+<tr class="separator:ae160bf2a6e25b780885a8eca928183b9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ab0aafaab14703eca1b47ebff63c5d2a2" id="r_ab0aafaab14703eca1b47ebff63c5d2a2"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0aafaab14703eca1b47ebff63c5d2a2">setpoint</a></td></tr>
+<tr class="separator:ab0aafaab14703eca1b47ebff63c5d2a2"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a783d4bd4f0fff2dc33ba69649ee971dd" id="r_a783d4bd4f0fff2dc33ba69649ee971dd"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a783d4bd4f0fff2dc33ba69649ee971dd">feedback</a></td></tr>
+<tr class="separator:a783d4bd4f0fff2dc33ba69649ee971dd"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>The <a class="el" href="classwbc_1_1PIDController.html" title="The PIDController class implements an n-dimensional PID controller.">PIDController</a> class implements an n-dimensional PID controller. </p>
@@ -208,8 +207,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="a0d079132f1f3e771d2c08ff6304fee39" name="a0d079132f1f3e771d2c08ff6304fee39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0d079132f1f3e771d2c08ff6304fee39">&#9670;&#160;</a></span>applyDeadZone()</h2>
+<a id="a6190bc7bfc13705f9723079fe51ea352" name="a6190bc7bfc13705f9723079fe51ea352"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6190bc7bfc13705f9723079fe51ea352">&#9670;&#160;</a></span>applyDeadZone()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -217,25 +216,25 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void wbc::PIDController::applyDeadZone </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>in</em></span>, </td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>in</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>min</em></span>, </td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>min</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>out</em></span>&#160;)</td>
+          <td class="paramtype">Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>out</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="ae0c8aaaf4ae5b128f600abec12bca38d" name="ae0c8aaaf4ae5b128f600abec12bca38d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0c8aaaf4ae5b128f600abec12bca38d">&#9670;&#160;</a></span>applySaturation()</h2>
+<a id="a4f63e0269533e6638147ad45c1f34665" name="a4f63e0269533e6638147ad45c1f34665"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4f63e0269533e6638147ad45c1f34665">&#9670;&#160;</a></span>applySaturation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -243,25 +242,25 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void wbc::PIDController::applySaturation </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>in</em></span>, </td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>in</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>max</em></span>, </td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>max</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>out</em></span>&#160;)</td>
+          <td class="paramtype">Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>out</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 </div>
 </div>
-<a id="a57ace2920ebf16fe58a2a85faf987e25" name="a57ace2920ebf16fe58a2a85faf987e25"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a57ace2920ebf16fe58a2a85faf987e25">&#9670;&#160;</a></span>computeDerivative()</h2>
+<a id="a7ab833221dabd2f1aeb927c031bf35b9" name="a7ab833221dabd2f1aeb927c031bf35b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7ab833221dabd2f1aeb927c031bf35b9">&#9670;&#160;</a></span>computeDerivative()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -270,7 +269,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const base::VectorXd &amp; wbc::PIDController::computeDerivative </td>
+          <td class="memname">const Eigen::VectorXd &amp; wbc::PIDController::computeDerivative </td>
           <td>(</td>
           <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>delta_t</em></span></td><td>)</td>
           <td></td>
@@ -285,8 +284,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a0c7b9fe9b684f479fdb7111e89071ced" name="a0c7b9fe9b684f479fdb7111e89071ced"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0c7b9fe9b684f479fdb7111e89071ced">&#9670;&#160;</a></span>deadZone()</h2>
+<a id="afa79b57629076fc8481e452068e8d9d4" name="afa79b57629076fc8481e452068e8d9d4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa79b57629076fc8481e452068e8d9d4">&#9670;&#160;</a></span>deadZone()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -295,7 +294,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const base::VectorXd &amp; wbc::PIDController::deadZone </td>
+          <td class="memname">const Eigen::VectorXd &amp; wbc::PIDController::deadZone </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -310,8 +309,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ad9c08cef2f4e928269af47ac62c17c39" name="ad9c08cef2f4e928269af47ac62c17c39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad9c08cef2f4e928269af47ac62c17c39">&#9670;&#160;</a></span>getControlError()</h2>
+<a id="a1750b37137aa2e7f527550a0441934f8" name="a1750b37137aa2e7f527550a0441934f8"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1750b37137aa2e7f527550a0441934f8">&#9670;&#160;</a></span>getControlError()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -320,7 +319,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::getControlError </td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::getControlError </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -385,8 +384,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a2aee309777b2d095d73e2c85eec1db99" name="a2aee309777b2d095d73e2c85eec1db99"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2aee309777b2d095d73e2c85eec1db99">&#9670;&#160;</a></span>maxCtrlOutput()</h2>
+<a id="ad04b7c5e0aff17f9022d6c8677143791" name="ad04b7c5e0aff17f9022d6c8677143791"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad04b7c5e0aff17f9022d6c8677143791">&#9670;&#160;</a></span>maxCtrlOutput()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -395,7 +394,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">const base::VectorXd &amp; wbc::PIDController::maxCtrlOutput </td>
+          <td class="memname">const Eigen::VectorXd &amp; wbc::PIDController::maxCtrlOutput </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -410,8 +409,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a7db98f8a875c8d88f68b6b1f1c4bd91e" name="a7db98f8a875c8d88f68b6b1f1c4bd91e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7db98f8a875c8d88f68b6b1f1c4bd91e">&#9670;&#160;</a></span>setDeadZone()</h2>
+<a id="a70c8e3e01de253757758f86b142d2e19" name="a70c8e3e01de253757758f86b142d2e19"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a70c8e3e01de253757758f86b142d2e19">&#9670;&#160;</a></span>setDeadZone()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -419,7 +418,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void wbc::PIDController::setDeadZone </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>dz</em></span></td><td>)</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>dz</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -427,8 +426,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="acde94b9c97de1974211ada9cd48ecf39" name="acde94b9c97de1974211ada9cd48ecf39"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acde94b9c97de1974211ada9cd48ecf39">&#9670;&#160;</a></span>setMaxCtrlOutput()</h2>
+<a id="a300be24a9e9c11e6b15943434eb16508" name="a300be24a9e9c11e6b15943434eb16508"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a300be24a9e9c11e6b15943434eb16508">&#9670;&#160;</a></span>setMaxCtrlOutput()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -436,7 +435,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void wbc::PIDController::setMaxCtrlOutput </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>max</em></span></td><td>)</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>max</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -480,8 +479,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a2eefca7fb93260dcfd974d1581cdd24a" name="a2eefca7fb93260dcfd974d1581cdd24a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2eefca7fb93260dcfd974d1581cdd24a">&#9670;&#160;</a></span>control_error</h2>
+<a id="a2f35cb538bfb0a8e7d1dd678bfb4e85a" name="a2f35cb538bfb0a8e7d1dd678bfb4e85a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2f35cb538bfb0a8e7d1dd678bfb4e85a">&#9670;&#160;</a></span>control_error</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -490,7 +489,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::control_error</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::control_error</td>
         </tr>
       </table>
   </td>
@@ -502,8 +501,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ae0846c8d93f91b1b83a00a20346cbb62" name="ae0846c8d93f91b1b83a00a20346cbb62"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae0846c8d93f91b1b83a00a20346cbb62">&#9670;&#160;</a></span>control_output</h2>
+<a id="ae160bf2a6e25b780885a8eca928183b9" name="ae160bf2a6e25b780885a8eca928183b9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae160bf2a6e25b780885a8eca928183b9">&#9670;&#160;</a></span>control_output</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -512,7 +511,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::control_output</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::control_output</td>
         </tr>
       </table>
   </td>
@@ -524,8 +523,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aadf25616d50afedbfb33690791f60ec2" name="aadf25616d50afedbfb33690791f60ec2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aadf25616d50afedbfb33690791f60ec2">&#9670;&#160;</a></span>dead_zone</h2>
+<a id="a3e40f7038b46f8edd9708f393c12575a" name="a3e40f7038b46f8edd9708f393c12575a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3e40f7038b46f8edd9708f393c12575a">&#9670;&#160;</a></span>dead_zone</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -534,7 +533,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::dead_zone</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::dead_zone</td>
         </tr>
       </table>
   </td>
@@ -546,8 +545,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a3beef21634df446af608b2bdc2b0e70f" name="a3beef21634df446af608b2bdc2b0e70f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3beef21634df446af608b2bdc2b0e70f">&#9670;&#160;</a></span>derivative</h2>
+<a id="a94a6bd7c5418be29c07dedc5d37452e3" name="a94a6bd7c5418be29c07dedc5d37452e3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94a6bd7c5418be29c07dedc5d37452e3">&#9670;&#160;</a></span>derivative</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -556,7 +555,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::derivative</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::derivative</td>
         </tr>
       </table>
   </td>
@@ -590,8 +589,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ad2a1769c76770ec6af9ed48948dacae4" name="ad2a1769c76770ec6af9ed48948dacae4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad2a1769c76770ec6af9ed48948dacae4">&#9670;&#160;</a></span>feedback</h2>
+<a id="a783d4bd4f0fff2dc33ba69649ee971dd" name="a783d4bd4f0fff2dc33ba69649ee971dd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a783d4bd4f0fff2dc33ba69649ee971dd">&#9670;&#160;</a></span>feedback</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -600,7 +599,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::feedback</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::feedback</td>
         </tr>
       </table>
   </td>
@@ -612,8 +611,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a410e35649e556b9f5fe8e0b7898bc95a" name="a410e35649e556b9f5fe8e0b7898bc95a"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a410e35649e556b9f5fe8e0b7898bc95a">&#9670;&#160;</a></span>integral</h2>
+<a id="abb6dbbc2eec720c7a0080f888a9ba55d" name="abb6dbbc2eec720c7a0080f888a9ba55d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abb6dbbc2eec720c7a0080f888a9ba55d">&#9670;&#160;</a></span>integral</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -622,7 +621,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::integral</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::integral</td>
         </tr>
       </table>
   </td>
@@ -634,8 +633,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ac0433c5536fd64dca5c00d5054b6e571" name="ac0433c5536fd64dca5c00d5054b6e571"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac0433c5536fd64dca5c00d5054b6e571">&#9670;&#160;</a></span>max_ctrl_output</h2>
+<a id="acc65d485319bb79dab674fd992ae2c5e" name="acc65d485319bb79dab674fd992ae2c5e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#acc65d485319bb79dab674fd992ae2c5e">&#9670;&#160;</a></span>max_ctrl_output</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -644,7 +643,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::max_ctrl_output</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::max_ctrl_output</td>
         </tr>
       </table>
   </td>
@@ -678,8 +677,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="afbdb0cec9c1bda6b8a58cd135a005480" name="afbdb0cec9c1bda6b8a58cd135a005480"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afbdb0cec9c1bda6b8a58cd135a005480">&#9670;&#160;</a></span>prev_control_error</h2>
+<a id="a1dcb1ebc9cabff2af9fd9c36b6e0d334" name="a1dcb1ebc9cabff2af9fd9c36b6e0d334"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1dcb1ebc9cabff2af9fd9c36b6e0d334">&#9670;&#160;</a></span>prev_control_error</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -688,7 +687,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::prev_control_error</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::prev_control_error</td>
         </tr>
       </table>
   </td>
@@ -700,8 +699,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a6a8eda73086d67e3f355deff681a2bba" name="a6a8eda73086d67e3f355deff681a2bba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a8eda73086d67e3f355deff681a2bba">&#9670;&#160;</a></span>setpoint</h2>
+<a id="ab0aafaab14703eca1b47ebff63c5d2a2" name="ab0aafaab14703eca1b47ebff63c5d2a2"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ab0aafaab14703eca1b47ebff63c5d2a2">&#9670;&#160;</a></span>setpoint</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -710,7 +709,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PIDController::setpoint</td>
+          <td class="memname">Eigen::VectorXd wbc::PIDController::setpoint</td>
         </tr>
       </table>
   </td>

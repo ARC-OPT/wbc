@@ -67,8 +67,8 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">PluginLoader.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="PluginLoader_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef PLUGIN_LOADER_HPP</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define PLUGIN_LOADER_HPP</span></div>
+<a href="PluginLoader_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef WBC_CORE_PLUGIN_LOADER_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define WBC_CORE_PLUGIN_LOADER_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
 <div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &lt;string&gt;</span></div>
 <div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;stdexcept&gt;</span></div>
@@ -76,51 +76,53 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;dlfcn.h&gt;</span></div>
 <div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
 <div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacewbc.html">wbc</a> {</div>
-<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span> </div>
-<div class="foldopen" id="foldopen00011" data-start="{" data-end="};">
-<div class="line"><a id="l00011" name="l00011"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html">   11</a></span><span class="keyword">class </span><a class="code hl_class" href="classwbc_1_1PluginLoader.html">PluginLoader</a>{</div>
-<div class="line"><a id="l00012" name="l00012"></a><span class="lineno">   12</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00013" name="l00013"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">   13</a></span>    <span class="keyword">typedef</span> std::map&lt;std::string, void*&gt; <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a>;</div>
-<div class="line"><a id="l00014" name="l00014"></a><span class="lineno">   14</span> </div>
-<div class="foldopen" id="foldopen00015" data-start="{" data-end="}">
-<div class="line"><a id="l00015" name="l00015"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#acaba321313481608eedb81533e5bfa02">   15</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classwbc_1_1PluginLoader.html#acaba321313481608eedb81533e5bfa02">loadPlugin</a>(<span class="keyword">const</span> std::string&amp; name){</div>
-<div class="line"><a id="l00016" name="l00016"></a><span class="lineno">   16</span>        <span class="keywordtype">void</span> *handle = dlopen(std::string(name).c_str(), RTLD_NOW);</div>
-<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span>        <span class="keywordflow">if</span>(!handle)</div>
-<div class="line"><a id="l00018" name="l00018"></a><span class="lineno">   18</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Failed to load plugin &quot;</span> + name);</div>
-<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>()-&gt;insert(std::make_pair(name, handle));</div>
-<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>    }</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span></div>
+<div class="foldopen" id="foldopen00014" data-start="{" data-end="};">
+<div class="line"><a id="l00014" name="l00014"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html">   14</a></span><span class="keyword">class </span><a class="code hl_class" href="classwbc_1_1PluginLoader.html">PluginLoader</a>{</div>
+<div class="line"><a id="l00015" name="l00015"></a><span class="lineno">   15</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00016" name="l00016"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">   16</a></span>    <span class="keyword">typedef</span> std::map&lt;std::string, void*&gt; <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a>;</div>
+<div class="line"><a id="l00017" name="l00017"></a><span class="lineno">   17</span> </div>
+<div class="foldopen" id="foldopen00018" data-start="{" data-end="}">
+<div class="line"><a id="l00018" name="l00018"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#a722d8d1ea2ec736b46f9f430ffc6158d">   18</a></span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classwbc_1_1PluginLoader.html#a722d8d1ea2ec736b46f9f430ffc6158d">loadPlugin</a>(<span class="keyword">const</span> std::string&amp; name){</div>
+<div class="line"><a id="l00019" name="l00019"></a><span class="lineno">   19</span>        <span class="keywordtype">void</span> *handle = dlopen(std::string(name).c_str(), RTLD_NOW);</div>
+<div class="line"><a id="l00020" name="l00020"></a><span class="lineno">   20</span>        <span class="keywordflow">if</span>(!handle)</div>
+<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00022" name="l00022"></a><span class="lineno">   22</span>        <a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>()-&gt;insert(std::make_pair(name, handle));</div>
+<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>    }</div>
 </div>
-<div class="line"><a id="l00021" name="l00021"></a><span class="lineno">   21</span> </div>
-<div class="foldopen" id="foldopen00022" data-start="{" data-end="}">
-<div class="line"><a id="l00022" name="l00022"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#ad6571e3f809c3935ab4461bf41c230d7">   22</a></span>    <span class="keyword">static</span> <span class="keywordtype">void</span> <a class="code hl_function" href="classwbc_1_1PluginLoader.html#ad6571e3f809c3935ab4461bf41c230d7">unloadPlugin</a>(<span class="keyword">const</span> std::string&amp; name){</div>
-<div class="line"><a id="l00023" name="l00023"></a><span class="lineno">   23</span>        PluginMap::iterator it = <a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>()-&gt;find(name);</div>
-<div class="line"><a id="l00024" name="l00024"></a><span class="lineno">   24</span>        <span class="keywordflow">if</span>(it == <a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>()-&gt;end())</div>
-<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span>            <span class="keywordflow">throw</span> std::runtime_error(<span class="stringliteral">&quot;Failed to unload plugin &quot;</span> + name + <span class="stringliteral">&quot;. Is the plugin loaded?&quot;</span>);</div>
-<div class="line"><a id="l00026" name="l00026"></a><span class="lineno">   26</span>        dlclose(it-&gt;second);</div>
-<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        plugin_map-&gt;erase(name);</div>
-<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>    }</div>
+<div class="line"><a id="l00025" name="l00025"></a><span class="lineno">   25</span> </div>
+<div class="foldopen" id="foldopen00026" data-start="{" data-end="}">
+<div class="line"><a id="l00026" name="l00026"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#aa1f164fb0ca03d1cebd508ca538368fd">   26</a></span>    <span class="keyword">static</span> <span class="keywordtype">bool</span> <a class="code hl_function" href="classwbc_1_1PluginLoader.html#aa1f164fb0ca03d1cebd508ca538368fd">unloadPlugin</a>(<span class="keyword">const</span> std::string&amp; name){</div>
+<div class="line"><a id="l00027" name="l00027"></a><span class="lineno">   27</span>        PluginMap::iterator it = <a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>()-&gt;find(name);</div>
+<div class="line"><a id="l00028" name="l00028"></a><span class="lineno">   28</span>        <span class="keywordflow">if</span>(it == <a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>()-&gt;end())</div>
+<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span>            <span class="keywordflow">return</span> <span class="keyword">false</span>;</div>
+<div class="line"><a id="l00030" name="l00030"></a><span class="lineno">   30</span>        dlclose(it-&gt;second);</div>
+<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        plugin_map-&gt;erase(name);</div>
+<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>        <span class="keywordflow">return</span> <span class="keyword">true</span>;</div>
+<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>    }</div>
 </div>
-<div class="line"><a id="l00029" name="l00029"></a><span class="lineno">   29</span> </div>
-<div class="foldopen" id="foldopen00030" data-start="{" data-end="}">
-<div class="line"><a id="l00030" name="l00030"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">   30</a></span>    <span class="keyword">static</span> <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a> *<a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>(){</div>
-<div class="line"><a id="l00031" name="l00031"></a><span class="lineno">   31</span>        <span class="keywordflow">if</span>(!plugin_map)</div>
-<div class="line"><a id="l00032" name="l00032"></a><span class="lineno">   32</span>            plugin_map = <span class="keyword">new</span> <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a>;</div>
-<div class="line"><a id="l00033" name="l00033"></a><span class="lineno">   33</span>        <span class="keywordflow">return</span> plugin_map;</div>
-<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span>    }</div>
+<div class="line"><a id="l00034" name="l00034"></a><span class="lineno">   34</span> </div>
+<div class="foldopen" id="foldopen00035" data-start="{" data-end="}">
+<div class="line"><a id="l00035" name="l00035"></a><span class="lineno"><a class="line" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">   35</a></span>    <span class="keyword">static</span> <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a> *<a class="code hl_function" href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">getPluginMap</a>(){</div>
+<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>        <span class="keywordflow">if</span>(!plugin_map)</div>
+<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>            plugin_map = <span class="keyword">new</span> <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a>;</div>
+<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span>        <span class="keywordflow">return</span> plugin_map;</div>
+<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>    }</div>
 </div>
-<div class="line"><a id="l00035" name="l00035"></a><span class="lineno">   35</span><span class="keyword">private</span>:</div>
-<div class="line"><a id="l00036" name="l00036"></a><span class="lineno">   36</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a>* plugin_map;</div>
-<div class="line"><a id="l00037" name="l00037"></a><span class="lineno">   37</span>};</div>
+<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">private</span>:</div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span>    <span class="keyword">static</span> <a class="code hl_typedef" href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">PluginMap</a>* plugin_map;</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span>};</div>
 </div>
-<div class="line"><a id="l00038" name="l00038"></a><span class="lineno">   38</span> </div>
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno">   39</span>}</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span> </div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aclasswbc_1_1PluginLoader_html"><div class="ttname"><a href="classwbc_1_1PluginLoader.html">wbc::PluginLoader</a></div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:11</div></div>
-<div class="ttc" id="aclasswbc_1_1PluginLoader_html_acaba321313481608eedb81533e5bfa02"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#acaba321313481608eedb81533e5bfa02">wbc::PluginLoader::loadPlugin</a></div><div class="ttdeci">static void loadPlugin(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:15</div></div>
-<div class="ttc" id="aclasswbc_1_1PluginLoader_html_ad6571e3f809c3935ab4461bf41c230d7"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#ad6571e3f809c3935ab4461bf41c230d7">wbc::PluginLoader::unloadPlugin</a></div><div class="ttdeci">static void unloadPlugin(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:22</div></div>
-<div class="ttc" id="aclasswbc_1_1PluginLoader_html_ae9cd388151ac15e4aba3a42a6cf0a966"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">wbc::PluginLoader::PluginMap</a></div><div class="ttdeci">std::map&lt; std::string, void * &gt; PluginMap</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:13</div></div>
-<div class="ttc" id="aclasswbc_1_1PluginLoader_html_aeae442b9757f3ea9d3f5378d538277be"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">wbc::PluginLoader::getPluginMap</a></div><div class="ttdeci">static PluginMap * getPluginMap()</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:30</div></div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span> </div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>}</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span><span class="preprocessor">#endif </span><span class="comment">// WBC_CORE_PLUGIN_LOADER_HPP</span></div>
+<div class="ttc" id="aclasswbc_1_1PluginLoader_html"><div class="ttname"><a href="classwbc_1_1PluginLoader.html">wbc::PluginLoader</a></div><div class="ttdoc">Helper class to load the robot model, solver and scene plugins.</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:14</div></div>
+<div class="ttc" id="aclasswbc_1_1PluginLoader_html_a722d8d1ea2ec736b46f9f430ffc6158d"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#a722d8d1ea2ec736b46f9f430ffc6158d">wbc::PluginLoader::loadPlugin</a></div><div class="ttdeci">static bool loadPlugin(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:18</div></div>
+<div class="ttc" id="aclasswbc_1_1PluginLoader_html_aa1f164fb0ca03d1cebd508ca538368fd"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#aa1f164fb0ca03d1cebd508ca538368fd">wbc::PluginLoader::unloadPlugin</a></div><div class="ttdeci">static bool unloadPlugin(const std::string &amp;name)</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:26</div></div>
+<div class="ttc" id="aclasswbc_1_1PluginLoader_html_ae9cd388151ac15e4aba3a42a6cf0a966"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#ae9cd388151ac15e4aba3a42a6cf0a966">wbc::PluginLoader::PluginMap</a></div><div class="ttdeci">std::map&lt; std::string, void * &gt; PluginMap</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:16</div></div>
+<div class="ttc" id="aclasswbc_1_1PluginLoader_html_aeae442b9757f3ea9d3f5378d538277be"><div class="ttname"><a href="classwbc_1_1PluginLoader.html#aeae442b9757f3ea9d3f5378d538277be">wbc::PluginLoader::getPluginMap</a></div><div class="ttdeci">static PluginMap * getPluginMap()</div><div class="ttdef"><b>Definition</b> PluginLoader.hpp:35</div></div>
 <div class="ttc" id="anamespacewbc_html"><div class="ttname"><a href="namespacewbc.html">wbc</a></div><div class="ttdef"><b>Definition</b> ContactsAccelerationConstraint.cpp:3</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

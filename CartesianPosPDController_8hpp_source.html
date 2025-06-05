@@ -67,43 +67,57 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">CartesianPosPDController.hpp</div></div>
 </div><!--header-->
 <div class="contents">
-<a href="CartesianPosPDController_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef WBC_CART_POS_PD_CONTROLLER_HPP</span></div>
-<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define WBC_CART_POS_PD_CONTROLLER_HPP</span></div>
+<a href="CartesianPosPDController_8hpp.html">Go to the documentation of this file.</a><div class="fragment"><div class="line"><a id="l00001" name="l00001"></a><span class="lineno">    1</span><span class="preprocessor">#ifndef WBC_CONTROLLERS_CARTPOSPDCONTROLLER_HPP</span></div>
+<div class="line"><a id="l00002" name="l00002"></a><span class="lineno">    2</span><span class="preprocessor">#define WBC_CONTROLLERS_CARTPOSPDCONTROLLER_HPP</span></div>
 <div class="line"><a id="l00003" name="l00003"></a><span class="lineno">    3</span> </div>
-<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="PosPDController_8hpp.html">PosPDController.hpp</a>&quot;</span></div>
-<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &lt;base/samples/RigidBodyStateSE3.hpp&gt;</span></div>
-<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span> </div>
-<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacewbc.html">wbc</a> {</div>
-<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span></div>
-<div class="foldopen" id="foldopen00039" data-start="{" data-end="};">
-<div class="line"><a id="l00039" name="l00039"></a><span class="lineno"><a class="line" href="classwbc_1_1CartesianPosPDController.html">   39</a></span><span class="keyword">class </span><a class="code hl_function" href="classwbc_1_1CartesianPosPDController.html#a62f51421e3aebc6e22992a1c23b334cd">CartesianPosPDController</a> : <span class="keyword">public</span> <a class="code hl_function" href="classwbc_1_1PosPDController.html#a17fbbe25586cab884dc664251c6dc104">PosPDController</a>{</div>
-<div class="line"><a id="l00040" name="l00040"></a><span class="lineno">   40</span><span class="keyword">protected</span>:</div>
-<div class="line"><a id="l00041" name="l00041"></a><span class="lineno"><a class="line" href="classwbc_1_1CartesianPosPDController.html#a20cef5897e1812bb2bb0db88ca3484ef">   41</a></span>    base::samples::RigidBodyStateSE3 <a class="code hl_variable" href="classwbc_1_1CartesianPosPDController.html#a20cef5897e1812bb2bb0db88ca3484ef">control_output</a>;</div>
-<div class="line"><a id="l00042" name="l00042"></a><span class="lineno"><a class="line" href="classwbc_1_1CartesianPosPDController.html#ac343cc7e5f2ccbfb1d1d8839528a199e">   42</a></span>    base::Vector6d <a class="code hl_variable" href="classwbc_1_1CartesianPosPDController.html#ac343cc7e5f2ccbfb1d1d8839528a199e">control_error</a>;</div>
-<div class="line"><a id="l00043" name="l00043"></a><span class="lineno"><a class="line" href="classwbc_1_1CartesianPosPDController.html#a4d4a65c8a3eb1e4894fe7dc5c235a3a8">   43</a></span>    base::Twist <a class="code hl_variable" href="classwbc_1_1CartesianPosPDController.html#a4d4a65c8a3eb1e4894fe7dc5c235a3a8">pose_diff</a>;</div>
-<div class="line"><a id="l00044" name="l00044"></a><span class="lineno"><a class="line" href="classwbc_1_1CartesianPosPDController.html#a3bb67d53e4d5870dfc5b7061e74ef99e">   44</a></span>    base::Acceleration <a class="code hl_variable" href="classwbc_1_1CartesianPosPDController.html#a3bb67d53e4d5870dfc5b7061e74ef99e">vel_diff</a>;</div>
-<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span> </div>
-<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classwbc_1_1CartesianPosPDController.html#a894b557a5add16bff8c707f1a96012e5">extractFeedback</a>(<span class="keyword">const</span> base::samples::RigidBodyStateSE3&amp; feedback);</div>
-<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    <span class="keywordtype">void</span> <a class="code hl_function" href="classwbc_1_1CartesianPosPDController.html#a7bf822ab30c4b40a82f4dbb9c42bc01e">extractSetpoint</a>(<span class="keyword">const</span> base::samples::RigidBodyStateSE3&amp; setpoint, <span class="keyword">const</span> base::samples::RigidBodyStateSE3&amp; feedback);</div>
-<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span> </div>
-<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    <a class="code hl_function" href="classwbc_1_1CartesianPosPDController.html#a62f51421e3aebc6e22992a1c23b334cd">CartesianPosPDController</a>();</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    <span class="keyword">const</span> base::samples::RigidBodyStateSE3&amp; <a class="code hl_function" href="classwbc_1_1PosPDController.html#aeafaf639db6d29ab918bcdbb68853f68">update</a>(<span class="keyword">const</span> base::samples::RigidBodyStateSE3&amp; setpoint, <span class="keyword">const</span> base::samples::RigidBodyStateSE3&amp; feedback);</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>};</div>
-</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span> </div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>}</div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="preprocessor">#endif</span></div>
-<div class="ttc" id="aPosPDController_8hpp_html"><div class="ttname"><a href="PosPDController_8hpp.html">PosPDController.hpp</a></div></div>
-<div class="ttc" id="aclasswbc_1_1CartesianPosPDController_html_a20cef5897e1812bb2bb0db88ca3484ef"><div class="ttname"><a href="classwbc_1_1CartesianPosPDController.html#a20cef5897e1812bb2bb0db88ca3484ef">wbc::CartesianPosPDController::control_output</a></div><div class="ttdeci">base::samples::RigidBodyStateSE3 control_output</div><div class="ttdef"><b>Definition</b> CartesianPosPDController.hpp:41</div></div>
-<div class="ttc" id="aclasswbc_1_1CartesianPosPDController_html_a3bb67d53e4d5870dfc5b7061e74ef99e"><div class="ttname"><a href="classwbc_1_1CartesianPosPDController.html#a3bb67d53e4d5870dfc5b7061e74ef99e">wbc::CartesianPosPDController::vel_diff</a></div><div class="ttdeci">base::Acceleration vel_diff</div><div class="ttdef"><b>Definition</b> CartesianPosPDController.hpp:44</div></div>
-<div class="ttc" id="aclasswbc_1_1CartesianPosPDController_html_a4d4a65c8a3eb1e4894fe7dc5c235a3a8"><div class="ttname"><a href="classwbc_1_1CartesianPosPDController.html#a4d4a65c8a3eb1e4894fe7dc5c235a3a8">wbc::CartesianPosPDController::pose_diff</a></div><div class="ttdeci">base::Twist pose_diff</div><div class="ttdef"><b>Definition</b> CartesianPosPDController.hpp:43</div></div>
-<div class="ttc" id="aclasswbc_1_1CartesianPosPDController_html_a62f51421e3aebc6e22992a1c23b334cd"><div class="ttname"><a href="classwbc_1_1CartesianPosPDController.html#a62f51421e3aebc6e22992a1c23b334cd">wbc::CartesianPosPDController::CartesianPosPDController</a></div><div class="ttdeci">CartesianPosPDController()</div><div class="ttdef"><b>Definition</b> CartesianPosPDController.cpp:7</div></div>
-<div class="ttc" id="aclasswbc_1_1CartesianPosPDController_html_a7bf822ab30c4b40a82f4dbb9c42bc01e"><div class="ttname"><a href="classwbc_1_1CartesianPosPDController.html#a7bf822ab30c4b40a82f4dbb9c42bc01e">wbc::CartesianPosPDController::extractSetpoint</a></div><div class="ttdeci">void extractSetpoint(const base::samples::RigidBodyStateSE3 &amp;setpoint, const base::samples::RigidBodyStateSE3 &amp;feedback)</div><div class="ttdef"><b>Definition</b> CartesianPosPDController.cpp:21</div></div>
-<div class="ttc" id="aclasswbc_1_1CartesianPosPDController_html_a894b557a5add16bff8c707f1a96012e5"><div class="ttname"><a href="classwbc_1_1CartesianPosPDController.html#a894b557a5add16bff8c707f1a96012e5">wbc::CartesianPosPDController::extractFeedback</a></div><div class="ttdeci">void extractFeedback(const base::samples::RigidBodyStateSE3 &amp;feedback)</div><div class="ttdef"><b>Definition</b> CartesianPosPDController.cpp:13</div></div>
-<div class="ttc" id="aclasswbc_1_1CartesianPosPDController_html_ac343cc7e5f2ccbfb1d1d8839528a199e"><div class="ttname"><a href="classwbc_1_1CartesianPosPDController.html#ac343cc7e5f2ccbfb1d1d8839528a199e">wbc::CartesianPosPDController::control_error</a></div><div class="ttdeci">base::Vector6d control_error</div><div class="ttdef"><b>Definition</b> CartesianPosPDController.hpp:42</div></div>
-<div class="ttc" id="aclasswbc_1_1PosPDController_html_a17fbbe25586cab884dc664251c6dc104"><div class="ttname"><a href="classwbc_1_1PosPDController.html#a17fbbe25586cab884dc664251c6dc104">wbc::PosPDController::PosPDController</a></div><div class="ttdeci">PosPDController(size_t dim_controller)</div><div class="ttdef"><b>Definition</b> PosPDController.cpp:5</div></div>
-<div class="ttc" id="aclasswbc_1_1PosPDController_html_aeafaf639db6d29ab918bcdbb68853f68"><div class="ttname"><a href="classwbc_1_1PosPDController.html#aeafaf639db6d29ab918bcdbb68853f68">wbc::PosPDController::update</a></div><div class="ttdeci">void update()</div><div class="ttdef"><b>Definition</b> PosPDController.cpp:25</div></div>
+<div class="line"><a id="l00004" name="l00004"></a><span class="lineno">    4</span><span class="preprocessor">#include &quot;<a class="code" href="Pose_8hpp.html">../types/Pose.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00005" name="l00005"></a><span class="lineno">    5</span><span class="preprocessor">#include &quot;<a class="code" href="Twist_8hpp.html">../types/Twist.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00006" name="l00006"></a><span class="lineno">    6</span><span class="preprocessor">#include &quot;<a class="code" href="SpatialAcceleration_8hpp.html">../types/SpatialAcceleration.hpp</a>&quot;</span></div>
+<div class="line"><a id="l00007" name="l00007"></a><span class="lineno">    7</span><span class="preprocessor">#include &lt;memory&gt;</span></div>
+<div class="line"><a id="l00008" name="l00008"></a><span class="lineno">    8</span> </div>
+<div class="line"><a id="l00009" name="l00009"></a><span class="lineno">    9</span><span class="keyword">namespace </span><a class="code hl_namespace" href="namespacewbc.html">wbc</a> {</div>
+<div class="line"><a id="l00010" name="l00010"></a><span class="lineno">   10</span></div>
+<div class="line"><a id="l00041" name="l00041"></a><span class="lineno">   41</span><span class="keyword">class </span>CartesianPosPDController {</div>
+<div class="line"><a id="l00042" name="l00042"></a><span class="lineno">   42</span><span class="keyword">protected</span>:</div>
+<div class="line"><a id="l00043" name="l00043"></a><span class="lineno">   43</span>    uint dim_controller;</div>
+<div class="line"><a id="l00044" name="l00044"></a><span class="lineno">   44</span>    types::Twist control_out_vel;</div>
+<div class="line"><a id="l00045" name="l00045"></a><span class="lineno">   45</span>    types::SpatialAcceleration control_out_acc;</div>
+<div class="line"><a id="l00046" name="l00046"></a><span class="lineno">   46</span>    Eigen::VectorXd u;</div>
+<div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Eigen::VectorXd u_max;</div>
+<div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    Eigen::VectorXd p_gain;</div>
+<div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    Eigen::VectorXd d_gain;</div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    Eigen::VectorXd x;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    Eigen::VectorXd v;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    Eigen::VectorXd rx;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    Eigen::VectorXd rv;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    Eigen::VectorXd ra;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    types::Twist pose_diff;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    CartesianPosPDController();</div>
+<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> types::Twist&amp; update(<span class="keyword">const</span> types::Pose&amp; ref_pose,</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                               <span class="keyword">const</span> types::Twist&amp; ref_twist,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                               <span class="keyword">const</span> types::Pose&amp; pose);</div>
+<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> types::SpatialAcceleration&amp; update(<span class="keyword">const</span> types::Pose&amp; ref_pose,</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                             <span class="keyword">const</span> types::Twist&amp; ref_twist,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                             <span class="keyword">const</span> types::SpatialAcceleration&amp; ref_acc,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                             <span class="keyword">const</span> types::Pose&amp; pose,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                             <span class="keyword">const</span> types::Twist&amp; twist);</div>
+<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> setPGain(<span class="keyword">const</span> Eigen::VectorXd &amp;gain);</div>
+<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; pGain(){<span class="keywordflow">return</span> p_gain;}</div>
+<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> setDGain(<span class="keyword">const</span> Eigen::VectorXd &amp;gain);</div>
+<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; dGain(){<span class="keywordflow">return</span> d_gain;}</div>
+<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> setMaxCtrlOutput(<span class="keyword">const</span> Eigen::VectorXd &amp;max_ctrl_out);</div>
+<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; maxCtrlOutput(){<span class="keywordflow">return</span> u_max;}</div>
+<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> applySaturation(<span class="keyword">const</span> Eigen::VectorXd&amp; in, <span class="keyword">const</span> Eigen::VectorXd&amp; max, Eigen::VectorXd &amp;out);</div>
+<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
+<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">using </span>CartesianPosPDControllerPtr = std::shared_ptr&lt;CartesianPosPDController&gt;;</div>
+<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
+<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#endif</span></div>
+<div class="ttc" id="aPose_8hpp_html"><div class="ttname"><a href="Pose_8hpp.html">Pose.hpp</a></div></div>
+<div class="ttc" id="aSpatialAcceleration_8hpp_html"><div class="ttname"><a href="SpatialAcceleration_8hpp.html">SpatialAcceleration.hpp</a></div></div>
+<div class="ttc" id="aTwist_8hpp_html"><div class="ttname"><a href="Twist_8hpp.html">Twist.hpp</a></div></div>
 <div class="ttc" id="anamespacewbc_html"><div class="ttname"><a href="namespacewbc.html">wbc</a></div><div class="ttdef"><b>Definition</b> ContactsAccelerationConstraint.cpp:3</div></div>
 </div><!-- fragment --></div><!-- contents -->
 <!-- start footer part -->

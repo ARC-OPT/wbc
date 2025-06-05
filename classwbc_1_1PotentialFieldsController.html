@@ -72,7 +72,7 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
-<p>Base class for potential field controllers.  
+<p>Eigen class for potential field controllers.  
  <a href="#details">More...</a></p>
 
 <p><code>#include &lt;<a class="el" href="PotentialFieldsController_8hpp_source.html">PotentialFieldsController.hpp</a>&gt;</code></p>
@@ -91,23 +91,23 @@ Inheritance diagram for wbc::PotentialFieldsController:</div>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a8e706b4da95fe59a6d53beba7b3bb091" id="r_a8e706b4da95fe59a6d53beba7b3bb091"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e706b4da95fe59a6d53beba7b3bb091">PotentialFieldsController</a> (const uint _dimension)</td></tr>
 <tr class="separator:a8e706b4da95fe59a6d53beba7b3bb091"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab531844db42fa4c962163d94045ba515" id="r_ab531844db42fa4c962163d94045ba515"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab531844db42fa4c962163d94045ba515">applySaturation</a> (const base::VectorXd &amp;in, base::VectorXd &amp;out)</td></tr>
-<tr class="memdesc:ab531844db42fa4c962163d94045ba515"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Saturation on the control output. If one or more values of &lt;in&gt; are bigger than the Corrresponding entry of &lt;max&gt;, all values will be scaled down according to the biggest ratio eta = in_i / max,i.  <br /></td></tr>
-<tr class="separator:ab531844db42fa4c962163d94045ba515"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2d9b031edfc2593a1105cdd5843a0966" id="r_a2d9b031edfc2593a1105cdd5843a0966"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2d9b031edfc2593a1105cdd5843a0966">applySaturation</a> (const Eigen::VectorXd &amp;in, Eigen::VectorXd &amp;out)</td></tr>
+<tr class="memdesc:a2d9b031edfc2593a1105cdd5843a0966"><td class="mdescLeft">&#160;</td><td class="mdescRight">Apply Saturation on the control output. If one or more values of &lt;in&gt; are bigger than the Corrresponding entry of &lt;max&gt;, all values will be scaled down according to the biggest ratio eta = in_i / max,i.  <br /></td></tr>
+<tr class="separator:a2d9b031edfc2593a1105cdd5843a0966"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa528f22954ae207c4548ee64f3696d3e" id="r_aa528f22954ae207c4548ee64f3696d3e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa528f22954ae207c4548ee64f3696d3e">setFields</a> (const std::vector&lt; <a class="el" href="namespacewbc.html#a1f927e8dadec0f0d7c5e1773695f0455">PotentialFieldPtr</a> &gt; &amp;_fields)</td></tr>
 <tr class="separator:aa528f22954ae207c4548ee64f3696d3e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a78bf33e55601a369a1c2e077307e01cc" id="r_a78bf33e55601a369a1c2e077307e01cc"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structwbc_1_1PotentialFieldInfo.html">PotentialFieldInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78bf33e55601a369a1c2e077307e01cc">getFieldInfos</a> ()</td></tr>
 <tr class="separator:a78bf33e55601a369a1c2e077307e01cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8e65e4209c5c73f264eeaeab890bee25" id="r_a8e65e4209c5c73f264eeaeab890bee25"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8e65e4209c5c73f264eeaeab890bee25">clearFields</a> ()</td></tr>
 <tr class="separator:a8e65e4209c5c73f264eeaeab890bee25"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a28f55daa62cd8a3eb64ebea2cc980c1f" id="r_a28f55daa62cd8a3eb64ebea2cc980c1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a28f55daa62cd8a3eb64ebea2cc980c1f">setPGain</a> (const base::VectorXd &amp;gain)</td></tr>
-<tr class="separator:a28f55daa62cd8a3eb64ebea2cc980c1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aa4c5bd04b661544e043476ca88661d56" id="r_aa4c5bd04b661544e043476ca88661d56"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa4c5bd04b661544e043476ca88661d56">setMaxControlOutput</a> (const base::VectorXd &amp;new_max_control_output)</td></tr>
-<tr class="separator:aa4c5bd04b661544e043476ca88661d56"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a3cccaa9817a5c2986e0ec2be5df224c4" id="r_a3cccaa9817a5c2986e0ec2be5df224c4"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3cccaa9817a5c2986e0ec2be5df224c4">getMaxControlOutput</a> ()</td></tr>
-<tr class="separator:a3cccaa9817a5c2986e0ec2be5df224c4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aea9645c71b78829e0b98743a29f21207" id="r_aea9645c71b78829e0b98743a29f21207"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aea9645c71b78829e0b98743a29f21207">getPGain</a> ()</td></tr>
-<tr class="separator:aea9645c71b78829e0b98743a29f21207"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a17b609a480e437a7bfc75471946c98f5" id="r_a17b609a480e437a7bfc75471946c98f5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a17b609a480e437a7bfc75471946c98f5">setPGain</a> (const Eigen::VectorXd &amp;gain)</td></tr>
+<tr class="separator:a17b609a480e437a7bfc75471946c98f5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a03d17d2937a148271b15c7719712a7c1" id="r_a03d17d2937a148271b15c7719712a7c1"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a03d17d2937a148271b15c7719712a7c1">setMaxControlOutput</a> (const Eigen::VectorXd &amp;new_max_control_output)</td></tr>
+<tr class="separator:a03d17d2937a148271b15c7719712a7c1"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afa04288d33c2a651e220c12f34446b33" id="r_afa04288d33c2a651e220c12f34446b33"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afa04288d33c2a651e220c12f34446b33">getMaxControlOutput</a> ()</td></tr>
+<tr class="separator:afa04288d33c2a651e220c12f34446b33"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a94dc5839cb2bfda60f1eea81541913e4" id="r_a94dc5839cb2bfda60f1eea81541913e4"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a94dc5839cb2bfda60f1eea81541913e4">getPGain</a> ()</td></tr>
+<tr class="separator:a94dc5839cb2bfda60f1eea81541913e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1b8376a27116fb716fd7e553944e15f4" id="r_a1b8376a27116fb716fd7e553944e15f4"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="namespacewbc.html#a1f927e8dadec0f0d7c5e1773695f0455">PotentialFieldPtr</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1b8376a27116fb716fd7e553944e15f4">getFields</a> ()</td></tr>
 <tr class="separator:a1b8376a27116fb716fd7e553944e15f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a33ee9c8a780cec8be9eb4b9ff5686787" id="r_a33ee9c8a780cec8be9eb4b9ff5686787"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a33ee9c8a780cec8be9eb4b9ff5686787">getDimension</a> ()</td></tr>
@@ -115,12 +115,12 @@ Public Member Functions</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
-<tr class="memitem:a39f232dd2e26096b13bc7a6748c75e42" id="r_a39f232dd2e26096b13bc7a6748c75e42"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a39f232dd2e26096b13bc7a6748c75e42">p_gain</a></td></tr>
-<tr class="separator:a39f232dd2e26096b13bc7a6748c75e42"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a78456110b254b731501306a9c3007720" id="r_a78456110b254b731501306a9c3007720"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a78456110b254b731501306a9c3007720">max_ctrl_output</a></td></tr>
-<tr class="separator:a78456110b254b731501306a9c3007720"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a81b089c69e902a10f29a55270bade803" id="r_a81b089c69e902a10f29a55270bade803"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a81b089c69e902a10f29a55270bade803">control_output</a></td></tr>
-<tr class="separator:a81b089c69e902a10f29a55270bade803"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a75044af636cd8ca2c91660d4bb9bf62d" id="r_a75044af636cd8ca2c91660d4bb9bf62d"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a75044af636cd8ca2c91660d4bb9bf62d">p_gain</a></td></tr>
+<tr class="separator:a75044af636cd8ca2c91660d4bb9bf62d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a2b3146494c2f015966eecb1cdf5fb623" id="r_a2b3146494c2f015966eecb1cdf5fb623"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2b3146494c2f015966eecb1cdf5fb623">max_ctrl_output</a></td></tr>
+<tr class="separator:a2b3146494c2f015966eecb1cdf5fb623"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a0960ee3db0653c287cf199e71cd6fba4" id="r_a0960ee3db0653c287cf199e71cd6fba4"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0960ee3db0653c287cf199e71cd6fba4">control_output</a></td></tr>
+<tr class="separator:a0960ee3db0653c287cf199e71cd6fba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abbffeafc4ffc53eebc20a6a0480e7a1f" id="r_abbffeafc4ffc53eebc20a6a0480e7a1f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacewbc.html#a1f927e8dadec0f0d7c5e1773695f0455">PotentialFieldPtr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abbffeafc4ffc53eebc20a6a0480e7a1f">fields</a></td></tr>
 <tr class="separator:abbffeafc4ffc53eebc20a6a0480e7a1f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5667d1f02791f510567a9ad8771fe7f" id="r_aa5667d1f02791f510567a9ad8771fe7f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structwbc_1_1PotentialFieldInfo.html">PotentialFieldInfo</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5667d1f02791f510567a9ad8771fe7f">field_infos</a></td></tr>
@@ -129,7 +129,7 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a697e0fef58167944de52e795b9436af6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
-<div class="textblock"><p>Base class for potential field controllers. </p>
+<div class="textblock"><p>Eigen class for potential field controllers. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a8e706b4da95fe59a6d53beba7b3bb091" name="a8e706b4da95fe59a6d53beba7b3bb091"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a8e706b4da95fe59a6d53beba7b3bb091">&#9670;&#160;</a></span>PotentialFieldsController()</h2>
@@ -149,8 +149,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ab531844db42fa4c962163d94045ba515" name="ab531844db42fa4c962163d94045ba515"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab531844db42fa4c962163d94045ba515">&#9670;&#160;</a></span>applySaturation()</h2>
+<a id="a2d9b031edfc2593a1105cdd5843a0966" name="a2d9b031edfc2593a1105cdd5843a0966"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2d9b031edfc2593a1105cdd5843a0966">&#9670;&#160;</a></span>applySaturation()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -158,12 +158,12 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void PotentialFieldsController::applySaturation </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>in</em></span>, </td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>in</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>out</em></span>&#160;)</td>
+          <td class="paramtype">Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>out</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -275,8 +275,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a3cccaa9817a5c2986e0ec2be5df224c4" name="a3cccaa9817a5c2986e0ec2be5df224c4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3cccaa9817a5c2986e0ec2be5df224c4">&#9670;&#160;</a></span>getMaxControlOutput()</h2>
+<a id="afa04288d33c2a651e220c12f34446b33" name="afa04288d33c2a651e220c12f34446b33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afa04288d33c2a651e220c12f34446b33">&#9670;&#160;</a></span>getMaxControlOutput()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -285,7 +285,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialFieldsController::getMaxControlOutput </td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialFieldsController::getMaxControlOutput </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -301,8 +301,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aea9645c71b78829e0b98743a29f21207" name="aea9645c71b78829e0b98743a29f21207"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aea9645c71b78829e0b98743a29f21207">&#9670;&#160;</a></span>getPGain()</h2>
+<a id="a94dc5839cb2bfda60f1eea81541913e4" name="a94dc5839cb2bfda60f1eea81541913e4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a94dc5839cb2bfda60f1eea81541913e4">&#9670;&#160;</a></span>getPGain()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -311,7 +311,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialFieldsController::getPGain </td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialFieldsController::getPGain </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -345,8 +345,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aa4c5bd04b661544e043476ca88661d56" name="aa4c5bd04b661544e043476ca88661d56"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aa4c5bd04b661544e043476ca88661d56">&#9670;&#160;</a></span>setMaxControlOutput()</h2>
+<a id="a03d17d2937a148271b15c7719712a7c1" name="a03d17d2937a148271b15c7719712a7c1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a03d17d2937a148271b15c7719712a7c1">&#9670;&#160;</a></span>setMaxControlOutput()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -354,7 +354,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void PotentialFieldsController::setMaxControlOutput </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>new_max_control_output</em></span></td><td>)</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>new_max_control_output</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -363,8 +363,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a28f55daa62cd8a3eb64ebea2cc980c1f" name="a28f55daa62cd8a3eb64ebea2cc980c1f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a28f55daa62cd8a3eb64ebea2cc980c1f">&#9670;&#160;</a></span>setPGain()</h2>
+<a id="a17b609a480e437a7bfc75471946c98f5" name="a17b609a480e437a7bfc75471946c98f5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17b609a480e437a7bfc75471946c98f5">&#9670;&#160;</a></span>setPGain()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -372,7 +372,7 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="memname">void PotentialFieldsController::setPGain </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>gain</em></span></td><td>)</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>gain</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -382,8 +382,8 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
-<a id="a81b089c69e902a10f29a55270bade803" name="a81b089c69e902a10f29a55270bade803"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a81b089c69e902a10f29a55270bade803">&#9670;&#160;</a></span>control_output</h2>
+<a id="a0960ee3db0653c287cf199e71cd6fba4" name="a0960ee3db0653c287cf199e71cd6fba4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a0960ee3db0653c287cf199e71cd6fba4">&#9670;&#160;</a></span>control_output</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -392,7 +392,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialFieldsController::control_output</td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialFieldsController::control_output</td>
         </tr>
       </table>
   </td>
@@ -470,8 +470,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a78456110b254b731501306a9c3007720" name="a78456110b254b731501306a9c3007720"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a78456110b254b731501306a9c3007720">&#9670;&#160;</a></span>max_ctrl_output</h2>
+<a id="a2b3146494c2f015966eecb1cdf5fb623" name="a2b3146494c2f015966eecb1cdf5fb623"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2b3146494c2f015966eecb1cdf5fb623">&#9670;&#160;</a></span>max_ctrl_output</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -480,7 +480,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialFieldsController::max_ctrl_output</td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialFieldsController::max_ctrl_output</td>
         </tr>
       </table>
   </td>
@@ -492,8 +492,8 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a39f232dd2e26096b13bc7a6748c75e42" name="a39f232dd2e26096b13bc7a6748c75e42"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a39f232dd2e26096b13bc7a6748c75e42">&#9670;&#160;</a></span>p_gain</h2>
+<a id="a75044af636cd8ca2c91660d4bb9bf62d" name="a75044af636cd8ca2c91660d4bb9bf62d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a75044af636cd8ca2c91660d4bb9bf62d">&#9670;&#160;</a></span>p_gain</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -502,7 +502,7 @@ Protected Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialFieldsController::p_gain</td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialFieldsController::p_gain</td>
         </tr>
       </table>
   </td>

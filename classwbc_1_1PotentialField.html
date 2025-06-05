@@ -93,24 +93,22 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:a840df6e1f5a4c9bb85575e5a53f211ea"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad286d4f85ce3cd7199a67468653202f4" id="r_ad286d4f85ce3cd7199a67468653202f4"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad286d4f85ce3cd7199a67468653202f4">~PotentialField</a> ()</td></tr>
 <tr class="separator:ad286d4f85ce3cd7199a67468653202f4"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad061e84f2eb02ea112f85404bf95c2ef" id="r_ad061e84f2eb02ea112f85404bf95c2ef"><td class="memItemLeft" align="right" valign="top">virtual const base::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad061e84f2eb02ea112f85404bf95c2ef">update</a> (const base::VectorXd &amp;position)=0</td></tr>
-<tr class="memdesc:ad061e84f2eb02ea112f85404bf95c2ef"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implement in derived class. Compute control update according to potential field equation.  <br /></td></tr>
-<tr class="separator:ad061e84f2eb02ea112f85404bf95c2ef"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:abcda2748626f63c936666d02b045d1cb" id="r_abcda2748626f63c936666d02b045d1cb"><td class="memItemLeft" align="right" valign="top">virtual const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abcda2748626f63c936666d02b045d1cb">update</a> (const Eigen::VectorXd &amp;position)=0</td></tr>
+<tr class="memdesc:abcda2748626f63c936666d02b045d1cb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Implement in derived class. Compute control update according to potential field equation.  <br /></td></tr>
+<tr class="separator:abcda2748626f63c936666d02b045d1cb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:abc97183dace955d7dd82c2cb81567bb3" id="r_abc97183dace955d7dd82c2cb81567bb3"><td class="memItemLeft" align="right" valign="top">base::Time&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc97183dace955d7dd82c2cb81567bb3">time</a></td></tr>
-<tr class="separator:abc97183dace955d7dd82c2cb81567bb3"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab7115eb8cb9c505722fa9ac6c83d6f41" id="r_ab7115eb8cb9c505722fa9ac6c83d6f41"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab7115eb8cb9c505722fa9ac6c83d6f41">dimension</a></td></tr>
 <tr class="separator:ab7115eb8cb9c505722fa9ac6c83d6f41"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ad8470af44fd662392b11ba067f6ce5b0" id="r_ad8470af44fd662392b11ba067f6ce5b0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad8470af44fd662392b11ba067f6ce5b0">influence_distance</a></td></tr>
 <tr class="separator:ad8470af44fd662392b11ba067f6ce5b0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:aade8e851c75c74b4a7db27c7896d3235" id="r_aade8e851c75c74b4a7db27c7896d3235"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aade8e851c75c74b4a7db27c7896d3235">distance</a></td></tr>
-<tr class="separator:aade8e851c75c74b4a7db27c7896d3235"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a64235843e712e38645b16328152c4dab" id="r_a64235843e712e38645b16328152c4dab"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a64235843e712e38645b16328152c4dab">pot_field_center</a></td></tr>
-<tr class="separator:a64235843e712e38645b16328152c4dab"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5a025b25805bec313efa5b1c546a0192" id="r_a5a025b25805bec313efa5b1c546a0192"><td class="memItemLeft" align="right" valign="top">base::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5a025b25805bec313efa5b1c546a0192">gradient</a></td></tr>
-<tr class="separator:a5a025b25805bec313efa5b1c546a0192"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a42d3344188a59d90327f649ca818645f" id="r_a42d3344188a59d90327f649ca818645f"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42d3344188a59d90327f649ca818645f">distance</a></td></tr>
+<tr class="separator:a42d3344188a59d90327f649ca818645f"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:afb3d35c761211d8f37fa9233bb997bc5" id="r_afb3d35c761211d8f37fa9233bb997bc5"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afb3d35c761211d8f37fa9233bb997bc5">pot_field_center</a></td></tr>
+<tr class="separator:afb3d35c761211d8f37fa9233bb997bc5"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ac92703155cfb26f5eab7b4babc623624" id="r_ac92703155cfb26f5eab7b4babc623624"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac92703155cfb26f5eab7b4babc623624">gradient</a></td></tr>
+<tr class="separator:ac92703155cfb26f5eab7b4babc623624"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a432aa4243b86ea6ea34f0e4c36f7602e" id="r_a432aa4243b86ea6ea34f0e4c36f7602e"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a432aa4243b86ea6ea34f0e4c36f7602e">name</a></td></tr>
 <tr class="separator:a432aa4243b86ea6ea34f0e4c36f7602e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -173,8 +171,8 @@ Public Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ad061e84f2eb02ea112f85404bf95c2ef" name="ad061e84f2eb02ea112f85404bf95c2ef"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad061e84f2eb02ea112f85404bf95c2ef">&#9670;&#160;</a></span>update()</h2>
+<a id="abcda2748626f63c936666d02b045d1cb" name="abcda2748626f63c936666d02b045d1cb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abcda2748626f63c936666d02b045d1cb">&#9670;&#160;</a></span>update()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -183,9 +181,9 @@ Public Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">virtual const base::VectorXd &amp; wbc::PotentialField::update </td>
+          <td class="memname">virtual const Eigen::VectorXd &amp; wbc::PotentialField::update </td>
           <td>(</td>
-          <td class="paramtype">const base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>position</em></span></td><td>)</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>position</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -199,7 +197,7 @@ Public Attributes</h2></td></tr>
 <p>Implement in derived class. Compute control update according to potential field equation. </p>
 <dl class="section return"><dt>Returns</dt><dd>Computed gradient. Size will be same as dimension </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1PlanarPotentialField.html#a7ded3300a43692f288cd4d9903586ffc">wbc::PlanarPotentialField</a>, and <a class="el" href="classwbc_1_1RadialPotentialField.html#ab6016cd7f00c0f9422720d926003ee49">wbc::RadialPotentialField</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1PlanarPotentialField.html#a1be21cfb605bd36763a7b147afcbad7f">wbc::PlanarPotentialField</a>, and <a class="el" href="classwbc_1_1RadialPotentialField.html#a8b85b4fd6fb5b2fea6f27714d38fc876">wbc::RadialPotentialField</a>.</p>
 
 </div>
 </div>
@@ -219,14 +217,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="aade8e851c75c74b4a7db27c7896d3235" name="aade8e851c75c74b4a7db27c7896d3235"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#aade8e851c75c74b4a7db27c7896d3235">&#9670;&#160;</a></span>distance</h2>
+<a id="a42d3344188a59d90327f649ca818645f" name="a42d3344188a59d90327f649ca818645f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a42d3344188a59d90327f649ca818645f">&#9670;&#160;</a></span>distance</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialField::distance</td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialField::distance</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -234,14 +232,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a5a025b25805bec313efa5b1c546a0192" name="a5a025b25805bec313efa5b1c546a0192"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5a025b25805bec313efa5b1c546a0192">&#9670;&#160;</a></span>gradient</h2>
+<a id="ac92703155cfb26f5eab7b4babc623624" name="ac92703155cfb26f5eab7b4babc623624"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac92703155cfb26f5eab7b4babc623624">&#9670;&#160;</a></span>gradient</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialField::gradient</td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialField::gradient</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -279,32 +277,18 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a64235843e712e38645b16328152c4dab" name="a64235843e712e38645b16328152c4dab"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a64235843e712e38645b16328152c4dab">&#9670;&#160;</a></span>pot_field_center</h2>
+<a id="afb3d35c761211d8f37fa9233bb997bc5" name="afb3d35c761211d8f37fa9233bb997bc5"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afb3d35c761211d8f37fa9233bb997bc5">&#9670;&#160;</a></span>pot_field_center</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">base::VectorXd wbc::PotentialField::pot_field_center</td>
+          <td class="memname">Eigen::VectorXd wbc::PotentialField::pot_field_center</td>
         </tr>
       </table>
 </div><div class="memdoc">
 <p>Potential field center position </p>
-
-</div>
-</div>
-<a id="abc97183dace955d7dd82c2cb81567bb3" name="abc97183dace955d7dd82c2cb81567bb3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#abc97183dace955d7dd82c2cb81567bb3">&#9670;&#160;</a></span>time</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::Time wbc::PotentialField::time</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
 
 </div>
 </div>

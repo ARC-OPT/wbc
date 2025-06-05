@@ -72,6 +72,9 @@ $(function(){ initResizable(false); });
 </div><!--header-->
 <div class="contents">
 
+<p>Base class for all QP solvers.  
+ <a href="#details">More...</a></p>
+
 <p><code>#include &lt;<a class="el" href="QPSolver_8hpp_source.html">QPSolver.hpp</a>&gt;</code></p>
 <div class="dynheader">
 Inheritance diagram for wbc::QPSolver:</div>
@@ -79,12 +82,12 @@ Inheritance diagram for wbc::QPSolver:</div>
  <div class="center">
   <img src="classwbc_1_1QPSolver.png" usemap="#wbc::QPSolver_map" alt=""/>
   <map id="wbc::QPSolver_map" name="wbc::QPSolver_map">
-<area href="classwbc_1_1EiquadprogSolver.html" title="The EiquadprogSolver class is a wrapper for the qp-solver eiquadprog (see https://github...." alt="wbc::EiquadprogSolver" shape="rect" coords="0,56,163,80"/>
-<area href="classwbc_1_1HierarchicalLSSolver.html" title="Implementation of the hierarchical weighted damped least squares solver (HWLS), similar to Schutter,..." alt="wbc::HierarchicalLSSolver" shape="rect" coords="173,56,336,80"/>
-<area href="classwbc_1_1OsqpSolver.html" alt="wbc::OsqpSolver" shape="rect" coords="346,56,509,80"/>
-<area href="classwbc_1_1ProxQPSolver.html" title="The ProxQPSolver class is a wrapper for the qp-solver prox-qp (see https://github...." alt="wbc::ProxQPSolver" shape="rect" coords="519,56,682,80"/>
-<area href="classwbc_1_1QPOASESSolver.html" title="The QPOASESSolver class is a wrapper for the qp-solver qpoases (see https://www.coin-or...." alt="wbc::QPOASESSolver" shape="rect" coords="692,56,855,80"/>
-<area href="classwbc_1_1QPSwiftSolver.html" alt="wbc::QPSwiftSolver" shape="rect" coords="865,56,1028,80"/>
+<area href="classwbc_1_1EiquadprogSolver.html" title="The EiquadprogSolver class is a wrapper for the qp-solver eiquadprog (see https://github...." alt="wbc::EiquadprogSolver" shape="rect" coords="0,56,142,80"/>
+<area href="classwbc_1_1HPIPMSolver.html" alt="wbc::HPIPMSolver" shape="rect" coords="152,56,294,80"/>
+<area href="classwbc_1_1OsqpSolver.html" title="The OsqpSolver solves convex quadratic programs (QPs) of the form." alt="wbc::OsqpSolver" shape="rect" coords="304,56,446,80"/>
+<area href="classwbc_1_1ProxQPSolver.html" title="The ProxQPSolver class is a wrapper for the qp-solver prox-qp (see https://github...." alt="wbc::ProxQPSolver" shape="rect" coords="456,56,598,80"/>
+<area href="classwbc_1_1QPOASESSolver.html" title="The QPOASESSolver class is a wrapper for the qp-solver qpoases (see https://www.coin-or...." alt="wbc::QPOASESSolver" shape="rect" coords="608,56,750,80"/>
+<area href="classwbc_1_1QPSwiftSolver.html" alt="wbc::QPSwiftSolver" shape="rect" coords="760,56,902,80"/>
   </map>
 </div></div>
 <table class="memberdecls">
@@ -94,11 +97,11 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:ae0c526c58ef026242136d0873fcb23c6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a30edabb36c25298f81aaf405fc164c3d" id="r_a30edabb36c25298f81aaf405fc164c3d"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a30edabb36c25298f81aaf405fc164c3d">~QPSolver</a> ()</td></tr>
 <tr class="separator:a30edabb36c25298f81aaf405fc164c3d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a5ae8941c04159e538dac4c60c9008ef4" id="r_a5ae8941c04159e538dac4c60c9008ef4"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5ae8941c04159e538dac4c60c9008ef4">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;hierarchical_qp, base::VectorXd &amp;solver_output)=0</td></tr>
-<tr class="memdesc:a5ae8941c04159e538dac4c60c9008ef4"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
-<tr class="separator:a5ae8941c04159e538dac4c60c9008ef4"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a37c8dae7248389b449905fc177afa06a" id="r_a37c8dae7248389b449905fc177afa06a"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37c8dae7248389b449905fc177afa06a">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;hierarchical_qp, Eigen::VectorXd &amp;solver_output, bool allow_warm_start=true)=0</td></tr>
+<tr class="memdesc:a37c8dae7248389b449905fc177afa06a"><td class="mdescLeft">&#160;</td><td class="mdescRight">solve Solve the given quadratic program  <br /></td></tr>
+<tr class="separator:a37c8dae7248389b449905fc177afa06a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a63c08815ce01f2d3c253724f301aa4b4" id="r_a63c08815ce01f2d3c253724f301aa4b4"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a63c08815ce01f2d3c253724f301aa4b4">reset</a> ()</td></tr>
-<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="#a5ae8941c04159e538dac4c60c9008ef4" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
+<tr class="memdesc:a63c08815ce01f2d3c253724f301aa4b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">reset Enforces reconfiguration at next call to <a class="el" href="#a37c8dae7248389b449905fc177afa06a" title="solve Solve the given quadratic program">solve()</a>  <br /></td></tr>
 <tr class="separator:a63c08815ce01f2d3c253724f301aa4b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
@@ -106,7 +109,9 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a37459355745290b4509a9b6ea0c949ce" id="r_a37459355745290b4509a9b6ea0c949ce"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a37459355745290b4509a9b6ea0c949ce">configured</a></td></tr>
 <tr class="separator:a37459355745290b4509a9b6ea0c949ce"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
-<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
+<div class="textblock"><p>Base class for all QP solvers. </p>
+</div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="ae0c526c58ef026242136d0873fcb23c6" name="ae0c526c58ef026242136d0873fcb23c6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ae0c526c58ef026242136d0873fcb23c6">&#9670;&#160;</a></span>QPSolver()</h2>
 
@@ -173,12 +178,12 @@ Protected Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p>reset Enforces reconfiguration at next call to <a class="el" href="#a5ae8941c04159e538dac4c60c9008ef4" title="solve Solve the given quadratic program">solve()</a> </p>
+<p>reset Enforces reconfiguration at next call to <a class="el" href="#a37c8dae7248389b449905fc177afa06a" title="solve Solve the given quadratic program">solve()</a> </p>
 
 </div>
 </div>
-<a id="a5ae8941c04159e538dac4c60c9008ef4" name="a5ae8941c04159e538dac4c60c9008ef4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5ae8941c04159e538dac4c60c9008ef4">&#9670;&#160;</a></span>solve()</h2>
+<a id="a37c8dae7248389b449905fc177afa06a" name="a37c8dae7248389b449905fc177afa06a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a37c8dae7248389b449905fc177afa06a">&#9670;&#160;</a></span>solve()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -194,7 +199,12 @@ Protected Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>&#160;)</td>
+          <td class="paramtype">Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>solver_output</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>allow_warm_start</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -207,13 +217,13 @@ Protected Attributes</h2></td></tr>
 <p>solve Solve the given quadratic program </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">hierarchical_qp</td><td>Description of the hierarchical quadratic program to solve. </td></tr>
-    <tr><td class="paramname">solver_output</td><td>solution of the quadratic program </td></tr>
+    <tr><td class="paramname">hierarchical_qp</td><td>Description of the (hierarchical) quadratic program to solve. </td></tr>
+    <tr><td class="paramname">solver_output</td><td>solution of the quadratic program as vector </td></tr>
   </table>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1EiquadprogSolver.html#acc34c44225e1c4578a00729ce585c9e6">wbc::EiquadprogSolver</a>, <a class="el" href="classwbc_1_1HierarchicalLSSolver.html#a535945383d85c0b8c9c165ab8f6c3a12">wbc::HierarchicalLSSolver</a>, <a class="el" href="classwbc_1_1OsqpSolver.html#a0526b7b484abaeeab1e8bd2a1587945c">wbc::OsqpSolver</a>, <a class="el" href="classwbc_1_1ProxQPSolver.html#a728f0c992274c71d76e3c192a966efc1">wbc::ProxQPSolver</a>, <a class="el" href="classwbc_1_1QPOASESSolver.html#a49bffb1466bfade8f6e2027657a8feda">wbc::QPOASESSolver</a>, and <a class="el" href="classwbc_1_1QPSwiftSolver.html#a6ed082cadccc6f1440d350f3234af471">wbc::QPSwiftSolver</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1EiquadprogSolver.html#ae530008a277817111bc0702cce7df986">wbc::EiquadprogSolver</a>, <a class="el" href="classwbc_1_1HPIPMSolver.html#a2de000be284c274760f1db622fdbf5af">wbc::HPIPMSolver</a>, <a class="el" href="classwbc_1_1OsqpSolver.html#acaa55bedc735bb210ccbd5910b0b319b">wbc::OsqpSolver</a>, <a class="el" href="classwbc_1_1ProxQPSolver.html#ae50b0b27af45822b42a0cd3938d6cbcd">wbc::ProxQPSolver</a>, <a class="el" href="classwbc_1_1QPOASESSolver.html#a22ee533fc606882096a2685759f64024">wbc::QPOASESSolver</a>, and <a class="el" href="classwbc_1_1QPSwiftSolver.html#a5b65a58c61550e9f5f1d2d03b494ecab">wbc::QPSwiftSolver</a>.</p>
 
 </div>
 </div>

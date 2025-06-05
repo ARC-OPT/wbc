@@ -80,18 +80,15 @@ $(function(){ initResizable(false); });
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a7b8bd8a31842c23b0b3fa46a3a8be560" id="r_a7b8bd8a31842c23b0b3fa46a3a8be560"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b8bd8a31842c23b0b3fa46a3a8be560">JointIntegrator</a> ()</td></tr>
 <tr class="separator:a7b8bd8a31842c23b0b3fa46a3a8be560"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ab0ee72ed46d22c58cf834cdc36a3e8d5" id="r_ab0ee72ed46d22c58cf834cdc36a3e8d5"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab0ee72ed46d22c58cf834cdc36a3e8d5">integrate</a> (const base::samples::Joints &amp;joint_state, base::commands::Joints &amp;cmd, double cycle_time, <a class="el" href="JointIntegrator_8hpp.html#a9eca50997f7f604b063d2cb1874f5fef">IntegrationMethod</a> method=<a class="el" href="JointIntegrator_8hpp.html#a9eca50997f7f604b063d2cb1874f5fefae06caa270566bb68a321d91b7769fcee">RECTANGULAR</a>, bool use_cur_state=false)</td></tr>
-<tr class="memdesc:ab0ee72ed46d22c58cf834cdc36a3e8d5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs numerical from acceleration/velocity to positions.  <br /></td></tr>
-<tr class="separator:ab0ee72ed46d22c58cf834cdc36a3e8d5"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6ded7d409d78a9e282e40809624180dc" id="r_a6ded7d409d78a9e282e40809624180dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6ded7d409d78a9e282e40809624180dc">integrateRectangular</a> (base::commands::Joints &amp;cmd, double cycle_time, bool use_cur_state=false)</td></tr>
-<tr class="memdesc:a6ded7d409d78a9e282e40809624180dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs numerical from acceleration/velocity to positions using rectangular method.  <br /></td></tr>
-<tr class="separator:a6ded7d409d78a9e282e40809624180dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a055b704a4694189276148824137562dc" id="r_a055b704a4694189276148824137562dc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a055b704a4694189276148824137562dc">integrateTrapezoidal</a> (base::commands::Joints &amp;cmd, double cycle_time, bool use_cur_state=false)</td></tr>
-<tr class="memdesc:a055b704a4694189276148824137562dc"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trapezoidal method for numerical integration.  <br /></td></tr>
-<tr class="separator:a055b704a4694189276148824137562dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ae9b2a5d9a016a8fc5e68ca5ba5b15528" id="r_ae9b2a5d9a016a8fc5e68ca5ba5b15528"><td class="memItemLeft" align="right" valign="top">base::JointState::MODE&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9b2a5d9a016a8fc5e68ca5ba5b15528">cmdMode</a> (const base::JointState &amp;cmd)</td></tr>
-<tr class="memdesc:ae9b2a5d9a016a8fc5e68ca5ba5b15528"><td class="mdescLeft">&#160;</td><td class="mdescRight">cmdType Return the control model type POSITION/VELOCITY/ACCELERATION depending on the valid fields  <br /></td></tr>
-<tr class="separator:ae9b2a5d9a016a8fc5e68ca5ba5b15528"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a7b22485104dcb0d82507bd278562fc4c" id="r_a7b22485104dcb0d82507bd278562fc4c"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b22485104dcb0d82507bd278562fc4c">integrate</a> (const <a class="el" href="classwbc_1_1types_1_1JointState.html">types::JointState</a> &amp;joint_state, <a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;cmd, double cycle_time, <a class="el" href="namespacewbc_1_1types.html#ae147a698f239849425c5fe9b45f73679">types::CommandMode</a> mode, <a class="el" href="JointIntegrator_8hpp.html#a9eca50997f7f604b063d2cb1874f5fef">IntegrationMethod</a> method=<a class="el" href="JointIntegrator_8hpp.html#a9eca50997f7f604b063d2cb1874f5fefae06caa270566bb68a321d91b7769fcee">RECTANGULAR</a>, bool use_cur_state=false)</td></tr>
+<tr class="memdesc:a7b22485104dcb0d82507bd278562fc4c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs numerical from acceleration/velocity to positions.  <br /></td></tr>
+<tr class="separator:a7b22485104dcb0d82507bd278562fc4c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aece942d544ef0e19655c6153d920cecf" id="r_aece942d544ef0e19655c6153d920cecf"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aece942d544ef0e19655c6153d920cecf">integrateRectangular</a> (<a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;cmd, double cycle_time, <a class="el" href="namespacewbc_1_1types.html#ae147a698f239849425c5fe9b45f73679">types::CommandMode</a> mode, bool use_cur_state=false)</td></tr>
+<tr class="memdesc:aece942d544ef0e19655c6153d920cecf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Performs numerical from acceleration/velocity to positions using rectangular method.  <br /></td></tr>
+<tr class="separator:aece942d544ef0e19655c6153d920cecf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a32a9578b21de6cb4f3f2c244322b602e" id="r_a32a9578b21de6cb4f3f2c244322b602e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32a9578b21de6cb4f3f2c244322b602e">integrateTrapezoidal</a> (<a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;cmd, double cycle_time, <a class="el" href="namespacewbc_1_1types.html#ae147a698f239849425c5fe9b45f73679">types::CommandMode</a> mode, bool use_cur_state=false)</td></tr>
+<tr class="memdesc:a32a9578b21de6cb4f3f2c244322b602e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Trapezoidal method for numerical integration.  <br /></td></tr>
+<tr class="separator:a32a9578b21de6cb4f3f2c244322b602e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab01636ae3fedbac1c99dfb33c4e6a8df" id="r_ab01636ae3fedbac1c99dfb33c4e6a8df"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab01636ae3fedbac1c99dfb33c4e6a8df">reinit</a> ()</td></tr>
 <tr class="memdesc:ab01636ae3fedbac1c99dfb33c4e6a8df"><td class="mdescLeft">&#160;</td><td class="mdescRight">Reinitialize state of the integrator.  <br /></td></tr>
 <tr class="separator:ab01636ae3fedbac1c99dfb33c4e6a8df"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -125,27 +122,8 @@ Public Member Functions</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="ae9b2a5d9a016a8fc5e68ca5ba5b15528" name="ae9b2a5d9a016a8fc5e68ca5ba5b15528"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ae9b2a5d9a016a8fc5e68ca5ba5b15528">&#9670;&#160;</a></span>cmdMode()</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">base::JointState::MODE wbc::JointIntegrator::cmdMode </td>
-          <td>(</td>
-          <td class="paramtype">const base::JointState &amp;</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-<p>cmdType Return the control model type POSITION/VELOCITY/ACCELERATION depending on the valid fields </p>
-
-</div>
-</div>
-<a id="ab0ee72ed46d22c58cf834cdc36a3e8d5" name="ab0ee72ed46d22c58cf834cdc36a3e8d5"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab0ee72ed46d22c58cf834cdc36a3e8d5">&#9670;&#160;</a></span>integrate()</h2>
+<a id="a7b22485104dcb0d82507bd278562fc4c" name="a7b22485104dcb0d82507bd278562fc4c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a7b22485104dcb0d82507bd278562fc4c">&#9670;&#160;</a></span>integrate()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -153,17 +131,22 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void wbc::JointIntegrator::integrate </td>
           <td>(</td>
-          <td class="paramtype">const base::samples::Joints &amp;</td>          <td class="paramname"><span class="paramname"><em>joint_state</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="classwbc_1_1types_1_1JointState.html">types::JointState</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>joint_state</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">base::commands::Joints &amp;</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>cycle_time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacewbc_1_1types.html#ae147a698f239849425c5fe9b45f73679">types::CommandMode</a></td>          <td class="paramname"><span class="paramname"><em>mode</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -191,8 +174,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a6ded7d409d78a9e282e40809624180dc" name="a6ded7d409d78a9e282e40809624180dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6ded7d409d78a9e282e40809624180dc">&#9670;&#160;</a></span>integrateRectangular()</h2>
+<a id="aece942d544ef0e19655c6153d920cecf" name="aece942d544ef0e19655c6153d920cecf"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aece942d544ef0e19655c6153d920cecf">&#9670;&#160;</a></span>integrateRectangular()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -200,12 +183,17 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void wbc::JointIntegrator::integrateRectangular </td>
           <td>(</td>
-          <td class="paramtype">base::commands::Joints &amp;</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>cycle_time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacewbc_1_1types.html#ae147a698f239849425c5fe9b45f73679">types::CommandMode</a></td>          <td class="paramname"><span class="paramname"><em>mode</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -226,8 +214,8 @@ Public Member Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a055b704a4694189276148824137562dc" name="a055b704a4694189276148824137562dc"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a055b704a4694189276148824137562dc">&#9670;&#160;</a></span>integrateTrapezoidal()</h2>
+<a id="a32a9578b21de6cb4f3f2c244322b602e" name="a32a9578b21de6cb4f3f2c244322b602e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a32a9578b21de6cb4f3f2c244322b602e">&#9670;&#160;</a></span>integrateTrapezoidal()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -235,12 +223,17 @@ Public Member Functions</h2></td></tr>
         <tr>
           <td class="memname">void wbc::JointIntegrator::integrateTrapezoidal </td>
           <td>(</td>
-          <td class="paramtype">base::commands::Joints &amp;</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>, </td>
+          <td class="paramtype"><a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;</td>          <td class="paramname"><span class="paramname"><em>cmd</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
           <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>cycle_time</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype"><a class="el" href="namespacewbc_1_1types.html#ae147a698f239849425c5fe9b45f73679">types::CommandMode</a></td>          <td class="paramname"><span class="paramname"><em>mode</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
