@@ -17,6 +17,7 @@ class Scene{
 protected:
     RobotModelPtr robot_model;
     QPSolverPtr solver;
+    Eigen::VectorXd solver_output;
 
 public:
     Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
@@ -49,6 +50,11 @@ public:
      * @brief Return the current solver
      */
     QPSolverPtr getSolver(){return solver;}
+
+    /**
+     * @brief Get current solver output in raw values
+     */
+    const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
 };
 
 typedef std::shared_ptr<Scene> ScenePtr;

@@ -49,7 +49,6 @@ protected:
     HierarchicalQP hqp;
     bool configured;
     types::JointCommand solver_output_joints;
-    Eigen::VectorXd solver_output;
 
     bool contactsHaveChanged(const std::vector<types::Contact>& old_contacts, const std::vector<types::Contact>& new_contacts){
         if(old_contacts.size() != new_contacts.size())
@@ -98,11 +97,6 @@ public:
      * @brief Return the current value of hessian regularizer
      */
     double getHessianRegularizer(){return hessian_regularizer;}
-
-    /**
-     * @brief Get current solver output in raw values
-     */
-    const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
 };
 
 } // namespace wbc

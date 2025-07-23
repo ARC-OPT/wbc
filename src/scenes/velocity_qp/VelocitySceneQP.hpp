@@ -40,7 +40,6 @@ protected:
     HierarchicalQP hqp;
     bool configured;
     types::JointCommand solver_output_joints;
-    Eigen::VectorXd solver_output;
 
 public:
     /**
@@ -78,11 +77,6 @@ public:
      * @brief Return the current value of hessian regularizer
      */
     double getHessianRegularizer(){return hessian_regularizer;}
-
-    /**
-     * @brief Get current solver output in raw values
-     */
-    const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
 };
 
 } // namespace wbc
