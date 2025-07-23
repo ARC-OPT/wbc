@@ -112,9 +112,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a2f0f09dc520dfc9220eeb5c8f920a2f0" id="r_a2f0f09dc520dfc9220eeb5c8f920a2f0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f0f09dc520dfc9220eeb5c8f920a2f0">getHessianRegularizer</a> ()</td></tr>
 <tr class="memdesc:a2f0f09dc520dfc9220eeb5c8f920a2f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current value of hessian regularizer.  <br /></td></tr>
 <tr class="separator:a2f0f09dc520dfc9220eeb5c8f920a2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a71c6322e5c6c85ad74148c85d30d8572" id="r_a71c6322e5c6c85ad74148c85d30d8572"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a71c6322e5c6c85ad74148c85d30d8572">getSolverOutputRaw</a> () const</td></tr>
-<tr class="memdesc:a71c6322e5c6c85ad74148c85d30d8572"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current solver output in raw values.  <br /></td></tr>
-<tr class="separator:a71c6322e5c6c85ad74148c85d30d8572"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1Scene"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classwbc_1_1Scene')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1Scene.html">wbc::Scene</a></td></tr>
 <tr class="memitem:a9b4b944de7c8ab39e24283c3b782fc50 inherit pub_methods_classwbc_1_1Scene" id="r_a9b4b944de7c8ab39e24283c3b782fc50"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a9b4b944de7c8ab39e24283c3b782fc50">Scene</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> <a class="el" href="classwbc_1_1Scene.html#a1ee33fc1fee5a7c1f72d7f40199f6b31">robot_model</a>, <a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a> <a class="el" href="classwbc_1_1Scene.html#aff2c19220d73cf5c9d27255c660d04ba">solver</a>, const double dt)</td></tr>
 <tr class="separator:a9b4b944de7c8ab39e24283c3b782fc50 inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,6 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:aa1b3592bb4fc3e5a3010de89405e72b4 inherit pub_methods_classwbc_1_1Scene" id="r_aa1b3592bb4fc3e5a3010de89405e72b4"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#aa1b3592bb4fc3e5a3010de89405e72b4">getSolver</a> ()</td></tr>
 <tr class="memdesc:aa1b3592bb4fc3e5a3010de89405e72b4 inherit pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current solver.  <br /></td></tr>
 <tr class="separator:aa1b3592bb4fc3e5a3010de89405e72b4 inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a205446f840ec20a54490e635b3e1a984 inherit pub_methods_classwbc_1_1Scene" id="r_a205446f840ec20a54490e635b3e1a984"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a205446f840ec20a54490e635b3e1a984">getSolverOutputRaw</a> () const</td></tr>
+<tr class="memdesc:a205446f840ec20a54490e635b3e1a984 inherit pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current solver output in raw values.  <br /></td></tr>
+<tr class="separator:a205446f840ec20a54490e635b3e1a984 inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -154,13 +154,13 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aaf741b05c435199ac1d77ea413e3fbfe"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a924e4f91a6c7f0de4d6f3e73bcab668d" id="r_a924e4f91a6c7f0de4d6f3e73bcab668d"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a924e4f91a6c7f0de4d6f3e73bcab668d">solver_output_joints</a></td></tr>
 <tr class="separator:a924e4f91a6c7f0de4d6f3e73bcab668d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a348d9b4a1e27256f7abb361f1e2d2d71" id="r_a348d9b4a1e27256f7abb361f1e2d2d71"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a348d9b4a1e27256f7abb361f1e2d2d71">solver_output</a></td></tr>
-<tr class="separator:a348d9b4a1e27256f7abb361f1e2d2d71"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classwbc_1_1Scene"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classwbc_1_1Scene')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classwbc_1_1Scene.html">wbc::Scene</a></td></tr>
 <tr class="memitem:a1ee33fc1fee5a7c1f72d7f40199f6b31 inherit pro_attribs_classwbc_1_1Scene" id="r_a1ee33fc1fee5a7c1f72d7f40199f6b31"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a1ee33fc1fee5a7c1f72d7f40199f6b31">robot_model</a></td></tr>
 <tr class="separator:a1ee33fc1fee5a7c1f72d7f40199f6b31 inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aff2c19220d73cf5c9d27255c660d04ba inherit pro_attribs_classwbc_1_1Scene" id="r_aff2c19220d73cf5c9d27255c660d04ba"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#aff2c19220d73cf5c9d27255c660d04ba">solver</a></td></tr>
 <tr class="separator:aff2c19220d73cf5c9d27255c660d04ba inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aaf848f5b8f9f316fb077774b2beb12b8 inherit pro_attribs_classwbc_1_1Scene" id="r_aaf848f5b8f9f316fb077774b2beb12b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#aaf848f5b8f9f316fb077774b2beb12b8">solver_output</a></td></tr>
+<tr class="separator:aaf848f5b8f9f316fb077774b2beb12b8 inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
@@ -362,33 +362,6 @@ Static Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Return the current value of hessian regularizer. </p>
-
-</div>
-</div>
-<a id="a71c6322e5c6c85ad74148c85d30d8572" name="a71c6322e5c6c85ad74148c85d30d8572"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a71c6322e5c6c85ad74148c85d30d8572">&#9670;&#160;</a></span>getSolverOutputRaw()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const Eigen::VectorXd &amp; wbc::AccelerationSceneTSID::getSolverOutputRaw </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td> const</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get current solver output in raw values. </p>
 
 </div>
 </div>
@@ -656,28 +629,6 @@ Static Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">Eigen::VectorXd wbc::AccelerationSceneTSID::robot_acc</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a348d9b4a1e27256f7abb361f1e2d2d71" name="a348d9b4a1e27256f7abb361f1e2d2d71"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a348d9b4a1e27256f7abb361f1e2d2d71">&#9670;&#160;</a></span>solver_output</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::VectorXd wbc::AccelerationSceneTSID::solver_output</td>
         </tr>
       </table>
   </td>
