@@ -19,6 +19,7 @@ protected:
     QPSolverPtr solver;
     Eigen::VectorXd solver_output;
     double hessian_regularizer;
+    std::vector<types::Wrench> contact_wrenches;
 
 public:
     Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
@@ -67,6 +68,11 @@ public:
      * @brief Return the current value of hessian regularizer
      */
     double getHessianRegularizer(){return hessian_regularizer;}
+
+    /**
+     * @brief Get estimated contact wrenches
+     */
+    const std::vector<types::Wrench>& getContactWrenches(){return contact_wrenches;}
 };
 
 typedef std::shared_ptr<Scene> ScenePtr;

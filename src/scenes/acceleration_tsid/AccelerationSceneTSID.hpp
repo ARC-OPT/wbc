@@ -43,7 +43,6 @@ protected:
     // Helper variables
     std::vector<types::Contact> contacts;
     Eigen::VectorXd robot_acc, solver_output_acc;
-    std::vector<types::Wrench> contact_wrenches;
     std::vector< TaskPtr > tasks;
     std::vector< ConstraintPtr > constraints;
     HierarchicalQP hqp;
@@ -82,11 +81,6 @@ public:
      * @return Solver output as joint acceleration command
      */
     virtual const types::JointCommand& solve(const HierarchicalQP& hqp);
-
-    /**
-     * @brief Get estimated contact wrenches
-     */
-    const std::vector<types::Wrench>& getContactWrenches(){return contact_wrenches;}
 
 };
 

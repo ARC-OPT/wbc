@@ -41,7 +41,6 @@ protected:
     static SceneRegistry<AccelerationSceneReducedTSID> reg;
 
     Eigen::VectorXd robot_acc, solver_output_acc;
-    std::vector<types::Wrench> contact_wrenches;
     std::vector<types::Contact> contacts;
     std::vector< TaskPtr > tasks;
     std::vector< ConstraintPtr > constraints;
@@ -80,11 +79,6 @@ public:
      * @return Solver output as joint acceleration command
      */
     virtual const types::JointCommand& solve(const HierarchicalQP& hqp);
-
-    /**
-     * @brief Get estimated contact wrenches
-     */
-    const std::vector<types::Wrench>& getContactWrenches(){return contact_wrenches;}
 };
 
 } // namespace wbc
