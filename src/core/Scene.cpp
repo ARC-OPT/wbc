@@ -8,7 +8,8 @@ namespace wbc{
 
 Scene::Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double /*dt*/) :
     robot_model(robot_model),
-    solver(solver){
+    solver(solver),
+    hessian_regularizer(1e-8){
 }
 
 Scene::~Scene(){

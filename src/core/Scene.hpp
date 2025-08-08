@@ -18,6 +18,7 @@ protected:
     RobotModelPtr robot_model;
     QPSolverPtr solver;
     Eigen::VectorXd solver_output;
+    double hessian_regularizer;
 
 public:
     Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
@@ -55,6 +56,17 @@ public:
      * @brief Get current solver output in raw values
      */
     const Eigen::VectorXd& getSolverOutputRaw() const { return solver_output; }
+
+    /**
+     * @brief setHessianRegularizer
+     * @param reg This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8
+     */
+    void setHessianRegularizer(const double reg){hessian_regularizer=reg;}
+
+    /**
+     * @brief Return the current value of hessian regularizer
+     */
+    double getHessianRegularizer(){return hessian_regularizer;}
 };
 
 typedef std::shared_ptr<Scene> ScenePtr;

@@ -12,7 +12,6 @@ SceneRegistry<VelocitySceneQP> VelocitySceneQP::reg("velocity_qp");
 
 VelocitySceneQP::VelocitySceneQP(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
     Scene(robot_model, solver, dt),
-    hessian_regularizer(1e-8),
     configured(false){
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)

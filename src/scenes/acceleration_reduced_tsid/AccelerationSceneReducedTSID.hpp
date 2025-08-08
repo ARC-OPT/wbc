@@ -42,7 +42,6 @@ protected:
 
     Eigen::VectorXd robot_acc, solver_output_acc;
     std::vector<types::Wrench> contact_wrenches;
-    double hessian_regularizer;
     std::vector<types::Contact> contacts;
     std::vector< TaskPtr > tasks;
     std::vector< ConstraintPtr > constraints;
@@ -86,17 +85,6 @@ public:
      * @brief Get estimated contact wrenches
      */
     const std::vector<types::Wrench>& getContactWrenches(){return contact_wrenches;}
-
-    /**
-     * @brief setHessianRegularizer
-     * @param reg This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8
-     */
-    void setHessianRegularizer(const double reg){hessian_regularizer=reg;}
-
-    /**
-     * @brief Return the current value of hessian regularizer
-     */
-    double getHessianRegularizer(){return hessian_regularizer;}
 };
 
 } // namespace wbc

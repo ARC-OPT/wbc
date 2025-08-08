@@ -34,7 +34,6 @@ class VelocitySceneQP : public Scene{
 protected:
     static SceneRegistry<VelocitySceneQP> reg;
 
-    double hessian_regularizer;
     std::vector< TaskPtr > tasks;
     std::vector< ConstraintPtr > constraints;
     HierarchicalQP hqp;
@@ -66,17 +65,6 @@ public:
      * @return Solver output as joint velocity command
      */
     virtual const types::JointCommand& solve(const HierarchicalQP& hqp);
-
-    /**
-     * @brief setHessianRegularizer
-     * @param reg This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8
-     */
-    void setHessianRegularizer(const double reg){hessian_regularizer=reg;}
-
-    /**
-     * @brief Return the current value of hessian regularizer
-     */
-    double getHessianRegularizer(){return hessian_regularizer;}
 };
 
 } // namespace wbc

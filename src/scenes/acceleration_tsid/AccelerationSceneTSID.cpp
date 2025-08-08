@@ -13,7 +13,6 @@ SceneRegistry<AccelerationSceneTSID> AccelerationSceneTSID::reg("acceleration_ts
 
 AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
     Scene(robot_model, solver, dt),
-    hessian_regularizer(1e-8),
     configured(false){
 
     // whether or not torques are removed  from the qp problem

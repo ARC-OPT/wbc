@@ -14,7 +14,6 @@ SceneRegistry<AccelerationSceneReducedTSID> AccelerationSceneReducedTSID::reg("a
 
 AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
     Scene(robot_model, solver, dt),
-    hessian_regularizer(1e-7),
     configured(false){
 
     // whether or not torques are removed  from the qp problem
