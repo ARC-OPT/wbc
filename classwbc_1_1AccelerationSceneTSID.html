@@ -106,12 +106,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a047fc47536091faa9bb54dd26b15ceae" id="r_a047fc47536091faa9bb54dd26b15ceae"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a047fc47536091faa9bb54dd26b15ceae">getContactWrenches</a> ()</td></tr>
 <tr class="memdesc:a047fc47536091faa9bb54dd26b15ceae"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get estimated contact wrenches.  <br /></td></tr>
 <tr class="separator:a047fc47536091faa9bb54dd26b15ceae"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac9dfb7fbe43fd65dc9968e2b385c1280" id="r_ac9dfb7fbe43fd65dc9968e2b385c1280"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac9dfb7fbe43fd65dc9968e2b385c1280">setHessianRegularizer</a> (const double <a class="el" href="#a2d18c8f2ef84007578649569b6998980">reg</a>)</td></tr>
-<tr class="memdesc:ac9dfb7fbe43fd65dc9968e2b385c1280"><td class="mdescLeft">&#160;</td><td class="mdescRight">setHessianRegularizer  <br /></td></tr>
-<tr class="separator:ac9dfb7fbe43fd65dc9968e2b385c1280"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2f0f09dc520dfc9220eeb5c8f920a2f0" id="r_a2f0f09dc520dfc9220eeb5c8f920a2f0"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2f0f09dc520dfc9220eeb5c8f920a2f0">getHessianRegularizer</a> ()</td></tr>
-<tr class="memdesc:a2f0f09dc520dfc9220eeb5c8f920a2f0"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current value of hessian regularizer.  <br /></td></tr>
-<tr class="separator:a2f0f09dc520dfc9220eeb5c8f920a2f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1Scene"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classwbc_1_1Scene')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1Scene.html">wbc::Scene</a></td></tr>
 <tr class="memitem:a9b4b944de7c8ab39e24283c3b782fc50 inherit pub_methods_classwbc_1_1Scene" id="r_a9b4b944de7c8ab39e24283c3b782fc50"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a9b4b944de7c8ab39e24283c3b782fc50">Scene</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> <a class="el" href="classwbc_1_1Scene.html#a1ee33fc1fee5a7c1f72d7f40199f6b31">robot_model</a>, <a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a> <a class="el" href="classwbc_1_1Scene.html#aff2c19220d73cf5c9d27255c660d04ba">solver</a>, const double dt)</td></tr>
 <tr class="separator:a9b4b944de7c8ab39e24283c3b782fc50 inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,6 +120,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:a205446f840ec20a54490e635b3e1a984 inherit pub_methods_classwbc_1_1Scene" id="r_a205446f840ec20a54490e635b3e1a984"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a205446f840ec20a54490e635b3e1a984">getSolverOutputRaw</a> () const</td></tr>
 <tr class="memdesc:a205446f840ec20a54490e635b3e1a984 inherit pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current solver output in raw values.  <br /></td></tr>
 <tr class="separator:a205446f840ec20a54490e635b3e1a984 inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a973af5714aeb6bece229f91f564b7d1f inherit pub_methods_classwbc_1_1Scene" id="r_a973af5714aeb6bece229f91f564b7d1f"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a973af5714aeb6bece229f91f564b7d1f">setHessianRegularizer</a> (const double reg)</td></tr>
+<tr class="memdesc:a973af5714aeb6bece229f91f564b7d1f inherit pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">setHessianRegularizer  <br /></td></tr>
+<tr class="separator:a973af5714aeb6bece229f91f564b7d1f inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:acabbd7fbbc1bb7749a4b492e5e39d1bf inherit pub_methods_classwbc_1_1Scene" id="r_acabbd7fbbc1bb7749a4b492e5e39d1bf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#acabbd7fbbc1bb7749a4b492e5e39d1bf">getHessianRegularizer</a> ()</td></tr>
+<tr class="memdesc:acabbd7fbbc1bb7749a4b492e5e39d1bf inherit pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current value of hessian regularizer.  <br /></td></tr>
+<tr class="separator:acabbd7fbbc1bb7749a4b492e5e39d1bf inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -142,8 +142,6 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:acf52465108f65c4667df0de784ad959f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af22cb6740c35aa66080171931c7db1d0" id="r_af22cb6740c35aa66080171931c7db1d0"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af22cb6740c35aa66080171931c7db1d0">contact_wrenches</a></td></tr>
 <tr class="separator:af22cb6740c35aa66080171931c7db1d0"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a258be6c6763bf8598bfeeb35b37ddd8b" id="r_a258be6c6763bf8598bfeeb35b37ddd8b"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a258be6c6763bf8598bfeeb35b37ddd8b">hessian_regularizer</a></td></tr>
-<tr class="separator:a258be6c6763bf8598bfeeb35b37ddd8b"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:affdce48dce6f682a0bb2d85d3b3103c7" id="r_affdce48dce6f682a0bb2d85d3b3103c7"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#affdce48dce6f682a0bb2d85d3b3103c7">tasks</a></td></tr>
 <tr class="separator:affdce48dce6f682a0bb2d85d3b3103c7"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc6e8fc72014a9c38b1b5eff82cfc3cf" id="r_abc6e8fc72014a9c38b1b5eff82cfc3cf"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacewbc.html#a53839f05e12ade46c466bf51039d1167">ConstraintPtr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc6e8fc72014a9c38b1b5eff82cfc3cf">constraints</a></td></tr>
@@ -161,6 +159,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aff2c19220d73cf5c9d27255c660d04ba inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf848f5b8f9f316fb077774b2beb12b8 inherit pro_attribs_classwbc_1_1Scene" id="r_aaf848f5b8f9f316fb077774b2beb12b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#aaf848f5b8f9f316fb077774b2beb12b8">solver_output</a></td></tr>
 <tr class="separator:aaf848f5b8f9f316fb077774b2beb12b8 inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a400ed9aeb7260d0335659743792f9491 inherit pro_attribs_classwbc_1_1Scene" id="r_a400ed9aeb7260d0335659743792f9491"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a400ed9aeb7260d0335659743792f9491">hessian_regularizer</a></td></tr>
+<tr class="separator:a400ed9aeb7260d0335659743792f9491 inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
@@ -338,66 +338,6 @@ Static Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a2f0f09dc520dfc9220eeb5c8f920a2f0" name="a2f0f09dc520dfc9220eeb5c8f920a2f0"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2f0f09dc520dfc9220eeb5c8f920a2f0">&#9670;&#160;</a></span>getHessianRegularizer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double wbc::AccelerationSceneTSID::getHessianRegularizer </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Return the current value of hessian regularizer. </p>
-
-</div>
-</div>
-<a id="ac9dfb7fbe43fd65dc9968e2b385c1280" name="ac9dfb7fbe43fd65dc9968e2b385c1280"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac9dfb7fbe43fd65dc9968e2b385c1280">&#9670;&#160;</a></span>setHessianRegularizer()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">void wbc::AccelerationSceneTSID::setHessianRegularizer </td>
-          <td>(</td>
-          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>reg</em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>setHessianRegularizer </p>
-<dl class="params"><dt>Parameters</dt><dd>
-  <table class="params">
-    <tr><td class="paramname">reg</td><td>This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8 </td></tr>
-  </table>
-  </dd>
-</dl>
-
-</div>
-</div>
 <a id="a6f976d6e81f10cfab375af47d8014f6c" name="a6f976d6e81f10cfab375af47d8014f6c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6f976d6e81f10cfab375af47d8014f6c">&#9670;&#160;</a></span>solve()</h2>
 
@@ -541,28 +481,6 @@ Static Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt;<a class="el" href="classwbc_1_1types_1_1Contact.html">types::Contact</a>&gt; wbc::AccelerationSceneTSID::contacts</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a258be6c6763bf8598bfeeb35b37ddd8b" name="a258be6c6763bf8598bfeeb35b37ddd8b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a258be6c6763bf8598bfeeb35b37ddd8b">&#9670;&#160;</a></span>hessian_regularizer</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">double wbc::AccelerationSceneTSID::hessian_regularizer</td>
         </tr>
       </table>
   </td>
