@@ -103,9 +103,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ac5265274903edcbd0c2491b20fd0a49c" id="r_ac5265274903edcbd0c2491b20fd0a49c"><td class="memItemLeft" align="right" valign="top">virtual const <a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac5265274903edcbd0c2491b20fd0a49c">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;<a class="el" href="#a3a569a5e91255a73cec18e531f216241">hqp</a>)</td></tr>
 <tr class="memdesc:ac5265274903edcbd0c2491b20fd0a49c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the given optimization problem.  <br /></td></tr>
 <tr class="separator:ac5265274903edcbd0c2491b20fd0a49c"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:acb56d7bcbd9e91bdd3eee9526fc36b28" id="r_acb56d7bcbd9e91bdd3eee9526fc36b28"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acb56d7bcbd9e91bdd3eee9526fc36b28">getContactWrenches</a> ()</td></tr>
-<tr class="memdesc:acb56d7bcbd9e91bdd3eee9526fc36b28"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get estimated contact wrenches.  <br /></td></tr>
-<tr class="separator:acb56d7bcbd9e91bdd3eee9526fc36b28"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1Scene"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classwbc_1_1Scene')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1Scene.html">wbc::Scene</a></td></tr>
 <tr class="memitem:a9b4b944de7c8ab39e24283c3b782fc50 inherit pub_methods_classwbc_1_1Scene" id="r_a9b4b944de7c8ab39e24283c3b782fc50"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a9b4b944de7c8ab39e24283c3b782fc50">Scene</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> <a class="el" href="classwbc_1_1Scene.html#a1ee33fc1fee5a7c1f72d7f40199f6b31">robot_model</a>, <a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a> <a class="el" href="classwbc_1_1Scene.html#aff2c19220d73cf5c9d27255c660d04ba">solver</a>, const double dt)</td></tr>
 <tr class="separator:a9b4b944de7c8ab39e24283c3b782fc50 inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -126,6 +123,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acabbd7fbbc1bb7749a4b492e5e39d1bf inherit pub_methods_classwbc_1_1Scene" id="r_acabbd7fbbc1bb7749a4b492e5e39d1bf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#acabbd7fbbc1bb7749a4b492e5e39d1bf">getHessianRegularizer</a> ()</td></tr>
 <tr class="memdesc:acabbd7fbbc1bb7749a4b492e5e39d1bf inherit pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current value of hessian regularizer.  <br /></td></tr>
 <tr class="separator:acabbd7fbbc1bb7749a4b492e5e39d1bf inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48bf813e8289c7f009322e59012a6840 inherit pub_methods_classwbc_1_1Scene" id="r_a48bf813e8289c7f009322e59012a6840"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a48bf813e8289c7f009322e59012a6840">getContactWrenches</a> ()</td></tr>
+<tr class="memdesc:a48bf813e8289c7f009322e59012a6840 inherit pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get estimated contact wrenches.  <br /></td></tr>
+<tr class="separator:a48bf813e8289c7f009322e59012a6840 inherit pub_methods_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-methods" name="pro-methods"></a>
 Protected Member Functions</h2></td></tr>
@@ -138,8 +138,6 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a8c94ade953ba230ae66eacb5f28bbb59"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae8de6c317dd8d9edf9a68d9a04c92c9f" id="r_ae8de6c317dd8d9edf9a68d9a04c92c9f"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8de6c317dd8d9edf9a68d9a04c92c9f">solver_output_acc</a></td></tr>
 <tr class="separator:ae8de6c317dd8d9edf9a68d9a04c92c9f"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a0ce3f4b375d2c30a62a26244e0017cca" id="r_a0ce3f4b375d2c30a62a26244e0017cca"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0ce3f4b375d2c30a62a26244e0017cca">contact_wrenches</a></td></tr>
-<tr class="separator:a0ce3f4b375d2c30a62a26244e0017cca"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3975ed0b53c54b8b3ff7111b056b7df6" id="r_a3975ed0b53c54b8b3ff7111b056b7df6"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Contact.html">types::Contact</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3975ed0b53c54b8b3ff7111b056b7df6">contacts</a></td></tr>
 <tr class="separator:a3975ed0b53c54b8b3ff7111b056b7df6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ae9a0fcda9523880c0f919f3f5056b4a8" id="r_ae9a0fcda9523880c0f919f3f5056b4a8"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae9a0fcda9523880c0f919f3f5056b4a8">tasks</a></td></tr>
@@ -161,6 +159,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aaf848f5b8f9f316fb077774b2beb12b8 inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a400ed9aeb7260d0335659743792f9491 inherit pro_attribs_classwbc_1_1Scene" id="r_a400ed9aeb7260d0335659743792f9491"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a400ed9aeb7260d0335659743792f9491">hessian_regularizer</a></td></tr>
 <tr class="separator:a400ed9aeb7260d0335659743792f9491 inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15299f9fb8152cc7e4fd77da507d4214 inherit pro_attribs_classwbc_1_1Scene" id="r_a15299f9fb8152cc7e4fd77da507d4214"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Scene.html#a15299f9fb8152cc7e4fd77da507d4214">contact_wrenches</a></td></tr>
+<tr class="separator:a15299f9fb8152cc7e4fd77da507d4214 inherit pro_attribs_classwbc_1_1Scene"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
 Static Protected Attributes</h2></td></tr>
@@ -311,33 +311,6 @@ Static Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="acb56d7bcbd9e91bdd3eee9526fc36b28" name="acb56d7bcbd9e91bdd3eee9526fc36b28"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acb56d7bcbd9e91bdd3eee9526fc36b28">&#9670;&#160;</a></span>getContactWrenches()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp; wbc::AccelerationSceneReducedTSID::getContactWrenches </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Get estimated contact wrenches. </p>
-
-</div>
-</div>
 <a id="ac5265274903edcbd0c2491b20fd0a49c" name="ac5265274903edcbd0c2491b20fd0a49c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ac5265274903edcbd0c2491b20fd0a49c">&#9670;&#160;</a></span>solve()</h2>
 
@@ -437,28 +410,6 @@ Static Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt; <a class="el" href="namespacewbc.html#a53839f05e12ade46c466bf51039d1167">ConstraintPtr</a> &gt; wbc::AccelerationSceneReducedTSID::constraints</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="a0ce3f4b375d2c30a62a26244e0017cca" name="a0ce3f4b375d2c30a62a26244e0017cca"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a0ce3f4b375d2c30a62a26244e0017cca">&#9670;&#160;</a></span>contact_wrenches</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">std::vector&lt;<a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a>&gt; wbc::AccelerationSceneReducedTSID::contact_wrenches</td>
         </tr>
       </table>
   </td>

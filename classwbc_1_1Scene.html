@@ -118,6 +118,9 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:acabbd7fbbc1bb7749a4b492e5e39d1bf" id="r_acabbd7fbbc1bb7749a4b492e5e39d1bf"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acabbd7fbbc1bb7749a4b492e5e39d1bf">getHessianRegularizer</a> ()</td></tr>
 <tr class="memdesc:acabbd7fbbc1bb7749a4b492e5e39d1bf"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current value of hessian regularizer.  <br /></td></tr>
 <tr class="separator:acabbd7fbbc1bb7749a4b492e5e39d1bf"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a48bf813e8289c7f009322e59012a6840" id="r_a48bf813e8289c7f009322e59012a6840"><td class="memItemLeft" align="right" valign="top">const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a48bf813e8289c7f009322e59012a6840">getContactWrenches</a> ()</td></tr>
+<tr class="memdesc:a48bf813e8289c7f009322e59012a6840"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get estimated contact wrenches.  <br /></td></tr>
+<tr class="separator:a48bf813e8289c7f009322e59012a6840"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
 Protected Attributes</h2></td></tr>
@@ -129,6 +132,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:aaf848f5b8f9f316fb077774b2beb12b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a400ed9aeb7260d0335659743792f9491" id="r_a400ed9aeb7260d0335659743792f9491"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a400ed9aeb7260d0335659743792f9491">hessian_regularizer</a></td></tr>
 <tr class="separator:a400ed9aeb7260d0335659743792f9491"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a15299f9fb8152cc7e4fd77da507d4214" id="r_a15299f9fb8152cc7e4fd77da507d4214"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a15299f9fb8152cc7e4fd77da507d4214">contact_wrenches</a></td></tr>
+<tr class="separator:a15299f9fb8152cc7e4fd77da507d4214"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Base class for all wbc scenes. </p>
@@ -209,6 +214,33 @@ Protected Attributes</h2></td></tr>
 </dl>
 
 <p>Implemented in <a class="el" href="classwbc_1_1AccelerationSceneReducedTSID.html#a9fcf694689f64c0d4741465125952f30">wbc::AccelerationSceneReducedTSID</a>, <a class="el" href="classwbc_1_1AccelerationSceneTSID.html#a6709298b7683e81f9bc67eb195be1982">wbc::AccelerationSceneTSID</a>, and <a class="el" href="classwbc_1_1VelocitySceneQP.html#a9ad2b8283f79c783930be0777a3a0066">wbc::VelocitySceneQP</a>.</p>
+
+</div>
+</div>
+<a id="a48bf813e8289c7f009322e59012a6840" name="a48bf813e8289c7f009322e59012a6840"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a48bf813e8289c7f009322e59012a6840">&#9670;&#160;</a></span>getContactWrenches()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp; wbc::Scene::getContactWrenches </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Get estimated contact wrenches. </p>
 
 </div>
 </div>
@@ -414,6 +446,28 @@ Protected Attributes</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a15299f9fb8152cc7e4fd77da507d4214" name="a15299f9fb8152cc7e4fd77da507d4214"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a15299f9fb8152cc7e4fd77da507d4214">&#9670;&#160;</a></span>contact_wrenches</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a>&gt; wbc::Scene::contact_wrenches</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a400ed9aeb7260d0335659743792f9491" name="a400ed9aeb7260d0335659743792f9491"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a400ed9aeb7260d0335659743792f9491">&#9670;&#160;</a></span>hessian_regularizer</h2>
 
