@@ -16,6 +16,8 @@ void JointAccelerationTask::update(){
     A.setZero();
     for(uint k = 0; k < joint_names.size(); k++){
         int idx = robot_model->jointIndex(joint_names[k]);
+        if(robot_model->hasFloatingBase())
+            idx += 6;
         A(k,idx) = 1.0;
     }
     y_ref_world = y_ref;     // In joint space y_ref is equal to y_ref_root
