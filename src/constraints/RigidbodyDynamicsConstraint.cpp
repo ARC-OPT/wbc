@@ -11,7 +11,7 @@ namespace wbc{
         uint na = robot_model->na();
         uint nc = contacts.size();
 
-        uint nv = reduced ? (nj + nc*3) : (nj + na + nc*3);
+        uint nv = reduced ? (nj + nc*dim_contact) : (nj + na + nc*dim_contact);
 
         // TODO: Fix for non-floating base robots!!!
         if(reduced) // no torques in qp, consider only floating base dynamics
@@ -24,7 +24,7 @@ namespace wbc{
             A_mtx.block(0,  0, 6, nj) =  robot_model->jointSpaceInertiaMatrix().topRows<6>();
             for(uint i = 0; i < contacts.size(); i++){
                 if(contacts[i].active)
-                    A_mtx.block(0, nj+i*3, 6, 3) = -robot_model->spaceJacobian(contacts[i].frame_id).topRows<3>().transpose().topRows<6>();
+                    A_mtx.block(0, nj+i*dim_contact, 6, dim_contact) = -robot_model->spaceJacobian(contacts[i].frame_id).topRows(dim_contact).transpose().topRows<6>();
             }
             b_vec = -robot_model->biasForces().topRows<6>();
 
@@ -40,7 +40,7 @@ namespace wbc{
             A_mtx.block(0, nj, nj, na) = -robot_model->selectionMatrix().transpose();
             for(uint i = 0; i < contacts.size(); i++){
                 if(contacts[i].active)
-                    A_mtx.block(0, nj+na+i*3, nj, 3) = -robot_model->spaceJacobian(contacts[i].frame_id).topRows(3).transpose();
+                    A_mtx.block(0, nj+na+i*dim_contact, nj, dim_contact) = -robot_model->spaceJacobian(contacts[i].frame_id).topRows(dim_contact).transpose();
             }
             b_vec = -robot_model->biasForces();
         }

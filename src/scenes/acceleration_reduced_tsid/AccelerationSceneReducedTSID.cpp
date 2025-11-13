@@ -12,9 +12,10 @@ namespace wbc {
 
 SceneRegistry<AccelerationSceneReducedTSID> AccelerationSceneReducedTSID::reg("acceleration_reduced_tsid");
 
-AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
+AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact) :
     Scene(robot_model, solver, dt),
-    configured(false){
+    configured(false),
+    dim_contact(dim_contact){
 
     // whether or not torques are removed  from the qp problem
     // this formulation includes torques !!!
@@ -22,11 +23,11 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
     if(robot_model->hasFloatingBase())
-        constraints.push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
-    constraints.push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
+        constraints.push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced,dim_contact));
+    constraints.push_back(std::make_shared<ContactsAccelerationConstraint>(reduced, dim_contact));
     constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
     constraints.push_back(std::make_shared<EffortLimitsAccelerationConstraint>());
-    constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+    // constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
 }
 
 bool AccelerationSceneReducedTSID::configure(const std::vector<TaskPtr> &tasks_in){
@@ -77,7 +78,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     // QP Size: (nc x nj+nc*3)
     // Variable order: (qdd,f_ext)
     QuadraticProgram& qp = hqp[0];
-    qp.resize(nj+ncp*3, total_eqs, total_ineqs, has_bounds);
+    qp.resize(nj+ncp*dim_contact, total_eqs, total_ineqs, has_bounds);
     qp.A.setZero();
     qp.lower_x.setConstant(-10000);   // bounds
     qp.upper_x.setConstant(+10000);   // bounds
@@ -117,6 +118,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         TaskPtr task = tasks[i];
         task->update();
 
+
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the task again
         if(task->activation == 0){
@@ -128,6 +130,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             task->Aw.row(i) = task->weights_world(i) * task->A.row(i) * task->activation;
             task->y_ref_world(i) = task->y_ref_world(i) * task->weights_world(i) * task->activation;
         }
+
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = hqp.Wq[i] * task->Aw.col(i);
 
@@ -142,8 +145,8 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             }
             uint idx = cp.mapNameToIndex(contact_link);*/
 
-            qp.H.block(nj+wrench_idx*3,nj+wrench_idx*3,3,3) += task->Aw.transpose()*task->Aw;
-            qp.g.segment(nj+wrench_idx*3,3) -= task->Aw.transpose()*task->y_ref_world;
+            qp.H.block(nj+wrench_idx*dim_contact,nj+wrench_idx*dim_contact,dim_contact,dim_contact) += task->Aw.transpose()*task->Aw;
+            qp.g.segment(nj+wrench_idx*dim_contact,dim_contact) -= task->Aw.transpose()*task->y_ref_world;
             wrench_idx++;
         }
         else{ // qdd
@@ -170,12 +173,12 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
     uint nc = contacts.size();
 
     auto qdd_out = Eigen::Map<Eigen::VectorXd>(solver_output.data(), nj);
-    auto fext_out = Eigen::Map<Eigen::VectorXd>(solver_output.data()+nj, 3*nc);
+    auto fext_out = Eigen::Map<Eigen::VectorXd>(solver_output.data()+nj, dim_contact*nc);
 
     // computing torques from accelerations and forces (using last na equation from dynamic equations of motion)
     Eigen::VectorXd tau_out = robot_model->jointSpaceInertiaMatrix().bottomRows(na) * qdd_out;
     for(uint c = 0; c < nc; c++)
-        tau_out += -robot_model->spaceJacobian(contacts[c].frame_id).topRows<3>().transpose().bottomRows(na) * fext_out.segment<3>(c*3);
+        tau_out += -robot_model->spaceJacobian(contacts[c].frame_id).topRows(dim_contact).transpose().bottomRows(na) * fext_out.segment(c*dim_contact,dim_contact);
     tau_out += robot_model->biasForces().bottomRows(na);
 
     for(uint i = 0; i < solver_output.size(); i++){
@@ -193,8 +196,9 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
     // Convert solver output: contact wrenches
     contact_wrenches.resize(nc);
     for(uint i = 0; i < nc; i++){
-        contact_wrenches[i].force = fext_out.segment(i*3, 3);
-        //contact_wrenches[i].torque = fext_out.segment(i*6+3, 3);
+        contact_wrenches[i].force = fext_out.segment(i*dim_contact, 3);
+        if(dim_contact == 6)
+            contact_wrenches[i].torque = fext_out.segment(i*dim_contact+3, 3);
     }
 
     return solver_output_joints;

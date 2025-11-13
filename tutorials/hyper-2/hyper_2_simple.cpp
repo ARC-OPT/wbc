@@ -133,6 +133,8 @@ int main(){
         cout<<"Velocity:      "; cout<<solver_output.velocity.transpose()<<" "; cout<<endl;
         cout<<"Acceleration:  "; cout<<solver_output.acceleration.transpose()<<" "; cout<<endl;
         cout<<"Effort:        "; cout<<solver_output.effort.transpose()<<" "; cout<<endl;
+        cout<<"Ext. Force     "; for(const auto& wrench : scene.getContactWrenches()) cout<<wrench.force.transpose()<<" "; cout<<endl;
+        cout<<"Ext. Torque    "; for(const auto& wrench : scene.getContactWrenches()) cout<<wrench.torque.transpose()<<" "; cout<<endl;
         cout<<"solve time:    " << solve_time << " (mu s)" << endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 
