@@ -14,14 +14,12 @@ void JointVelocityTask::update(){
     // Joint space tasks: task matrix has only ones and Zeros. The joint order in the tasks might be different than in the robot model.
     // Thus, for joint space tasks, the joint indices have to be mapped correctly.
     A.setZero();
-    for(uint k = 0; k < joint_names.size(); k++){
-        int idx = robot_model->jointIndex(joint_names[k]);
-        if(robot_model->hasFloatingBase())
-            idx += 6;
-        A(k,idx) = 1.0;
-    }
-    y_ref_world = y_ref;     // In joint space y_ref is equal to y_ref_root
-    weights_world = weights; // Same of the weights
+    y_ref_world.setZero();
+    weights_world.setZero();
+    A.block(0,robot_model->nfb(),nv,nv).setIdentity(); // Set identity for the actuated joints
+    
+    y_ref_world.tail(y_ref.size()) = y_ref;     // In joint space y_ref is equal to y_ref_root
+    weights_world.tail(y_ref.size()) = weights; // Same for the weights
 }
 
 void JointVelocityTask::setReference(const Eigen::VectorXd &ref){
