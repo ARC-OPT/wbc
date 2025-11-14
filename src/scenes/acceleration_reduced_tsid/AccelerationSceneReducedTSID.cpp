@@ -13,7 +13,7 @@ namespace wbc {
 SceneRegistry<AccelerationSceneReducedTSID> AccelerationSceneReducedTSID::reg("acceleration_reduced_tsid");
 
 AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact) :
-    Scene(robot_model, solver, dt),
+    Scene(robot_model, solver, dt, dim_contact),
     configured(false),
     dim_contact(dim_contact){
 
