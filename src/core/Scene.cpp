@@ -6,7 +6,7 @@ loglevel_e loglevel = logWARNING;
 
 namespace wbc{
 
-Scene::Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double /*dt*/, uint /*dim_contact*/) :
+Scene::Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double /*dt*/) :
     robot_model(robot_model),
     solver(solver),
     hessian_regularizer(1e-8){

@@ -22,7 +22,7 @@ protected:
     std::vector<types::Wrench> contact_wrenches;
 
 public:
-    Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact = 3);
+    Scene(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
     ~Scene();
 
     /**
