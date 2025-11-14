@@ -4,8 +4,6 @@ namespace wbc {
 
 void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
 
-    const bool use_torques = false;
-
     const auto& contacts = robot_model->getContacts();
 
     uint nj = robot_model->nj();
@@ -15,8 +13,8 @@ void ContactsFrictionPointConstraint::update(RobotModelPtr robot_model){
 
     uint nv = reduced ? nj + 3*nc : nj + na + 3*nc;
 
-    const uint row_skip = use_torques ? 8 : 4;
-    const uint col_skip = use_torques ? 6 : 3;
+    const uint row_skip = 4;
+    const uint col_skip = 3;
 
     A_mtx.resize(nac*row_skip, nv);
     lb_vec.resize(nac*row_skip);

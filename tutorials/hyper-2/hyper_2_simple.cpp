@@ -32,7 +32,16 @@ int main(){
     RobotModelConfig config;
     config.file_or_string = "../../../models/hyper-2/urdf/HyPer-2.urdf";
     config.floating_base = true;
-    config.contact_points = {types::Contact("link_ll_foot",1,1.0),types::Contact("link_lr_foot",1,1.0)};
+    config.contact_points = {types::Contact("link_ll_foot", // Contact frame ID
+                                             1,             // Contact active?
+                                             1.0,           // Coulomb friction coefficient
+                                             0.15,         // x-dimension of contact surface
+                                             0.22),         // y-dimension of contact surface
+                             types::Contact("link_lr_foot",
+                                             1,
+                                             1.0,
+                                             0.15,
+                                             0.22)};
     if(!robot_model->configure(config))
         return -1;
 
@@ -56,7 +65,7 @@ int main(){
     jnt_task = make_shared<JointAccelerationTask>(TaskConfig("joint_position",0,vector<double>(nj,1),1   ),
                                                    robot_model,
                                                    robot_model->jointNames());
-    AccelerationSceneReducedTSID scene(robot_model, solver, dt);
+    AccelerationSceneReducedTSID scene(robot_model, solver, dt, 6);
     if(!scene.configure({jnt_task}))
         return -1;
 

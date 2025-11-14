@@ -32,6 +32,7 @@ void ContactsFrictionSurfaceConstraint::update(RobotModelPtr robot_model){
             double mu=contacts[i].mu;
             double wx = contacts[i].wx, wy = contacts[i].wy;
 
+            // According to https://scaron.info/robotics/wrench-friction-cones.html
             Eigen::MatrixXd a(row_skip,col_skip);
             a << -1,  0, -mu,  0,  0, 0,
                   1,  0, -mu,  0,  0, 0,
@@ -51,7 +52,7 @@ void ContactsFrictionSurfaceConstraint::update(RobotModelPtr robot_model){
                   -wy, -wx, -(wx+wy)*mu, -mu, -mu,  1;
 
             Eigen::VectorXd lb(row_skip), ub(row_skip);
-            lb.setConstant(-1e10);
+            lb.setConstant(-1e5);
             ub.setZero();
 
             lb_vec.segment(idx*row_skip,row_skip) = lb;

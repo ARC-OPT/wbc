@@ -19,12 +19,15 @@ protected:
 public:
 
     /** @brief Default constructor */
-    EffortLimitsAccelerationConstraint() 
-        : Constraint(Constraint::inequality) { }
+    EffortLimitsAccelerationConstraint(uint dim_contact) 
+        : Constraint(Constraint::inequality), dim_contact(dim_contact) { }
 
     virtual ~EffortLimitsAccelerationConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) override;
+
+protected:
+    uint dim_contact;
 
 };
 typedef std::shared_ptr<EffortLimitsAccelerationConstraint> EffortLimitsAccelerationConstraintPtr;
