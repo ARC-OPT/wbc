@@ -3,6 +3,7 @@
 #include <scenes/velocity_qp/VelocitySceneQP.hpp>
 #include <tools/JointIntegrator.hpp>
 #include <controllers/CartesianPosPDController.hpp>
+#include <tasks/SpatialVelocityTask.hpp>
 
 using namespace std;
 using namespace wbc;
@@ -41,27 +42,30 @@ int main()
     // Configure the AccelerationSceneTSID scene. This scene computes joint accelerations, joint torques and contact wrenches as output.
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
     VelocitySceneQP scene(robot_model, solver, dt);
-    vector<TaskConfig> wbc_config;
-    wbc_config.push_back(TaskConfig("cart_ctrl_left",  0, "RH5v2_Root_Link", "ALWristFT_Link", "RH5v2_Root_Link", 1.0));
-    wbc_config.push_back(TaskConfig("cart_ctrl_right",  0, "RH5v2_Root_Link", "ARWristFT_Link", "RH5v2_Root_Link", 1.0));
-    if(!scene.configure(wbc_config))
+    SpatialVelocityTaskPtr cart_task_left, cart_task_right;
+    cart_task_left = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
+                                                        robot_model,
+                                                        "ALWristFT_Link",
+                                                        "RH5v2_Root_Link");
+    cart_task_right = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_right",0,{1,1,1,1,1,1},1),
+                                                             robot_model,
+                                                            "ARWristFT_Link",
+                                                            "RH5v2_Root_Link");
+    if(!scene.configure({cart_task_left, cart_task_right}))
         return -1;
 
     // Choose an initial joint state. Since we use acceleration-based WBC here, we have to pass the velocities and
     // accelerations as well
-    base::samples::Joints joint_state;
-    joint_state.names = rm_hyrodyn->jointnames_independent;
-    uint nj = joint_state.names.size();
-    for(auto n : joint_state.names){
-        base::JointState js;
-        js.position = js.speed = js.acceleration = 0;
-        joint_state.elements.push_back(js);
-    }
-    joint_state.time = base::Time::now();
-    joint_state["ALShoulder1"].position = joint_state["ARShoulder1"].position = -1.0;
-    joint_state["ALShoulder2"].position = joint_state["ARShoulder2"].position = 1.0;
-    joint_state["ALElbow"].position     = joint_state["ARElbow"].position     = -1.0;
-    robot_model->update(joint_state);
+    types::JointState joint_state;
+    joint_state.resize(robot_model->na());
+    joint_state.position.setZero();
+    joint_state.velocity.setZero();
+    joint_state.acceleration.setZero();
+    joint_state.position[robot_model->jointIndex("ALShoulder1")] = joint_state.position[robot_model->jointIndex("ARShoulder1")] = -1.0;
+    joint_state.position[robot_model->jointIndex("ALShoulder2")] = joint_state.position[robot_model->jointIndex("ARShoulder2")] = 1.0;
+    joint_state.position[robot_model->jointIndex("ALElbow")] = joint_state.position[robot_model->jointIndex("ARElbow")] = -1.0;
+    robot_model->update(joint_state.position,
+                        joint_state.velocity);
 
     // Configure Cartesian controllers. The controllers implement the following control law:
     //
@@ -69,44 +73,47 @@ int main()
     //
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl_left, ctrl_right;
-    base::VectorXd p_gain(6),d_gain(6),ff_gain(6);
+    Eigen::VectorXd p_gain(6),d_gain(6);
     p_gain.setConstant(10); // Stiffness
     d_gain.setConstant(30); // Damping
-    ff_gain.setConstant(1); // Feed forward
     ctrl_left.setPGain(p_gain);
     ctrl_left.setDGain(d_gain);
     ctrl_right.setPGain(p_gain);
     ctrl_right.setDGain(d_gain);
 
     // Target Pose left/right
-    base::samples::RigidBodyStateSE3 setpoint_left, setpoint_right, feedback_left, feedback_right, ctrl_output_left, ctrl_output_right;
-    setpoint_left.pose.position = base::Vector3d(0.4,0.453543,0.183343);
-    setpoint_left.pose.orientation = base::Quaterniond(0.371912,-0.485673,0.725747,-0.314793);
-    setpoint_right.pose.position = base::Vector3d(0.522827, -0.453543, 0.183345);
-    setpoint_right.pose.orientation = base::Quaterniond(0.371914, 0.485672, 0.72575, 0.314787);
+    types::RigidBodyState setpoint_left, setpoint_right, feedback_left, feedback_right;
+    types::Twist ctrl_output_left, ctrl_output_right;
+    setpoint_left.pose.position = Eigen::Vector3d(0.4,0.453543,0.183343);
+    setpoint_left.pose.orientation = Eigen::Quaterniond(0.371912,-0.485673,0.725747,-0.314793);
+    setpoint_left.twist.setZero();
+    setpoint_right.pose.position = Eigen::Vector3d(0.522827, -0.453543, 0.183345);
+    setpoint_right.pose.orientation = Eigen::Quaterniond(0.371914, 0.485672, 0.72575, 0.314787);
+    setpoint_right.twist.setZero();
 
     // Run control loop
     JointIntegrator integrator;
     double loop_time = dt; // seconds
-    base::commands::Joints solver_output;
+    types::JointCommand solver_output;
     for(double t = 0; t < 5; t+=loop_time){
 
         // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
-        robot_model->update(joint_state);
+        robot_model->update(joint_state.position,
+                            joint_state.velocity);
 
         // Update controllers, left arm: Follow sinusoidal trajectory
         setpoint_left.pose.position[0] = 0.522827 + 0.1*sin(t);
         setpoint_left.twist.linear[0] = 0.1*cos(t);
         setpoint_left.acceleration.linear[0] = -0.1*sin(t);
-        feedback_left = robot_model->rigidBodyState(wbc_config[0].root, wbc_config[0].tip);
-        feedback_right = robot_model->rigidBodyState(wbc_config[1].root, wbc_config[1].tip);
-        ctrl_output_left = ctrl_left.update(setpoint_left, feedback_left);
-        ctrl_output_right = ctrl_right.update(setpoint_right, feedback_right);
+        feedback_left.pose = robot_model->pose(cart_task_left->tipFrame());
+        feedback_right.pose = robot_model->pose(cart_task_right->tipFrame());
+        ctrl_output_left  = ctrl_left.update(setpoint_left.pose, setpoint_left.twist, feedback_left.pose);
+        ctrl_output_right = ctrl_right.update(setpoint_right.pose, setpoint_right.twist, feedback_right.pose);
 
         // Update constraints. Pass the control output of the controller to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
-        scene.setReference(wbc_config[0].name, ctrl_output_left);
-        scene.setReference(wbc_config[1].name, ctrl_output_right);
+        cart_task_left->setReference(ctrl_output_left);
+        cart_task_right->setReference(ctrl_output_right);
 
         // Update WBC scene. The output is a (hierarchical) quadratic program (QP), which can be solved by any standard QP solver
         HierarchicalQP hqp = scene.update();
@@ -115,18 +122,17 @@ int main()
         solver_output = scene.solve(hqp);
 
         // Integrate once to get joint velocity from solver output
-        integrator.integrate(robot_model->jointState(robot_model->actuatedJointNames()),solver_output,loop_time);
+        integrator.integrate(robot_model->jointState(),solver_output,loop_time,wbc::types::CommandMode::VELOCITY);
 
         // Use Hyrodyn to compute the joint velocity in independent joint space from the solver output, which only contat
-        for(int i = 0; i < solver_output.size(); i++)
-            rm_hyrodyn->ud[i] = solver_output[i].speed;
+        rm_hyrodyn->u = solver_output.position;
+        rm_hyrodyn->ud = solver_output.velocity;
         rm_hyrodyn->calculate_forward_system_state();
 
         // Update joint state by integrating again
-        for(size_t i = 0; i < joint_state.size(); i++){
-            joint_state[i].position += rm_hyrodyn->yd[i] * loop_time;
-            joint_state[i].speed = rm_hyrodyn->yd[i];
-        }
+        joint_state.position = rm_hyrodyn->y;
+        joint_state.velocity = rm_hyrodyn->yd;
+        
 
         cout<<"setpoint left: x: "<<setpoint_left.pose.position(0)<<" y: "<<setpoint_left.pose.position(1)<<" z: "<<setpoint_left.pose.position(2)<<endl;
         cout<<"setpoint left: qx: "<<setpoint_left.pose.orientation.x()<<" qy: "<<setpoint_left.pose.orientation.y()<<" qz: "<<setpoint_left.pose.orientation.z()<<" qw: "<<setpoint_left.pose.orientation.w()<<endl<<endl;
@@ -139,8 +145,8 @@ int main()
         cout<<"feedback right qx: "<<feedback_right.pose.orientation.x()<<" qy: "<<feedback_right.pose.orientation.y()<<" qz: "<<feedback_right.pose.orientation.z()<<" qw: "<<feedback_right.pose.orientation.w()<<endl<<endl;
 
         cout<<"Solver output: "; cout<<endl;
-        cout<<"Joint Names:   "; for(int i = 0; i < nj; i++) cout<<solver_output.names[i]<<" "; cout<<endl;
-        cout<<"Velocity:      "; for(int i = 0; i < nj; i++) cout<<solver_output[i].speed<<" "; cout<<endl;
+        cout<<"Position:      "; cout<<solver_output.position.transpose()<<endl;
+        cout<<"Velocity:      "; cout<<solver_output.velocity.transpose()<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
         usleep(loop_time * 1e6);
     }
