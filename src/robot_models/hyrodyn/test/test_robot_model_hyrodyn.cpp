@@ -50,6 +50,7 @@ BOOST_AUTO_TEST_CASE(configure_and_update){
 
     // Valid config with floating base
     config = RobotModelConfig("../../../../../models/kuka/urdf/kuka_iiwa.urdf");
+    config.submechanism_file = "../../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     config.floating_base = true;
     BOOST_CHECK(robot_model->configure(config) == true);
 

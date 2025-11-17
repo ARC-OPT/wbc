@@ -205,6 +205,8 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
                            << "  Max. Eff: " << joint_limits.max.effort[i];
     log(logDEBUG) << "------------------------------------------------------------";
 
+    configured = true;
+
     return true;
 }
 
@@ -255,20 +257,17 @@ void RobotModelHyrodyn::update(const Eigen::VectorXd& joint_positions,
         hyrodyn.update_all_independent_coordinates();
     }
     else{
-        hyrodyn.y_robot   = joint_positions;
-        hyrodyn.yd_robot  = joint_velocities;
-        hyrodyn.ydd_robot = joint_accelerations;
+        hyrodyn.y   = joint_positions;
+        hyrodyn.yd  = joint_velocities;
+        hyrodyn.ydd = joint_accelerations;
     }
 
     // Compute system state
     hyrodyn.calculate_system_state();
 
-    for(size_t i = 0; i < hyrodyn.jointnames_spanningtree.size(); i++){
-        const std::string &name = hyrodyn.jointnames_spanningtree[i];
-        joint_state.position     = hyrodyn.Q;
-        joint_state.velocity     = hyrodyn.QDot;
-        joint_state.acceleration = hyrodyn.QDDot;
-    }
+    joint_state.position     = hyrodyn.y.tail(na());
+    joint_state.velocity     = hyrodyn.yd.tail(na());
+    joint_state.acceleration = hyrodyn.ydd.tail(na());
 }
 
 const types::Pose &RobotModelHyrodyn::pose(const std::string &frame_id){
