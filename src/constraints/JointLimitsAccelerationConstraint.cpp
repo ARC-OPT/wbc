@@ -27,7 +27,8 @@ namespace wbc{
         bool check_velocities = false;
         bool check_positions = false;
         
-        auto state = robot_model->jointState();
+        auto position = robot_model->getQ().tail(robot_model->na());
+        auto velocity = robot_model->getQd().tail(robot_model->na());
 
         // check if a value is not nan otherwise return a substiture value
         // used for acceleration limits since they might not be define in URDFs
@@ -43,8 +44,8 @@ namespace wbc{
 
         for(size_t i = 0; i < nj - nfb; i++){
 
-            double pos = state.position[i];
-            double vel = state.velocity[i];
+            double pos = position[i];
+            double vel = velocity[i];
 
             // enforce joint acceleration and velocity limit
             if(check_accelerations)

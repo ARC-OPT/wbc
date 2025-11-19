@@ -64,8 +64,6 @@ int main()
     joint_state.position[robot_model->jointIndex("ALShoulder1")] = joint_state.position[robot_model->jointIndex("ARShoulder1")] = -1.0;
     joint_state.position[robot_model->jointIndex("ALShoulder2")] = joint_state.position[robot_model->jointIndex("ARShoulder2")] = 1.0;
     joint_state.position[robot_model->jointIndex("ALElbow")] = joint_state.position[robot_model->jointIndex("ARElbow")] = -1.0;
-    robot_model->update(joint_state.position,
-                        joint_state.velocity);
 
     // Configure Cartesian controllers. The controllers implement the following control law:
     //
@@ -74,8 +72,8 @@ int main()
     // As we don't use feed forward acceleration here, we can ignore the factor kf.
     CartesianPosPDController ctrl_left, ctrl_right;
     Eigen::VectorXd p_gain(6),d_gain(6);
-    p_gain.setConstant(10); // Stiffness
-    d_gain.setConstant(30); // Damping
+    p_gain.setConstant(30); // Stiffness
+    d_gain.setConstant(0); // Damping
     ctrl_left.setPGain(p_gain);
     ctrl_left.setDGain(d_gain);
     ctrl_right.setPGain(p_gain);
@@ -99,7 +97,8 @@ int main()
 
         // Update the robot model. WBC will only work if at least one joint state with valid timestamp has been passed to the robot model.
         robot_model->update(joint_state.position,
-                            joint_state.velocity);
+                            joint_state.velocity,
+                            joint_state.acceleration);
 
         // Update controllers, left arm: Follow sinusoidal trajectory
         setpoint_left.pose.position[0] = 0.522827 + 0.1*sin(t);
@@ -121,17 +120,13 @@ int main()
         // Solve the QP. The output is the joint acceleration/torque that achieves the task space acceleration demanded by the controllers
         solver_output = scene.solve(hqp);
 
-        // Integrate once to get joint velocity from solver output
-        integrator.integrate(robot_model->jointState(),solver_output,loop_time,wbc::types::CommandMode::VELOCITY);
-
         // Use Hyrodyn to compute the joint velocity in independent joint space from the solver output, which only contat
-        rm_hyrodyn->u = solver_output.position;
         rm_hyrodyn->ud = solver_output.velocity;
         rm_hyrodyn->calculate_forward_system_state();
 
-        // Update joint state by integrating again
-        joint_state.position = rm_hyrodyn->y;
-        joint_state.velocity = rm_hyrodyn->yd;
+        // Update joint state by integrating
+        joint_state.velocity = rm_hyrodyn->yd.tail(robot_model->na());
+        joint_state.position += joint_state.velocity * dt;
         
 
         cout<<"setpoint left: x: "<<setpoint_left.pose.position(0)<<" y: "<<setpoint_left.pose.position(1)<<" z: "<<setpoint_left.pose.position(2)<<endl;
@@ -145,7 +140,6 @@ int main()
         cout<<"feedback right qx: "<<feedback_right.pose.orientation.x()<<" qy: "<<feedback_right.pose.orientation.y()<<" qz: "<<feedback_right.pose.orientation.z()<<" qw: "<<feedback_right.pose.orientation.w()<<endl<<endl;
 
         cout<<"Solver output: "; cout<<endl;
-        cout<<"Position:      "; cout<<solver_output.position.transpose()<<endl;
         cout<<"Velocity:      "; cout<<solver_output.velocity.transpose()<<endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
         usleep(loop_time * 1e6);

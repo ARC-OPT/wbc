@@ -87,6 +87,7 @@ BOOST_AUTO_TEST_CASE(fk){
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
     RobotModelConfig cfg(urdf_file);
     cfg.floating_base = false;
+    cfg.submechanism_file = "../../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     BOOST_CHECK(robot_model->configure(cfg));
 
     testFK(robot_model, tip_frame, false);
@@ -100,9 +101,10 @@ BOOST_AUTO_TEST_CASE(space_jacobian){
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
     RobotModelConfig cfg(urdf_file);
     cfg.floating_base = true;
+    cfg.submechanism_file = "../../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     BOOST_CHECK(robot_model->configure(cfg));
 
-    testSpaceJacobian(robot_model, tip_frame, true);
+    testSpaceJacobian(robot_model, tip_frame, false);
 }
 
 BOOST_AUTO_TEST_CASE(body_jacobian){
@@ -112,6 +114,7 @@ BOOST_AUTO_TEST_CASE(body_jacobian){
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
     RobotModelConfig cfg(urdf_file);
     cfg.floating_base = true;
+    cfg.submechanism_file = "../../../../../models/kuka/hyrodyn/kuka_iiwa_floating_base.yml";
     BOOST_CHECK(robot_model->configure(cfg));
 
     testBodyJacobian(robot_model, tip_frame, false);
@@ -124,6 +127,7 @@ BOOST_AUTO_TEST_CASE(com_jacobian){
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
     RobotModelConfig cfg(urdf_file);
     cfg.floating_base = false;
+    cfg.submechanism_file = "../../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     BOOST_CHECK(robot_model->configure(cfg));
 
     testCoMJacobian(robot_model, false);
@@ -135,7 +139,8 @@ BOOST_AUTO_TEST_CASE(inverse_dynamics){
 
     RobotModelPtr robot_model = make_shared<RobotModelHyrodyn>();
     RobotModelConfig cfg(urdf_file);
-    cfg.floating_base = true;
+    cfg.floating_base = false;
+    cfg.submechanism_file = "../../../../../models/kuka/hyrodyn/kuka_iiwa.yml";
     BOOST_CHECK(robot_model->configure(cfg));
 
     testInverseDynamics(robot_model, false);
@@ -182,16 +187,16 @@ BOOST_AUTO_TEST_CASE(compare_serial_vs_hybrid_model){
     Eigen::MatrixXd jac = robot_model_hybrid->spaceJacobian(tip);
     Eigen::VectorXd v(6);
     v.setZero();
-    v[2] = -0.1;
+    v[2] = -0.01;
     Eigen::VectorXd u = jac.completeOrthogonalDecomposition().pseudoInverse()*v;
     std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->hyrodynHandle()->ud = u;
     std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->hyrodynHandle()->calculate_forward_system_state();
 
     /*cout<< "Solution actuation space" << endl;
-    std::cout<<robot_model_hybrid->hyrodynHandle()->ud.transpose()<<endl;
+    std::cout<<std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->hyrodynHandle()->ud.transpose()<<endl;
 
     cout<< "Solution projected to independent joint space" << endl;
-    std::cout<<robot_model_hybrid->hyrodynHandle()->yd.transpose()<<endl;*/
+    std::cout<<std::dynamic_pointer_cast<RobotModelHyrodyn>(robot_model_hybrid)->hyrodynHandle()->yd.transpose()<<endl;*/
 
     //cout<<"******************** SERIAL MODEL *****************"<<endl;
     jac = robot_model_serial->spaceJacobian(tip);

@@ -171,7 +171,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     }
 
     joint_state.resize(hyrodyn.spanningtree_dof);
-    joint_names = hyrodyn.jointnames_spanningtree;
+    joint_names = hyrodyn.jointnames_independent;
     actuated_joint_names = hyrodyn.jointnames_active;
     independent_joint_names = hyrodyn.jointnames_independent;
 
@@ -187,6 +187,10 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
         selection_matrix(i, nfb() + i) = 1.0;
     joint_weights.resize(na());
     joint_weights.setConstant(1.0);
+
+    q.resize(na() + nfb());
+    qd.resize(na() + nfb());
+    qdd.resize(na() + nfb());
 
     log(logDEBUG) << "------------------- WBC RobotModelHyrodyn -----------------";
     log(logDEBUG) << "Robot Name " << robot_urdf->getName();
@@ -222,39 +226,52 @@ void RobotModelHyrodyn::update(const Eigen::VectorXd& joint_positions,
     assert(joint_velocities.size() == na());
     assert(joint_accelerations.size() == na());
 
+    resetData();
+
     if(has_floating_base){
         floating_base_state.pose = fb_pose;
         floating_base_state.twist = fb_twist;
         floating_base_state.acceleration = fb_acc;
 
-        // Transformation from fb body linear acceleration to fb joint linear acceleration
-        // look at RobotModelRBDL for description
+        // Transformation from fb body linear acceleration to fb joint linear acceleration:
+        // since RBDL treats the floating Eigen as XYZ translation followed by spherical
+        // aj is S*qdd(i)
+        // j is parent of i
+        // a(i) = Xa(j) + aj + cross(v(i), vj)
+        // For pinocchio we give directly a(fb), for RBDL we give aj instead (for the first two joints)
+        // so we have to remove the cross contribution cross(v(i), vj) from it
         Eigen::Matrix3d fb_rot = floating_base_state.pose.orientation.toRotationMatrix();
-        types::Twist fb_twist = floating_base_state.twist;
-        types::SpatialAcceleration fb_acc = floating_base_state.acceleration;
+        types::Twist fb_twist_tmp = floating_base_state.twist;
+        types::SpatialAcceleration fb_acc_tmp = floating_base_state.acceleration;
 
         Eigen::VectorXd spherical_j_vel(6);
-        spherical_j_vel << fb_twist.angular, Eigen::Vector3d::Zero();
+        spherical_j_vel << fb_twist_tmp.angular, Eigen::Vector3d::Zero();
         Eigen::VectorXd spherical_b_vel(6);
-        spherical_b_vel << fb_twist.angular, fb_rot.transpose() * fb_twist.linear;
-        Eigen::VectorXd fb_spherical_cross = crossm(spherical_b_vel, spherical_j_vel);
-        fb_acc.linear = fb_acc.linear - fb_rot * fb_spherical_cross.tail<3>(); // remove cross contribution from linear acc s(in world coordinates as RBDL want)
+        spherical_b_vel << fb_twist_tmp.angular, fb_rot.transpose() * fb_twist_tmp.linear;
 
-        hyrodyn.floating_robot_pose.segment(0,3) = floating_base_state.pose.position;
-        hyrodyn.floating_robot_pose[3] = floating_base_state.pose.orientation.x();
-        hyrodyn.floating_robot_pose[4] = floating_base_state.pose.orientation.y();
-        hyrodyn.floating_robot_pose[5] = floating_base_state.pose.orientation.z();
-        hyrodyn.floating_robot_pose[6] = floating_base_state.pose.orientation.w();
-        hyrodyn.floating_robot_twist.segment(0,3) = floating_base_state.twist.angular;
-        hyrodyn.floating_robot_twist.segment(3,3) = floating_base_state.twist.linear;
-        hyrodyn.floating_robot_accn.segment(0,3) = fb_acc.angular;
-        hyrodyn.floating_robot_accn.segment(3,3) = fb_acc.linear;
+        Eigen::VectorXd fb_spherical_cross = Math::crossm(spherical_b_vel, spherical_j_vel);
+        // remove cross contribution from linear acc s(in world coordinates as RBDL want)
+        fb_acc_tmp.linear = fb_acc_tmp.linear - fb_rot * fb_spherical_cross.tail<3>();
+
+        hyrodyn.floating_robot_pose.segment(0,3) = q.segment(0,3) = floating_base_state.pose.position;
+        hyrodyn.floating_robot_pose[3] = q[3] = floating_base_state.pose.orientation.x();
+        hyrodyn.floating_robot_pose[4] = q[4] = floating_base_state.pose.orientation.y();
+        hyrodyn.floating_robot_pose[5] = q[5] = floating_base_state.pose.orientation.z();
+        hyrodyn.floating_robot_pose[6] = q[6] = floating_base_state.pose.orientation.w();
+        hyrodyn.floating_robot_twist.segment(0,3) = qd.segment(3,3) = fb_twist_tmp.angular;
+        hyrodyn.floating_robot_twist.segment(3,3) = qd.segment(0,3) = fb_twist_tmp.linear;
+        hyrodyn.floating_robot_accn.segment(0,3) = qdd.segment(3,3) = fb_acc_tmp.angular;
+        hyrodyn.floating_robot_accn.segment(3,3) = qdd.segment(0,3) = fb_acc_tmp.linear;
 
         hyrodyn.y_robot   = joint_positions;
         hyrodyn.yd_robot  = joint_velocities;
         hyrodyn.ydd_robot = joint_accelerations;
             
         hyrodyn.update_all_independent_coordinates();
+
+        q.segment(0,7) = hyrodyn.y.segment(0,7);
+        qd.segment(0,6) = hyrodyn.yd.segment(0,6);
+        qdd.segment(0,6) = hyrodyn.ydd.segment(0,6);
     }
     else{
         hyrodyn.y   = joint_positions;
@@ -265,9 +282,16 @@ void RobotModelHyrodyn::update(const Eigen::VectorXd& joint_positions,
     // Compute system state
     hyrodyn.calculate_system_state();
 
+    q.tail(na())   = hyrodyn.u;
+    qd.tail(na())  = hyrodyn.ud;
+    qdd.tail(na()) = hyrodyn.udd;
+
     joint_state.position     = hyrodyn.y.tail(na());
     joint_state.velocity     = hyrodyn.yd.tail(na());
     joint_state.acceleration = hyrodyn.ydd.tail(na());
+
+    updateData();
+    updated = true;
 }
 
 const types::Pose &RobotModelHyrodyn::pose(const std::string &frame_id){
@@ -341,7 +365,6 @@ const Eigen::MatrixXd &RobotModelHyrodyn::spaceJacobian(const std::string &frame
             space_jac_map[frame_id].data.block(3,0,3,n_cols) = hyrodyn.Jsu.block(0,0,3,n_cols);
         }
         space_jac_map[frame_id].needs_recompute = false;
-
     }
 
     return space_jac_map[frame_id].data;
@@ -377,6 +400,8 @@ const Eigen::MatrixXd &RobotModelHyrodyn::bodyJacobian(const std::string &frame_
 
 const Eigen::MatrixXd &RobotModelHyrodyn::comJacobian(){
     assert(updated);
+
+    log(logWARNING) << "RobotModelHyrodyn::comJacobian() only works for serial (independent joint space) models right now.";
 
     if(com_jac.empty())
         com_jac.push_back(Matrix());
