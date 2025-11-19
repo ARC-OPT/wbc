@@ -16,87 +16,91 @@ protected:
     hyrodyn::RobotModel_HyRoDyn hyrodyn;
 
     void clear();
+    void addFloatingBaseToURDF(urdf::ModelInterfaceSharedPtr& robot_urdf, const std::string &world_frame_id = "world");
 public:
     RobotModelHyrodyn();
     virtual ~RobotModelHyrodyn();
 
     /**
-     * @brief Load and configure the robot model
+     * @brief This will read the robot model from the given URDF file and initialize all members accordingly.
      * @param cfg Model configuration. See RobotModelConfig.hpp for details
      * @return True in case of success, else false
      */
     virtual bool configure(const RobotModelConfig& cfg);
 
-    /**
-     * @brief Update the robot configuration
-     * @param joint_state The joint_state vector. Has to contain all robot joints that are configured in the model.
-     * @param poses Optional, only for floating base robots: update the floating base state of the robot model.
-     */
-    virtual void update(const base::samples::Joints& joint_state,
-                        const base::samples::RigidBodyStateSE3& floating_base_state = base::samples::RigidBodyStateSE3());
+    /** @brief Update kinematics/dynamics.
+      * @param joint_positions Positions of all independent joints. These have to be in the same order as used by the model (alphabetic). For getting the joint order, call jointNames().
+      * @param joint_velocities Velocities of all independent joints. These have to be in the same order as used by the model (alphabetic). For getting the joint order, call jointNames().
+      * @param joint_acceleration Velocities of all independent joints. These have to be in the same order as used by the model (alphabetic). For getting the joint order, call jointNames().
+      * @param fb_pose Pose of the floating base in world coordinates
+      * @param fb_twist Twist of the floating base in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame attached to the floating base (robot root),
+      * but aligned to world coordinates
+      * @param fb_acc Spatial accelerationof the floating base in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame attached to the floating base (robot root),
+      * but aligned to world coordinates
+    */
+    virtual void update(const Eigen::VectorXd& joint_positions,
+                        const Eigen::VectorXd& joint_velocities,
+                        const Eigen::VectorXd& joint_accelerations,
+                        const types::Pose& fb_pose,
+                        const types::Twist& fb_twist,
+                        const types::SpatialAcceleration& fb_acc);
 
-    /** Return entire system state*/
-    virtual void systemState(base::VectorXd &q, base::VectorXd &qd, base::VectorXd &qdd);
+    /** Returns the pose of the body defined by frame_id. Pose will be computed with respect to world frame (floating base robot) or
+     *  robot root link (fixed base)*/
+    virtual const types::Pose &pose(const std::string &frame_id);
 
-    /**
-     * @brief Computes and returns the relative transform between the two given frames. By convention this is the pose of the tip frame in root coordinates.
-     *  This will create a kinematic chain between root and tip frame, if called for the first time with the given arguments.
-     * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
-     * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
-     */
-    virtual const base::samples::RigidBodyStateSE3 &rigidBodyState(const std::string &root_frame, const std::string &tip_frame);
+    /** Returns the twist of the body defined by frame_id. Twist will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame
+      * attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base)*/
+    virtual const types::Twist &twist(const std::string &frame_id);
 
-    /** @brief Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
-      * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
-      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
-      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+    /** Returns the spatial acceleration of the body defined by frame_id. Twist will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame
+      * attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base)*/
+    virtual const types::SpatialAcceleration &acceleration(const std::string &frame_id);
+
+    /** @brief Returns the Space Jacobian for the given frame. The order of the Jacobian's columns will be the same as in the model (alphabetic). Note that
+      * the linear part of the jacobian will be aligned to world frame (floating base robot) or robot root link (fixed base), and the angular part will be in
+      * body coordinates. This is refered to as "hybrid" representation.
+      * @param frame_id Tip frame of the Jacobian. Has to be a valid link in the robot model.
+      * @return A 6 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.
       */
-    virtual const base::MatrixXd &spaceJacobian(const std::string &root_frame, const std::string &tip_frame);
+    virtual const Eigen::MatrixXd &spaceJacobian(const std::string &frame_id);
 
-    /** @brief Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
-      * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
-      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
-      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
+    /** @brief Returns the Body Jacobian for the given frame. The order of the Jacobian's columns will be the same as in the model (alphabetic).
+      * @param frame_id Reference frame of the Jacobian. Has to be a valid link in the robot model.
+      * @return A 6 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.
       */
-    virtual const base::MatrixXd &bodyJacobian(const std::string &root_frame, const std::string &tip_frame);
+    virtual const Eigen::MatrixXd &bodyJacobian(const std::string &frame_id);
 
-    /** @brief Returns the CoM Jacobian for the entire robot, which maps the robot joint velocities to linear spatial velocities in robot base coordinates.
-      * Size of the Jacobian will be 3 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
-      * columns will be the same as the configured joint order of the robot.
-      * @return A 3xN matrix, where N is the number of robot joints
+    /** @brief Returns the CoM Jacobian for the robot, which maps the robot joint velocities to linear spatial velocities of the CoM expressed in
+      * world frame (floating base robot) or robot root link (fixed base). The order of the columns will be the same as the configured joint order of the robot.
+      * @return A 3 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.
       */
-    virtual const base::MatrixXd &comJacobian();
+    virtual const Eigen::MatrixXd &comJacobian();
 
-    /** @brief Returns the derivative of the Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. By convention reference frame & reference point
-      *  of the Jacobian will be the root frame (corresponding to the body Jacobian). Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the
-      * columns will be the same as the joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries.
-      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
-      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
-      * @return A 6xN Jacobian derivative matrix, where N is the number of robot joints
+    /** @brief Returns the spatial acceleration bias, i.e. the term Jdot*qdot. The linear part of the acceleration will be aligned to world frame (floating base robot) or
+      *  robot root link (fixed base), and the angular part will be in body coordinates. This is refered to as "hybrid" representation.
+      * @param frame_id Reference frame of the spatial acceleration. Has to be a valid link in the robot model.
+      * @return A 6 dof spatial acceleration.
       */
-    virtual const base::MatrixXd &jacobianDot(const std::string &root_frame, const std::string &tip_frame);
+    virtual const types::SpatialAcceleration &spatialAccelerationBias(const std::string &frame_id);
 
-    /** @brief Returns the spatial acceleration bias, i.e. the term Jdot*qdot
-      * @param root_frame Root frame of the chain. Has to be a valid link in the robot model.
-      * @param tip_frame Tip frame of the chain. Has to be a valid link in the robot model.
-      * @return A Nx1 vector, where N is the number of robot joints
-      */
-    virtual const base::Acceleration &spatialAccelerationBias(const std::string &root_frame, const std::string &tip_frame);
+    /** @brief Returns the joint space mass-inertia matrix, which is nj x nj,  where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.*/
+    virtual const Eigen::MatrixXd &jointSpaceInertiaMatrix();
 
-    /** Compute and return the joint space mass-inertia matrix, which is nj x nj, where nj is the number of joints of the system*/
-    virtual const base::MatrixXd &jointSpaceInertiaMatrix();
+    /** @brief Returns the bias force vector, which is nj x 1, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot.*/
+    virtual const Eigen::VectorXd &biasForces();
 
-    /** Compute and return the bias force vector, which is nj x 1, where nj is the number of joints of the system*/
-    virtual const base::VectorXd &biasForces();
-
-    /** @brief Return Current center of gravity in expressed base frame*/
-    virtual const base::samples::RigidBodyStateSE3& centerOfMass();
+    /** @brief Return centers of mass expressed in world frame*/
+    virtual const types::RigidBodyState& centerOfMass();
 
     /** @brief Return pointer to the internal hyrodyn model*/
     hyrodyn::RobotModel_HyRoDyn *hyrodynHandle(){return &hyrodyn;}
 
-    /** @brief Compute and return the inverse dynamics solution*/
-    virtual void computeInverseDynamics(base::commands::Joints &solver_output);
+    /** @brief Compute tau from internal state
+      * @param qdd_ref (Optional) Desired reference joint acceleration (including floating base), if empty actual acceleration will be used.
+      * @param f_ext (Optional) Contact wrenches, if not empty, size has to match the number of contact points. All wrenches will be in local coordinates, but aligned wrt. world*/
+    virtual const Eigen::VectorXd& inverseDynamics(const Eigen::VectorXd& qdd_ref = Eigen::VectorXd(),
+                                                   const std::vector<types::Wrench>& f_ext = std::vector<types::Wrench>());
 };
 
 }
