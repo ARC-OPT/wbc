@@ -100,8 +100,6 @@ int main(){
         feedback.pose = robot_model->pose(cart_task->tipFrame());
         ctrl_output = controller.update(setpoint.pose, setpoint.twist, feedback.pose);
 
-        std::cout<<ctrl_output.vector6d().transpose()<<std::endl;
-
         // Update constraints. Pass the control output of the solver to the corresponding constraint.
         // The control output is the gradient of the task function that is to be minimized during execution.
         cart_task->setReference(ctrl_output);
@@ -121,8 +119,6 @@ int main(){
 
         joint_state.velocity     = rm_hyrodyn->yd.tail(robot_model->na());
         joint_state.position     += joint_state.velocity * dt;
-
-        std::cout<<joint_state.position.transpose()<<std::endl;
 
         // Update independent joint state
 
