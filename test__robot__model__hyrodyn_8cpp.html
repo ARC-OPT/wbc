@@ -70,7 +70,7 @@ $(function(){ initResizable(false); });
   <div class="headertitle"><div class="title">test_robot_model_hyrodyn.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
-<div class="textblock"><code>#include &quot;<a class="el" href="RobotModelHyrodyn_8hpp_source.html">robot_models/hyrodyn/RobotModelHyrodyn.hpp</a>&quot;</code><br />
+<div class="textblock"><code>#include &quot;<a class="el" href="RobotModelHyrodyn_8hpp_source.html">../RobotModelHyrodyn.hpp</a>&quot;</code><br />
 <code>#include &lt;boost/test/unit_test.hpp&gt;</code><br />
 <code>#include &quot;<a class="el" href="test__robot__model_8hpp_source.html">../../test/test_robot_model.hpp</a>&quot;</code><br />
 </div><table class="memberdecls">
@@ -93,8 +93,8 @@ Functions</h2></td></tr>
 <tr class="separator:a5ef9a14879ba258db0ddd06e5caae4fb"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa54d11b71d5b0b4c84843c6239cc8e0d" id="r_aa54d11b71d5b0b4c84843c6239cc8e0d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa54d11b71d5b0b4c84843c6239cc8e0d">BOOST_AUTO_TEST_CASE</a> (com_jacobian)</td></tr>
 <tr class="separator:aa54d11b71d5b0b4c84843c6239cc8e0d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a2293ef44ce81f8bcefc1ca6aaa56e598" id="r_a2293ef44ce81f8bcefc1ca6aaa56e598"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2293ef44ce81f8bcefc1ca6aaa56e598">BOOST_AUTO_TEST_CASE</a> (dynamics)</td></tr>
-<tr class="separator:a2293ef44ce81f8bcefc1ca6aaa56e598"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aec30387be4c05a331a439bc26e51a318" id="r_aec30387be4c05a331a439bc26e51a318"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec30387be4c05a331a439bc26e51a318">BOOST_AUTO_TEST_CASE</a> (inverse_dynamics)</td></tr>
+<tr class="separator:aec30387be4c05a331a439bc26e51a318"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40bbcaf4118b49151a610b729bbf2000" id="r_a40bbcaf4118b49151a610b729bbf2000"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a40bbcaf4118b49151a610b729bbf2000">BOOST_AUTO_TEST_CASE</a> (compare_serial_vs_hybrid_model)</td></tr>
 <tr class="separator:a40bbcaf4118b49151a610b729bbf2000"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -198,25 +198,8 @@ Functions</h2></td></tr>
 
 </div>
 </div>
-<a id="a2293ef44ce81f8bcefc1ca6aaa56e598" name="a2293ef44ce81f8bcefc1ca6aaa56e598"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2293ef44ce81f8bcefc1ca6aaa56e598">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[5/7]</span></h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">BOOST_AUTO_TEST_CASE </td>
-          <td>(</td>
-          <td class="paramtype">dynamics</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-
-</div>
-</div>
 <a id="af0d2aa284a956970ca63fbb0174498c6" name="af0d2aa284a956970ca63fbb0174498c6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af0d2aa284a956970ca63fbb0174498c6">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[6/7]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#af0d2aa284a956970ca63fbb0174498c6">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[5/7]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -225,6 +208,23 @@ Functions</h2></td></tr>
           <td class="memname">BOOST_AUTO_TEST_CASE </td>
           <td>(</td>
           <td class="paramtype">fk</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aec30387be4c05a331a439bc26e51a318" name="aec30387be4c05a331a439bc26e51a318"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec30387be4c05a331a439bc26e51a318">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[6/7]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">BOOST_AUTO_TEST_CASE </td>
+          <td>(</td>
+          <td class="paramtype">inverse_dynamics</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>

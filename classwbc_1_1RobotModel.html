@@ -402,7 +402,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Returns the spatial acceleration of the body defined by frame_id. <a class="el" href="structwbc_1_1RobotModel_1_1Twist.html">Twist</a> will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base) </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a95702906c080b46d1b1ac680a1bc51f3">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a193fc8121a494bc5f10b193e69d0f87a">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#adc8e43fe7b82b53ce7f20b3d5e9ee3c5">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a95702906c080b46d1b1ac680a1bc51f3">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a193fc8121a494bc5f10b193e69d0f87a">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -485,7 +485,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Returns the bias force vector, which is nj x 1, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#aa7fdb1e22c5dccb65edb832076b42edd">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a036d06a285b17a0f20f4cd249e04750f">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a81590fae05326f3013b1ed3b3047d300">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a8aca393d61726ffeebd70c620875c758">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a036d06a285b17a0f20f4cd249e04750f">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a81590fae05326f3013b1ed3b3047d300">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -521,7 +521,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A 6 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot. </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a9d2d594535df58b42ce5f7656eb53536">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a0694be4f6a027fd0f66a02325cad2336">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a60b9f3973262a0dd8d29d8c758328c19">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a9d2d594535df58b42ce5f7656eb53536">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a0694be4f6a027fd0f66a02325cad2336">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -550,7 +550,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Return centers of mass expressed in world frame. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a05da85b0f2ede12e221e581dc0b99da3">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a1ef9965662840d1408b03280e6a58795">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a89d268df8d69a59a65f8aa34f805c2f0">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a189583d5df447f674f01f1419bbd1db4">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a1ef9965662840d1408b03280e6a58795">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a89d268df8d69a59a65f8aa34f805c2f0">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -605,7 +605,7 @@ Protected Attributes</h2></td></tr>
 <p>Returns the CoM Jacobian for the robot, which maps the robot joint velocities to linear spatial velocities of the CoM expressed in world frame (floating base robot) or robot root link (fixed base). The order of the columns will be the same as the configured joint order of the robot. </p>
 <dl class="section return"><dt>Returns</dt><dd>A 3 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot. </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#af349320a5e7628bdb1b27083bfc059f8">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a31ff24b9be086e35f29ca8bdd046f01d">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ac2af2ac5a4c398d03c67ba8d677f6bea">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a56ade37ff2eb17d99d1bffca6df378ff">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a31ff24b9be086e35f29ca8bdd046f01d">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ac2af2ac5a4c398d03c67ba8d677f6bea">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1008,7 +1008,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a00608b88f2700ae50b574b28dafaae1d">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a602bd4f3000011279704a11fe4835ae4">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a5a61436d13db007faea3cfab787a9a2a">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a00608b88f2700ae50b574b28dafaae1d">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a602bd4f3000011279704a11fe4835ae4">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1115,7 +1115,7 @@ Protected Attributes</h2></td></tr>
 
 <p>Returns the joint space mass-inertia matrix, which is nj x nj, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot. </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#ad388b3d6b2964e16e4126b515e1dfce5">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a7bf865e86cfe1ddbe4594cbee0f50fb8">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a3fcc91a2b6dfba7a099981f07a6094bc">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a3d17e7c4b013da8ece3ddbfe92bbd9f6">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a7bf865e86cfe1ddbe4594cbee0f50fb8">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a3fcc91a2b6dfba7a099981f07a6094bc">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1314,7 +1314,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Returns the pose of the body defined by frame_id. <a class="el" href="structwbc_1_1RobotModel_1_1Pose.html">Pose</a> will be computed with respect to world frame (floating base robot) or robot root link (fixed base) </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#aab2422fe5353619e9b940bc48988d867">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ae220b6ed1ece3267eba5c8c830dfc7e9">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a870e09bd86c58daa41926802d892599d">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#aab2422fe5353619e9b940bc48988d867">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ae220b6ed1ece3267eba5c8c830dfc7e9">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1467,7 +1467,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A 6 x nj matrix, where nj is the number of joints + number of floating coordinates, i.e. 6 in case of a floating base robot. </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a010866edc8579d52b93f26bc18e9d5b7">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ae84bd68e3d6e035c84a32504681e5ede">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a5d745d8abc225a5b2a6e106229dd7c30">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a010866edc8579d52b93f26bc18e9d5b7">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#ae84bd68e3d6e035c84a32504681e5ede">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1503,7 +1503,7 @@ Protected Attributes</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>A 6 dof spatial acceleration. </dd></dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#aa9cfb4c88d631e859726d9769dcd7766">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#aaed826dcabe411917d37fc57af026102">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a911392c7a9fffc05c751a3625d21b6fc">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#aa9cfb4c88d631e859726d9769dcd7766">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#aaed826dcabe411917d37fc57af026102">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1531,7 +1531,7 @@ Protected Attributes</h2></td></tr>
 </div><div class="memdoc">
 <p>Returns the twist of the body defined by frame_id. <a class="el" href="structwbc_1_1RobotModel_1_1Twist.html">Twist</a> will be in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame attached to the given body, but aligned to world coordinates (floating base robot) or robot root link (fixed base) </p>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a977955f2927e7ca469a8862812852fb2">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a3f928d81e3e07f890f218d067484d74e">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#a2a9376e41cdb63fd51dea31c2d9bcc62">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a977955f2927e7ca469a8862812852fb2">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a3f928d81e3e07f890f218d067484d74e">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
@@ -1669,7 +1669,7 @@ Protected Attributes</h2></td></tr>
   </dd>
 </dl>
 
-<p>Implemented in <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a4fa57b703f7e2fd96634e0ca8ce32d28">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a38fce3a4705fb972f354cabd0607fe66">wbc::RobotModelRBDL</a>.</p>
+<p>Implemented in <a class="el" href="classwbc_1_1RobotModelHyrodyn.html#aabd657d4028786274e4c431eb4d7a4fd">wbc::RobotModelHyrodyn</a>, <a class="el" href="classwbc_1_1RobotModelPinocchio.html#a4fa57b703f7e2fd96634e0ca8ce32d28">wbc::RobotModelPinocchio</a>, and <a class="el" href="classwbc_1_1RobotModelRBDL.html#a38fce3a4705fb972f354cabd0607fe66">wbc::RobotModelRBDL</a>.</p>
 
 </div>
 </div>
