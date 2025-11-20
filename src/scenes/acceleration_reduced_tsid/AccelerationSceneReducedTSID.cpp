@@ -135,7 +135,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             task->Aw.col(i) = hqp.Wq[i] * task->Aw.col(i);
 
         // Decide on which output variables the tasks are to be mapped: qdd or f_ext
-        if(task->type == TaskType::contact_force){ // f_ext
+        if(task->type == TaskType::contact_force || task->type == TaskType::contact_wrench){ // f_ext
             /*const std::vector<ActiveContact> &cp = robot_model->getActiveContacts();
             const std::string contact_link = task->config.ref_frame;
             if(std::find(cp.names.begin(), cp.names.end(), contact_link) == cp.names.end()){

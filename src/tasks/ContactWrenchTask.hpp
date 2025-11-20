@@ -1,19 +1,19 @@
-#ifndef WBC_TASKS_CONTACTFORCETASK_HPP
-#define WBC_TASKS_CONTACTFORCETASK_HPP
+#ifndef WBC_TASKS_CONTACTWRENCHTASK_HPP
+#define WBC_TASKS_CONTACTWRENCHTASK_HPP
 
 #include "../core/Task.hpp"
 
 namespace wbc{
 
-class ContactForceTask : public Task{
+class ContactWrenchTask : public Task{
 protected:
     Eigen::MatrixXd ref_frame_rotation;
     const std::string ref_frame;
 public:
-    ContactForceTask(TaskConfig config,
+    ContactWrenchTask(TaskConfig config,
                       RobotModelPtr robot_model,
                       const std::string &ref_frame);
-    virtual ~ContactForceTask() = default;
+    virtual ~ContactWrenchTask() = default;
 
     /**
      * @brief Compute the cartesian task matrix A
@@ -32,7 +32,7 @@ public:
     const std::string& refFrame(){return ref_frame;}
 };
 
-typedef std::shared_ptr<ContactForceTask> ContactForceTaskPtr;
+typedef std::shared_ptr<ContactWrenchTask> ContactWrenchTaskPtr;
 
 }
 

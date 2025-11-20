@@ -15,7 +15,8 @@ enum TaskType{
     com_acceleration,
     joint_velocity,
     joint_acceleration,
-    contact_force
+    contact_force,
+    contact_wrench
 };
 
 /**
