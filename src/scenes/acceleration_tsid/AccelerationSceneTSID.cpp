@@ -40,7 +40,8 @@ bool AccelerationSceneTSID::configure(const std::vector<TaskPtr> &tasks_in){
         if(task->type != spatial_acceleration &&
            task->type != joint_acceleration &&
            task->type != com_acceleration &&
-           task->type != contact_force){
+           task->type != contact_force &&
+           task->type != contact_wrench){
             log(logERROR)<<"Invalid task type: "<<task->type;
             return false;
         }
