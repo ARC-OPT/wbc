@@ -88,9 +88,9 @@ Inheritance diagram for wbc::EffortLimitsAccelerationConstraint:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:ac85e7d299d2140cd819b9f86decfb134" id="r_ac85e7d299d2140cd819b9f86decfb134"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac85e7d299d2140cd819b9f86decfb134">EffortLimitsAccelerationConstraint</a> ()</td></tr>
-<tr class="memdesc:ac85e7d299d2140cd819b9f86decfb134"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
-<tr class="separator:ac85e7d299d2140cd819b9f86decfb134"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a04b004857c6617b58ebab8d6a4cffe45" id="r_a04b004857c6617b58ebab8d6a4cffe45"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a04b004857c6617b58ebab8d6a4cffe45">EffortLimitsAccelerationConstraint</a> (uint <a class="el" href="#a95081293debc322a96b3696448060b2a">dim_contact</a>)</td></tr>
+<tr class="memdesc:a04b004857c6617b58ebab8d6a4cffe45"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
+<tr class="separator:a04b004857c6617b58ebab8d6a4cffe45"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a7b62d638196b64c4f5203ec02d55a5fa" id="r_a7b62d638196b64c4f5203ec02d55a5fa"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7b62d638196b64c4f5203ec02d55a5fa">~EffortLimitsAccelerationConstraint</a> ()=default</td></tr>
 <tr class="separator:a7b62d638196b64c4f5203ec02d55a5fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a3a555b28a18db1d02910e200f761de2d" id="r_a3a555b28a18db1d02910e200f761de2d"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a555b28a18db1d02910e200f761de2d">update</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model) override</td></tr>
@@ -122,6 +122,8 @@ Public Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a4b11f306c366e7c2ca89c1e11d8cc93a" id="r_a4b11f306c366e7c2ca89c1e11d8cc93a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1types_1_1JointLimits.html">types::JointLimits</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4b11f306c366e7c2ca89c1e11d8cc93a">joint_limits</a></td></tr>
 <tr class="separator:a4b11f306c366e7c2ca89c1e11d8cc93a"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a95081293debc322a96b3696448060b2a" id="r_a95081293debc322a96b3696448060b2a"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a95081293debc322a96b3696448060b2a">dim_contact</a></td></tr>
+<tr class="separator:a95081293debc322a96b3696448060b2a"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classwbc_1_1Constraint"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classwbc_1_1Constraint')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classwbc_1_1Constraint.html">wbc::Constraint</a></td></tr>
 <tr class="memitem:a1c356c8705d971a5dab550db6a399020 inherit pro_attribs_classwbc_1_1Constraint" id="r_a1c356c8705d971a5dab550db6a399020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a1c356c8705d971a5dab550db6a399020">c_type</a></td></tr>
 <tr class="separator:a1c356c8705d971a5dab550db6a399020 inherit pro_attribs_classwbc_1_1Constraint"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,8 +155,8 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Effort limits constraint for reduced TSID scene since torques are not part of qp, torque limits are enforced through acceleration and external forces limits using the linear dependecy given by the dynamic model. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="ac85e7d299d2140cd819b9f86decfb134" name="ac85e7d299d2140cd819b9f86decfb134"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac85e7d299d2140cd819b9f86decfb134">&#9670;&#160;</a></span>EffortLimitsAccelerationConstraint()</h2>
+<a id="a04b004857c6617b58ebab8d6a4cffe45" name="a04b004857c6617b58ebab8d6a4cffe45"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a04b004857c6617b58ebab8d6a4cffe45">&#9670;&#160;</a></span>EffortLimitsAccelerationConstraint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -165,7 +167,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">wbc::EffortLimitsAccelerationConstraint::EffortLimitsAccelerationConstraint </td>
           <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>dim_contact</em></span></td><td>)</td>
           <td></td>
         </tr>
       </table>
@@ -237,6 +239,28 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a95081293debc322a96b3696448060b2a" name="a95081293debc322a96b3696448060b2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a95081293debc322a96b3696448060b2a">&#9670;&#160;</a></span>dim_contact</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint wbc::EffortLimitsAccelerationConstraint::dim_contact</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a4b11f306c366e7c2ca89c1e11d8cc93a" name="a4b11f306c366e7c2ca89c1e11d8cc93a"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a4b11f306c366e7c2ca89c1e11d8cc93a">&#9670;&#160;</a></span>joint_limits</h2>
 

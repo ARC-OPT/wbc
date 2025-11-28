@@ -88,9 +88,9 @@ Inheritance diagram for wbc::RigidbodyDynamicsConstraint:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a7c132d53044e2f11342beb0c2840ec74" id="r_a7c132d53044e2f11342beb0c2840ec74"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a7c132d53044e2f11342beb0c2840ec74">RigidbodyDynamicsConstraint</a> (bool <a class="el" href="#a651226653a3cbaa01667460c44ca7126">reduced</a>=false)</td></tr>
-<tr class="memdesc:a7c132d53044e2f11342beb0c2840ec74"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
-<tr class="separator:a7c132d53044e2f11342beb0c2840ec74"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae918eb5430524e698dfb0297eb6c1ba4" id="r_ae918eb5430524e698dfb0297eb6c1ba4"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae918eb5430524e698dfb0297eb6c1ba4">RigidbodyDynamicsConstraint</a> (bool <a class="el" href="#a651226653a3cbaa01667460c44ca7126">reduced</a>=false, uint <a class="el" href="#a3ae347977899d7ced25e0cf99f8cc70d">dim_contact</a>=3)</td></tr>
+<tr class="memdesc:ae918eb5430524e698dfb0297eb6c1ba4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
+<tr class="separator:ae918eb5430524e698dfb0297eb6c1ba4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a36f5985643cba4e1750894e075065d9e" id="r_a36f5985643cba4e1750894e075065d9e"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a36f5985643cba4e1750894e075065d9e">~RigidbodyDynamicsConstraint</a> ()=default</td></tr>
 <tr class="separator:a36f5985643cba4e1750894e075065d9e"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a79cc6bdebc3f233d8fd85fe588e548c5" id="r_a79cc6bdebc3f233d8fd85fe588e548c5"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a79cc6bdebc3f233d8fd85fe588e548c5">update</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model) override</td></tr>
@@ -122,6 +122,8 @@ Public Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:a651226653a3cbaa01667460c44ca7126" id="r_a651226653a3cbaa01667460c44ca7126"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a651226653a3cbaa01667460c44ca7126">reduced</a></td></tr>
 <tr class="separator:a651226653a3cbaa01667460c44ca7126"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3ae347977899d7ced25e0cf99f8cc70d" id="r_a3ae347977899d7ced25e0cf99f8cc70d"><td class="memItemLeft" align="right" valign="top">uint&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3ae347977899d7ced25e0cf99f8cc70d">dim_contact</a></td></tr>
+<tr class="separator:a3ae347977899d7ced25e0cf99f8cc70d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pro_attribs_classwbc_1_1Constraint"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classwbc_1_1Constraint')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classwbc_1_1Constraint.html">wbc::Constraint</a></td></tr>
 <tr class="memitem:a1c356c8705d971a5dab550db6a399020 inherit pro_attribs_classwbc_1_1Constraint" id="r_a1c356c8705d971a5dab550db6a399020"><td class="memItemLeft" align="right" valign="top"><a class="el" href="classwbc_1_1Constraint.html#a1d5eac6389077831ca18462e0fea391c">Type</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Constraint.html#a1c356c8705d971a5dab550db6a399020">c_type</a></td></tr>
 <tr class="separator:a1c356c8705d971a5dab550db6a399020 inherit pro_attribs_classwbc_1_1Constraint"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -153,8 +155,8 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract class to represent a generic hard constraint for a WBC optimization problem. </p>
 </div><h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a7c132d53044e2f11342beb0c2840ec74" name="a7c132d53044e2f11342beb0c2840ec74"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a7c132d53044e2f11342beb0c2840ec74">&#9670;&#160;</a></span>RigidbodyDynamicsConstraint()</h2>
+<a id="ae918eb5430524e698dfb0297eb6c1ba4" name="ae918eb5430524e698dfb0297eb6c1ba4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae918eb5430524e698dfb0297eb6c1ba4">&#9670;&#160;</a></span>RigidbodyDynamicsConstraint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -165,8 +167,12 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="memname">wbc::RigidbodyDynamicsConstraint::RigidbodyDynamicsConstraint </td>
           <td>(</td>
-          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>reduced</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span></td><td>)</td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>reduced</em></span><span class="paramdefsep"> = </span><span class="paramdefval">false</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>dim_contact</em></span><span class="paramdefsep"> = </span><span class="paramdefval">3</span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -236,6 +242,28 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Data Documentation</h2>
+<a id="a3ae347977899d7ced25e0cf99f8cc70d" name="a3ae347977899d7ced25e0cf99f8cc70d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3ae347977899d7ced25e0cf99f8cc70d">&#9670;&#160;</a></span>dim_contact</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">uint wbc::RigidbodyDynamicsConstraint::dim_contact</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a651226653a3cbaa01667460c44ca7126" name="a651226653a3cbaa01667460c44ca7126"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a651226653a3cbaa01667460c44ca7126">&#9670;&#160;</a></span>reduced</h2>
 

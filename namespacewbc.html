@@ -103,9 +103,12 @@ Classes</h2></td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1ContactsFrictionPointConstraint.html">ContactsFrictionPointConstraint</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1ContactsFrictionSurfaceConstraint.html">ContactsFrictionSurfaceConstraint</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Polyhedral wrench friction (coulomb) cone constraint according to <a href="https://scaron.info/robotics/wrench-friction-cones.html">https://scaron.info/robotics/wrench-friction-cones.html</a> (<a class="el" href="classwbc_1_1types_1_1Wrench.html">Wrench</a> friction cone for surface contacts)  <a href="classwbc_1_1ContactsFrictionSurfaceConstraint.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1ContactsVelocityConstraint.html">ContactsVelocityConstraint</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Abstract class to represent a generic hard constraint for a WBC optimization problem.  <a href="classwbc_1_1ContactsVelocityConstraint.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1ContactWrenchTask.html">ContactWrenchTask</a></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1EffortLimitsAccelerationConstraint.html">EffortLimitsAccelerationConstraint</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Effort limits constraint for reduced TSID scene since torques are not part of qp, torque limits are enforced through acceleration and external forces limits using the linear dependecy given by the dynamic model.  <a href="classwbc_1_1EffortLimitsAccelerationConstraint.html#details">More...</a><br /></td></tr>
@@ -264,6 +267,8 @@ Typedefs</h2></td></tr>
 <tr class="separator:ade598e7dea52a3424aee8478fab5d965"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1237f17f2c97e223a20601d55cfb50f0" id="r_a1237f17f2c97e223a20601d55cfb50f0"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1ContactForceTask.html">ContactForceTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1237f17f2c97e223a20601d55cfb50f0">ContactForceTaskPtr</a></td></tr>
 <tr class="separator:a1237f17f2c97e223a20601d55cfb50f0"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a9d995ca68cfb9068e9341ad4d787ef24" id="r_a9d995ca68cfb9068e9341ad4d787ef24"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1ContactWrenchTask.html">ContactWrenchTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9d995ca68cfb9068e9341ad4d787ef24">ContactWrenchTaskPtr</a></td></tr>
+<tr class="separator:a9d995ca68cfb9068e9341ad4d787ef24"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aabf1bfc3b85e41937a0f48b98e9cc9e4" id="r_aabf1bfc3b85e41937a0f48b98e9cc9e4"><td class="memItemLeft" align="right" valign="top">using&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aabf1bfc3b85e41937a0f48b98e9cc9e4">JointAccelerationTaskPtr</a> = std::shared_ptr&lt;<a class="el" href="classwbc_1_1JointAccelerationTask.html">JointAccelerationTask</a>&gt;</td></tr>
 <tr class="separator:aabf1bfc3b85e41937a0f48b98e9cc9e4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a40c8aa5f29ce8ab8fb6fa46b68993bf6" id="r_a40c8aa5f29ce8ab8fb6fa46b68993bf6"><td class="memItemLeft" align="right" valign="top">typedef std::shared_ptr&lt; <a class="el" href="classwbc_1_1JointVelocityTask.html">JointVelocityTask</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a40c8aa5f29ce8ab8fb6fa46b68993bf6">JointVelocityTaskPtr</a></td></tr>
@@ -285,6 +290,8 @@ Enumerations</h2></td></tr>
 , <a class="el" href="#a221811c8e68c3040908923a8bdded9e6a642f1d361d75588904ea4217f618865d">joint_velocity</a>
 , <a class="el" href="#a221811c8e68c3040908923a8bdded9e6abf6b858797ba4a8a26d376ed1826b75e">joint_acceleration</a>
 , <a class="el" href="#a221811c8e68c3040908923a8bdded9e6a4134317da2c52fd2629fa86b7fbaf539">contact_force</a>
+, <br />
+&#160;&#160;<a class="el" href="#a221811c8e68c3040908923a8bdded9e6a3ef1c08a2327775084bbabbb34eb5a8e">contact_wrench</a>
 <br />
  }</td></tr>
 <tr class="separator:a221811c8e68c3040908923a8bdded9e6"><td class="memSeparator" colspan="2">&#160;</td></tr>
@@ -404,6 +411,20 @@ Functions</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="classwbc_1_1ContactsVelocityConstraint.html">ContactsVelocityConstraint</a>&gt; <a class="el" href="#a1ab48086cb0f366ccb0587ad720dcc81">wbc::ContactsVelocityConstraintPtr</a></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a9d995ca68cfb9068e9341ad4d787ef24" name="a9d995ca68cfb9068e9341ad4d787ef24"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9d995ca68cfb9068e9341ad4d787ef24">&#9670;&#160;</a></span>ContactWrenchTaskPtr</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">typedef std::shared_ptr&lt;<a class="el" href="classwbc_1_1ContactWrenchTask.html">ContactWrenchTask</a>&gt; <a class="el" href="#a9d995ca68cfb9068e9341ad4d787ef24">wbc::ContactWrenchTaskPtr</a></td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -641,6 +662,7 @@ Functions</h2></td></tr>
 <tr><td class="fieldname"><a id="a221811c8e68c3040908923a8bdded9e6a642f1d361d75588904ea4217f618865d" name="a221811c8e68c3040908923a8bdded9e6a642f1d361d75588904ea4217f618865d"></a>joint_velocity&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a221811c8e68c3040908923a8bdded9e6abf6b858797ba4a8a26d376ed1826b75e" name="a221811c8e68c3040908923a8bdded9e6abf6b858797ba4a8a26d376ed1826b75e"></a>joint_acceleration&#160;</td><td class="fielddoc"></td></tr>
 <tr><td class="fieldname"><a id="a221811c8e68c3040908923a8bdded9e6a4134317da2c52fd2629fa86b7fbaf539" name="a221811c8e68c3040908923a8bdded9e6a4134317da2c52fd2629fa86b7fbaf539"></a>contact_force&#160;</td><td class="fielddoc"></td></tr>
+<tr><td class="fieldname"><a id="a221811c8e68c3040908923a8bdded9e6a3ef1c08a2327775084bbabbb34eb5a8e" name="a221811c8e68c3040908923a8bdded9e6a3ef1c08a2327775084bbabbb34eb5a8e"></a>contact_wrench&#160;</td><td class="fielddoc"></td></tr>
 </table>
 
 </div>
