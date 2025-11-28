@@ -6,6 +6,7 @@
 #include "../../constraints/ContactsAccelerationConstraint.hpp"
 #include "../../constraints/JointLimitsAccelerationConstraint.hpp"
 #include "../../constraints/EffortLimitsAccelerationConstraint.hpp"
+#include "../../constraints/ContactsFrictionPointConstraint.hpp"
 #include "../../constraints/ContactsFrictionSurfaceConstraint.hpp"
 
 namespace wbc {
@@ -27,7 +28,10 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
     constraints.push_back(std::make_shared<ContactsAccelerationConstraint>(reduced, dim_contact));
     constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced, dim_contact));
     constraints.push_back(std::make_shared<EffortLimitsAccelerationConstraint>(dim_contact));
-    constraints.push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
+    if(dim_contact == 3)
+        constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+    else
+        constraints.push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
 }
 
 bool AccelerationSceneReducedTSID::configure(const std::vector<TaskPtr> &tasks_in){
@@ -200,6 +204,8 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
         contact_wrenches[i].force = fext_out.segment(i*dim_contact, 3);
         if(dim_contact == 6)
             contact_wrenches[i].torque = fext_out.segment(i*dim_contact+3, 3);
+        else
+            contact_wrenches[i].torque.setZero();
     }
 
     return solver_output_joints;

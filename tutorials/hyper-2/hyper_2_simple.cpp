@@ -2,6 +2,7 @@
 #include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/acceleration_reduced_tsid/AccelerationSceneReducedTSID.hpp>
+#include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
 #include <controllers/JointPosPDController.hpp>
 #include <tasks/JointAccelerationTask.hpp>
 #include <tools/JointIntegrator.hpp>

@@ -48,6 +48,8 @@ protected:
     HierarchicalQP hqp;
     bool configured;
     types::JointCommand solver_output_joints;
+    uint dim_contact;
+
 
     bool contactsHaveChanged(const std::vector<types::Contact>& old_contacts, const std::vector<types::Contact>& new_contacts){
         if(old_contacts.size() != new_contacts.size())
@@ -60,7 +62,7 @@ protected:
     }
 
 public:
-    AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt);
+    AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact=3);
     virtual ~AccelerationSceneTSID(){
     }
 
