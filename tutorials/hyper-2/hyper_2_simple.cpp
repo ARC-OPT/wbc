@@ -2,6 +2,7 @@
 #include <robot_models/pinocchio/RobotModelPinocchio.hpp>
 #include <core/RobotModelConfig.hpp>
 #include <scenes/acceleration_reduced_tsid/AccelerationSceneReducedTSID.hpp>
+#include <scenes/acceleration_tsid/AccelerationSceneTSID.hpp>
 #include <controllers/JointPosPDController.hpp>
 #include <tasks/JointAccelerationTask.hpp>
 #include <tools/JointIntegrator.hpp>
@@ -32,7 +33,16 @@ int main(){
     RobotModelConfig config;
     config.file_or_string = "../../../models/hyper-2/urdf/HyPer-2.urdf";
     config.floating_base = true;
-    config.contact_points = {types::Contact("link_ll_foot",1,1.0),types::Contact("link_lr_foot",1,1.0)};
+    config.contact_points = {types::Contact("link_ll_foot", // Contact frame ID
+                                             1,             // Contact active?
+                                             1.0,           // Coulomb friction coefficient
+                                             0.15,         // x-dimension of contact surface
+                                             0.22),         // y-dimension of contact surface
+                             types::Contact("link_lr_foot",
+                                             1,
+                                             1.0,
+                                             0.15,
+                                             0.22)};
     if(!robot_model->configure(config))
         return -1;
 
@@ -56,7 +66,7 @@ int main(){
     jnt_task = make_shared<JointAccelerationTask>(TaskConfig("joint_position",0,vector<double>(nj,1),1   ),
                                                    robot_model,
                                                    robot_model->jointNames());
-    AccelerationSceneReducedTSID scene(robot_model, solver, dt);
+    AccelerationSceneReducedTSID scene(robot_model, solver, dt, 6);
     if(!scene.configure({jnt_task}))
         return -1;
 
@@ -133,6 +143,8 @@ int main(){
         cout<<"Velocity:      "; cout<<solver_output.velocity.transpose()<<" "; cout<<endl;
         cout<<"Acceleration:  "; cout<<solver_output.acceleration.transpose()<<" "; cout<<endl;
         cout<<"Effort:        "; cout<<solver_output.effort.transpose()<<" "; cout<<endl;
+        cout<<"Ext. Force     "; for(const auto& wrench : scene.getContactWrenches()) cout<<wrench.force.transpose()<<" "; cout<<endl;
+        cout<<"Ext. Torque    "; for(const auto& wrench : scene.getContactWrenches()) cout<<wrench.torque.transpose()<<" "; cout<<endl;
         cout<<"solve time:    " << solve_time << " (mu s)" << endl;
         cout<<"---------------------------------------------------------------------------------------------"<<endl<<endl;
 

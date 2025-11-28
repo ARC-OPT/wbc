@@ -5,6 +5,10 @@
 
 namespace wbc {
 
+/**
+ * @brief Polyhedral wrench friction (coulomb) cone constraint according to 
+ * https://scaron.info/robotics/wrench-friction-cones.html (Wrench friction cone for surface contacts)
+ */
 class ContactsFrictionSurfaceConstraint : public Constraint{
 public:
     /** @brief Default constructor */

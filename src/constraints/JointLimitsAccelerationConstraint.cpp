@@ -2,10 +2,11 @@
 #include <iostream>
 namespace wbc{
 
-    JointLimitsAccelerationConstraint::JointLimitsAccelerationConstraint(double dt, bool reduced) 
+    JointLimitsAccelerationConstraint::JointLimitsAccelerationConstraint(double dt, bool reduced, uint dim_contact) 
     :   Constraint(Constraint::bounds),
         dt(dt),
-        reduced(reduced)
+        reduced(reduced),
+        dim_contact(dim_contact)
     {
 
     }
@@ -16,7 +17,7 @@ namespace wbc{
         uint na = robot_model->na();
         uint nc = robot_model->nc();
         uint nfb = robot_model->nfb();
-        uint nv = reduced ? nj+3*nc : nj+na+3*nc;
+        uint nv = reduced ? nj+dim_contact*nc : nj+na+dim_contact*nc;
 
         lb_vec.resize(nv);
         ub_vec.resize(nv);

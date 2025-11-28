@@ -6,24 +6,29 @@
 #include "../../constraints/ContactsAccelerationConstraint.hpp"
 #include "../../constraints/JointLimitsAccelerationConstraint.hpp"
 #include "../../constraints/ContactsFrictionPointConstraint.hpp"
+#include "../../constraints/ContactsFrictionSurfaceConstraint.hpp"
 
 namespace wbc {
 
 SceneRegistry<AccelerationSceneTSID> AccelerationSceneTSID::reg("acceleration_tsid");
 
-AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt) :
+AccelerationSceneTSID::AccelerationSceneTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact) :
     Scene(robot_model, solver, dt),
-    configured(false){
+    configured(false),
+    dim_contact(dim_contact){
 
     // whether or not torques are removed  from the qp problem
     // this formulation includes torques !!!
     bool reduced = false; // DO NOT CHANGE
 
     // for now manually adding constraint to this scene (an option would be to take them during configuration)
-    constraints.push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced));
-    constraints.push_back(std::make_shared<ContactsAccelerationConstraint>(reduced));
-    constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced));
-    constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+    constraints.push_back(std::make_shared<RigidbodyDynamicsConstraint>(reduced,dim_contact));
+    constraints.push_back(std::make_shared<ContactsAccelerationConstraint>(reduced,dim_contact));
+    constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced,dim_contact));
+    if(dim_contact == 3)
+        constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+    else
+        constraints.push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
 }
 
 bool AccelerationSceneTSID::configure(const std::vector<TaskPtr> &tasks_in){
@@ -35,7 +40,8 @@ bool AccelerationSceneTSID::configure(const std::vector<TaskPtr> &tasks_in){
         if(task->type != spatial_acceleration &&
            task->type != joint_acceleration &&
            task->type != com_acceleration &&
-           task->type != contact_force){
+           task->type != contact_force &&
+           task->type != contact_wrench){
             log(logERROR)<<"Invalid task type: "<<task->type;
             return false;
         }
@@ -75,7 +81,7 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
     // QP Size: (nc x nj+na+nc*3)
     //Variable order: (qdd,tau,f_ext)
     QuadraticProgram& qp = hqp[0];
-    qp.resize(nj+na+ncp*3, total_eqs, total_ineqs, has_bounds);
+    qp.resize(nj+na+ncp*dim_contact, total_eqs, total_ineqs, has_bounds);
     total_eqs = total_ineqs = 0;
     for(uint i = 0; i < constraints.size(); i++) {
         Constraint::Type type = constraints[i]->type();
@@ -133,8 +139,8 @@ const HierarchicalQP& AccelerationSceneTSID::update(){
                 throw std::runtime_error("Invalid task configuration");
             }*/
 
-            qp.H.block(nj+na+wrench_idx*3,nj+na+wrench_idx*3,3,3) += task->Aw.transpose()*task->Aw;
-            qp.g.segment(nj+na+wrench_idx*3,3) -= task->Aw.transpose()*task->y_ref_world;
+            qp.H.block(nj+na+wrench_idx*dim_contact,nj+na+wrench_idx*dim_contact,dim_contact,dim_contact) += task->Aw.transpose()*task->Aw;
+            qp.g.segment(nj+na+wrench_idx*dim_contact,dim_contact) -= task->Aw.transpose()*task->y_ref_world;
             wrench_idx++;
         }
         else{ // qdd
@@ -160,6 +166,7 @@ const types::JointCommand& AccelerationSceneTSID::solve(const HierarchicalQP& hq
     uint nj = robot_model->nj();
     uint na = robot_model->na();
     uint nfb = robot_model->nfb();
+    uint nc = contacts.size();
     solver_output_joints.resize(na);
     for(uint i = 0; i < solver_output.size(); i++){
         if(std::isnan(solver_output[i]))
@@ -173,10 +180,14 @@ const types::JointCommand& AccelerationSceneTSID::solve(const HierarchicalQP& hq
     // std::cout<<"F_ext: "<<solver_output.segment(nj+na,robot_model->nc()*3).transpose()<<std::endl<<std::endl;
 
     // Convert solver output: contact wrenches
-    contact_wrenches.resize(robot_model->getContacts().size());
-    for(uint i = 0; i < robot_model->getContacts().size(); i++){
-        contact_wrenches[i].force = solver_output.segment(nj+na+i*3,3);
-        //contact_wrenches[i].torque = solver_output.segment(nj+na+i*6+3,3);
+    auto fext_out = Eigen::Map<Eigen::VectorXd>(solver_output.data()+nj+na, dim_contact*nc);    
+    contact_wrenches.resize(nc);
+    for(uint i = 0; i < nc; i++){
+        contact_wrenches[i].force = fext_out.segment(i*dim_contact, 3);
+        if(dim_contact == 6)
+            contact_wrenches[i].torque = fext_out.segment(i*dim_contact+3, 3);
+        else
+            contact_wrenches[i].torque.setZero();
     }
     return solver_output_joints;
 }

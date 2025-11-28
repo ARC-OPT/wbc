@@ -156,8 +156,8 @@ uint RobotModel::nac(){
 }
 
 void RobotModel::setJointWeights(const Eigen::VectorXd &weights){
-    assert(weights.size() == joint_weights.size());
-    joint_weights = weights;
+    assert(weights.size() == na());
+    joint_weights.tail(na()) = weights;
 }
 
 RobotModelFactory::RobotModelMap* RobotModelFactory::robot_model_map = 0;

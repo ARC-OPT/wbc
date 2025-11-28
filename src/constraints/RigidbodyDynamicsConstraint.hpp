@@ -14,8 +14,8 @@ class RigidbodyDynamicsConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    explicit RigidbodyDynamicsConstraint(bool reduced = false) 
-        : Constraint(Constraint::equality), reduced(reduced) { }
+    explicit RigidbodyDynamicsConstraint(bool reduced = false, uint dim_contact = 3) 
+        : Constraint(Constraint::equality), reduced(reduced), dim_contact(dim_contact) { }
 
     virtual ~RigidbodyDynamicsConstraint() = default;
 
@@ -24,6 +24,7 @@ public:
 protected:
 
     bool reduced;
+    uint dim_contact;
 };
 typedef std::shared_ptr<RigidbodyDynamicsConstraint> RigidbodyDynamicsConstraintPtr;
 

@@ -13,7 +13,8 @@ class ContactsAccelerationConstraint : public Constraint {
 public:
 
     /** @brief Default constructor */
-    explicit ContactsAccelerationConstraint(bool _reduced = false) : Constraint(Constraint::equality), reduced(_reduced) { }
+    explicit ContactsAccelerationConstraint(bool _reduced = false, uint dim_contact = 3) : 
+        Constraint(Constraint::equality), reduced(_reduced), dim_contact(dim_contact) { }
 
     virtual ~ContactsAccelerationConstraint() = default;
 
@@ -22,6 +23,7 @@ public:
 private:
 
     bool reduced; // if torques are removed from the qp formulation or not
+    uint dim_contact;
 
 };
 
