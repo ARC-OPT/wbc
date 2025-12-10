@@ -81,8 +81,8 @@ $(function(){ initResizable(false); });
 Public Member Functions</h2></td></tr>
 <tr class="memitem:aaa9a203529e2491796bc52e99384b813" id="r_aaa9a203529e2491796bc52e99384b813"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaa9a203529e2491796bc52e99384b813">TaskConfig</a> ()</td></tr>
 <tr class="separator:aaa9a203529e2491796bc52e99384b813"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ac17d21ad1ea7920702d6239c5c32846d" id="r_ac17d21ad1ea7920702d6239c5c32846d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac17d21ad1ea7920702d6239c5c32846d">TaskConfig</a> (const std::string &amp;<a class="el" href="#a03146c05b23599c8be79461247f3bf75">name</a>, const int <a class="el" href="#abc40c15f2d92229b89364dc4f4bea017">priority</a>, const std::vector&lt; double &gt; <a class="el" href="#a6a520dc825d54ccf9819974cef731587">weights</a>, const double <a class="el" href="#addc434d6053da547025b27679b54a492">activation</a>)</td></tr>
-<tr class="separator:ac17d21ad1ea7920702d6239c5c32846d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a35d33e2297c59a50d36483017ddfe9d9" id="r_a35d33e2297c59a50d36483017ddfe9d9"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a35d33e2297c59a50d36483017ddfe9d9">TaskConfig</a> (const std::string &amp;<a class="el" href="#a03146c05b23599c8be79461247f3bf75">name</a>, const int <a class="el" href="#abc40c15f2d92229b89364dc4f4bea017">priority</a>, const Eigen::VectorXd &amp;<a class="el" href="#a398c95fa19fb177954dfd5f823359739">weights</a>, const double <a class="el" href="#addc434d6053da547025b27679b54a492">activation</a>)</td></tr>
+<tr class="separator:a35d33e2297c59a50d36483017ddfe9d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aa5bd2f2eacf49be459c48d66092facf6" id="r_aa5bd2f2eacf49be459c48d66092facf6"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa5bd2f2eacf49be459c48d66092facf6">~TaskConfig</a> ()</td></tr>
 <tr class="separator:aa5bd2f2eacf49be459c48d66092facf6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8cea1c9aad13a1bec6cb8b3a7580238a" id="r_a8cea1c9aad13a1bec6cb8b3a7580238a"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8cea1c9aad13a1bec6cb8b3a7580238a">isValid</a> () const</td></tr>
@@ -94,8 +94,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:a03146c05b23599c8be79461247f3bf75"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:abc40c15f2d92229b89364dc4f4bea017" id="r_abc40c15f2d92229b89364dc4f4bea017"><td class="memItemLeft" align="right" valign="top">int&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abc40c15f2d92229b89364dc4f4bea017">priority</a></td></tr>
 <tr class="separator:abc40c15f2d92229b89364dc4f4bea017"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a6a520dc825d54ccf9819974cef731587" id="r_a6a520dc825d54ccf9819974cef731587"><td class="memItemLeft" align="right" valign="top">std::vector&lt; double &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6a520dc825d54ccf9819974cef731587">weights</a></td></tr>
-<tr class="separator:a6a520dc825d54ccf9819974cef731587"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a398c95fa19fb177954dfd5f823359739" id="r_a398c95fa19fb177954dfd5f823359739"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a398c95fa19fb177954dfd5f823359739">weights</a></td></tr>
+<tr class="separator:a398c95fa19fb177954dfd5f823359739"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:addc434d6053da547025b27679b54a492" id="r_addc434d6053da547025b27679b54a492"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#addc434d6053da547025b27679b54a492">activation</a></td></tr>
 <tr class="separator:addc434d6053da547025b27679b54a492"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
@@ -127,8 +127,8 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="ac17d21ad1ea7920702d6239c5c32846d" name="ac17d21ad1ea7920702d6239c5c32846d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac17d21ad1ea7920702d6239c5c32846d">&#9670;&#160;</a></span>TaskConfig() <span class="overload">[2/2]</span></h2>
+<a id="a35d33e2297c59a50d36483017ddfe9d9" name="a35d33e2297c59a50d36483017ddfe9d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a35d33e2297c59a50d36483017ddfe9d9">&#9670;&#160;</a></span>TaskConfig() <span class="overload">[2/2]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -146,7 +146,7 @@ Public Attributes</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::vector&lt; double &gt;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span>, </td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>weights</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -241,14 +241,14 @@ Public Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a6a520dc825d54ccf9819974cef731587" name="a6a520dc825d54ccf9819974cef731587"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6a520dc825d54ccf9819974cef731587">&#9670;&#160;</a></span>weights</h2>
+<a id="a398c95fa19fb177954dfd5f823359739" name="a398c95fa19fb177954dfd5f823359739"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a398c95fa19fb177954dfd5f823359739">&#9670;&#160;</a></span>weights</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt;double&gt; wbc::TaskConfig::weights</td>
+          <td class="memname">Eigen::VectorXd wbc::TaskConfig::weights</td>
         </tr>
       </table>
 </div><div class="memdoc">

@@ -66,7 +66,6 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
-<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1ContactForceTask-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">wbc::ContactForceTask Class Reference</div></div>
 </div><!--header-->
@@ -85,8 +84,8 @@ Inheritance diagram for wbc::ContactForceTask:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a42ad3b97b23c523d9efa4830063fd9fa" id="r_a42ad3b97b23c523d9efa4830063fd9fa"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a42ad3b97b23c523d9efa4830063fd9fa">ContactForceTask</a> (<a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> <a class="el" href="classwbc_1_1Task.html#ad705422d73c0b0d8da9ff3a15dc180dc">config</a>, <a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> <a class="el" href="classwbc_1_1Task.html#aaf6ccdd12d2171ee96ac3fcff38252d1">robot_model</a>, const std::string &amp;<a class="el" href="#ad0af85faa01d9e8b43496bf270e461ff">ref_frame</a>)</td></tr>
-<tr class="separator:a42ad3b97b23c523d9efa4830063fd9fa"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aa4f72f0c8d06db47aa5254dce94c0135" id="r_aa4f72f0c8d06db47aa5254dce94c0135"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa4f72f0c8d06db47aa5254dce94c0135">ContactForceTask</a> (<a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> <a class="el" href="classwbc_1_1Task.html#ad705422d73c0b0d8da9ff3a15dc180dc">config</a>, <a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> <a class="el" href="classwbc_1_1Task.html#aaf6ccdd12d2171ee96ac3fcff38252d1">robot_model</a>)</td></tr>
+<tr class="separator:aa4f72f0c8d06db47aa5254dce94c0135"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a9465b2726e13dfec35ee372de23463a0" id="r_a9465b2726e13dfec35ee372de23463a0"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9465b2726e13dfec35ee372de23463a0">~ContactForceTask</a> ()=default</td></tr>
 <tr class="separator:a9465b2726e13dfec35ee372de23463a0"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a5579fdd04c5420f2c75c3d8a8377b299" id="r_a5579fdd04c5420f2c75c3d8a8377b299"><td class="memItemLeft" align="right" valign="top">virtual void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a5579fdd04c5420f2c75c3d8a8377b299">update</a> () override</td></tr>
@@ -95,9 +94,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memitem:ad0e80d84942a30696df74bae873a0ede" id="r_ad0e80d84942a30696df74bae873a0ede"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0e80d84942a30696df74bae873a0ede">setReference</a> (const <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &amp;ref)</td></tr>
 <tr class="memdesc:ad0e80d84942a30696df74bae873a0ede"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the Cartesian reference input for this task.  <br /></td></tr>
 <tr class="separator:ad0e80d84942a30696df74bae873a0ede"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:adc06d919b6c60992d225f3bb9e2e3888" id="r_adc06d919b6c60992d225f3bb9e2e3888"><td class="memItemLeft" align="right" valign="top">const std::string &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adc06d919b6c60992d225f3bb9e2e3888">refFrame</a> ()</td></tr>
-<tr class="memdesc:adc06d919b6c60992d225f3bb9e2e3888"><td class="mdescLeft">&#160;</td><td class="mdescRight">Returns the reference frame. This is the frame in which the task reference is assumed to be given. In this case the given reference wrench will be transformed from this frame to world frame.  <br /></td></tr>
-<tr class="separator:adc06d919b6c60992d225f3bb9e2e3888"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1Task"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_methods_classwbc_1_1Task')"><img src="closed.png" alt="-"/>&#160;Public Member Functions inherited from <a class="el" href="classwbc_1_1Task.html">wbc::Task</a></td></tr>
 <tr class="memitem:a2375be1513469437a90bd4a38c94ad8e inherit pub_methods_classwbc_1_1Task" id="r_a2375be1513469437a90bd4a38c94ad8e"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#a2375be1513469437a90bd4a38c94ad8e">Task</a> ()</td></tr>
 <tr class="memdesc:a2375be1513469437a90bd4a38c94ad8e inherit pub_methods_classwbc_1_1Task"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
@@ -117,16 +113,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a29155a7778d066a3c6723226d333662d inherit pub_methods_classwbc_1_1Task"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set task activation.  <br /></td></tr>
 <tr class="separator:a29155a7778d066a3c6723226d333662d inherit pub_methods_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table><table class="memberdecls">
-<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
-Protected Attributes</h2></td></tr>
-<tr class="memitem:ab619021817fd1380ab5017092f26bd44" id="r_ab619021817fd1380ab5017092f26bd44"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab619021817fd1380ab5017092f26bd44">ref_frame_rotation</a></td></tr>
-<tr class="separator:ab619021817fd1380ab5017092f26bd44"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:ad0af85faa01d9e8b43496bf270e461ff" id="r_ad0af85faa01d9e8b43496bf270e461ff"><td class="memItemLeft" align="right" valign="top">const std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad0af85faa01d9e8b43496bf270e461ff">ref_frame</a></td></tr>
-<tr class="separator:ad0af85faa01d9e8b43496bf270e461ff"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="inherit_header pro_attribs_classwbc_1_1Task"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classwbc_1_1Task')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classwbc_1_1Task.html">wbc::Task</a></td></tr>
-<tr class="memitem:aaf6ccdd12d2171ee96ac3fcff38252d1 inherit pro_attribs_classwbc_1_1Task" id="r_aaf6ccdd12d2171ee96ac3fcff38252d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#aaf6ccdd12d2171ee96ac3fcff38252d1">robot_model</a></td></tr>
-<tr class="separator:aaf6ccdd12d2171ee96ac3fcff38252d1 inherit pro_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
-</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="inherited" name="inherited"></a>
 Additional Inherited Members</h2></td></tr>
 <tr class="inherit_header pub_attribs_classwbc_1_1Task"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pub_attribs_classwbc_1_1Task')"><img src="closed.png" alt="-"/>&#160;Public Attributes inherited from <a class="el" href="classwbc_1_1Task.html">wbc::Task</a></td></tr>
@@ -134,12 +120,8 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:ad705422d73c0b0d8da9ff3a15dc180dc inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1065e0f44d78deb7b81d5fbc6b3e6b8 inherit pub_attribs_classwbc_1_1Task" id="r_ab1065e0f44d78deb7b81d5fbc6b3e6b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#ab1065e0f44d78deb7b81d5fbc6b3e6b8">y_ref</a></td></tr>
 <tr class="separator:ab1065e0f44d78deb7b81d5fbc6b3e6b8 inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90e3d27dad58c55519b72852e1caeab2 inherit pub_attribs_classwbc_1_1Task" id="r_a90e3d27dad58c55519b72852e1caeab2"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#a90e3d27dad58c55519b72852e1caeab2">y_ref_world</a></td></tr>
-<tr class="separator:a90e3d27dad58c55519b72852e1caeab2 inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a620cb5f7c062df5f81a85c130ae9531d inherit pub_attribs_classwbc_1_1Task" id="r_a620cb5f7c062df5f81a85c130ae9531d"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#a620cb5f7c062df5f81a85c130ae9531d">weights</a></td></tr>
 <tr class="separator:a620cb5f7c062df5f81a85c130ae9531d inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bd1af7e4c92bea99468d25d706d806f inherit pub_attribs_classwbc_1_1Task" id="r_a4bd1af7e4c92bea99468d25d706d806f"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#a4bd1af7e4c92bea99468d25d706d806f">weights_world</a></td></tr>
-<tr class="separator:a4bd1af7e4c92bea99468d25d706d806f inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32e99c585ad4b277cf5772a2667dffa6 inherit pub_attribs_classwbc_1_1Task" id="r_a32e99c585ad4b277cf5772a2667dffa6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#a32e99c585ad4b277cf5772a2667dffa6">activation</a></td></tr>
 <tr class="separator:a32e99c585ad4b277cf5772a2667dffa6 inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a681bcf3f317c159015ca9045a8b182a1 inherit pub_attribs_classwbc_1_1Task" id="r_a681bcf3f317c159015ca9045a8b182a1"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#a681bcf3f317c159015ca9045a8b182a1">A</a></td></tr>
@@ -152,10 +134,13 @@ Additional Inherited Members</h2></td></tr>
 <tr class="separator:abf6e8056587015d4a48f0577e7b5d400 inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a258c2cf7ad8d8e68fa83f65122ea8f66 inherit pub_attribs_classwbc_1_1Task" id="r_a258c2cf7ad8d8e68fa83f65122ea8f66"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a221811c8e68c3040908923a8bdded9e6">TaskType</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#a258c2cf7ad8d8e68fa83f65122ea8f66">type</a></td></tr>
 <tr class="separator:a258c2cf7ad8d8e68fa83f65122ea8f66 inherit pub_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="inherit_header pro_attribs_classwbc_1_1Task"><td colspan="2" onclick="javascript:dynsection.toggleInherit('pro_attribs_classwbc_1_1Task')"><img src="closed.png" alt="-"/>&#160;Protected Attributes inherited from <a class="el" href="classwbc_1_1Task.html">wbc::Task</a></td></tr>
+<tr class="memitem:aaf6ccdd12d2171ee96ac3fcff38252d1 inherit pro_attribs_classwbc_1_1Task" id="r_aaf6ccdd12d2171ee96ac3fcff38252d1"><td class="memItemLeft" align="right" valign="top"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="classwbc_1_1Task.html#aaf6ccdd12d2171ee96ac3fcff38252d1">robot_model</a></td></tr>
+<tr class="separator:aaf6ccdd12d2171ee96ac3fcff38252d1 inherit pro_attribs_classwbc_1_1Task"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
 <h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a42ad3b97b23c523d9efa4830063fd9fa" name="a42ad3b97b23c523d9efa4830063fd9fa"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a42ad3b97b23c523d9efa4830063fd9fa">&#9670;&#160;</a></span>ContactForceTask()</h2>
+<a id="aa4f72f0c8d06db47aa5254dce94c0135" name="aa4f72f0c8d06db47aa5254dce94c0135"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa4f72f0c8d06db47aa5254dce94c0135">&#9670;&#160;</a></span>ContactForceTask()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -168,12 +153,7 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a></td>          <td class="paramname"><span class="paramname"><em>robot_model</em></span>, </td>
-        </tr>
-        <tr>
-          <td class="paramkey"></td>
-          <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>ref_frame</em></span>&#160;)</td>
+          <td class="paramtype"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a></td>          <td class="paramname"><span class="paramname"><em>robot_model</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -206,33 +186,6 @@ Additional Inherited Members</h2></td></tr>
 </div>
 </div>
 <h2 class="groupheader">Member Function Documentation</h2>
-<a id="adc06d919b6c60992d225f3bb9e2e3888" name="adc06d919b6c60992d225f3bb9e2e3888"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#adc06d919b6c60992d225f3bb9e2e3888">&#9670;&#160;</a></span>refFrame()</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::string &amp; wbc::ContactForceTask::refFrame </td>
-          <td>(</td>
-          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
-          <td></td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-<p>Returns the reference frame. This is the frame in which the task reference is assumed to be given. In this case the given reference wrench will be transformed from this frame to world frame. </p>
-
-</div>
-</div>
 <a id="ad0e80d84942a30696df74bae873a0ede" name="ad0e80d84942a30696df74bae873a0ede"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ad0e80d84942a30696df74bae873a0ede">&#9670;&#160;</a></span>setReference()</h2>
 
@@ -290,51 +243,6 @@ Additional Inherited Members</h2></td></tr>
 </dl>
 
 <p>Implements <a class="el" href="classwbc_1_1Task.html#a7859650c4810564b64ac2540943771ca">wbc::Task</a>.</p>
-
-</div>
-</div>
-<h2 class="groupheader">Member Data Documentation</h2>
-<a id="ad0af85faa01d9e8b43496bf270e461ff" name="ad0af85faa01d9e8b43496bf270e461ff"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ad0af85faa01d9e8b43496bf270e461ff">&#9670;&#160;</a></span>ref_frame</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">const std::string wbc::ContactForceTask::ref_frame</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
-
-</div>
-</div>
-<a id="ab619021817fd1380ab5017092f26bd44" name="ab619021817fd1380ab5017092f26bd44"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ab619021817fd1380ab5017092f26bd44">&#9670;&#160;</a></span>ref_frame_rotation</h2>
-
-<div class="memitem">
-<div class="memproto">
-<table class="mlabels">
-  <tr>
-  <td class="mlabels-left">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::MatrixXd wbc::ContactForceTask::ref_frame_rotation</td>
-        </tr>
-      </table>
-  </td>
-  <td class="mlabels-right">
-<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
-  </tr>
-</table>
-</div><div class="memdoc">
 
 </div>
 </div>

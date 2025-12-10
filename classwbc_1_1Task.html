@@ -123,12 +123,8 @@ Public Attributes</h2></td></tr>
 <tr class="separator:ad705422d73c0b0d8da9ff3a15dc180dc"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ab1065e0f44d78deb7b81d5fbc6b3e6b8" id="r_ab1065e0f44d78deb7b81d5fbc6b3e6b8"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab1065e0f44d78deb7b81d5fbc6b3e6b8">y_ref</a></td></tr>
 <tr class="separator:ab1065e0f44d78deb7b81d5fbc6b3e6b8"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a90e3d27dad58c55519b72852e1caeab2" id="r_a90e3d27dad58c55519b72852e1caeab2"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a90e3d27dad58c55519b72852e1caeab2">y_ref_world</a></td></tr>
-<tr class="separator:a90e3d27dad58c55519b72852e1caeab2"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a620cb5f7c062df5f81a85c130ae9531d" id="r_a620cb5f7c062df5f81a85c130ae9531d"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a620cb5f7c062df5f81a85c130ae9531d">weights</a></td></tr>
 <tr class="separator:a620cb5f7c062df5f81a85c130ae9531d"><td class="memSeparator" colspan="2">&#160;</td></tr>
-<tr class="memitem:a4bd1af7e4c92bea99468d25d706d806f" id="r_a4bd1af7e4c92bea99468d25d706d806f"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4bd1af7e4c92bea99468d25d706d806f">weights_world</a></td></tr>
-<tr class="separator:a4bd1af7e4c92bea99468d25d706d806f"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a32e99c585ad4b277cf5772a2667dffa6" id="r_a32e99c585ad4b277cf5772a2667dffa6"><td class="memItemLeft" align="right" valign="top">double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a32e99c585ad4b277cf5772a2667dffa6">activation</a></td></tr>
 <tr class="separator:a32e99c585ad4b277cf5772a2667dffa6"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a681bcf3f317c159015ca9045a8b182a1" id="r_a681bcf3f317c159015ca9045a8b182a1"><td class="memItemLeft" align="right" valign="top">Eigen::MatrixXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a681bcf3f317c159015ca9045a8b182a1">A</a></td></tr>
@@ -468,21 +464,6 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
-<a id="a4bd1af7e4c92bea99468d25d706d806f" name="a4bd1af7e4c92bea99468d25d706d806f"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4bd1af7e4c92bea99468d25d706d806f">&#9670;&#160;</a></span>weights_world</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::VectorXd wbc::Task::weights_world</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p><a class="el" href="classwbc_1_1Task.html" title="Abstract class to represent a generic task for a WBC optimization problem.">Task</a> weights. In case of joint tasks, weights_root will be equal to weights. In case of Cartesian tasks, weights_world will be equal to weights, transformed into the robot's world frame </p>
-
-</div>
-</div>
 <a id="ab1065e0f44d78deb7b81d5fbc6b3e6b8" name="ab1065e0f44d78deb7b81d5fbc6b3e6b8"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#ab1065e0f44d78deb7b81d5fbc6b3e6b8">&#9670;&#160;</a></span>y_ref</h2>
 
@@ -494,22 +475,7 @@ Protected Attributes</h2></td></tr>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Reference input for this task. Can be either joint or a Cartesian space variables. </p>
-
-</div>
-</div>
-<a id="a90e3d27dad58c55519b72852e1caeab2" name="a90e3d27dad58c55519b72852e1caeab2"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a90e3d27dad58c55519b72852e1caeab2">&#9670;&#160;</a></span>y_ref_world</h2>
-
-<div class="memitem">
-<div class="memproto">
-      <table class="memname">
-        <tr>
-          <td class="memname">Eigen::VectorXd wbc::Task::y_ref_world</td>
-        </tr>
-      </table>
-</div><div class="memdoc">
-<p>Reference value for this task. Can be either joint or a Cartesian space variables. In the former case, y_ref_root will be equal to y_ref, in the latter case, y_ref_root will be y_ref transformed into the world frame. </p>
+<p>Reference input for this task. Can be either joint or a Cartesian space variables. In the latter case, the reference has to be in world coordinates </p>
 
 </div>
 </div>
