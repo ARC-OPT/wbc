@@ -2,7 +2,7 @@
 #define WBC_CORE_TASK_CONFIG_HPP
 
 #include <string>
-#include <vector>
+#include <Eigen/Core>
 #include <stdexcept>
 
 namespace wbc{
@@ -29,7 +29,7 @@ public:
     /** Default constructor for Cartesian space tasks*/
     TaskConfig(const std::string &name,
                const int priority,
-               const std::vector<double> weights,
+               const Eigen::VectorXd& weights,
                const double activation);
     ~TaskConfig();
 
@@ -44,7 +44,7 @@ public:
      *  A value of 0 means that the reference of the corresponding task variable will be ignored while computing the solution.
      *  Vector Size has to be same as number of task variables. e.g. number of joint names in case of joint space task,
         and 6 in case of a Cartesian task */
-    std::vector<double> weights;
+    Eigen::VectorXd weights;
 
     /** Initial activation for this task. Has to be within 0 and 1. Can be used to enable(1)/disable(0) the whole task,
      *  or to apply a smooth activation function. Default is 0.*/

@@ -66,10 +66,9 @@ int main(){
     // behave similarly in task space. However, as you wil see, the joint velocities will not exceed the joint limits defined in the URDF file.
 
     SpatialVelocityTaskPtr cart_task;
-    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl",0,vector<double>(6,1),1),
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl",0,Eigen::VectorXd::Ones(6),1),
                                                    robot_model,
-                                                   "kuka_lbr_l_tcp",
-                                                   "kuka_lbr_l_link_0");
+                                                   "kuka_lbr_l_tcp");
     VelocitySceneQP scene(robot_model, solver, 1e-3);
     if(!scene.configure({cart_task}))
         return -1;

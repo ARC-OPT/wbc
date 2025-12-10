@@ -52,10 +52,9 @@ BOOST_AUTO_TEST_CASE(simple_test){
 
     // Configure scene
     SpatialVelocityTaskPtr cart_task;
-    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl", 0, {1,1,1,1,1,1},1),
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl", 0, Eigen::VectorXd::Ones(6),1),
                                                    robot_model,
-                                                   "RH5_Root_Link",
-                                                   "world");
+                                                   "RH5_Root_Link");
 
     VelocitySceneQP wbc_scene(robot_model, solver, 1e-3);
     BOOST_CHECK_EQUAL(wbc_scene.configure({cart_task}), true);

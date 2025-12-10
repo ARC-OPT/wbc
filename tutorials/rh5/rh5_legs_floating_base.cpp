@@ -80,10 +80,9 @@ int main(){
     // world coordinates
 
     SpatialVelocityTaskPtr cart_task;
-    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("com_position",0,vector<double>(6,1),1),
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("com_position",0,Eigen::VectorXd::Ones(6),1),
                                                    robot_model,
-                                                   "RH5_Root_Link",
-                                                   "world");
+                                                   "RH5_Root_Link");
     VelocitySceneQP scene(robot_model, solver, dt);
     if(!scene.configure({cart_task}))
         return -1;

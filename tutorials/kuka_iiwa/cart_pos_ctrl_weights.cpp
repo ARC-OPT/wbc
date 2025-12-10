@@ -38,10 +38,11 @@ int main(){
     // a single Cartesian task. The most important entries here are root/tip and reference frame, any of which has to be a valid
     // link in the URDF model. For all configuration options, check core/TaskConfig.hpp
     SpatialVelocityTaskPtr cart_task;
-    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,0,0,0},1),
+    Eigen::VectorXd weights = Eigen::VectorXd::Ones(6);
+    weights.segment(3,3).setZero(); // Set orientation weights to zero
+    cart_task = make_shared<SpatialVelocityTask>(TaskConfig("cart_pos_ctrl",0,weights,1),
                                                    robot_model,
-                                                   "kuka_lbr_l_tcp",
-                                                   "kuka_lbr_l_link_0");
+                                                   "kuka_lbr_l_tcp");
     VelocitySceneQP scene(robot_model, solver, 1e-3);
     if(!scene.configure({cart_task}))
         return -1;

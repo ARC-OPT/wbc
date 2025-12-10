@@ -63,10 +63,9 @@ int main()
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
     AccelerationSceneTSID scene(robot_model, solver, dt);
     SpatialAccelerationTaskPtr cart_task;
-    cart_task = make_shared<SpatialAccelerationTask>(TaskConfig("cart_pos_ctrl",0,{1,1,1,1,1,1},1),
+    cart_task = make_shared<SpatialAccelerationTask>(TaskConfig("cart_pos_ctrl",0,Eigen::VectorXd::Ones(6),1),
                                                        robot_model,
-                                                       "kuka_lbr_l_tcp",
-                                                       "kuka_lbr_l_link_0");
+                                                       "kuka_lbr_l_tcp");
     if(!scene.configure({cart_task}))
         return -1;
 

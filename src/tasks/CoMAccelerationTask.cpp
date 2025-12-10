@@ -14,10 +14,6 @@ void CoMAccelerationTask::update(){
         y_ref = y_ref - robot_model->spatialAccelerationBias(robot_model->baseFrame()).linear;
     else
         y_ref = y_ref;
-
-    // CoM tasks are always in world frame, no need to transform.
-    y_ref_world = y_ref;
-    weights_world = weights;
 }
 
 void CoMAccelerationTask::setReference(const Eigen::Vector3d& ref){

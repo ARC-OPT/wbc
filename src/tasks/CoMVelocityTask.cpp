@@ -10,9 +10,6 @@ CoMVelocityTask::CoMVelocityTask(TaskConfig config,
 
 void CoMVelocityTask::update(){
     A = robot_model->comJacobian();
-    // CoM tasks are always in world/base frame, no need to transform.
-    y_ref_world = y_ref;
-    weights_world = weights;
 }
 
 void CoMVelocityTask::setReference(const Eigen::Vector3d& ref){

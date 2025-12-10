@@ -5,7 +5,7 @@ namespace wbc{
 
 TaskConfig::TaskConfig(const std::string &name,
                        const int priority,
-                       const std::vector<double> weights,
+                       const Eigen::VectorXd& weights,
                        const double activation) :
     name(name),
     priority(priority),
@@ -26,7 +26,7 @@ bool TaskConfig::isValid() const{
     if(priority < 0){
         log(logERROR)<<"Task "<<name<<": Priority has to be >= 0, but is "<<priority;
         return false;}
-    if(weights.empty()){
+    if(weights.size() == 0){
         log(logERROR)<<"Task "<<name<<": Weights are empty";
         return false;}
     for(size_t i = 0; i < weights.size(); i++)

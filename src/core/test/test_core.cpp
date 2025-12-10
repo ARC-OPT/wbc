@@ -17,7 +17,8 @@ BOOST_AUTO_TEST_CASE(task_config){
     cart_config.name       = "cart_pos_ctrl_left";
     cart_config.priority   = 0;
     cart_config.activation = 1;
-    cart_config.weights    = {1,1,1,1,1,1};
+    cart_config.weights.resize(6);
+    cart_config.weights << 1,1,1,1,1,1;
 
     // Valid cart_config
     BOOST_CHECK(cart_config.isValid());
@@ -33,7 +34,7 @@ BOOST_AUTO_TEST_CASE(task_config){
     cart_config.activation = 1;
 
     // Invalid weight vector
-    cart_config.weights = {1,-11,1,1,1,1};
+    cart_config.weights << 1,-11,1,1,1,1;
     BOOST_CHECK(cart_config.isValid() == false);
 }
 

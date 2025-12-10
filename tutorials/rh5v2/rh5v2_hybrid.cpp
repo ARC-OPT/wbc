@@ -43,14 +43,12 @@ int main()
     // Pass two tasks here: Left arm Cartesian pose and right arm Cartesian pose.
     VelocitySceneQP scene(robot_model, solver, dt);
     SpatialVelocityTaskPtr cart_task_left, cart_task_right;
-    cart_task_left = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_left",0,{1,1,1,1,1,1},1),
+    cart_task_left = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_left",0,Eigen::VectorXd::Ones(6),1),
                                                         robot_model,
-                                                        "ALWristFT_Link",
-                                                        "RH5v2_Root_Link");
-    cart_task_right = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_right",0,{1,1,1,1,1,1},1),
+                                                        "ALWristFT_Link");
+    cart_task_right = make_shared<SpatialVelocityTask>(TaskConfig("cart_ctrl_right",0,Eigen::VectorXd::Ones(6),1),
                                                              robot_model,
-                                                            "ARWristFT_Link",
-                                                            "RH5v2_Root_Link");
+                                                            "ARWristFT_Link");
     if(!scene.configure({cart_task_left, cart_task_right}))
         return -1;
 

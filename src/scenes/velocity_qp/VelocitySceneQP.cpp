@@ -109,20 +109,18 @@ const HierarchicalQP& VelocitySceneQP::update(){
 
         // If the activation value is zero, also set reference to zero. Activation is usually used to switch between different
         // task phases and we don't want to store the "old" reference value, in case we switch on the task again
-        if(task->activation == 0){
+        if(task->activation == 0)
            task->y_ref.setZero();
-           task->y_ref_world.setZero();
-        }
 
         for(int i = 0; i < task->A.rows(); i++){
-            task->Aw.row(i) = task->weights_world(i) * task->A.row(i) * task->activation;
-            task->y_ref_world(i) = task->y_ref_world(i) * task->weights_world(i) * task->activation;
+            task->Aw.row(i) = task->weights(i) * task->A.row(i) * task->activation;
+            task->y_ref(i) = task->y_ref(i) * task->weights(i) * task->activation;
         }
         for(int i = 0; i < task->A.cols(); i++)
             task->Aw.col(i) = hqp.Wq[i] * task->Aw.col(i);
 
         qp.H.block(0,0,nj,nj) += task->Aw.transpose()*task->Aw;
-        qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref_world;
+        qp.g.segment(0,nj) -= task->Aw.transpose()*task->y_ref;
 
     } // tasks on prio
 

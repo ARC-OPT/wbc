@@ -45,10 +45,9 @@ int main(){
     dynamic_pointer_cast<QPOASESSolver>(solver)->setMaxNoWSR(1000);
 
     // Configure Scene, use VelocitySceneQuadraticCost in this case
-    SpatialVelocityTaskPtr cart_task = std::make_shared<SpatialVelocityTask>(TaskConfig("left_leg_posture",0,{1,1,1,1,1,1},1),
+    SpatialVelocityTaskPtr cart_task = std::make_shared<SpatialVelocityTask>(TaskConfig("left_leg_posture",0,Eigen::VectorXd::Ones(6),1),
                                                                                         robot_model,
-                                                                                        "LLAnkle_FT",
-                                                                                        "RH5_Root_Link");
+                                                                                        "LLAnkle_FT");
    VelocitySceneQP scene(robot_model, solver, dt);
     if(!scene.configure({cart_task}))
         return -1;

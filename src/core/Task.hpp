@@ -52,21 +52,14 @@ public:
     /** Configuration of this task. See TaskConfig.hpp for more details*/
     TaskConfig config;
 
-    /** Reference input for this task. Can be either joint or a Cartesian space variables. */
+    /** Reference input for this task. Can be either joint or a Cartesian space variables. In the latter case, the 
+     * reference has to be in world coordinates */
     Eigen::VectorXd y_ref;
-
-    /** Reference value for this task. Can be either joint or a Cartesian space variables. In the former case, y_ref_root will be
-     *  equal to y_ref, in the latter case, y_ref_root will be y_ref transformed into the world frame.*/
-    Eigen::VectorXd y_ref_world;
 
     /** Task weights. Size has to be same as number of task variables and all entries have to be >= 0.
      *  A zero entry means that the reference of the corresponding task variable will be ignored while computing the solution, for example
      *  when controlling the Cartesian pose, the last 3 entries can be set to zero in order to ignore the orientarion and only control the position*/
     Eigen::VectorXd weights;
-
-    /** Task weights. In case of joint tasks, weights_root will be equal to weights. In case of Cartesian tasks, weights_world will be equal to
-      * weights, transformed into the robot's world frame*/
-    Eigen::VectorXd weights_world;
 
     /** Task activation. Has to be between 0 and 1. Will be multiplied with the task weights. Can be used to (smoothly) switch on/off the tasks */
     double activation;

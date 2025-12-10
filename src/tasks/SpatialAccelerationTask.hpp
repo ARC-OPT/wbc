@@ -13,12 +13,11 @@ class SpatialAccelerationTask : public Task{
 protected:
     Eigen::MatrixXd rot_mat;
     std::string tip_frame;
-    std::string ref_frame;
+    
 public:
     SpatialAccelerationTask(TaskConfig config,
                               RobotModelPtr robot_model,
-                              const std::string &tip_frame,
-                              const std::string &ref_frame);
+                              const std::string &tip_frame);
     virtual ~SpatialAccelerationTask() = default;
 
     /**
@@ -33,12 +32,8 @@ public:
      */
     void setReference(const types::SpatialAcceleration& ref);
 
-    /** @brief Returns the tip frame. This is the tip  of kinematic chain used by the task*/
+    /** @brief Returns the tip frame. This is the tip of kinematic chain used by the task*/
     const std::string &tipFrame(){return tip_frame;}
-
-    /** @brief Returns the reference frame. This is the frame in which the task reference is assumed to be given. In this case the given reference acceleration
-     *  will be transformed from this frame to world frame*/
-    const std::string& refFrame(){return ref_frame;}
 };
 
 using SpatialAccelerationTaskPtr = std::shared_ptr<SpatialAccelerationTask>;

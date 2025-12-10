@@ -63,7 +63,7 @@ int main(){
 
     JointAccelerationTaskPtr jnt_task;
     uint nj = robot_model->na();
-    jnt_task = make_shared<JointAccelerationTask>(TaskConfig("joint_position",0,vector<double>(nj,1),1   ),
+    jnt_task = make_shared<JointAccelerationTask>(TaskConfig("joint_position",0,Eigen::VectorXd::Ones(nj),1   ),
                                                    robot_model,
                                                    robot_model->jointNames());
     AccelerationSceneReducedTSID scene(robot_model, solver, dt, 6);
