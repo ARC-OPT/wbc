@@ -86,35 +86,38 @@ $(function(){ initResizable(false); });
 <div class="line"><a id="l00047" name="l00047"></a><span class="lineno">   47</span>    Eigen::VectorXd u_max;</div>
 <div class="line"><a id="l00048" name="l00048"></a><span class="lineno">   48</span>    Eigen::VectorXd p_gain;</div>
 <div class="line"><a id="l00049" name="l00049"></a><span class="lineno">   49</span>    Eigen::VectorXd d_gain;</div>
-<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    Eigen::VectorXd x;</div>
-<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    Eigen::VectorXd v;</div>
-<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    Eigen::VectorXd rx;</div>
-<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    Eigen::VectorXd rv;</div>
-<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    Eigen::VectorXd ra;</div>
-<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    types::Twist pose_diff;</div>
-<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span> </div>
-<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span><span class="keyword">public</span>:</div>
-<div class="line"><a id="l00059" name="l00059"></a><span class="lineno">   59</span>    CartesianPosPDController();</div>
-<div class="line"><a id="l00061" name="l00061"></a><span class="lineno">   61</span>    <span class="keyword">const</span> types::Twist&amp; update(<span class="keyword">const</span> types::Pose&amp; ref_pose,</div>
-<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>                               <span class="keyword">const</span> types::Twist&amp; ref_twist,</div>
-<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                               <span class="keyword">const</span> types::Pose&amp; pose);</div>
-<div class="line"><a id="l00065" name="l00065"></a><span class="lineno">   65</span>    <span class="keyword">const</span> types::SpatialAcceleration&amp; update(<span class="keyword">const</span> types::Pose&amp; ref_pose,</div>
-<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>                                             <span class="keyword">const</span> types::Twist&amp; ref_twist,</div>
-<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                             <span class="keyword">const</span> types::SpatialAcceleration&amp; ref_acc,</div>
-<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                             <span class="keyword">const</span> types::Pose&amp; pose,</div>
-<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                             <span class="keyword">const</span> types::Twist&amp; twist);</div>
-<div class="line"><a id="l00071" name="l00071"></a><span class="lineno">   71</span>    <span class="keywordtype">void</span> setPGain(<span class="keyword">const</span> Eigen::VectorXd &amp;gain);</div>
-<div class="line"><a id="l00073" name="l00073"></a><span class="lineno">   73</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; pGain(){<span class="keywordflow">return</span> p_gain;}</div>
-<div class="line"><a id="l00075" name="l00075"></a><span class="lineno">   75</span>    <span class="keywordtype">void</span> setDGain(<span class="keyword">const</span> Eigen::VectorXd &amp;gain);</div>
-<div class="line"><a id="l00077" name="l00077"></a><span class="lineno">   77</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; dGain(){<span class="keywordflow">return</span> d_gain;}</div>
-<div class="line"><a id="l00079" name="l00079"></a><span class="lineno">   79</span>    <span class="keywordtype">void</span> setMaxCtrlOutput(<span class="keyword">const</span> Eigen::VectorXd &amp;max_ctrl_out);</div>
-<div class="line"><a id="l00081" name="l00081"></a><span class="lineno">   81</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; maxCtrlOutput(){<span class="keywordflow">return</span> u_max;}</div>
-<div class="line"><a id="l00090" name="l00090"></a><span class="lineno">   90</span>    <span class="keywordtype">void</span> applySaturation(<span class="keyword">const</span> Eigen::VectorXd&amp; in, <span class="keyword">const</span> Eigen::VectorXd&amp; max, Eigen::VectorXd &amp;out);</div>
-<div class="line"><a id="l00091" name="l00091"></a><span class="lineno">   91</span>};</div>
-<div class="line"><a id="l00092" name="l00092"></a><span class="lineno">   92</span><span class="keyword">using </span>CartesianPosPDControllerPtr = std::shared_ptr&lt;CartesianPosPDController&gt;;</div>
-<div class="line"><a id="l00093" name="l00093"></a><span class="lineno">   93</span> </div>
-<div class="line"><a id="l00094" name="l00094"></a><span class="lineno">   94</span>}</div>
-<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span><span class="preprocessor">#endif</span></div>
+<div class="line"><a id="l00050" name="l00050"></a><span class="lineno">   50</span>    Eigen::VectorXd ff_gain;</div>
+<div class="line"><a id="l00051" name="l00051"></a><span class="lineno">   51</span>    Eigen::VectorXd x;</div>
+<div class="line"><a id="l00052" name="l00052"></a><span class="lineno">   52</span>    Eigen::VectorXd v;</div>
+<div class="line"><a id="l00053" name="l00053"></a><span class="lineno">   53</span>    Eigen::VectorXd rx;</div>
+<div class="line"><a id="l00054" name="l00054"></a><span class="lineno">   54</span>    Eigen::VectorXd rv;</div>
+<div class="line"><a id="l00055" name="l00055"></a><span class="lineno">   55</span>    Eigen::VectorXd ra;</div>
+<div class="line"><a id="l00056" name="l00056"></a><span class="lineno">   56</span>    types::Twist pose_diff;</div>
+<div class="line"><a id="l00057" name="l00057"></a><span class="lineno">   57</span> </div>
+<div class="line"><a id="l00058" name="l00058"></a><span class="lineno">   58</span><span class="keyword">public</span>:</div>
+<div class="line"><a id="l00060" name="l00060"></a><span class="lineno">   60</span>    CartesianPosPDController();</div>
+<div class="line"><a id="l00062" name="l00062"></a><span class="lineno">   62</span>    <span class="keyword">const</span> types::Twist&amp; update(<span class="keyword">const</span> types::Pose&amp; ref_pose,</div>
+<div class="line"><a id="l00063" name="l00063"></a><span class="lineno">   63</span>                               <span class="keyword">const</span> types::Twist&amp; ref_twist,</div>
+<div class="line"><a id="l00064" name="l00064"></a><span class="lineno">   64</span>                               <span class="keyword">const</span> types::Pose&amp; pose);</div>
+<div class="line"><a id="l00066" name="l00066"></a><span class="lineno">   66</span>    <span class="keyword">const</span> types::SpatialAcceleration&amp; update(<span class="keyword">const</span> types::Pose&amp; ref_pose,</div>
+<div class="line"><a id="l00067" name="l00067"></a><span class="lineno">   67</span>                                             <span class="keyword">const</span> types::Twist&amp; ref_twist,</div>
+<div class="line"><a id="l00068" name="l00068"></a><span class="lineno">   68</span>                                             <span class="keyword">const</span> types::SpatialAcceleration&amp; ref_acc,</div>
+<div class="line"><a id="l00069" name="l00069"></a><span class="lineno">   69</span>                                             <span class="keyword">const</span> types::Pose&amp; pose,</div>
+<div class="line"><a id="l00070" name="l00070"></a><span class="lineno">   70</span>                                             <span class="keyword">const</span> types::Twist&amp; twist);</div>
+<div class="line"><a id="l00072" name="l00072"></a><span class="lineno">   72</span>    <span class="keywordtype">void</span> setPGain(<span class="keyword">const</span> Eigen::VectorXd &amp;gain);</div>
+<div class="line"><a id="l00074" name="l00074"></a><span class="lineno">   74</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; pGain(){<span class="keywordflow">return</span> p_gain;}</div>
+<div class="line"><a id="l00076" name="l00076"></a><span class="lineno">   76</span>    <span class="keywordtype">void</span> setDGain(<span class="keyword">const</span> Eigen::VectorXd &amp;gain);</div>
+<div class="line"><a id="l00078" name="l00078"></a><span class="lineno">   78</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; dGain(){<span class="keywordflow">return</span> d_gain;}</div>
+<div class="line"><a id="l00080" name="l00080"></a><span class="lineno">   80</span>    <span class="keywordtype">void</span> setFFGain(<span class="keyword">const</span> Eigen::VectorXd &amp;gain);</div>
+<div class="line"><a id="l00082" name="l00082"></a><span class="lineno">   82</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; ffGain(){<span class="keywordflow">return</span> ff_gain;}</div>
+<div class="line"><a id="l00084" name="l00084"></a><span class="lineno">   84</span>    <span class="keywordtype">void</span> setMaxCtrlOutput(<span class="keyword">const</span> Eigen::VectorXd &amp;max_ctrl_out);</div>
+<div class="line"><a id="l00086" name="l00086"></a><span class="lineno">   86</span>    <span class="keyword">const</span> Eigen::VectorXd&amp; maxCtrlOutput(){<span class="keywordflow">return</span> u_max;}</div>
+<div class="line"><a id="l00095" name="l00095"></a><span class="lineno">   95</span>    <span class="keywordtype">void</span> applySaturation(<span class="keyword">const</span> Eigen::VectorXd&amp; in, <span class="keyword">const</span> Eigen::VectorXd&amp; max, Eigen::VectorXd &amp;out);</div>
+<div class="line"><a id="l00096" name="l00096"></a><span class="lineno">   96</span>};</div>
+<div class="line"><a id="l00097" name="l00097"></a><span class="lineno">   97</span><span class="keyword">using </span>CartesianPosPDControllerPtr = std::shared_ptr&lt;CartesianPosPDController&gt;;</div>
+<div class="line"><a id="l00098" name="l00098"></a><span class="lineno">   98</span> </div>
+<div class="line"><a id="l00099" name="l00099"></a><span class="lineno">   99</span>}</div>
+<div class="line"><a id="l00100" name="l00100"></a><span class="lineno">  100</span><span class="preprocessor">#endif</span></div>
 <div class="ttc" id="aPose_8hpp_html"><div class="ttname"><a href="Pose_8hpp.html">Pose.hpp</a></div></div>
 <div class="ttc" id="aSpatialAcceleration_8hpp_html"><div class="ttname"><a href="SpatialAcceleration_8hpp.html">SpatialAcceleration.hpp</a></div></div>
 <div class="ttc" id="aTwist_8hpp_html"><div class="ttname"><a href="Twist_8hpp.html">Twist.hpp</a></div></div>

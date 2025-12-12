@@ -95,6 +95,10 @@ Public Member Functions</h2></td></tr>
 <tr class="separator:aabaff2433611af95b6005bbe61e31b67"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a8bb8a65a18cf4942315fdc5b764723eb" id="r_a8bb8a65a18cf4942315fdc5b764723eb"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8bb8a65a18cf4942315fdc5b764723eb">dGain</a> ()</td></tr>
 <tr class="separator:a8bb8a65a18cf4942315fdc5b764723eb"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:a3bf60f22e4fc3dc9d993d7a4ddd7e9cc" id="r_a3bf60f22e4fc3dc9d993d7a4ddd7e9cc"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3bf60f22e4fc3dc9d993d7a4ddd7e9cc">setFFGain</a> (const Eigen::VectorXd &amp;gain)</td></tr>
+<tr class="separator:a3bf60f22e4fc3dc9d993d7a4ddd7e9cc"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aac33bf3798734197b9428661ebb254b4" id="r_aac33bf3798734197b9428661ebb254b4"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aac33bf3798734197b9428661ebb254b4">ffGain</a> ()</td></tr>
+<tr class="separator:aac33bf3798734197b9428661ebb254b4"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a847f74694af5791a1e2a398ab35a3410" id="r_a847f74694af5791a1e2a398ab35a3410"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a847f74694af5791a1e2a398ab35a3410">setMaxCtrlOutput</a> (const Eigen::VectorXd &amp;max_ctrl_out)</td></tr>
 <tr class="separator:a847f74694af5791a1e2a398ab35a3410"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:af1e14ef38b8b84d585f0da03598f6542" id="r_af1e14ef38b8b84d585f0da03598f6542"><td class="memItemLeft" align="right" valign="top">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af1e14ef38b8b84d585f0da03598f6542">maxCtrlOutput</a> ()</td></tr>
@@ -111,6 +115,8 @@ Protected Attributes</h2></td></tr>
 <tr class="separator:a36f9c3bfa5be9cff3925b4aee25a7374"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:a1196d6b3069196fdf8998e0509737fe9" id="r_a1196d6b3069196fdf8998e0509737fe9"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a1196d6b3069196fdf8998e0509737fe9">d_gain</a></td></tr>
 <tr class="separator:a1196d6b3069196fdf8998e0509737fe9"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:ae2597b9859cf2ae4306d950ab438d5d9" id="r_ae2597b9859cf2ae4306d950ab438d5d9"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae2597b9859cf2ae4306d950ab438d5d9">ff_gain</a></td></tr>
+<tr class="separator:ae2597b9859cf2ae4306d950ab438d5d9"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:aaf7f77a70b9152aad4cd80589eda079d" id="r_aaf7f77a70b9152aad4cd80589eda079d"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aaf7f77a70b9152aad4cd80589eda079d">u_max</a></td></tr>
 <tr class="separator:aaf7f77a70b9152aad4cd80589eda079d"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:ac780883bf090b270e6018f93888b4509" id="r_ac780883bf090b270e6018f93888b4509"><td class="memItemLeft" align="right" valign="top">Eigen::VectorXd&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac780883bf090b270e6018f93888b4509">u</a></td></tr>
@@ -212,6 +218,32 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aac33bf3798734197b9428661ebb254b4" name="aac33bf3798734197b9428661ebb254b4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aac33bf3798734197b9428661ebb254b4">&#9670;&#160;</a></span>ffGain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">const Eigen::VectorXd &amp; wbc::JointPosPDController::ffGain </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Get feed forward gain </p>
+
+</div>
+</div>
 <a id="af1e14ef38b8b84d585f0da03598f6542" name="af1e14ef38b8b84d585f0da03598f6542"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#af1e14ef38b8b84d585f0da03598f6542">&#9670;&#160;</a></span>maxCtrlOutput()</h2>
 
@@ -279,6 +311,24 @@ Protected Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Set derivative/velocity gain. Size has to be the same dimension of the controller </p>
+
+</div>
+</div>
+<a id="a3bf60f22e4fc3dc9d993d7a4ddd7e9cc" name="a3bf60f22e4fc3dc9d993d7a4ddd7e9cc"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3bf60f22e4fc3dc9d993d7a4ddd7e9cc">&#9670;&#160;</a></span>setFFGain()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::JointPosPDController::setFFGain </td>
+          <td>(</td>
+          <td class="paramtype">const Eigen::VectorXd &amp;</td>          <td class="paramname"><span class="paramname"><em>gain</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Set feed forward gain. Size has to be the same dimension of the controller </p>
 
 </div>
 </div>
@@ -418,6 +468,28 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">uint wbc::JointPosPDController::dim_controller</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="ae2597b9859cf2ae4306d950ab438d5d9" name="ae2597b9859cf2ae4306d950ab438d5d9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2597b9859cf2ae4306d950ab438d5d9">&#9670;&#160;</a></span>ff_gain</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">Eigen::VectorXd wbc::JointPosPDController::ff_gain</td>
         </tr>
       </table>
   </td>
