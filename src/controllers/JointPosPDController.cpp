@@ -5,6 +5,7 @@ namespace wbc{
 JointPosPDController::JointPosPDController(uint dim) :
     dim_controller(dim){
     u_max.setConstant(dim,std::numeric_limits<double>::infinity());
+    ff_gain.setConstant(dim,1.0);
 }
 
 
@@ -16,10 +17,11 @@ const Eigen::VectorXd& JointPosPDController::update(const Eigen::VectorXd& ref_p
     assert(ref_vel.size() == dim_controller);
     assert(pos.size() == dim_controller);
     assert(p_gain.size() == dim_controller);
+    assert(ff_gain.size() == dim_controller);
     assert(u_max.size() == dim_controller);
 
     // Compute controller output
-    u = p_gain.cwiseProduct(ref_pos - pos) + ref_vel;
+    u = p_gain.cwiseProduct(ref_pos - pos) + ff_gain.cwiseProduct(ref_vel);
 
     // Apply Saturation
     applySaturation(u, u_max, u);
@@ -41,10 +43,11 @@ const Eigen::VectorXd& JointPosPDController::update(const Eigen::VectorXd& ref_p
     assert(vel.size() == dim_controller);
     assert(p_gain.size() == dim_controller);
     assert(d_gain.size() == dim_controller);
+    assert(ff_gain.size() == dim_controller);
     assert(u_max.size() == dim_controller);
 
     // Compute controller output
-    u = p_gain.cwiseProduct(ref_pos - pos) + d_gain.cwiseProduct(ref_vel - vel) + ref_acc;
+    u = p_gain.cwiseProduct(ref_pos - pos) + d_gain.cwiseProduct(ref_vel - vel) + ff_gain.cwiseProduct(ref_acc);
 
     // Apply Saturation
     applySaturation(u, u_max, u);
@@ -60,6 +63,11 @@ void JointPosPDController::setPGain(const Eigen::VectorXd &gain){
 void JointPosPDController::setDGain(const Eigen::VectorXd &gain){
     assert((size_t)gain.size() == dim_controller);
     d_gain = gain;
+}
+
+void JointPosPDController::setFFGain(const Eigen::VectorXd &gain){
+    assert((size_t)gain.size() == dim_controller);
+    ff_gain = gain;
 }
 
 void JointPosPDController::setMaxCtrlOutput(const Eigen::VectorXd &max_ctrl_out){

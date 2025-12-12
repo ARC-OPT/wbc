@@ -47,6 +47,7 @@ protected:
     Eigen::VectorXd u_max;
     Eigen::VectorXd p_gain;
     Eigen::VectorXd d_gain;
+    Eigen::VectorXd ff_gain;
     Eigen::VectorXd x;
     Eigen::VectorXd v;
     Eigen::VectorXd rx;
@@ -75,6 +76,10 @@ public:
     void setDGain(const Eigen::VectorXd &gain);
     /** Get derivative/velocity gain*/
     const Eigen::VectorXd& dGain(){return d_gain;}
+    /** Set feedforward gain gain. Size has to be the same dimension of the controller*/
+    void setFFGain(const Eigen::VectorXd &gain);
+    /** Get feed forward gain*/
+    const Eigen::VectorXd& ffGain(){return ff_gain;}
     /** Set controller saturation. Size has to be the same dimension of the controller*/
     void setMaxCtrlOutput(const Eigen::VectorXd &max_ctrl_out);
     /** Get controller saturation*/

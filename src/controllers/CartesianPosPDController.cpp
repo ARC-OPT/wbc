@@ -8,6 +8,7 @@ CartesianPosPDController::CartesianPosPDController() :
     ra.setConstant(6,0.0);
     x.setConstant(6,0.0);
     v.setConstant(6,0.0);
+    ff_gain.setConstant(6,1.0);
     u_max.setConstant(6,std::numeric_limits<double>::infinity());
 }
 
@@ -17,6 +18,7 @@ const types::Twist& CartesianPosPDController::update(const types::Pose& ref_pose
                                                      const types::Pose& pose){
 
     assert(p_gain.size() == dim_controller);
+    assert(ff_gain.size() == dim_controller);
     assert(u_max.size() == dim_controller);
 
     // Setpoint
@@ -30,7 +32,7 @@ const types::Twist& CartesianPosPDController::update(const types::Pose& ref_pose
     x.setZero();
 
     // Compute controller output
-    u = p_gain.cwiseProduct(rx - x) + rv;
+    u = p_gain.cwiseProduct(rx - x) + ff_gain.cwiseProduct(rv);
 
     // Apply Saturation
     applySaturation(u, u_max, u);
@@ -49,6 +51,7 @@ const types::SpatialAcceleration& CartesianPosPDController::update(const types::
                                                                    const types::Twist& twist){    
     assert(p_gain.size() == dim_controller);
     assert(d_gain.size() == dim_controller);
+    assert(ff_gain.size() == dim_controller);
     assert(u_max.size() == dim_controller);
 
     // Setpoint
@@ -66,7 +69,7 @@ const types::SpatialAcceleration& CartesianPosPDController::update(const types::
     v.segment(3,3) = twist.angular;
 
     // Compute controller output
-    u = p_gain.cwiseProduct(rx - x) + d_gain.cwiseProduct(rv - v) + ra;
+    u = p_gain.cwiseProduct(rx - x) + d_gain.cwiseProduct(rv - v) + ff_gain.cwiseProduct(ra);
 
     // Apply Saturation
     applySaturation(u, u_max, u);
@@ -86,6 +89,11 @@ void CartesianPosPDController::setPGain(const Eigen::VectorXd &gain){
 void CartesianPosPDController::setDGain(const Eigen::VectorXd &gain){
     assert((size_t)gain.size() == dim_controller);
     d_gain = gain;
+}
+
+void CartesianPosPDController::setFFGain(const Eigen::VectorXd &gain){
+    assert((size_t)gain.size() == dim_controller);
+    ff_gain = gain;
 }
 
 void CartesianPosPDController::setMaxCtrlOutput(const Eigen::VectorXd &max_ctrl_out){
