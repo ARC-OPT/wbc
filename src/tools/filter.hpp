@@ -7,32 +7,32 @@
 namespace wbc {
 
 class Filter{
+protected:
+    size_t window_size_;
 public:
+    Filter(size_t window_size) : window_size_(window_size) {}
+    virtual ~Filter() {}
     virtual double apply(double new_value) = 0;
 };
 
 class MovingMedianFilter : public Filter {
 protected:
-    size_t window_size_;
     Eigen::VectorXd values_;
     Eigen::VectorXd sorted_values_;
 public:
-    MovingMedianFilter(){}
-    MovingMedianFilter(size_t window_size) : window_size_(window_size) {}
+    MovingMedianFilter(size_t window_size) : Filter(window_size) {}
 
-    double apply(double new_value);
+    virtual double apply(double new_value);
 
 };
 
 class MovingAverageFilter : public Filter {
 protected:
-    size_t window_size_;
     Eigen::VectorXd values_;
 public:
-    MovingAverageFilter(){}
-    MovingAverageFilter(size_t window_size) : window_size_(window_size) {}
+    MovingAverageFilter(size_t window_size) : Filter(window_size) {}
 
-    double apply(double new_value);
+    virtual double apply(double new_value);
 
 };
 
