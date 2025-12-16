@@ -66,6 +66,7 @@ $(function(){ initResizable(false); });
 <div class="header">
   <div class="summary">
 <a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pro-attribs">Protected Attributes</a> &#124;
 <a href="classwbc_1_1Filter-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">wbc::Filter Class Reference<span class="mlabels"><span class="mlabel abstract">abstract</span></span></div></div>
 </div><!--header-->
@@ -85,9 +86,69 @@ Inheritance diagram for wbc::Filter:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
+<tr class="memitem:aa0c0e931f084fa801c5874e46356fa5d" id="r_aa0c0e931f084fa801c5874e46356fa5d"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa0c0e931f084fa801c5874e46356fa5d">Filter</a> (size_t window_size)</td></tr>
+<tr class="separator:aa0c0e931f084fa801c5874e46356fa5d"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:aacf18092865fd86877d29450649d1fef" id="r_aacf18092865fd86877d29450649d1fef"><td class="memItemLeft" align="right" valign="top">virtual&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aacf18092865fd86877d29450649d1fef">~Filter</a> ()</td></tr>
+<tr class="separator:aacf18092865fd86877d29450649d1fef"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:adfcee94b9011aa7a6199d83545a3ae5c" id="r_adfcee94b9011aa7a6199d83545a3ae5c"><td class="memItemLeft" align="right" valign="top">virtual double&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfcee94b9011aa7a6199d83545a3ae5c">apply</a> (double new_value)=0</td></tr>
 <tr class="separator:adfcee94b9011aa7a6199d83545a3ae5c"><td class="memSeparator" colspan="2">&#160;</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 class="groupheader"><a id="pro-attribs" name="pro-attribs"></a>
+Protected Attributes</h2></td></tr>
+<tr class="memitem:a80a93328bcd5a900fd8ac727dd23b159" id="r_a80a93328bcd5a900fd8ac727dd23b159"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a80a93328bcd5a900fd8ac727dd23b159">window_size_</a></td></tr>
+<tr class="separator:a80a93328bcd5a900fd8ac727dd23b159"><td class="memSeparator" colspan="2">&#160;</td></tr>
 </table>
+<h2 class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="aa0c0e931f084fa801c5874e46356fa5d" name="aa0c0e931f084fa801c5874e46356fa5d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa0c0e931f084fa801c5874e46356fa5d">&#9670;&#160;</a></span>Filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">wbc::Filter::Filter </td>
+          <td>(</td>
+          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>window_size</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="aacf18092865fd86877d29450649d1fef" name="aacf18092865fd86877d29450649d1fef"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aacf18092865fd86877d29450649d1fef">&#9670;&#160;</a></span>~Filter()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">virtual wbc::Filter::~Filter </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span><span class="mlabel virtual">virtual</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <h2 class="groupheader">Member Function Documentation</h2>
 <a id="adfcee94b9011aa7a6199d83545a3ae5c" name="adfcee94b9011aa7a6199d83545a3ae5c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#adfcee94b9011aa7a6199d83545a3ae5c">&#9670;&#160;</a></span>apply()</h2>
@@ -113,6 +174,29 @@ Public Member Functions</h2></td></tr>
 </div><div class="memdoc">
 
 <p>Implemented in <a class="el" href="classwbc_1_1MovingAverageFilter.html#a7ebc43e03f05d011e4222ca1d7f26f0c">wbc::MovingAverageFilter</a>, and <a class="el" href="classwbc_1_1MovingMedianFilter.html#a5837daad835aec160181e4e84ea00458">wbc::MovingMedianFilter</a>.</p>
+
+</div>
+</div>
+<h2 class="groupheader">Member Data Documentation</h2>
+<a id="a80a93328bcd5a900fd8ac727dd23b159" name="a80a93328bcd5a900fd8ac727dd23b159"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a80a93328bcd5a900fd8ac727dd23b159">&#9670;&#160;</a></span>window_size_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t wbc::Filter::window_size_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
 
 </div>
 </div>
