@@ -6,7 +6,12 @@
 
 namespace wbc {
 
-class MovingMedianFilter{
+class Filter{
+public:
+    virtual double apply(double new_value) = 0;
+};
+
+class MovingMedianFilter : public Filter {
 protected:
     size_t window_size_;
     Eigen::VectorXd values_;
@@ -19,7 +24,7 @@ public:
 
 };
 
-class MovingAverageFilter{
+class MovingAverageFilter : public Filter {
 protected:
     size_t window_size_;
     Eigen::VectorXd values_;
