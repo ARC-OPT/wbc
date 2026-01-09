@@ -44,8 +44,6 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
         dims.nb = qp.bounded ? qp.nq : 0;
         dims.ng = qp.nin;
         dims.ns = 0;
-        dims.nsb = 0;
-        dims.nsg = 0;
 
         if(config)
             free(config);
