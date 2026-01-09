@@ -96,6 +96,7 @@ void HPIPMSolver::solve(const HierarchicalQP &hierarchical_qp, Eigen::VectorXd &
                        NULL,
                        NULL,
                        NULL,
+                       NULL,
                        qp_in);
 
     int ret = dense_qp_solve(qp_solver, qp_in, qp_out);
