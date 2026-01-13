@@ -1,0 +1,317 @@
+submechanisms:
+- contextual_name: left_hip_joint
+  jointnames:
+  - joint_imu
+  - LL
+  - LLHip1
+  - LLHip2
+  - LLHip3
+  - LLAnkle_motor1
+  - LLAnkle_motor2
+  jointnames_active:
+  - LLHip1
+  - LLHip2
+  - LLHip3
+  jointnames_independent:
+  - LLHip1
+  - LLHip2
+  - LLHip3
+  jointnames_spanningtree:
+  - LLHip1
+  - LLHip2
+  - LLHip3
+  name: left_hip
+  type: "3R"
+
+- contextual_name: left_knee_joint
+  file_path: LL_Knee.urdf
+  jointnames:
+  - LLKnee
+  - LLKnee_d
+  - LLKnee_a
+  - LLKnee_b
+  - LLKnee_cut1
+  - LLKnee_c
+  jointnames_active:
+  - LLKnee_a
+  jointnames_independent:
+  - LLKnee
+  jointnames_spanningtree:
+  - LLKnee
+  - LLKnee_d
+  - LLKnee_a
+  - LLKnee_b
+  - LLKnee_cut1
+  - LLKnee_c
+  name: left_knee
+  type: "NUMERICAL"
+  loop_constraints:
+  - cut_joint: "LLKnee_cut1"
+    predecessor_body: "link_ll_knee_cut_1"
+    successor_body: "link_ll_knee_c"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+  - cut_joint: "LLKnee_cut1"
+    predecessor_body: "link_ll_knee_cut_1"
+    successor_body: "link_ll_knee_d"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+
+- contextual_name: left_ankle_joint
+  file_path: LL_Ankle.urdf
+  jointnames:
+  - LLAnklePitch
+  - LLAnkleRoll
+  - LLAnkle_b1
+  - LLAnkle_c
+  - LLAnkle_cut3
+  - LLAnkle_b2
+  - LLAnkle_d
+  - LLAnkle_cut4
+  - LLFoot
+  - LLAnkle_a1
+  - LLAnkle_cut1
+  - LLAnkle_a2
+  - LLAnkle_cut2
+  jointnames_active:
+  - LLAnkle_a1
+  - LLAnkle_a2
+  jointnames_independent:
+  - LLAnklePitch
+  - LLAnkleRoll
+  jointnames_spanningtree:
+  - LLAnklePitch
+  - LLAnkleRoll
+  - LLAnkle_b1
+  - LLAnkle_c
+  # - LLAnkle_cut3
+  - LLAnkle_b2
+  - LLAnkle_d
+  # - LLAnkle_cut4
+  # - LLFoot
+  - LLAnkle_a1
+  - LLAnkle_cut1
+  - LLAnkle_a2
+  - LLAnkle_cut2
+  name: hyper2_ankle
+  type: "NUMERICAL"
+  loop_constraints:
+  - cut_joint: "LLAnkle_cut1"
+    predecessor_body: "link_ll_ankle_cut_1"
+    successor_body: "link_ll_ankle_c"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTZ"
+      axis: [0.,0.,0.,0.,0.,1.]
+      baumgarte_stabilization_parameter: 0.01
+  - cut_joint: "LLAnkle_cut2"
+    predecessor_body: "link_ll_ankle_cut_2"
+    successor_body: "link_ll_ankle_d"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTZ"
+      axis: [0.,0.,0.,0.,0.,1.]
+      baumgarte_stabilization_parameter: 0.01
+
+- contextual_name: left_hip_joint
+  jointnames:
+  - RL
+  - LRHip1
+  - LRHip2
+  - LRHip3
+  - LRAnkle_motor1
+  - LRAnkle_motor2
+  jointnames_active:
+  - LRHip1
+  - LRHip2
+  - LRHip3
+  jointnames_independent:
+  - LRHip1
+  - LRHip2
+  - LRHip3
+  jointnames_spanningtree:
+  - LRHip1
+  - LRHip2
+  - LRHip3
+  name: left_hip
+  type: "3R"
+
+- contextual_name: right_knee_joint
+  file_path: LR_Knee.urdf
+  jointnames:
+  - LRKnee
+  - LRKnee_d
+  - LRKnee_a
+  - LRKnee_b
+  - LRKnee_cut1
+  - LRKnee_c
+  jointnames_active:
+  - LRKnee_a
+  jointnames_independent:
+  - LRKnee
+  jointnames_spanningtree:
+  - LRKnee
+  - LRKnee_d
+  - LRKnee_a
+  - LRKnee_b
+  - LRKnee_cut1
+  - LRKnee_c
+  name: right_knee
+  type: "NUMERICAL"
+  loop_constraints:
+  - cut_joint: "LRKnee_cut1"
+    predecessor_body: "link_lr_knee_cut_1"
+    successor_body: "link_lr_knee_c"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+  - cut_joint: "LRKnee_cut1"
+    predecessor_body: "link_lr_knee_cut_1"
+    successor_body: "link_lr_knee_d"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+
+- contextual_name: right_ankle_joint
+  file_path: LR_Ankle.urdf
+  jointnames:
+  - LRAnklePitch
+  - LRAnkleRoll
+  - LRAnkle_b1
+  - LRAnkle_c
+  - LRAnkle_cut3
+  - LRAnkle_b2
+  - LRAnkle_d
+  - LRAnkle_cut4
+  - RLFoot
+  - LRAnkle_a1
+  - LRAnkle_cut1
+  - LRAnkle_a2
+  - LRAnkle_cut2
+  jointnames_active:
+  - LRAnkle_a1
+  - LRAnkle_a2
+  jointnames_independent:
+  - LRAnklePitch
+  - LRAnkleRoll
+  jointnames_spanningtree:
+  - LRAnklePitch
+  - LRAnkleRoll
+  - LRAnkle_b1
+  - LRAnkle_c
+  # - LRAnkle_cut3
+  - LRAnkle_b2
+  - LRAnkle_d
+  # - LRAnkle_cut4
+  # - RLFoot
+  - LRAnkle_a1
+  - LRAnkle_cut1
+  - LRAnkle_a2
+  - LRAnkle_cut2
+  name: hyper2_ankle
+  type: "NUMERICAL"
+  loop_constraints:
+  - cut_joint: "LRAnkle_cut1"
+    predecessor_body: "link_lr_ankle_cut_1"
+    successor_body: "link_lr_ankle_c"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTZ"
+      axis: [0.,0.,0.,0.,0.,1.]
+      baumgarte_stabilization_parameter: 0.01
+  - cut_joint: "LRAnkle_cut2"
+    predecessor_body: "link_lr_ankle_cut_2"
+    successor_body: "link_lr_ankle_d"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTZ"
+      axis: [0.,0.,0.,0.,0.,1.]
+      baumgarte_stabilization_parameter: 0.01
+
+- contextual_name: left_arm_joint
+  jointnames:
+  - LA
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  - ALElbow
+  jointnames_active:
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  - ALElbow
+  jointnames_independent:
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  - ALElbow
+  jointnames_spanningtree:
+  - ALShoulder1
+  - ALShoulder2
+  - ALShoulder3
+  - ALElbow
+  name: left_arm
+  type: "4R"
+
+- contextual_name: right_arm_joint
+  jointnames:
+  - RA
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  - ARElbow
+  jointnames_active:
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  - ARElbow
+  jointnames_independent:
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  - ARElbow
+  jointnames_spanningtree:
+  - ARShoulder1
+  - ARShoulder2
+  - ARShoulder3
+  - ARElbow
+  name: right_arm
+  type: "4R"  

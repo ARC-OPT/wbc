@@ -1,0 +1,205 @@
+<?xml version="1.0" encoding="utf-8"?>
+<robot name="LR_Knee">
+  <mujoco>
+    <compiler meshdir="../meshes_full/" discardvisual="false" balanceinertia="true" autolimits="true"/>
+  </mujoco>
+  <link name="link_lr_hip_3">
+    <inertial>
+      <origin xyz="-0.0541876682232546 0.00839649003018059 6.31862193424865E-06" rpy="0 0 0" />
+      <mass value="3.87173525570443" />
+      <inertia ixx="0.00407636844183018" ixy="0.000154243421337047" ixz="2.27667305536027E-06" iyy="0.00756470452494266" iyz="1.00880444822934E-06" izz="0.00908515250695531" />
+    </inertial>
+    <!-- <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_hip_3.obj" />
+      </geometry>
+      <material name="">
+        <color rgba="0.250980392156863 0.250980392156863 0.250980392156863 1" />
+      </material>
+    </visual> -->
+    <!--collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_hip_3.obj" />
+      </geometry>
+    </collision-->
+  </link>
+  <link name="link_lr_knee_a">
+    <inertial>
+      <origin xyz="0.0106004441222305 -0.000539423501919521 -0.00628934730742887" rpy="0 0 0" />
+      <mass value="0.0253940047641168" />
+      <inertia ixx="1.96727185274523E-06" ixy="-3.10409377855407E-07" ixz="-1.46370348883889E-06" iyy="9.27089040733882E-06" iyz="3.73151822998995E-08" izz="1.00554656681933E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_a.obj" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <!--collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_a.obj" />
+      </geometry>
+    </collision-->
+  </link>
+  <joint name="LRKnee_a" type="revolute">
+    <origin xyz="0 0 0" rpy="0 0 0" />
+    <parent link="link_lr_hip_3" />
+    <child link="link_lr_knee_a" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="0" effort="0" velocity="0" />
+  </joint>
+  <link name="link_lr_knee_b">
+    <inertial>
+      <origin xyz="-0.11896315664801 0.0157406276984474 -1.55633052525655E-12" rpy="0 0 0" />
+      <mass value="0.0500330696879538" />
+      <inertia ixx="5.49399319241691E-06" ixy="2.99714318060517E-05" ixz="4.84169940703569E-17" iyy="0.000228043817702732" iyz="3.70620420494026E-16" izz="0.000232275646568133" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_b.obj" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <!--collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_b.obj" />
+      </geometry>
+    </collision-->
+  </link>
+  <joint name="LRKnee_b" type="revolute">
+    <origin xyz="0.05239 0.0080164 0" rpy="0 0 0" />
+    <parent link="link_lr_knee_a" />
+    <child link="link_lr_knee_b" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="0" effort="0" velocity="0" />
+  </joint>
+  <link name="link_lr_knee_cut_1">
+    <inertial>
+      <origin xyz="8.32667268468867E-17 0.0789953799176822 9.55280174773238E-18" rpy="0 0 0" />
+      <mass value="0.00014" />
+      <inertia ixx="5.83333333333335E-10" ixy="5.92120146430092E-26" ixz="2.66074224556257E-26" iyy="5.83333333333335E-10" iyz="2.2113559740047E-26" izz="5.83333333333335E-10" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_ll_knee_cut_1.obj" />
+      </geometry>
+      <material name="">
+        <color rgba="0.498039215686275 0.498039215686275 0.498039215686275 1" />
+      </material>
+    </visual>
+    <!--collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_cut_1.obj" />
+      </geometry>
+    </collision-->
+  </link>
+  <joint name="LRKnee_cut1" type="revolute">
+    <origin xyz="-0.23793 0.031481 0" rpy="0 0 0" />
+    <parent link="link_lr_knee_b" />
+    <child link="link_lr_knee_cut_1" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="0" effort="0" velocity="0" />
+  </joint>
+  <link name="link_lr_knee_c">
+    <inertial>
+      <origin xyz="0.0247409667682572 0.0247231975529044 1.98202071778888E-18" rpy="0 0 0" />
+      <mass value="0.00675752261454381" />
+      <inertia ixx="1.61391753861542E-06" ixy="-1.55291453234947E-06" ixz="1.96057611535778E-22" iyy="1.60744992600798E-06" iyz="1.95180259426667E-22" izz="3.18997713650877E-06" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_c.obj" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <!--collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_c.obj" />
+      </geometry>
+    </collision-->
+  </link>
+  <joint name="LRKnee_c" type="revolute">
+    <origin xyz="-0.235 -0.01 0" rpy="0 0 0" />
+    <parent link="link_lr_hip_3" />
+    <child link="link_lr_knee_c" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="0" effort="0" velocity="0" />
+  </joint>
+
+  <link name="link_lr_knee">
+    <inertial>
+      <origin xyz="-0.0931442558142447 0.0142131707561046 0.000201798544458144" rpy="0 0 0" />
+      <mass value="0.495887911605685" />
+      <inertia ixx="0.000360633060791027" ixy="-0.000211344910328007" ixz="-4.91161218475265E-08" iyy="0.00336051192754619" iyz="1.61891693838168E-08" izz="0.00337050316461114" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee.obj" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <!--collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee.obj" />
+      </geometry>
+    </collision-->
+  </link>
+  <joint name="LRKnee" type="revolute">
+    <origin xyz="-0.3 0 0" rpy="0 0 0" />
+    <parent link="link_lr_hip_3" />
+    <child link="link_lr_knee" />
+    <axis xyz="0 0 1" />
+    <limit lower="-3.141" upper="3.141" effort="22.0" velocity="40.0" /> <!-- AK80-9 v3-->
+  </joint>
+  
+  <link name="link_lr_knee_d">
+    <inertial>
+      <origin xyz="0.0402566282650146 -0.0143345782012452 -3.1459923233813E-09" rpy="0 0 0" />
+      <mass value="0.0240139161863506" />
+      <inertia ixx="1.24932163849931E-06" ixy="1.54835570231858E-06" ixz="-2.27848518106052E-13" iyy="1.42984773824703E-05" iyz="-6.03511151173007E-13" izz="1.50667259805782E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="3.1416 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_d.obj" />
+      </geometry>
+      <material name="">
+        <color rgba="0.898039215686275 0.917647058823529 0.929411764705882 1" />
+      </material>
+    </visual>
+    <!--collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="../meshes_full/link_lr_knee_d.obj" />
+      </geometry>
+    </collision-->
+  </link>
+  <joint name="LRKnee_d" type="revolute">
+    <origin xyz="0.03182 0.03182 0" rpy="0 0 0" />
+    <parent link="link_lr_knee" />
+    <child link="link_lr_knee_d" />
+    <axis xyz="0 0 1" />
+    <limit lower="0" upper="0" effort="0" velocity="0" />
+  </joint>
+
+</robot>

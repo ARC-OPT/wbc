@@ -1,0 +1,88 @@
+submechanisms:
+# - contextual_name: left_knee_joint
+#   file_path: LL_Knee.urdf
+#   jointnames:
+#   - LLKnee
+#   - LLKnee_d
+#   - LLKnee_a
+#   - LLKnee_b
+#   - LLKnee_cut1
+#   - LLKnee_c
+#   jointnames_active:
+#   - LLKnee_a
+#   jointnames_independent:
+#   - LLKnee
+#   jointnames_spanningtree:
+#   - LLKnee
+#   - LLKnee_d
+#   - LLKnee_a
+#   - LLKnee_b
+#   - LLKnee_cut1
+#   - LLKnee_c
+#   name: left_knee
+#   type: "NUMERICAL"
+#   loop_constraints:
+#   - cut_joint: "LLKnee_cut1"
+#     predecessor_body: "link_ll_knee_cut_1"
+#     successor_body: "link_ll_knee_c"
+#     constraint_axes: 
+#     - name: "loopTX"
+#       axis: [0.,0.,0.,1.,0.,0.]
+#       baumgarte_stabilization_parameter: 0.01
+#     - name: "loopTY"
+#       axis: [0.,0.,0.,0.,1.,0.]
+#       baumgarte_stabilization_parameter: 0.01
+#   - cut_joint: "LLKnee_cut1"
+#     predecessor_body: "link_ll_knee_cut_1"
+#     successor_body: "link_ll_knee_d"
+#     constraint_axes: 
+#     - name: "loopTX"
+#       axis: [0.,0.,0.,1.,0.,0.]
+#       baumgarte_stabilization_parameter: 0.01
+#     - name: "loopTY"
+#       axis: [0.,0.,0.,0.,1.,0.]
+#       baumgarte_stabilization_parameter: 0.01
+
+- contextual_name: right_knee_joint
+  file_path: LR_Knee.urdf
+  jointnames:
+  - LRKnee
+  - LRKnee_d
+  - LRKnee_a
+  - LRKnee_b
+  - LRKnee_cut1
+  - LRKnee_c
+  jointnames_active:
+  - LRKnee_a
+  jointnames_independent:
+  - LRKnee
+  jointnames_spanningtree:
+  - LRKnee
+  - LRKnee_d
+  - LRKnee_a
+  - LRKnee_b
+  - LRKnee_cut1
+  - LRKnee_c
+  name: right_knee
+  type: "NUMERICAL"
+  loop_constraints:
+  - cut_joint: "LRKnee_cut1"
+    predecessor_body: "link_lr_knee_cut_1"
+    successor_body: "link_lr_knee_c"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+  - cut_joint: "LRKnee_cut1"
+    predecessor_body: "link_lr_knee_cut_1"
+    successor_body: "link_lr_knee_d"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01

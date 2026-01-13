@@ -1,0 +1,66 @@
+submechanisms:
+- contextual_name: ankle_joint
+  file_path: LL_Ankle.urdf
+  jointnames:
+  - LLAnklePitch
+  - LLAnkleRoll
+  - LLAnkle_b1
+  - LLAnkle_c
+  - LLAnkle_cut3
+  - LLAnkle_b2
+  - LLAnkle_d
+  - LLAnkle_cut4
+  - LLFoot
+  - LLAnkle_a1
+  - LLAnkle_cut1
+  - LLAnkle_a2
+  - LLAnkle_cut2
+  jointnames_active:
+  - LLAnkle_a1
+  - LLAnkle_a2
+  jointnames_independent:
+  - LLAnklePitch
+  - LLAnkleRoll
+  jointnames_spanningtree:
+  - LLAnklePitch
+  - LLAnkleRoll
+  - LLAnkle_b1
+  - LLAnkle_c
+  # - LLAnkle_cut3
+  - LLAnkle_b2
+  - LLAnkle_d
+  # - LLAnkle_cut4
+  # - LLFoot
+  - LLAnkle_a1
+  - LLAnkle_cut1
+  - LLAnkle_a2
+  - LLAnkle_cut2
+  name: hyper2_ankle
+  type: "NUMERICAL"
+  loop_constraints:
+  - cut_joint: "LLAnkle_cut1"
+    predecessor_body: "link_ll_ankle_cut_1"
+    successor_body: "link_ll_ankle_c"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTZ"
+      axis: [0.,0.,0.,0.,0.,1.]
+      baumgarte_stabilization_parameter: 0.01
+  - cut_joint: "LLAnkle_cut2"
+    predecessor_body: "link_ll_ankle_cut_2"
+    successor_body: "link_ll_ankle_d"
+    constraint_axes: 
+    - name: "loopTX"
+      axis: [0.,0.,0.,1.,0.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTY"
+      axis: [0.,0.,0.,0.,1.,0.]
+      baumgarte_stabilization_parameter: 0.01
+    - name: "loopTZ"
+      axis: [0.,0.,0.,0.,0.,1.]
+      baumgarte_stabilization_parameter: 0.01
