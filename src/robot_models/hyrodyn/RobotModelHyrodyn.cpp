@@ -170,8 +170,8 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
         return false;
     }
 
-    joint_state.resize(hyrodyn.spanningtree_dof);
-    joint_names = hyrodyn.jointnames_independent;
+    joint_state.resize(hyrodyn.active_dof);
+    joint_names = hyrodyn.jointnames_active;
     actuated_joint_names = hyrodyn.jointnames_active;
     independent_joint_names = hyrodyn.jointnames_independent;
 
@@ -185,7 +185,7 @@ bool RobotModelHyrodyn::configure(const RobotModelConfig& cfg){
     selection_matrix.setZero();
     for(uint i = 0; i < actuated_joint_names.size(); i++)
         selection_matrix(i, nfb() + i) = 1.0;
-    joint_weights.resize(na());
+    joint_weights.resize(nj());
     joint_weights.setConstant(1.0);
 
     q.resize(na() + nfb());
@@ -467,6 +467,7 @@ const Eigen::VectorXd &RobotModelHyrodyn::biasForces(){
         bias_forces.push_back(Vector());
 
     if(bias_forces[0].needs_recompute){
+        tmp_ydd = hyrodyn.ydd;
         hyrodyn.ydd.setZero();
         if(hyrodyn.floating_base_robot){
             hyrodyn.calculate_inverse_dynamics_including_floatingbase();
@@ -476,6 +477,7 @@ const Eigen::VectorXd &RobotModelHyrodyn::biasForces(){
             hyrodyn.calculate_inverse_dynamics();
             bias_forces[0].data = hyrodyn.Tau_actuated;
         }
+        hyrodyn.ydd = tmp_ydd;
         bias_forces[0].needs_recompute = false;
     }
 

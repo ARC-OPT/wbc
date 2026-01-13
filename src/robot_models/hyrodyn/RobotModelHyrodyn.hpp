@@ -14,6 +14,7 @@ private:
 
 protected:
     hyrodyn::RobotModel_HyRoDyn hyrodyn;
+    Eigen::VectorXd tmp_ydd;
 
     void clear();
     void addFloatingBaseToURDF(urdf::ModelInterfaceSharedPtr& robot_urdf, const std::string &world_frame_id = "world");
