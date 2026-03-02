@@ -38,6 +38,8 @@ public:
     std::vector<types::Contact> contact_points;
     /** Optional: List of joints, which shall be ignored by the WBC, i.e., these joints will be set to "fixed" joints in the loaded urdf model*/
     std::vector<std::string> joint_blacklist;
+    /** Optional: Max. acceleration joint limits (abs value). Not supported in URDF, so we have to define them separately */
+    std::vector<double> max_joint_acceleration;
 };
 
 }

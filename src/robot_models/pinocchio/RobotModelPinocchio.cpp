@@ -91,6 +91,15 @@ bool RobotModelPinocchio::configure(const RobotModelConfig& cfg){
     joint_weights.setConstant(1.0);
 
     URDFTools::jointLimitsFromURDF(robot_urdf, joint_limits, joint_names);
+    if(!cfg.max_joint_acceleration.empty()){
+        if(cfg.max_joint_acceleration.size() != na()){
+            log(logERROR)<<"Size of joint acceleration limits in robot model config should be "<<na()<<" but is "<<cfg.max_joint_acceleration.size();
+            return false;
+        }
+        Eigen::VectorXd max_acc = Eigen::Map<Eigen::VectorXd>((double* )cfg.max_joint_acceleration.data(), na());
+        joint_limits.max.acceleration = max_acc;
+        joint_limits.min.acceleration = -1*max_acc;
+    }
 
     selection_matrix.resize(na(),nj());
     selection_matrix.setZero();
