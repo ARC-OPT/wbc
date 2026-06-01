@@ -48,7 +48,7 @@ protected:
     bool configured;
     types::JointCommand solver_output_joints;
     uint dim_contact;
-    double friction_cone_weight;
+    double friction_margin;
 
     bool contactsHaveChanged(const std::vector<types::Contact>& old_contacts, const std::vector<types::Contact>& new_contacts){
         if(old_contacts.size() != new_contacts.size())
@@ -61,7 +61,7 @@ protected:
     }
 
 public:
-    AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact = 3, double friction_cone_weight = 1.0);
+    AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact = 3, double friction_margin = 0.0);
     virtual ~AccelerationSceneReducedTSID(){}
 
     /**

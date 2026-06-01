@@ -11,15 +11,16 @@ namespace wbc {
  */
 class ContactsFrictionSurfaceConstraint : public Constraint{
 public:
-    /** @brief Default constructor */
-    explicit ContactsFrictionSurfaceConstraint(bool _reduced = false) : Constraint(Constraint::inequality), reduced(_reduced) { }
+    explicit ContactsFrictionSurfaceConstraint(bool _reduced = false, double margin = 0.0)
+        : Constraint(Constraint::inequality), reduced(_reduced), margin(margin) { }
 
     virtual ~ContactsFrictionSurfaceConstraint() = default;
 
     virtual void update(RobotModelPtr robot_model) override;
 
 private:
-    bool reduced; // if torques are removed from the qp formulation or not
+    bool reduced;
+    double margin;  // safety margin: keeps wrench strictly inside the cone boundary
 };
 
 }
