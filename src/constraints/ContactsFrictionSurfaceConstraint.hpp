@@ -11,8 +11,7 @@ namespace wbc {
  */
 class ContactsFrictionSurfaceConstraint : public Constraint{
 public:
-    explicit ContactsFrictionSurfaceConstraint(bool _reduced = false, double margin = 0.0)
-        : Constraint(Constraint::inequality), reduced(_reduced), margin(margin) { }
+    explicit ContactsFrictionSurfaceConstraint(bool _reduced = false) : Constraint(Constraint::inequality), reduced(_reduced) { }
 
     virtual ~ContactsFrictionSurfaceConstraint() = default;
 
@@ -20,7 +19,6 @@ public:
 
 private:
     bool reduced;
-    double margin;  // safety margin: keeps wrench strictly inside the cone boundary
 };
 
 }

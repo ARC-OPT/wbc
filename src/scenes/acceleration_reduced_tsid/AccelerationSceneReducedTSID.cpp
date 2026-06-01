@@ -13,11 +13,11 @@ namespace wbc {
 
 SceneRegistry<AccelerationSceneReducedTSID> AccelerationSceneReducedTSID::reg("acceleration_reduced_tsid");
 
-AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact, double friction_margin) :
+AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact, double friction_cone_weight) :
     Scene(robot_model, solver, dt),
     configured(false),
     dim_contact(dim_contact),
-    friction_margin(friction_margin){
+    friction_cone_weight(friction_cone_weight){
 
     // whether or not torques are removed  from the qp problem
     // this formulation includes torques !!!
@@ -30,9 +30,9 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
     constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced, dim_contact));
     constraints.push_back(std::make_shared<EffortLimitsAccelerationConstraint>(dim_contact));
     if(dim_contact == 3)
-        constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced, friction_margin));
+        constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
     else
-        constraints.push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced, friction_margin));
+        constraints.push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
 }
 
 bool AccelerationSceneReducedTSID::configure(const std::vector<TaskPtr> &tasks_in){
@@ -64,52 +64,78 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
 
     assert(configured);
 
-    uint nj = robot_model->nj();
+    uint nj  = robot_model->nj();
     uint ncp = robot_model->nc();
+    uint nac = robot_model->nac();  // number of active contacts
 
-    //////// Constraints
+    //////// Constraints - first pass: update all and count sizes
 
     bool has_bounds = false;
-    size_t total_eqs = 0, total_ineqs = 0;
-    for(auto contraint : constraints) {
-        contraint->update(robot_model);
-        if(contraint->type() == Constraint::equality)
-            total_eqs += contraint->size();
-        if(contraint->type() == Constraint::inequality)
-            total_ineqs += contraint->size();
-        if(contraint->type() == Constraint::bounds)
+    size_t total_eqs = 0, total_ineqs = 0, n_slack = 0;
+    for(auto constraint : constraints) {
+        constraint->update(robot_model);
+        if(constraint->type() == Constraint::equality)
+            total_eqs += constraint->size();
+        else if(constraint->type() == Constraint::inequality) {
+            total_ineqs += constraint->size();
+            // One scalar slack variable per active contact: F_mu,i * f_i <= s_i * 1
+            // This softens the cone boundary with nac extra variables instead of 16*nac.
+            if(dynamic_cast<ContactsFrictionSurfaceConstraint*>(constraint.get()) ||
+               dynamic_cast<ContactsFrictionPointConstraint*>(constraint.get()))
+                n_slack += nac;
+        }
+        else if(constraint->type() == Constraint::bounds)
             has_bounds = true;
     }
 
-    // QP Size: (nc x nj+nc*dim_contact)
-    // Variable order: (qdd,f_ext)
-    QuadraticProgram& qp = hqp[0];
-    qp.resize(nj+ncp*dim_contact, total_eqs, total_ineqs, has_bounds);
-    qp.A.setZero();
-    qp.lower_x.setConstant(-10000);   // bounds
-    qp.upper_x.setConstant(+10000);   // bounds
-    qp.lower_y.setZero(); // inequalities
-    qp.upper_y.setZero(); // inequalities
+    // Variable order: (qdd [nj], f_ext [ncp*dim_contact], s [nac])
+    uint nv_base = nj + ncp * dim_contact;
+    uint nv      = nv_base + n_slack;
 
-    total_eqs = 0, total_ineqs = 0;
+    QuadraticProgram& qp = hqp[0];
+    qp.resize(nv, total_eqs, total_ineqs, has_bounds);
+    qp.A.setZero();
+    qp.C.setZero();
+    qp.lower_x.setConstant(-10000);
+    qp.upper_x.setConstant(+10000);
+    qp.lower_x.tail(n_slack).setZero();  // slack variables s_i >= 0
+    qp.lower_y.setZero();
+    qp.upper_y.setZero();
+
+    size_t filled_eqs = 0, filled_ineqs = 0, slack_offset = 0;
     for(uint i = 0; i < constraints.size(); i++) {
         Constraint::Type type = constraints[i]->type();
         size_t c_size = constraints[i]->size();
+        bool is_friction = dynamic_cast<ContactsFrictionSurfaceConstraint*>(constraints[i].get()) != nullptr ||
+                           dynamic_cast<ContactsFrictionPointConstraint*>(constraints[i].get()) != nullptr;
 
         if(type == Constraint::bounds) {
-            qp.lower_x = constraints[i]->lb(); // NOTE! Good only if a single bound task is admitted
-            qp.upper_x = constraints[i]->ub();
+            // NOTE! Good only if a single bound constraint is admitted
+            qp.lower_x.head(nv_base) = constraints[i]->lb();
+            qp.upper_x.head(nv_base) = constraints[i]->ub();
+            qp.lower_x.tail(n_slack).setZero();          // restore slack lower bounds
+            qp.upper_x.tail(n_slack).setConstant(10000);
         }
-        else if (type == Constraint::equality) {
-            qp.A.middleRows(total_eqs, c_size) = constraints[i]->A();
-            qp.b.segment(total_eqs, c_size) = constraints[i]->b();
-            total_eqs += c_size;
+        else if(type == Constraint::equality) {
+            qp.A.block(filled_eqs, 0, c_size, nv_base) = constraints[i]->A();
+            qp.b.segment(filled_eqs, c_size) = constraints[i]->b();
+            filled_eqs += c_size;
         }
-        else if (type == Constraint::inequality) {
-            qp.C.middleRows(total_ineqs, c_size) = constraints[i]->A();
-            qp.lower_y.segment(total_ineqs, c_size) = constraints[i]->lb();
-            qp.upper_y.segment(total_ineqs, c_size) = constraints[i]->ub();
-            total_ineqs += c_size;
+        else if(type == Constraint::inequality) {
+            qp.C.block(filled_ineqs, 0, c_size, nv_base) = constraints[i]->A();
+            if(is_friction && nac > 0) {
+                // Each active contact i gets one scalar slack s_i shared across all its cone rows:
+                //   F_mu,i * f_i - s_i * 1 <= 0   =>  column nv_base+slack_offset+i gets -1s
+                size_t rows_per_contact = c_size / nac;
+                for(uint c = 0; c < nac; c++)
+                    qp.C.col(nv_base + slack_offset + c)
+                       .segment(filled_ineqs + c * rows_per_contact, rows_per_contact)
+                       .setConstant(-1.0);
+                slack_offset += nac;
+            }
+            qp.lower_y.segment(filled_ineqs, c_size) = constraints[i]->lb();
+            qp.upper_y.segment(filled_ineqs, c_size) = constraints[i]->ub();
+            filled_ineqs += c_size;
         }
     }
 
@@ -149,6 +175,9 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         }
     }
     qp.H.diagonal().array() += hessian_regularizer;
+    // Slack penalty: one scalar s_i per contact drives each contact's worst-face violation to zero
+    if(n_slack > 0)
+        qp.H.bottomRightCorner(n_slack, n_slack).diagonal().array() += friction_cone_weight;
 
     return hqp;
 }
