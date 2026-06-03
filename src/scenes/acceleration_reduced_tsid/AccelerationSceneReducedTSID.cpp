@@ -13,11 +13,12 @@ namespace wbc {
 
 SceneRegistry<AccelerationSceneReducedTSID> AccelerationSceneReducedTSID::reg("acceleration_reduced_tsid");
 
-AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact, double friction_cone_weight) :
+AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact, double friction_cone_weight, double friction_margin) :
     Scene(robot_model, solver, dt),
     configured(false),
     dim_contact(dim_contact),
-    friction_cone_weight(friction_cone_weight){
+    friction_cone_weight(friction_cone_weight),
+    friction_margin(friction_margin){
 
     // whether or not torques are removed  from the qp problem
     // this formulation includes torques !!!
@@ -30,9 +31,9 @@ AccelerationSceneReducedTSID::AccelerationSceneReducedTSID(RobotModelPtr robot_m
     constraints.push_back(std::make_shared<JointLimitsAccelerationConstraint>(dt, reduced, dim_contact));
     constraints.push_back(std::make_shared<EffortLimitsAccelerationConstraint>(dim_contact));
     if(dim_contact == 3)
-        constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced));
+        constraints.push_back(std::make_shared<ContactsFrictionPointConstraint>(reduced, friction_margin));
     else
-        constraints.push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced));
+        constraints.push_back(std::make_shared<ContactsFrictionSurfaceConstraint>(reduced, friction_margin));
 }
 
 bool AccelerationSceneReducedTSID::configure(const std::vector<TaskPtr> &tasks_in){

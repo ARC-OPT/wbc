@@ -53,7 +53,7 @@ void ContactsFrictionSurfaceConstraint::update(RobotModelPtr robot_model){
 
             Eigen::VectorXd lb(row_skip), ub(row_skip);
             lb.setConstant(-1e5);
-            ub.setZero();
+            ub.setConstant(-margin);
 
             lb_vec.segment(idx*row_skip,row_skip) = lb;
             ub_vec.segment(idx*row_skip,row_skip) = ub;

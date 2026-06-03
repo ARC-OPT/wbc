@@ -7,7 +7,8 @@ namespace wbc {
 
 class ContactsFrictionPointConstraint : public Constraint{
 public:
-    explicit ContactsFrictionPointConstraint(bool _reduced = false) : Constraint(Constraint::inequality), reduced(_reduced) { }
+    explicit ContactsFrictionPointConstraint(bool _reduced = false, double margin = 0.0)
+        : Constraint(Constraint::inequality), reduced(_reduced), margin(margin) { }
 
     virtual ~ContactsFrictionPointConstraint() = default;
 
@@ -15,6 +16,7 @@ public:
 
 private:
     bool reduced;
+    double margin;
 };
 
 }
