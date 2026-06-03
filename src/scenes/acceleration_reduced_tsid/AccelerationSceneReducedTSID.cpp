@@ -70,34 +70,41 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
 
     bool has_bounds = false;
     size_t total_eqs = 0, total_ineqs = 0;
+    uint n_friction = 0;
     for(auto contraint : constraints) {
         contraint->update(robot_model);
         if(contraint->type() == Constraint::equality)
             total_eqs += contraint->size();
-        if(contraint->type() == Constraint::inequality)
+        if(contraint->type() == Constraint::inequality) {
             total_ineqs += contraint->size();
+            n_friction = contraint->size(); // friction is the only/last inequality
+        }
         if(contraint->type() == Constraint::bounds)
             has_bounds = true;
     }
+    if(n_friction > 0) has_bounds = true; // slack variables need bounds
 
-    // QP Size: (nc x nj+nc*3)
-    // Variable order: (qdd,f_ext)
+    // Variable order: (qdd, f_ext, s) where s >= 0 are soft friction cone slack variables
     QuadraticProgram& qp = hqp[0];
-    qp.resize(nj+ncp*dim_contact, total_eqs, total_ineqs, has_bounds);
+    qp.resize(nj+ncp*dim_contact+n_friction, total_eqs, total_ineqs, has_bounds);
     qp.A.setZero();
+    qp.C.setZero(); // must zero explicitly since resize() fills with NaN
     qp.lower_x.setConstant(-10000);   // bounds
     qp.upper_x.setConstant(+10000);   // bounds
+    if(n_friction > 0)
+        qp.lower_x.tail(n_friction).setZero(); // s >= 0
     qp.lower_y.setZero(); // inequalities
     qp.upper_y.setZero(); // inequalities
 
     total_eqs = 0, total_ineqs = 0;
+    uint friction_row_start = 0;
     for(uint i = 0; i < constraints.size(); i++) {
         Constraint::Type type = constraints[i]->type();
         size_t c_size = constraints[i]->size();
 
         if(type == Constraint::bounds) {
-            qp.lower_x = constraints[i]->lb(); // NOTE! Good only if a single bound task is admitted
-            qp.upper_x = constraints[i]->ub();
+            qp.lower_x.head(nj+ncp*dim_contact) = constraints[i]->lb(); // NOTE! Good only if a single bound task is admitted
+            qp.upper_x.head(nj+ncp*dim_contact) = constraints[i]->ub();
         }
         else if (type == Constraint::equality) {
             qp.A.middleRows(total_eqs, c_size) = constraints[i]->A();
@@ -105,12 +112,18 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             total_eqs += c_size;
         }
         else if (type == Constraint::inequality) {
-            qp.C.middleRows(total_ineqs, c_size) = constraints[i]->A();
+            friction_row_start = total_ineqs;
+            qp.C.middleRows(total_ineqs, c_size).leftCols(nj+ncp*dim_contact) = constraints[i]->A();
             qp.lower_y.segment(total_ineqs, c_size) = constraints[i]->lb();
             qp.upper_y.segment(total_ineqs, c_size) = constraints[i]->ub();
             total_ineqs += c_size;
         }
     }
+
+    // Soft friction cone: extend friction rows with -I for slack s, so A_fric*f - s <= 0
+    if(n_friction > 0)
+        qp.C.block(friction_row_start, nj+ncp*dim_contact, n_friction, n_friction) =
+            -Eigen::MatrixXd::Identity(n_friction, n_friction);
 
     ///////// Tasks
 
@@ -149,6 +162,11 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     }
     qp.H.diagonal().array() += hessian_regularizer;
     //qp.H.block(nj,nj, ncp*3, ncp*3).diagonal().array() += 1e-12;
+
+    // Soft friction cone: penalize slack s with rho*||s||^2 to keep forces inside the cone
+    if(n_friction > 0)
+        qp.H.block(nj+ncp*dim_contact, nj+ncp*dim_contact, n_friction, n_friction)
+            .diagonal().array() += friction_softening_weight;
 
     // Contact force rate regularization: penalize ||f - f_prev||^2 to reduce chattering
     if(f_ext_prev.size() == (int)(ncp * dim_contact)) {
