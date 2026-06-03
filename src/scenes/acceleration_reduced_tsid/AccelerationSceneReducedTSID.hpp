@@ -50,6 +50,7 @@ protected:
     uint dim_contact;
     double friction_cone_weight;
     double friction_margin;
+    Eigen::VectorXd prev_fext;  // contact forces from the previous timestep, used for the direct penalty
 
     bool contactsHaveChanged(const std::vector<types::Contact>& old_contacts, const std::vector<types::Contact>& new_contacts){
         if(old_contacts.size() != new_contacts.size())
