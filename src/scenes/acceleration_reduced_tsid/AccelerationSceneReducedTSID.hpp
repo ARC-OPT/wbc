@@ -66,6 +66,12 @@ public:
     AccelerationSceneReducedTSID(RobotModelPtr robot_model, QPSolverPtr solver, const double dt, uint dim_contact = 3);
     virtual ~AccelerationSceneReducedTSID(){}
 
+    void setForceRateWeight(double w){ force_rate_weight = w; }
+    double getForceRateWeight() const { return force_rate_weight; }
+
+    void setFrictionSofteningWeight(double w){ friction_softening_weight = w; }
+    double getFrictionSofteningWeight() const { return friction_softening_weight; }
+
     /**
      * @brief Configure the WBC scene. Create tasks and sort them by priority given the task config
      * @param tasks Tasks used in optimization function. Size has to be > 0. All tasks have to be valid. See tasks and TaskConfig.hpp for more details.
