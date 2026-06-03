@@ -149,6 +149,13 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
     }
     qp.H.diagonal().array() += hessian_regularizer;
     //qp.H.block(nj,nj, ncp*3, ncp*3).diagonal().array() += 1e-12;
+
+    // Contact force rate regularization: penalize ||f - f_prev||^2 to reduce chattering
+    if(f_ext_prev.size() == (int)(ncp * dim_contact)) {
+        qp.H.block(nj, nj, ncp*dim_contact, ncp*dim_contact).diagonal().array() += force_rate_weight;
+        qp.g.segment(nj, ncp*dim_contact) -= force_rate_weight * f_ext_prev;
+    }
+
     return hqp;
 }
 
@@ -156,9 +163,11 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
 
     // solve
     solver_output.resize(hqp[0].nq);
-    bool allow_warm_start = !contactsHaveChanged(contacts, robot_model->getContacts());
+    bool contacts_changed = contactsHaveChanged(contacts, robot_model->getContacts());
+    if(contacts_changed)
+        f_ext_prev.resize(0); // invalidate: no valid previous force to regularize against
     contacts = robot_model->getContacts();
-    solver->solve(hqp, solver_output, allow_warm_start);
+    solver->solve(hqp, solver_output, !contacts_changed);
 
     // Convert solver output: Acceleration and torque
     uint nj = robot_model->nj();
@@ -179,6 +188,7 @@ const types::JointCommand& AccelerationSceneReducedTSID::solve(const Hierarchica
             throw std::runtime_error("Solver output is NaN");
         }
     }
+    f_ext_prev = fext_out;
     solver_output_joints.acceleration = qdd_out.tail(na);
     solver_output_joints.effort = tau_out; // tau_out does not include fb dofs.
 

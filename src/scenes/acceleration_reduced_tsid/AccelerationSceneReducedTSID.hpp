@@ -48,6 +48,8 @@ protected:
     bool configured;
     types::JointCommand solver_output_joints;
     uint dim_contact;
+    Eigen::VectorXd f_ext_prev;
+    double force_rate_weight = 1e-3;
 
     bool contactsHaveChanged(const std::vector<types::Contact>& old_contacts, const std::vector<types::Contact>& new_contacts){
         if(old_contacts.size() != new_contacts.size())
