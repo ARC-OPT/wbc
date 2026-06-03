@@ -107,7 +107,7 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
             qp.upper_x.head(nj+ncp*dim_contact) = constraints[i]->ub();
         }
         else if (type == Constraint::equality) {
-            qp.A.middleRows(total_eqs, c_size) = constraints[i]->A();
+            qp.A.middleRows(total_eqs, c_size).leftCols(nj+ncp*dim_contact) = constraints[i]->A();
             qp.b.segment(total_eqs, c_size) = constraints[i]->b();
             total_eqs += c_size;
         }
