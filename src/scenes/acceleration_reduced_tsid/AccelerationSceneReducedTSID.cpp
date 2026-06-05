@@ -168,10 +168,18 @@ const HierarchicalQP& AccelerationSceneReducedTSID::update(){
         qp.H.block(nj+ncp*dim_contact, nj+ncp*dim_contact, n_friction, n_friction)
             .diagonal().array() += friction_softening_weight;
 
-    // Contact force rate regularization: penalize ||f - f_prev||^2 to reduce chattering
+    // Tangential force rate regularization: penalize changes in fx,fy,tx,ty,tz but NOT fz.
+    // Smooths forces at the friction cone boundary without restricting normal force changes
+    // during contact transitions (foot landing/takeoff).
     if(f_ext_prev.size() == (int)(ncp * dim_contact)) {
-        qp.H.block(nj, nj, ncp*dim_contact, ncp*dim_contact).diagonal().array() += force_rate_weight;
-        qp.g.segment(nj, ncp*dim_contact) -= force_rate_weight * f_ext_prev;
+        for(uint c = 0; c < ncp; c++) {
+            for(int j = 0; j < (int)dim_contact; j++) {
+                if(j == 2) continue; // skip fz (normal force must change freely)
+                int k = nj + c*dim_contact + j;
+                qp.H(k, k) += force_rate_weight;
+                qp.g(k)    -= force_rate_weight * f_ext_prev(c*dim_contact + j);
+            }
+        }
     }
 
     return hqp;
