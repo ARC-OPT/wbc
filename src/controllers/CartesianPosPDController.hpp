@@ -46,8 +46,11 @@ protected:
     Eigen::VectorXd u;
     Eigen::VectorXd u_max;
     Eigen::VectorXd p_gain;
+    Eigen::VectorXd i_gain;
     Eigen::VectorXd d_gain;
     Eigen::VectorXd ff_gain;
+    Eigen::VectorXd windup_term;
+    Eigen::VectorXd error_accumulated;
     Eigen::VectorXd x;
     Eigen::VectorXd v;
     Eigen::VectorXd rx;
@@ -71,7 +74,11 @@ public:
     /** Set proportional/position gain. Size has to be the same dimension of the controller*/
     void setPGain(const Eigen::VectorXd &gain);
     /** Get proportional/position gain*/
-    const Eigen::VectorXd& pGain(){return p_gain;}
+    const Eigen::VectorXd& pGain(){return p_gain;}   
+    /** Set integral/accumulated gain. Size has to be the same dimension of the controller*/
+    void setIGain(const Eigen::VectorXd &gain);
+    /** Get integral/accumulated gain*/
+    const Eigen::VectorXd& iGain(){return i_gain;}
     /** Set derivative/velocity gain. Size has to be the same dimension of the controller*/
     void setDGain(const Eigen::VectorXd &gain);
     /** Get derivative/velocity gain*/
@@ -84,6 +91,11 @@ public:
     void setMaxCtrlOutput(const Eigen::VectorXd &max_ctrl_out);
     /** Get controller saturation*/
     const Eigen::VectorXd& maxCtrlOutput(){return u_max;}
+    /** Set windup terms */
+    void setWindup(const Eigen::VectorXd &windup_terms);
+    /** Get windup terms */
+    const Eigen::VectorXd& windup(){return windup_term;}
+
     /**
      * @brief Apply Saturation on the control output. If one or more values of <in> are bigger than the
      *        Corrresponding entry of <max>, all values will be scaled down according to the biggest

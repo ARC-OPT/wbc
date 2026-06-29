@@ -8,7 +8,10 @@ CartesianPosPDController::CartesianPosPDController() :
     ra.setConstant(6,0.0);
     x.setConstant(6,0.0);
     v.setConstant(6,0.0);
+    error_accumulated.setConstant(6,0.0);
     ff_gain.setConstant(6,1.0);
+    i_gain.setConstant(6,0.0);
+    windup_term.setConstant(6,std::numeric_limits<double>::infinity());
     u_max.setConstant(6,std::numeric_limits<double>::infinity());
 }
 
@@ -32,7 +35,10 @@ const types::Twist& CartesianPosPDController::update(const types::Pose& ref_pose
     x.setZero();
 
     // Compute controller output
-    u = p_gain.cwiseProduct(rx - x) + ff_gain.cwiseProduct(rv);
+    error_accumulated += (rx - x);
+    for(uint i = 0; i < error_accumulated.size(); i++)
+        error_accumulated(i) = std::min(std::max(error_accumulated(i), -windup_term(i)), windup_term(i));
+    u = p_gain.cwiseProduct(rx - x) + i_gain.cwiseProduct(error_accumulated) + ff_gain.cwiseProduct(rv);
 
     // Apply Saturation
     applySaturation(u, u_max, u);
@@ -50,6 +56,7 @@ const types::SpatialAcceleration& CartesianPosPDController::update(const types::
                                                                    const types::Pose& pose,
                                                                    const types::Twist& twist){    
     assert(p_gain.size() == dim_controller);
+    assert(i_gain.size() == dim_controller);
     assert(d_gain.size() == dim_controller);
     assert(ff_gain.size() == dim_controller);
     assert(u_max.size() == dim_controller);
@@ -69,7 +76,10 @@ const types::SpatialAcceleration& CartesianPosPDController::update(const types::
     v.segment(3,3) = twist.angular;
 
     // Compute controller output
-    u = p_gain.cwiseProduct(rx - x) + d_gain.cwiseProduct(rv - v) + ff_gain.cwiseProduct(ra);
+    error_accumulated += (rx - x);
+    for(uint i = 0; i < error_accumulated.size(); i++)
+        error_accumulated(i) = std::min(std::max(error_accumulated(i), -windup_term(i)), windup_term(i));
+    u = p_gain.cwiseProduct(rx - x) + i_gain.cwiseProduct(error_accumulated) + d_gain.cwiseProduct(rv - v) + ff_gain.cwiseProduct(rv);
 
     // Apply Saturation
     applySaturation(u, u_max, u);
@@ -86,6 +96,11 @@ void CartesianPosPDController::setPGain(const Eigen::VectorXd &gain){
     p_gain = gain;
 }
 
+void CartesianPosPDController::setIGain(const Eigen::VectorXd &gain){
+    assert((size_t)gain.size() == dim_controller);
+    i_gain = gain;
+}
+
 void CartesianPosPDController::setDGain(const Eigen::VectorXd &gain){
     assert((size_t)gain.size() == dim_controller);
     d_gain = gain;
@@ -99,6 +114,11 @@ void CartesianPosPDController::setFFGain(const Eigen::VectorXd &gain){
 void CartesianPosPDController::setMaxCtrlOutput(const Eigen::VectorXd &max_ctrl_out){
     assert((size_t)max_ctrl_out.size() == dim_controller);
     u_max = max_ctrl_out;
+}
+
+void CartesianPosPDController::setWindup(const Eigen::VectorXd &windup){
+    assert((size_t)windup.size() == dim_controller);
+    windup_term = windup;
 }
 
 void CartesianPosPDController::applySaturation(const Eigen::VectorXd& in, const Eigen::VectorXd& max, Eigen::VectorXd &out){
