@@ -35,9 +35,11 @@ const types::Twist& CartesianPosPDController::update(const types::Pose& ref_pose
     x.setZero();
 
     // Compute controller output
-    error_accumulated += (rx - x);
-    for(uint i = 0; i < error_accumulated.size(); i++)
-        error_accumulated(i) = std::min(std::max(error_accumulated(i), -windup_term(i)), windup_term(i));
+    if(i_gain.norm() > 0){
+        error_accumulated += (rx - x);
+        for(uint i = 0; i < error_accumulated.size(); i++)
+            error_accumulated(i) = std::min(std::max(error_accumulated(i), -windup_term(i)), windup_term(i));
+    }
     u = p_gain.cwiseProduct(rx - x) + i_gain.cwiseProduct(error_accumulated) + ff_gain.cwiseProduct(rv);
 
     // Apply Saturation
@@ -76,9 +78,11 @@ const types::SpatialAcceleration& CartesianPosPDController::update(const types::
     v.segment(3,3) = twist.angular;
 
     // Compute controller output
-    error_accumulated += (rx - x);
-    for(uint i = 0; i < error_accumulated.size(); i++)
-        error_accumulated(i) = std::min(std::max(error_accumulated(i), -windup_term(i)), windup_term(i));
+    if(i_gain.norm() > 0){
+        error_accumulated += (rx - x);
+        for(uint i = 0; i < error_accumulated.size(); i++)
+            error_accumulated(i) = std::min(std::max(error_accumulated(i), -windup_term(i)), windup_term(i));
+    }
     u = p_gain.cwiseProduct(rx - x) + i_gain.cwiseProduct(error_accumulated) + d_gain.cwiseProduct(rv - v) + ff_gain.cwiseProduct(rv);
 
     // Apply Saturation
