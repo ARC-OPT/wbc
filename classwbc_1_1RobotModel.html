@@ -186,6 +186,10 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aaecedc02d01072d80233f25b8baeef72"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return current URDF model.  <br /></td></tr>
 <tr class="memitem:a52c6c8e6a75c9be3b925adfa9570f093" id="r_a52c6c8e6a75c9be3b925adfa9570f093"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a52c6c8e6a75c9be3b925adfa9570f093">setJointWeights</a> (const Eigen::VectorXd &amp;weights)</td></tr>
 <tr class="memdesc:a52c6c8e6a75c9be3b925adfa9570f093"><td class="mdescLeft">&#160;</td><td class="mdescRight">set Joint weights by given name  <br /></td></tr>
+<tr class="memitem:a74b01f19b2316b7661a7e6a987a98dde" id="r_a74b01f19b2316b7661a7e6a987a98dde"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a74b01f19b2316b7661a7e6a987a98dde">setVelocityFilterCutoffFreq</a> (double freq)</td></tr>
+<tr class="memdesc:a74b01f19b2316b7661a7e6a987a98dde"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the cutoff frequency for the velocity filter.  <br /></td></tr>
+<tr class="memitem:ae4dd272e0ed60a3464adcb166d543ccb" id="r_ae4dd272e0ed60a3464adcb166d543ccb"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae4dd272e0ed60a3464adcb166d543ccb">setVelocityFilterSampleTime</a> (double sample_time)</td></tr>
+<tr class="memdesc:ae4dd272e0ed60a3464adcb166d543ccb"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set the sample time for the velocity filter.  <br /></td></tr>
 <tr class="memitem:a7ab9f8b392639541a37dcbdf5240ff41" id="r_a7ab9f8b392639541a37dcbdf5240ff41"><td class="memItemLeft">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a7ab9f8b392639541a37dcbdf5240ff41">getJointWeights</a> () const</td></tr>
 <tr class="memdesc:a7ab9f8b392639541a37dcbdf5240ff41"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get Joint weights as Named vector.  <br /></td></tr>
 <tr class="memitem:a72e2872271d3e0d0daf5d6dc5ebc7ae5" id="r_a72e2872271d3e0d0daf5d6dc5ebc7ae5"><td class="memItemLeft">virtual const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a72e2872271d3e0d0daf5d6dc5ebc7ae5">inverseDynamics</a> (const Eigen::VectorXd &amp;qdd_ref=Eigen::VectorXd(), const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp;f_ext=std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt;())=0</td></tr>
@@ -234,6 +238,10 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:a6bbf856f4b732dd733001648a6d1c1ee" id="r_a6bbf856f4b732dd733001648a6d1c1ee"><td class="memItemLeft"><a class="el" href="classwbc_1_1types_1_1SpatialAcceleration.html">types::SpatialAcceleration</a>&#160;</td><td class="memItemRight"><a class="el" href="#a6bbf856f4b732dd733001648a6d1c1ee">zero_acc</a></td></tr>
 <tr class="memitem:af459824dc1f5503ec12c5fcb849ac2d5" id="r_af459824dc1f5503ec12c5fcb849ac2d5"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#af459824dc1f5503ec12c5fcb849ac2d5">configured</a></td></tr>
 <tr class="memitem:ae4d95335e5b3d82918d3c2a04fb2e500" id="r_ae4d95335e5b3d82918d3c2a04fb2e500"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#ae4d95335e5b3d82918d3c2a04fb2e500">updated</a></td></tr>
+<tr class="memitem:a82fb1535c63c149c805560cab00f83b6" id="r_a82fb1535c63c149c805560cab00f83b6"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classwbc_1_1LowPassFilter.html">LowPassFilter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a82fb1535c63c149c805560cab00f83b6">joint_vel_filter</a></td></tr>
+<tr class="memitem:aa84ef0149d0a59df44699b087fcceb2b" id="r_aa84ef0149d0a59df44699b087fcceb2b"><td class="memItemLeft">std::unique_ptr&lt; <a class="el" href="classwbc_1_1LowPassFilter.html">LowPassFilter</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#aa84ef0149d0a59df44699b087fcceb2b">fb_vel_filter</a></td></tr>
+<tr class="memitem:a17896fa6e9695a52b001dda828385da3" id="r_a17896fa6e9695a52b001dda828385da3"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a17896fa6e9695a52b001dda828385da3">velocity_filter_cutoff_freq</a></td></tr>
+<tr class="memitem:a708beefd9d321da12049b245a47bff6e" id="r_a708beefd9d321da12049b245a47bff6e"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a708beefd9d321da12049b245a47bff6e">velocity_filter_sample_time</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Interface for all robot models. This has to provide all kinematics and dynamics information that is required for WBC. Conventions and usage: </p>
@@ -1343,6 +1351,60 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a74b01f19b2316b7661a7e6a987a98dde" name="a74b01f19b2316b7661a7e6a987a98dde"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a74b01f19b2316b7661a7e6a987a98dde">&#9670;&#160;</a></span>setVelocityFilterCutoffFreq()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::RobotModel::setVelocityFilterCutoffFreq </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>freq</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the cutoff frequency for the velocity filter. </p>
+
+</div>
+</div>
+<a id="ae4dd272e0ed60a3464adcb166d543ccb" name="ae4dd272e0ed60a3464adcb166d543ccb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae4dd272e0ed60a3464adcb166d543ccb">&#9670;&#160;</a></span>setVelocityFilterSampleTime()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::RobotModel::setVelocityFilterSampleTime </td>
+          <td>(</td>
+          <td class="paramtype">double</td>          <td class="paramname"><span class="paramname"><em>sample_time</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set the sample time for the velocity filter. </p>
+
+</div>
+</div>
 <a id="a9002aa259079b450da1b94b1af682297" name="a9002aa259079b450da1b94b1af682297"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a9002aa259079b450da1b94b1af682297">&#9670;&#160;</a></span>spaceJacobian()</h2>
 
@@ -1874,6 +1936,28 @@ Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="aa84ef0149d0a59df44699b087fcceb2b" name="aa84ef0149d0a59df44699b087fcceb2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa84ef0149d0a59df44699b087fcceb2b">&#9670;&#160;</a></span>fb_vel_filter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classwbc_1_1LowPassFilter.html">LowPassFilter</a>&gt; wbc::RobotModel::fb_vel_filter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="a658985246a6867424206fd64ca6a61c6" name="a658985246a6867424206fd64ca6a61c6"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a658985246a6867424206fd64ca6a61c6">&#9670;&#160;</a></span>fk_needs_recompute</h2>
 
@@ -2091,6 +2175,29 @@ Protected Attributes</h2></td></tr>
   </tr>
 </table>
 </div><div class="memdoc">
+
+</div>
+</div>
+<a id="a82fb1535c63c149c805560cab00f83b6" name="a82fb1535c63c149c805560cab00f83b6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a82fb1535c63c149c805560cab00f83b6">&#9670;&#160;</a></span>joint_vel_filter</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::unique_ptr&lt;<a class="el" href="classwbc_1_1LowPassFilter.html">LowPassFilter</a>&gt; wbc::RobotModel::joint_vel_filter</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+<p>Optional low-pass filters on the joint and floating base velocities, see <a class="el" href="structwbc_1_1RobotModelConfig.html" title="Robot Model configuration class, containts information like urdf file, type of robot model to be load...">RobotModelConfig</a>. Filtering is disabled if the pointers are null. </p>
 
 </div>
 </div>
@@ -2369,6 +2476,50 @@ Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">bool wbc::RobotModel::updated</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a17896fa6e9695a52b001dda828385da3" name="a17896fa6e9695a52b001dda828385da3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a17896fa6e9695a52b001dda828385da3">&#9670;&#160;</a></span>velocity_filter_cutoff_freq</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double wbc::RobotModel::velocity_filter_cutoff_freq</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a708beefd9d321da12049b245a47bff6e" name="a708beefd9d321da12049b245a47bff6e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a708beefd9d321da12049b245a47bff6e">&#9670;&#160;</a></span>velocity_filter_sample_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double wbc::RobotModel::velocity_filter_sample_time</td>
         </tr>
       </table>
   </td>

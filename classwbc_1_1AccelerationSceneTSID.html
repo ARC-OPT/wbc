@@ -98,6 +98,12 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:a2967aff01959adb999ea22a941ea8dbd"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update the wbc scene and return the (updated) optimization problem.  <br /></td></tr>
 <tr class="memitem:a6f976d6e81f10cfab375af47d8014f6c" id="r_a6f976d6e81f10cfab375af47d8014f6c"><td class="memItemLeft">virtual const <a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a> &amp;&#160;</td><td class="memItemRight"><a class="el" href="#a6f976d6e81f10cfab375af47d8014f6c">solve</a> (const <a class="el" href="structwbc_1_1HierarchicalQP.html">HierarchicalQP</a> &amp;hqp)</td></tr>
 <tr class="memdesc:a6f976d6e81f10cfab375af47d8014f6c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Solve the given optimization problem.  <br /></td></tr>
+<tr class="memitem:a276c34114443d6b400d8309eb3e6f7f3" id="r_a276c34114443d6b400d8309eb3e6f7f3"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a276c34114443d6b400d8309eb3e6f7f3">setAccelerationRegularization</a> (const double reg)</td></tr>
+<tr class="memdesc:a276c34114443d6b400d8309eb3e6f7f3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set acceleration regularization term.  <br /></td></tr>
+<tr class="memitem:ae2ee2d8d92b682b925f581cf5762e94a" id="r_ae2ee2d8d92b682b925f581cf5762e94a"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#ae2ee2d8d92b682b925f581cf5762e94a">setJointTorqueRegularization</a> (const double reg)</td></tr>
+<tr class="memdesc:ae2ee2d8d92b682b925f581cf5762e94a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set joint torque regularization term.  <br /></td></tr>
+<tr class="memitem:a2ca134590082aeefdadd124c26865a15" id="r_a2ca134590082aeefdadd124c26865a15"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="#a2ca134590082aeefdadd124c26865a15">setContactWrenchRegularization</a> (const double reg)</td></tr>
+<tr class="memdesc:a2ca134590082aeefdadd124c26865a15"><td class="mdescLeft">&#160;</td><td class="mdescRight">Set contact wrench regularization term.  <br /></td></tr>
 <tr class="inherit_header pub_methods_classwbc_1_1Scene"><td colspan="2">Public Member Functions inherited from <a class="el" href="classwbc_1_1Scene.html">wbc::Scene</a></td></tr>
 <tr class="memitem:a9b4b944de7c8ab39e24283c3b782fc50 pub_methods_classwbc_1_1Scene" id="r_a9b4b944de7c8ab39e24283c3b782fc50"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#a9b4b944de7c8ab39e24283c3b782fc50">Scene</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, <a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a> solver, const double dt)</td></tr>
 <tr class="memitem:aeaa623d8231661da3231205aeb380a31 pub_methods_classwbc_1_1Scene" id="r_aeaa623d8231661da3231205aeb380a31"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#aeaa623d8231661da3231205aeb380a31">~Scene</a> ()</td></tr>
@@ -107,10 +113,6 @@ Public Member Functions</h2></td></tr>
 <tr class="memdesc:aa1b3592bb4fc3e5a3010de89405e72b4 pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current solver.  <br /></td></tr>
 <tr class="memitem:a205446f840ec20a54490e635b3e1a984 pub_methods_classwbc_1_1Scene" id="r_a205446f840ec20a54490e635b3e1a984"><td class="memItemLeft">const Eigen::VectorXd &amp;&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#a205446f840ec20a54490e635b3e1a984">getSolverOutputRaw</a> () const</td></tr>
 <tr class="memdesc:a205446f840ec20a54490e635b3e1a984 pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get current solver output in raw values.  <br /></td></tr>
-<tr class="memitem:a973af5714aeb6bece229f91f564b7d1f pub_methods_classwbc_1_1Scene" id="r_a973af5714aeb6bece229f91f564b7d1f"><td class="memItemLeft">void&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#a973af5714aeb6bece229f91f564b7d1f">setHessianRegularizer</a> (const double reg)</td></tr>
-<tr class="memdesc:a973af5714aeb6bece229f91f564b7d1f pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">setHessianRegularizer  <br /></td></tr>
-<tr class="memitem:acabbd7fbbc1bb7749a4b492e5e39d1bf pub_methods_classwbc_1_1Scene" id="r_acabbd7fbbc1bb7749a4b492e5e39d1bf"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#acabbd7fbbc1bb7749a4b492e5e39d1bf">getHessianRegularizer</a> ()</td></tr>
-<tr class="memdesc:acabbd7fbbc1bb7749a4b492e5e39d1bf pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Return the current value of hessian regularizer.  <br /></td></tr>
 <tr class="memitem:a48bf813e8289c7f009322e59012a6840 pub_methods_classwbc_1_1Scene" id="r_a48bf813e8289c7f009322e59012a6840"><td class="memItemLeft">const std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt; &amp;&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#a48bf813e8289c7f009322e59012a6840">getContactWrenches</a> ()</td></tr>
 <tr class="memdesc:a48bf813e8289c7f009322e59012a6840 pub_methods_classwbc_1_1Scene"><td class="mdescLeft">&#160;</td><td class="mdescRight">Get estimated contact wrenches.  <br /></td></tr>
 </table><table class="memberdecls">
@@ -129,11 +131,13 @@ Protected Attributes</h2></td></tr>
 <tr class="memitem:aaf741b05c435199ac1d77ea413e3fbfe" id="r_aaf741b05c435199ac1d77ea413e3fbfe"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#aaf741b05c435199ac1d77ea413e3fbfe">configured</a></td></tr>
 <tr class="memitem:a924e4f91a6c7f0de4d6f3e73bcab668d" id="r_a924e4f91a6c7f0de4d6f3e73bcab668d"><td class="memItemLeft"><a class="el" href="classwbc_1_1types_1_1JointCommand.html">types::JointCommand</a>&#160;</td><td class="memItemRight"><a class="el" href="#a924e4f91a6c7f0de4d6f3e73bcab668d">solver_output_joints</a></td></tr>
 <tr class="memitem:a1f8b8814157f89e1ff51a7c204aa0761" id="r_a1f8b8814157f89e1ff51a7c204aa0761"><td class="memItemLeft">uint&#160;</td><td class="memItemRight"><a class="el" href="#a1f8b8814157f89e1ff51a7c204aa0761">dim_contact</a></td></tr>
+<tr class="memitem:a8dc396929ebff1d4db93e2c972bb6f65" id="r_a8dc396929ebff1d4db93e2c972bb6f65"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a8dc396929ebff1d4db93e2c972bb6f65">acceleration_regularization</a></td></tr>
+<tr class="memitem:abe6bdaa1ee6f280a8b5504e1c8af0280" id="r_abe6bdaa1ee6f280a8b5504e1c8af0280"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#abe6bdaa1ee6f280a8b5504e1c8af0280">wrench_regularization</a></td></tr>
+<tr class="memitem:a1d701df12ec848c750ad12b4d1ee132d" id="r_a1d701df12ec848c750ad12b4d1ee132d"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a1d701df12ec848c750ad12b4d1ee132d">torque_regularization</a></td></tr>
 <tr class="inherit_header pro_attribs_classwbc_1_1Scene"><td colspan="2">Protected Attributes inherited from <a class="el" href="classwbc_1_1Scene.html">wbc::Scene</a></td></tr>
 <tr class="memitem:a1ee33fc1fee5a7c1f72d7f40199f6b31 pro_attribs_classwbc_1_1Scene" id="r_a1ee33fc1fee5a7c1f72d7f40199f6b31"><td class="memItemLeft"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#a1ee33fc1fee5a7c1f72d7f40199f6b31">robot_model</a></td></tr>
 <tr class="memitem:aff2c19220d73cf5c9d27255c660d04ba pro_attribs_classwbc_1_1Scene" id="r_aff2c19220d73cf5c9d27255c660d04ba"><td class="memItemLeft"><a class="el" href="namespacewbc.html#a6902c325ae9865d95481fa98c9bf8f85">QPSolverPtr</a>&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#aff2c19220d73cf5c9d27255c660d04ba">solver</a></td></tr>
 <tr class="memitem:aaf848f5b8f9f316fb077774b2beb12b8 pro_attribs_classwbc_1_1Scene" id="r_aaf848f5b8f9f316fb077774b2beb12b8"><td class="memItemLeft">Eigen::VectorXd&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#aaf848f5b8f9f316fb077774b2beb12b8">solver_output</a></td></tr>
-<tr class="memitem:a400ed9aeb7260d0335659743792f9491 pro_attribs_classwbc_1_1Scene" id="r_a400ed9aeb7260d0335659743792f9491"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#a400ed9aeb7260d0335659743792f9491">hessian_regularizer</a></td></tr>
 <tr class="memitem:a15299f9fb8152cc7e4fd77da507d4214 pro_attribs_classwbc_1_1Scene" id="r_a15299f9fb8152cc7e4fd77da507d4214"><td class="memItemLeft">std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Wrench.html">types::Wrench</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Scene.html#a15299f9fb8152cc7e4fd77da507d4214">contact_wrenches</a></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pro-static-attribs" class="groupheader"><a id="pro-static-attribs" name="pro-static-attribs"></a>
@@ -289,6 +293,105 @@ Static Protected Attributes</h2></td></tr>
 
 </div>
 </div>
+<a id="a276c34114443d6b400d8309eb3e6f7f3" name="a276c34114443d6b400d8309eb3e6f7f3"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a276c34114443d6b400d8309eb3e6f7f3">&#9670;&#160;</a></span>setAccelerationRegularization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::AccelerationSceneTSID::setAccelerationRegularization </td>
+          <td>(</td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>reg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set acceleration regularization term. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reg</td><td>This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8. </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="a2ca134590082aeefdadd124c26865a15" name="a2ca134590082aeefdadd124c26865a15"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2ca134590082aeefdadd124c26865a15">&#9670;&#160;</a></span>setContactWrenchRegularization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::AccelerationSceneTSID::setContactWrenchRegularization </td>
+          <td>(</td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>reg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set contact wrench regularization term. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reg</td><td>This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
+<a id="ae2ee2d8d92b682b925f581cf5762e94a" name="ae2ee2d8d92b682b925f581cf5762e94a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae2ee2d8d92b682b925f581cf5762e94a">&#9670;&#160;</a></span>setJointTorqueRegularization()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void wbc::AccelerationSceneTSID::setJointTorqueRegularization </td>
+          <td>(</td>
+          <td class="paramtype">const double</td>          <td class="paramname"><span class="paramname"><em>reg</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel inline">inline</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p>Set joint torque regularization term. </p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">reg</td><td>This value is added to the diagonal of the Hessian matrix inside the QP to reduce the risk of infeasibility. Default is 1e-8 </td></tr>
+  </table>
+  </dd>
+</dl>
+
+</div>
+</div>
 <a id="a6f976d6e81f10cfab375af47d8014f6c" name="a6f976d6e81f10cfab375af47d8014f6c"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6f976d6e81f10cfab375af47d8014f6c">&#9670;&#160;</a></span>solve()</h2>
 
@@ -355,6 +458,28 @@ Static Protected Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a8dc396929ebff1d4db93e2c972bb6f65" name="a8dc396929ebff1d4db93e2c972bb6f65"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8dc396929ebff1d4db93e2c972bb6f65">&#9670;&#160;</a></span>acceleration_regularization</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double wbc::AccelerationSceneTSID::acceleration_regularization</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
 <a id="aaf741b05c435199ac1d77ea413e3fbfe" name="aaf741b05c435199ac1d77ea413e3fbfe"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#aaf741b05c435199ac1d77ea413e3fbfe">&#9670;&#160;</a></span>configured</h2>
 
@@ -564,6 +689,50 @@ Static Protected Attributes</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::vector&lt; <a class="el" href="namespacewbc.html#a07b382256399cd59c1f86d827dd66f4d">TaskPtr</a> &gt; wbc::AccelerationSceneTSID::tasks</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a1d701df12ec848c750ad12b4d1ee132d" name="a1d701df12ec848c750ad12b4d1ee132d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a1d701df12ec848c750ad12b4d1ee132d">&#9670;&#160;</a></span>torque_regularization</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double wbc::AccelerationSceneTSID::torque_regularization</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="abe6bdaa1ee6f280a8b5504e1c8af0280" name="abe6bdaa1ee6f280a8b5504e1c8af0280"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abe6bdaa1ee6f280a8b5504e1c8af0280">&#9670;&#160;</a></span>wrench_regularization</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">double wbc::AccelerationSceneTSID::wrench_regularization</td>
         </tr>
       </table>
   </td>

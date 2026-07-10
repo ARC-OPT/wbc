@@ -88,7 +88,7 @@ Inheritance diagram for wbc::SpatialAccelerationTask:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a96548a8d92bfdcc34c7a430fe79f6cba" id="r_a96548a8d92bfdcc34c7a430fe79f6cba"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a96548a8d92bfdcc34c7a430fe79f6cba">SpatialAccelerationTask</a> (<a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> config, <a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, const std::string &amp;tip_frame)</td></tr>
+<tr class="memitem:a534559424eb562f95d239c7b8116c46d" id="r_a534559424eb562f95d239c7b8116c46d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a534559424eb562f95d239c7b8116c46d">SpatialAccelerationTask</a> (<a class="el" href="classwbc_1_1TaskConfig.html">TaskConfig</a> config, <a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model, const std::string &amp;tip_frame, bool use_spatial_acc_bias=true)</td></tr>
 <tr class="memitem:a9ae670e7ac1f302737d4bc6fa14d9875" id="r_a9ae670e7ac1f302737d4bc6fa14d9875"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#a9ae670e7ac1f302737d4bc6fa14d9875">~SpatialAccelerationTask</a> ()=default</td></tr>
 <tr class="memitem:ad42ef4e705a324b34dff431acf66dc88" id="r_ad42ef4e705a324b34dff431acf66dc88"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#ad42ef4e705a324b34dff431acf66dc88">update</a> () override</td></tr>
 <tr class="memdesc:ad42ef4e705a324b34dff431acf66dc88"><td class="mdescLeft">&#160;</td><td class="mdescRight">Compute the cartesian task matrix A.  <br /></td></tr>
@@ -113,6 +113,7 @@ Public Member Functions</h2></td></tr>
 Protected Attributes</h2></td></tr>
 <tr class="memitem:ac64ab879e17f22054a85a52a528865a5" id="r_ac64ab879e17f22054a85a52a528865a5"><td class="memItemLeft">Eigen::MatrixXd&#160;</td><td class="memItemRight"><a class="el" href="#ac64ab879e17f22054a85a52a528865a5">rot_mat</a></td></tr>
 <tr class="memitem:a0f12c08cc4c4cc747da200715062dd40" id="r_a0f12c08cc4c4cc747da200715062dd40"><td class="memItemLeft">std::string&#160;</td><td class="memItemRight"><a class="el" href="#a0f12c08cc4c4cc747da200715062dd40">tip_frame</a></td></tr>
+<tr class="memitem:a34d417988e2ec21bdef9ac84d89bfa33" id="r_a34d417988e2ec21bdef9ac84d89bfa33"><td class="memItemLeft">bool&#160;</td><td class="memItemRight"><a class="el" href="#a34d417988e2ec21bdef9ac84d89bfa33">use_spatial_acc_bias</a></td></tr>
 <tr class="inherit_header pro_attribs_classwbc_1_1Task"><td colspan="2">Protected Attributes inherited from <a class="el" href="classwbc_1_1Task.html">wbc::Task</a></td></tr>
 <tr class="memitem:aaf6ccdd12d2171ee96ac3fcff38252d1 pro_attribs_classwbc_1_1Task" id="r_aaf6ccdd12d2171ee96ac3fcff38252d1"><td class="memItemLeft"><a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a>&#160;</td><td class="memItemRight"><a class="el" href="classwbc_1_1Task.html#aaf6ccdd12d2171ee96ac3fcff38252d1">robot_model</a></td></tr>
 </table><table class="memberdecls">
@@ -132,8 +133,8 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Implementation of a Cartesian acceleration task. </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a96548a8d92bfdcc34c7a430fe79f6cba" name="a96548a8d92bfdcc34c7a430fe79f6cba"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a96548a8d92bfdcc34c7a430fe79f6cba">&#9670;&#160;</a></span>SpatialAccelerationTask()</h2>
+<a id="a534559424eb562f95d239c7b8116c46d" name="a534559424eb562f95d239c7b8116c46d"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a534559424eb562f95d239c7b8116c46d">&#9670;&#160;</a></span>SpatialAccelerationTask()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -151,7 +152,12 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>tip_frame</em></span>&#160;)</td>
+          <td class="paramtype">const std::string &amp;</td>          <td class="paramname"><span class="paramname"><em>tip_frame</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>use_spatial_acc_bias</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
@@ -305,6 +311,28 @@ Additional Inherited Members</h2></td></tr>
       <table class="memname">
         <tr>
           <td class="memname">std::string wbc::SpatialAccelerationTask::tip_frame</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel protected">protected</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+</div>
+</div>
+<a id="a34d417988e2ec21bdef9ac84d89bfa33" name="a34d417988e2ec21bdef9ac84d89bfa33"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a34d417988e2ec21bdef9ac84d89bfa33">&#9670;&#160;</a></span>use_spatial_acc_bias</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool wbc::SpatialAccelerationTask::use_spatial_acc_bias</td>
         </tr>
       </table>
   </td>

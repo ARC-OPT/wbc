@@ -87,8 +87,8 @@ Inheritance diagram for wbc::ContactsAccelerationConstraint:</div>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a5e8345d90383ae9489af81384c51a0b6" id="r_a5e8345d90383ae9489af81384c51a0b6"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a5e8345d90383ae9489af81384c51a0b6">ContactsAccelerationConstraint</a> (bool _reduced=false, uint dim_contact=3)</td></tr>
-<tr class="memdesc:a5e8345d90383ae9489af81384c51a0b6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
+<tr class="memitem:a2460f421d3b2d7358f84c20c7b6391f9" id="r_a2460f421d3b2d7358f84c20c7b6391f9"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a2460f421d3b2d7358f84c20c7b6391f9">ContactsAccelerationConstraint</a> (bool _reduced=false, uint dim_contact=3, bool use_spatial_acc_bias=true)</td></tr>
+<tr class="memdesc:a2460f421d3b2d7358f84c20c7b6391f9"><td class="mdescLeft">&#160;</td><td class="mdescRight">Default constructor.  <br /></td></tr>
 <tr class="memitem:ab651f879e42902e80eaa2d6c3310d0a3" id="r_ab651f879e42902e80eaa2d6c3310d0a3"><td class="memItemLeft">virtual&#160;</td><td class="memItemRight"><a class="el" href="#ab651f879e42902e80eaa2d6c3310d0a3">~ContactsAccelerationConstraint</a> ()=default</td></tr>
 <tr class="memitem:a3b8e72238561bb55b60bb5c8af467b76" id="r_a3b8e72238561bb55b60bb5c8af467b76"><td class="memItemLeft">virtual void&#160;</td><td class="memItemRight"><a class="el" href="#a3b8e72238561bb55b60bb5c8af467b76">update</a> (<a class="el" href="namespacewbc.html#a6f349240f1da50e68041129c57e08840">RobotModelPtr</a> robot_model) override</td></tr>
 <tr class="memdesc:a3b8e72238561bb55b60bb5c8af467b76"><td class="mdescLeft">&#160;</td><td class="mdescRight">Update constraint matrix and vectors, depending on the type. Abstract method.  <br /></td></tr>
@@ -129,8 +129,8 @@ Additional Inherited Members</h2></td></tr>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Abstract class to represent a generic hard constraint for a WBC optimization problem. </p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a5e8345d90383ae9489af81384c51a0b6" name="a5e8345d90383ae9489af81384c51a0b6"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a5e8345d90383ae9489af81384c51a0b6">&#9670;&#160;</a></span>ContactsAccelerationConstraint()</h2>
+<a id="a2460f421d3b2d7358f84c20c7b6391f9" name="a2460f421d3b2d7358f84c20c7b6391f9"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2460f421d3b2d7358f84c20c7b6391f9">&#9670;&#160;</a></span>ContactsAccelerationConstraint()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -146,7 +146,12 @@ Additional Inherited Members</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>dim_contact</em></span><span class="paramdefsep"> = </span><span class="paramdefval">3</span>&#160;)</td>
+          <td class="paramtype">uint</td>          <td class="paramname"><span class="paramname"><em>dim_contact</em></span><span class="paramdefsep"> = </span><span class="paramdefval">3</span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">bool</td>          <td class="paramname"><span class="paramname"><em>use_spatial_acc_bias</em></span><span class="paramdefsep"> = </span><span class="paramdefval">true</span>&#160;)</td>
         </tr>
       </table>
   </td>
