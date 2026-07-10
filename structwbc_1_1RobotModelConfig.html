@@ -90,6 +90,8 @@ Public Attributes</h2></td></tr>
 <tr class="memitem:ab810650c59322deb8520d5840c251a92" id="r_ab810650c59322deb8520d5840c251a92"><td class="memItemLeft">std::vector&lt; <a class="el" href="classwbc_1_1types_1_1Contact.html">types::Contact</a> &gt;&#160;</td><td class="memItemRight"><a class="el" href="#ab810650c59322deb8520d5840c251a92">contact_points</a></td></tr>
 <tr class="memitem:a13154016a69a42d9bac88c17679fa41c" id="r_a13154016a69a42d9bac88c17679fa41c"><td class="memItemLeft">std::vector&lt; std::string &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a13154016a69a42d9bac88c17679fa41c">joint_blacklist</a></td></tr>
 <tr class="memitem:a13db81ff0f958483e5bfea70d9cedfc3" id="r_a13db81ff0f958483e5bfea70d9cedfc3"><td class="memItemLeft">std::vector&lt; double &gt;&#160;</td><td class="memItemRight"><a class="el" href="#a13db81ff0f958483e5bfea70d9cedfc3">max_joint_acceleration</a></td></tr>
+<tr class="memitem:a570e2b097f43772d2d26caf712bdb247" id="r_a570e2b097f43772d2d26caf712bdb247"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#a570e2b097f43772d2d26caf712bdb247">velocity_filter_cutoff_freq</a></td></tr>
+<tr class="memitem:ac5bfd7b12834665468d1d5dc11a3a757" id="r_ac5bfd7b12834665468d1d5dc11a3a757"><td class="memItemLeft">double&#160;</td><td class="memItemRight"><a class="el" href="#ac5bfd7b12834665468d1d5dc11a3a757">velocity_filter_sample_time</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Robot Model configuration class, containts information like urdf file, type of robot model to be loaded, etc. </p>
@@ -251,6 +253,36 @@ Public Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 <p>Only Hyrodyn models: Absolute path to submechanism file, which describes the kinematic structure including parallel mechanisms. </p>
+
+</div>
+</div>
+<a id="a570e2b097f43772d2d26caf712bdb247" name="a570e2b097f43772d2d26caf712bdb247"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a570e2b097f43772d2d26caf712bdb247">&#9670;&#160;</a></span>velocity_filter_cutoff_freq</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double wbc::RobotModelConfig::velocity_filter_cutoff_freq</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Optional: Cutoff frequency for the velocity filter </p>
+
+</div>
+</div>
+<a id="ac5bfd7b12834665468d1d5dc11a3a757" name="ac5bfd7b12834665468d1d5dc11a3a757"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac5bfd7b12834665468d1d5dc11a3a757">&#9670;&#160;</a></span>velocity_filter_sample_time</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">double wbc::RobotModelConfig::velocity_filter_sample_time</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Optional: Sample time for the velocity filter </p>
 
 </div>
 </div>

@@ -85,6 +85,7 @@ Macros</h2></td></tr>
 Functions</h2></td></tr>
 <tr class="memitem:a6b8c8cc1d79c46c0621f435ec115640d" id="r_a6b8c8cc1d79c46c0621f435ec115640d"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a6b8c8cc1d79c46c0621f435ec115640d">BOOST_AUTO_TEST_CASE</a> (simple_test)</td></tr>
 <tr class="memitem:ac8651287c01dae132d53eea995a4eb46" id="r_ac8651287c01dae132d53eea995a4eb46"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#ac8651287c01dae132d53eea995a4eb46">BOOST_AUTO_TEST_CASE</a> (delta_penalty)</td></tr>
+<tr class="memitem:a3296cc13c4d06b98f4809f0a870e79fd" id="r_a3296cc13c4d06b98f4809f0a870e79fd"><td class="memItemLeft">&#160;</td><td class="memItemRight"><a class="el" href="#a3296cc13c4d06b98f4809f0a870e79fd">BOOST_AUTO_TEST_CASE</a> (friction_cone_slack)</td></tr>
 </table>
 <a name="doc-define-members" id="doc-define-members"></a><h2 id="header-doc-define-members" class="groupheader">Macro Definition Documentation</h2>
 <a id="a139f00d2466d591f60b8d6a73c8273f1" name="a139f00d2466d591f60b8d6a73c8273f1"></a>
@@ -117,7 +118,7 @@ Functions</h2></td></tr>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="ac8651287c01dae132d53eea995a4eb46" name="ac8651287c01dae132d53eea995a4eb46"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#ac8651287c01dae132d53eea995a4eb46">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[1/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#ac8651287c01dae132d53eea995a4eb46">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[1/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -134,8 +135,26 @@ Functions</h2></td></tr>
 
 </div>
 </div>
+<a id="a3296cc13c4d06b98f4809f0a870e79fd" name="a3296cc13c4d06b98f4809f0a870e79fd"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a3296cc13c4d06b98f4809f0a870e79fd">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[2/3]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">BOOST_AUTO_TEST_CASE </td>
+          <td>(</td>
+          <td class="paramtype">friction_cone_slack</td>          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Check the softened friction cone constraint (one slack variable per contact): When the cone is inactive, the slack variables should be (close to) zero and the solution identical to the hard constraint. When the reference acceleration pushes the contact wrenches against the cone, the softened scene should track the reference better than the hard one, at the cost of a small cone violation</p>
+
+</div>
+</div>
 <a id="a6b8c8cc1d79c46c0621f435ec115640d" name="a6b8c8cc1d79c46c0621f435ec115640d"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6b8c8cc1d79c46c0621f435ec115640d">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[2/2]</span></h2>
+<h2 class="memtitle"><span class="permalink"><a href="#a6b8c8cc1d79c46c0621f435ec115640d">&#9670;&#160;</a></span>BOOST_AUTO_TEST_CASE() <span class="overload">[3/3]</span></h2>
 
 <div class="memitem">
 <div class="memproto">
