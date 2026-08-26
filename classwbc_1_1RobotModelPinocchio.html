@@ -385,7 +385,6 @@ Static Protected Attributes</h2></td></tr>
 <p>Returns the Body Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">root_frame</td><td>Root frame of the chain. Has to be a valid link in the robot model. </td></tr>
     <tr><td class="paramname">frame_id</td><td>Tip frame of the chain. Has to be a valid link in the robot model. </td></tr>
   </table>
   </dd>
@@ -658,7 +657,6 @@ Static Protected Attributes</h2></td></tr>
 <p>Returns the Space Jacobian for the kinematic chain between root and the tip frame as full body Jacobian. Size of the Jacobian will be 6 x nJoints, where nJoints is the number of joints of the whole robot. The order of the columns will be the same as the configured joint order of the robot. The columns that correspond to joints that are not part of the kinematic chain will have only zeros as entries. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">root_frame</td><td>Root frame of the chain. Has to be a valid link in the robot model. </td></tr>
     <tr><td class="paramname">frame_id</td><td>Tip frame of the chain. Has to be a valid link in the robot model. </td></tr>
   </table>
   </dd>
@@ -695,7 +693,6 @@ Static Protected Attributes</h2></td></tr>
 <p>Returns the spatial acceleration bias, i.e. the term Jdot*qdot. </p>
 <dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
-    <tr><td class="paramname">root_frame</td><td>Root frame of the chain. Has to be a valid link in the robot model. </td></tr>
     <tr><td class="paramname">frame_id</td><td>Tip frame of the chain. Has to be a valid link in the robot model. </td></tr>
   </table>
   </dd>
@@ -786,7 +783,7 @@ Static Protected Attributes</h2></td></tr>
   <table class="params">
     <tr><td class="paramname">joint_positions</td><td>Positions of all independent joints. These have to be in the same order as used by the model (alphabetic). For getting the joint order, call <a class="el" href="classwbc_1_1RobotModel.html#a7cebdc77ce1045b2bf467417f287a8f5" title="Return all joint names excluding the floating base. This will be.">jointNames()</a>. </td></tr>
     <tr><td class="paramname">joint_velocities</td><td>Velocities of all independent joints. These have to be in the same order as used by the model (alphabetic). For getting the joint order, call <a class="el" href="classwbc_1_1RobotModel.html#a7cebdc77ce1045b2bf467417f287a8f5" title="Return all joint names excluding the floating base. This will be.">jointNames()</a>. </td></tr>
-    <tr><td class="paramname">joint_acceleration</td><td>Velocities of all independent joints. These have to be in the same order as used by the model (alphabetic). For getting the joint order, call <a class="el" href="classwbc_1_1RobotModel.html#a7cebdc77ce1045b2bf467417f287a8f5" title="Return all joint names excluding the floating base. This will be.">jointNames()</a>. </td></tr>
+    <tr><td class="paramname">joint_accelerations</td><td>Accelerations of all independent joints. These have to be in the same order as used by the model (alphabetic). For getting the joint order, call <a class="el" href="classwbc_1_1RobotModel.html#a7cebdc77ce1045b2bf467417f287a8f5" title="Return all joint names excluding the floating base. This will be.">jointNames()</a>. </td></tr>
     <tr><td class="paramname">fb_pose</td><td><a class="el" href="structwbc_1_1RobotModel_1_1Pose.html">Pose</a> of the floating base in world coordinates </td></tr>
     <tr><td class="paramname">fb_twist</td><td><a class="el" href="structwbc_1_1RobotModel_1_1Twist.html">Twist</a> of the floating base in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame attached to the floating base (robot root), but aligned to world coordinates </td></tr>
     <tr><td class="paramname">fb_acc</td><td>Spatial accelerationof the floating base in "local-world-aligned" (hybrid) representation, i.e., with respect to a frame attached to the floating base (robot root), but aligned to world coordinates </td></tr>
