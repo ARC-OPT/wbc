@@ -19,6 +19,7 @@ option(SOLVER_EIQUADPROG "Build the Eiquadprog-based solver, by default only qpo
 option(SOLVER_QPSWIFT "Build the QPSwift-based solver, by default only qpoases is built" OFF)
 option(SOLVER_OSQP "Build the OSQP-based solver, by default only qpoases is built" OFF)
 option(SOLVER_HPIPM "Build the HPIPM solver, by default only qpoases is built" OFF)
+option(SOLVER_DAQP "Build the DAQP solver, by default only qpoases is built" OFF)
 
 add_subdirectory(src)
 add_subdirectory(tutorials)
