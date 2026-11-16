@@ -86,9 +86,16 @@ mkdir build && cd build
 cmake ..
 make -j8 && sudo make install && cd ../..
 
+# DAQP
+git clone https://github.com/darnstrom/daqp.git -b v0.11.2
+cd daqp
+mkdir build && cd build
+cmake ..
+make -j8 && sudo make install && cd ../..
+
 # WBC
 mkdir wbc/build && cd wbc/build
-cmake .. -DROBOT_MODEL_RBDL=ON -DSOLVER_PROXQP=ON -DSOLVER_EIQUADPROG=ON -DSOLVER_QPSWIFT=ON -DSOLVER_OSQP=ON -DCMAKE_BUILD_TYPE=RELEASE
+cmake .. -DROBOT_MODEL_RBDL=ON -DSOLVER_PROXQP=ON -DSOLVER_EIQUADPROG=ON -DSOLVER_QPSWIFT=ON -DSOLVER_OSQP=ON -DSOLVER_DAQP=ON -DCMAKE_BUILD_TYPE=RELEASE
 make -j8 && sudo make install && cd ..
 
 sudo ldconfig
