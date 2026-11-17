@@ -6,12 +6,14 @@ file(GLOB HEADERS RELATIVE ${PROJECT_SOURCE_DIR}/src/robot_models/robot_model_hy
 pkg_search_module(hyrodyn REQUIRED IMPORTED_TARGET hyrodyn)
 
 list(APPEND PKGCONFIG_REQUIRES wbc-core)
+list(APPEND PKGCONFIG_REQUIRES wbc-tools)
 list(APPEND PKGCONFIG_REQUIRES hyrodyn)
 string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME} PUBLIC
                       wbc-core
+                      wbc-tools
                       PkgConfig::hyrodyn)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
