@@ -1,4 +1,5 @@
 #include "EffortLimitsAccelerationConstraint.hpp"
+#include <iostream>
 
 namespace wbc{
 
@@ -34,7 +35,7 @@ namespace wbc{
         joint_limits = robot_model->jointLimits();
 
         for(uint i = 0; i < na; i++){
-            assert(joint_limits.min.effort[i]  joint_limits.max.effort[i] && "EffortLimitsAccelerationConstraint: joint effort limits are inconsistent!");
+            assert(joint_limits.min.effort[i] < joint_limits.max.effort[i] && "EffortLimitsAccelerationConstraint: joint effort limits are inconsistent!");
             lb_vec(i) = joint_limits.min.effort[i] - b(i);
             ub_vec(i) = joint_limits.max.effort[i] - b(i);
         }
