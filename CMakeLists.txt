@@ -16,7 +16,6 @@ option(ROBOT_MODEL_RBDL "Also build the RBDL-based robot model, by default only 
 option(ROBOT_MODEL_HYRODYN "Also build the HyRoDyn-based robot model, by default only pinocchio is built" OFF)
 option(SOLVER_PROXQP "Build the ProxQP-based solver, by default qpoases is built" OFF)
 option(SOLVER_EIQUADPROG "Build the Eiquadprog-based solver, by default only qpoases is built" OFF)
-option(SOLVER_QPSWIFT "Build the QPSwift-based solver, by default only qpoases is built" OFF)
 option(SOLVER_OSQP "Build the OSQP-based solver, by default only qpoases is built" OFF)
 option(SOLVER_HPIPM "Build the HPIPM solver, by default only qpoases is built" OFF)
 
