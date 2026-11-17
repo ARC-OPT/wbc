@@ -79,7 +79,7 @@ mkdir -p build
 cd build
 cmake -DACADOS_WITH_QPOASES=ON -DCMAKE_INSTALL_PREFIX=/usr/local ..
 make -j
-sudo make install
+sudo make install && cd ../..
 
 # WBC
 mkdir -p wbc/build && cd wbc/build
