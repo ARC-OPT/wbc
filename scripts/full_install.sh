@@ -43,14 +43,6 @@ mkdir build && cd build
 cmake ..
 make -j && sudo make install && cd ../..
 
-# qpSWIFT
-git clone https://github.com/qpSWIFT/qpSWIFT.git
-cd qpSWIFT
-cp ../wbc/patches/qpSWIFT.patch . && git apply qpSWIFT.patch
-mkdir build && cd build
-cmake .. 
-make -j && sudo make install && cd ../.. 
-
 # proxQP
 git clone --recurse-submodules https://github.com/Simple-Robotics/proxsuite.git proxqp
 cd proxqp
@@ -90,7 +82,7 @@ make -j
 sudo make install
 
 # WBC
-mkdir wbc/build && cd wbc/build
+mkdir -p wbc/build && cd wbc/build
 cmake .. -DROBOT_MODEL_RBDL=ON -DSOLVER_PROXQP=ON -DSOLVER_EIQUADPROG=ON -DSOLVER_OSQP=ON -DROBOT_MODEL_HYRODYN=ON -DCMAKE_BUILD_TYPE=RELEASE
 make -j && sudo make install && cd ..
 
