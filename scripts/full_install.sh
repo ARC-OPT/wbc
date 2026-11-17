@@ -63,7 +63,7 @@ cmake ..
 make -j && sudo make install && cd ../..
 
 # HyRoDyn 
-sudo apt install -y --no-install-recommends libgtest-dev yaml-cpp
+sudo apt install -y --no-install-recommends libgtest-dev libyaml-cpp-dev
 git clone --recursive https://github.com/dfki-ric/hyrodyn.git
 cd hyrodyn
 mkdir build && cd build
