@@ -1,6 +1,7 @@
 SET(TARGET_NAME wbc-solvers-proxqp)
 
-pkg_search_module(proxsuite REQUIRED IMPORTED_TARGET proxsuite)
+#pkg_search_module(proxsuite REQUIRED IMPORTED_TARGET proxsuite)
+find_package(proxsuite REQUIRED)
 
 set(SOURCES ProxQPSolver.cpp)
 set(HEADERS ProxQPSolver.hpp)
@@ -12,7 +13,7 @@ string (REPLACE ";" " " PKGCONFIG_REQUIRES "${PKGCONFIG_REQUIRES}")
 add_library(${TARGET_NAME} SHARED ${SOURCES} ${HEADERS})
 target_link_libraries(${TARGET_NAME} PUBLIC
                       wbc-core
-                      PkgConfig::proxsuite)
+                      proxsuite::proxsuite)
 
 set_target_properties(${TARGET_NAME} PROPERTIES
        VERSION ${PROJECT_VERSION}
