@@ -1,4 +1,3 @@
-[![Ubuntu 22.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu22.04.yml)
 [![Ubuntu 24.04](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu24.04.yml/badge.svg)](https://github.com/ARC-OPT/wbc/actions/workflows/build_and_test_ubuntu24.04.yml)
 
 [![DOI](https://joss.theoj.org/papers/10.21105/joss.06696/status.svg)](https://doi.org/10.21105/joss.06696)   
